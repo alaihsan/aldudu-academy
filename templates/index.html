@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aldudu Academy</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <!-- HALAMAN LOGIN -->
+    <div id="login-page" class="login-page">
+        <div class="login-container">
+            <div class="login-header"><h1>Aldudu Academy</h1><p>Selamat datang! Silakan login.</p></div>
+            <form id="login-form">
+                <div class="form-group"><label for="email" class="form-label">Email</label><input type="email" id="email" name="email" value="guru@aldudu.com" required class="form-input"></div>
+                <div class="form-group"><label for="password" class="form-label">Password</label><input type="password" id="password" name="password" value="123" required class="form-input"></div>
+                <div id="login-error" class="form-error hidden"></div>
+                <div class="form-group" style="margin-top: 2rem;"><button type="submit" class="btn btn-primary">Login</button></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- HALAMAN APLIKASI UTAMA -->
+    <div id="app-page" class="hidden">
+        <header class="app-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <a href="{{ url_for('dashboard') }}" class="header-logo">Aldudu Academy</a>
+                </div>
+                <div class="header-right">
+                    <span id="welcome-message"></span>
+                    <button id="logout-button" class="btn-link">Logout</button>
+                </div>
+            </div>
+        </header>
+
+        <main class="container">
+            <!-- BAGIAN UNTUK MURID: GABUNG KELAS -->
+            <div id="enroll-section" class="hidden">
+                <div class="enroll-container">
+                    <h3>Gabung ke Kelas Baru</h3>
+                    <form id="enroll-form" class="enroll-form">
+                        <input type="text" id="class-code-input" placeholder="Masukkan Kode Kelas..." class="form-input" required>
+                        <button type="submit" class="btn btn-primary">Gabung</button>
+                    </form>
+                    <div id="enroll-message" class="enroll-message"></div>
+                </div>
+            </div>
+
+            <!-- SUB-HEADER UNTUK JUDUL DAN TAHUN AJARAN -->
+            <div class="sub-header">
+                <h1 id="content-title" class="content-title"></h1>
+                <div class="academic-year-selector">
+                    <label for="academic-year" class="form-label" style="margin-bottom: 0;">Tahun Ajaran:</label>
+                    <select id="academic-year" name="academic-year" class="form-input" style="padding: 0.4rem 0.8rem; width: auto;"></select>
+                </div>
+            </div>
+
+            <div id="class-grid" class="class-grid"></div>
+        </main>
+    </div>
+
+    <!-- MODAL TAMBAH KELAS (UNTUK GURU) -->
+    <div id="add-class-modal" class="modal hidden">
+        <div class="modal-content">
+            <form id="add-class-form">
+                <div class="modal-header"><h3>Buat Kelas Baru</h3><p>Buat kelas baru untuk tahun ajaran yang sedang aktif.</p></div>
+                <div class="modal-body"><div class="form-group"><label for="course-name" class="form-label">Nama Kelas</label><input type="text" id="course-name" name="course-name" required placeholder="Contoh: Kimia XII - IPA 1" class="form-input"><div id="modal-error" class="form-error hidden"></div></div></div>
+                <div class="modal-footer"><button type="button" id="modal-cancel-button" class="btn btn-secondary">Batal</button><button type="submit" class="btn btn-primary">Simpan Kelas</button></div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- MODAL TAMPILKAN KODE KELAS (UNTUK GURU) -->
+    <div id="show-code-modal" class="modal hidden">
+        <div class="modal-content" style="text-align: center;">
+            <div class="modal-header"><h3>Kelas Berhasil Dibuat!</h3><p>Bagikan kode berikut kepada murid Anda untuk bergabung.</p></div>
+            <div class="modal-body">
+                <div id="generated-class-code" class="class-code-display"></div>
+                <p id="copy-feedback" class="copy-feedback"></p>
+            </div>
+            <div class="modal-footer" style="justify-content: center;"><button type="button" id="close-code-modal-button" class="btn btn-primary">Selesai</button></div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

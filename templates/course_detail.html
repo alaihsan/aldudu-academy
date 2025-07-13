@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Menggunakan Jinja2 untuk membuat judul dinamis -->
+    <title>{{ course.name }} - Aldudu Academy</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <div id="app-page">
+        <!-- Header Utama -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <a href="{{ url_for('dashboard') }}" class="header-logo">Aldudu Academy</a>
+                </div>
+                <div class="header-right">
+                    <!-- Anda bisa menambahkan nama user di sini jika diperlukan -->
+                    <a href="{{ url_for('dashboard') }}" class="btn-link">Kembali ke Dasbor</a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Konten Utama Halaman Detail Kelas -->
+        <main class="container">
+            <!-- Menampilkan data kelas yang dikirim dari Flask -->
+            <h1 class="content-title">{{ course.name }}</h1>
+            
+            <div class="course-details-container">
+                <p><strong>Wali Kelas:</strong> {{ course.teacher.name }}</p>
+                <p><strong>Tahun Ajaran:</strong> {{ course.academic_year.year }}</p>
+
+                <hr style="margin: 2rem 0;">
+
+                <h2 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem;">Materi & Tugas</h2>
+                <div class="content-placeholder">
+                    <p>Fitur untuk menampilkan daftar tugas, kuis, dan materi akan dibuat di sini.</p>
+                </div>
+
+                <h2 style="font-size: 1.5rem; font-weight: 600; margin-top: 2rem; margin-bottom: 1rem;">Daftar Murid</h2>
+                <div class="content-placeholder">
+                    <p>Fitur untuk menambah dan melihat daftar murid akan dibuat di sini.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>
