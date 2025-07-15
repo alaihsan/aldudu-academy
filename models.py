@@ -6,8 +6,6 @@ import enum
 
 db = SQLAlchemy()
 
-# Tabel perantara (association table) untuk relasi many-to-many
-# antara User (murid) dan Course (kelas)
 enrollments = db.Table('enrollments',
     db.Column('user_id', db.Integer, db.ForeignKey('users.id'), primary_key=True),
     db.Column('course_id', db.Integer, db.ForeignKey('courses.id'), primary_key=True)
@@ -28,10 +26,7 @@ class User(UserMixin, db.Model):
     role = db.Column(db.Enum(UserRole), nullable=False, default=UserRole.MURID)
     
     courses_taught = db.relationship('Course', back_populates='teacher', lazy='dynamic')
-
-    # Relasi baru: kelas-kelas yang diikuti oleh murid
-    courses_enrolled = db.relationship('Course', secondary=enrollments,
-                                       lazy='subquery', back_populates='students')
+    courses_enrolled = db.relationship('Course', secondary=enrollments, lazy='subquery', back_populates='students')
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -59,18 +54,16 @@ class Course(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150), nullable=False)
-    
-    # Kolom baru untuk kode kelas
     class_code = db.Column(db.String(8), unique=True, nullable=False, index=True)
+    
+    # Kolom baru untuk warna kartu
+    color = db.Column(db.String(7), nullable=False, default='#0282c6') # Default warna biru
     
     academic_year_id = db.Column(db.Integer, db.ForeignKey('academic_years.id'), nullable=False)
     teacher_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
     teacher = db.relationship('User', back_populates='courses_taught')
-
-    # Relasi baru: murid-murid yang terdaftar di kelas ini
-    students = db.relationship('User', secondary=enrollments,
-                               lazy='subquery', back_populates='courses_enrolled')
+    students = db.relationship('User', secondary=enrollments, lazy='subquery', back_populates='courses_enrolled')
 
     def __repr__(self):
         return f'<Course {self.name}>'

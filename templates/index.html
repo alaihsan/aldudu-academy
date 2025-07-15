@@ -25,18 +25,12 @@
     <div id="app-page" class="hidden">
         <header class="app-header">
             <div class="header-content">
-                <div class="header-left">
-                    <a href="{{ url_for('dashboard') }}" class="header-logo">Aldudu Academy</a>
-                </div>
-                <div class="header-right">
-                    <span id="welcome-message"></span>
-                    <button id="logout-button" class="btn-link">Logout</button>
-                </div>
+                <div class="header-left"><a href="{{ url_for('dashboard') }}" class="header-logo">Aldudu Academy</a></div>
+                <div class="header-right"><span id="welcome-message"></span><button id="logout-button" class="btn-link">Logout</button></div>
             </div>
         </header>
 
         <main class="container">
-            <!-- BAGIAN UNTUK MURID: GABUNG KELAS -->
             <div id="enroll-section" class="hidden">
                 <div class="enroll-container">
                     <h3>Gabung ke Kelas Baru</h3>
@@ -47,8 +41,6 @@
                     <div id="enroll-message" class="enroll-message"></div>
                 </div>
             </div>
-
-            <!-- SUB-HEADER UNTUK JUDUL DAN TAHUN AJARAN -->
             <div class="sub-header">
                 <h1 id="content-title" class="content-title"></h1>
                 <div class="academic-year-selector">
@@ -56,23 +48,22 @@
                     <select id="academic-year" name="academic-year" class="form-input" style="padding: 0.4rem 0.8rem; width: auto;"></select>
                 </div>
             </div>
-
             <div id="class-grid" class="class-grid"></div>
         </main>
     </div>
 
-    <!-- MODAL TAMBAH KELAS (UNTUK GURU) -->
+    <!-- MODAL TAMBAH KELAS -->
     <div id="add-class-modal" class="modal hidden">
         <div class="modal-content">
             <form id="add-class-form">
                 <div class="modal-header"><h3>Buat Kelas Baru</h3><p>Buat kelas baru untuk tahun ajaran yang sedang aktif.</p></div>
-                <div class="modal-body"><div class="form-group"><label for="course-name" class="form-label">Nama Kelas</label><input type="text" id="course-name" name="course-name" required placeholder="Contoh: Kimia XII - IPA 1" class="form-input"><div id="modal-error" class="form-error hidden"></div></div></div>
-                <div class="modal-footer"><button type="button" id="modal-cancel-button" class="btn btn-secondary">Batal</button><button type="submit" class="btn btn-primary">Simpan Kelas</button></div>
+                <div class="modal-body"><div class="form-group"><label for="course-name" class="form-label">Nama Kelas</label><input type="text" id="course-name" name="course-name" required placeholder="Contoh: Kimia XII - IPA 1" class="form-input"><div id="add-modal-error" class="form-error hidden"></div></div></div>
+                <div class="modal-footer"><button type="button" id="add-cancel-button" class="btn btn-secondary">Batal</button><button type="submit" class="btn btn-primary">Simpan Kelas</button></div>
             </form>
         </div>
     </div>
     
-    <!-- MODAL TAMPILKAN KODE KELAS (UNTUK GURU) -->
+    <!-- MODAL TAMPILKAN KODE KELAS -->
     <div id="show-code-modal" class="modal hidden">
         <div class="modal-content" style="text-align: center;">
             <div class="modal-header"><h3>Kelas Berhasil Dibuat!</h3><p>Bagikan kode berikut kepada murid Anda untuk bergabung.</p></div>
@@ -81,6 +72,35 @@
                 <p id="copy-feedback" class="copy-feedback"></p>
             </div>
             <div class="modal-footer" style="justify-content: center;"><button type="button" id="close-code-modal-button" class="btn btn-primary">Selesai</button></div>
+        </div>
+    </div>
+
+    <!-- MODAL BARU: EDIT KELAS -->
+    <div id="edit-class-modal" class="modal hidden">
+        <div class="modal-content">
+            <form id="edit-class-form">
+                <div class="modal-header">
+                    <h3>Edit Kelas</h3>
+                    <p>Ubah nama dan warna latar belakang untuk kelas ini.</p>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="edit-course-name" class="form-label">Nama Kelas</label>
+                        <input type="text" id="edit-course-name" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Warna Latar</label>
+                        <div id="color-picker" class="color-picker">
+                            <!-- Opsi warna akan di-generate oleh JavaScript -->
+                        </div>
+                    </div>
+                    <div id="edit-modal-error" class="form-error hidden"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="edit-cancel-button" class="btn btn-secondary">Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                </div>
+            </form>
         </div>
     </div>
 

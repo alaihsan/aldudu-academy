@@ -1,5 +1,5 @@
 # app.py
-from flask import Flask, render_template, jsonify, request, redirect, url_for
+from flask import Flask, render_template, jsonify, request, redirect, url_for, abort
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from models import db, User, AcademicYear, Course, UserRole
 import string
@@ -7,7 +7,6 @@ import random
 
 # --- FUNGSI HELPER ---
 def generate_class_code(length=6):
-    """Generate kode kelas alfanumerik yang unik."""
     characters = string.ascii_uppercase + string.digits
     while True:
         code = ''.join(random.choices(characters, k=length))
@@ -15,25 +14,20 @@ def generate_class_code(length=6):
             return code
 
 def get_courses_for_user(user, year_id):
-    """Helper untuk mengambil kelas berdasarkan peran user dan tahun ajaran."""
-    if not year_id:
-        return []
+    if not year_id: return []
     if user.role == UserRole.GURU:
         return Course.query.filter_by(teacher_id=user.id, academic_year_id=year_id).order_by(Course.name).all()
-    else: # MURID
-        return Course.query.join(User.courses_enrolled).filter(
-            User.id == user.id, 
-            Course.academic_year_id == year_id
-        ).order_by(Course.name).all()
+    else:
+        return Course.query.join(User.courses_enrolled).filter(User.id == user.id, Course.academic_year_id == year_id).order_by(Course.name).all()
 
 def format_course_data(course, user):
-    """Helper untuk memformat data kelas menjadi dictionary."""
     return {
         'id': course.id,
         'name': course.name,
         'teacher': course.teacher.name,
         'studentCount': len(course.students),
         'class_code': course.class_code,
+        'color': course.color, # Tambahkan warna ke data
         'is_teacher': course.teacher_id == user.id 
     }
 
@@ -51,7 +45,7 @@ login_manager.login_view = 'index'
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    return db.session.get(User, int(user_id))
 
 # --- RUTE HALAMAN (HTML) ---
 @app.route('/')
@@ -68,7 +62,8 @@ def dashboard():
 @app.route('/kelas/<int:course_id>')
 @login_required
 def course_detail(course_id):
-    course = Course.query.get_or_404(course_id)
+    course = db.session.get(Course, course_id)
+    if course is None: abort(404)
     return render_template('course_detail.html', course=course)
 
 # --- API ENDPOINTS (JSON) ---
@@ -124,10 +119,25 @@ def api_create_course():
     )
     db.session.add(new_course)
     db.session.commit()
-    return jsonify({
-        'success': True,
-        'course': format_course_data(new_course, current_user)
-    }), 201
+    return jsonify({'success': True, 'course': format_course_data(new_course, current_user)}), 201
+
+# --- API BARU UNTUK EDIT KELAS ---
+@app.route('/api/courses/<int:course_id>', methods=['PUT'])
+@login_required
+def update_course(course_id):
+    course = db.session.get(Course, course_id)
+    if course is None: abort(404)
+    if course.teacher_id != current_user.id:
+        abort(403, description="Anda tidak memiliki izin untuk mengedit kelas ini.")
+    
+    data = request.get_json()
+    if 'name' in data:
+        course.name = data['name']
+    if 'color' in data:
+        course.color = data['color']
+    
+    db.session.commit()
+    return jsonify({'success': True, 'course': format_course_data(course, current_user)})
 
 @app.route('/api/enroll', methods=['POST'])
 @login_required
@@ -144,11 +154,7 @@ def api_enroll_in_course():
         return jsonify({'success': False, 'message': 'Anda sudah terdaftar di kelas ini'}), 409
     current_user.courses_enrolled.append(course_to_join)
     db.session.commit()
-    return jsonify({
-        'success': True, 
-        'message': f'Anda berhasil bergabung dengan kelas {course_to_join.name}',
-        'course': format_course_data(course_to_join, current_user)
-    })
+    return jsonify({'success': True, 'message': f'Anda berhasil bergabung dengan kelas {course_to_join.name}', 'course': format_course_data(course_to_join, current_user)})
 
 # --- Perintah CLI ---
 @app.cli.command("init-db")
@@ -161,13 +167,13 @@ def init_db_command():
         guru.set_password("123")
         murid = User(name="Siti Murid", email="murid@aldudu.com", role=UserRole.MURID)
         murid.set_password("123")
-        ay1 = AcademicYear(year="2024/2025", is_active=True)
-        ay2 = AcademicYear(year="2023/2024")
+        ay1 = AcademicYear(year="2025/2026", is_active=True)
+        ay2 = AcademicYear(year="2024/2023")
         db.session.add_all([guru, murid, ay1, ay2])
         db.session.commit()
-        course1 = Course(name="Matematika XI-A", academic_year_id=ay1.id, teacher_id=guru.id, class_code=generate_class_code())
-        course2 = Course(name="Biologi XI-A", academic_year_id=ay1.id, teacher_id=guru.id, class_code=generate_class_code())
-        course3 = Course(name="Sejarah X-B", academic_year_id=ay2.id, teacher_id=guru.id, class_code=generate_class_code())
+        course1 = Course(name="Matematika XI-A", academic_year_id=ay1.id, teacher_id=guru.id, class_code=generate_class_code(), color="#0ea5e9")
+        course2 = Course(name="Biologi XI-A", academic_year_id=ay1.id, teacher_id=guru.id, class_code=generate_class_code(), color="#10b981")
+        course3 = Course(name="Sejarah X-B", academic_year_id=ay2.id, teacher_id=guru.id, class_code=generate_class_code(), color="#f97316")
         db.session.add_all([course1, course2, course3])
         murid.courses_enrolled.append(course3)
         db.session.commit()

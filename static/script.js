@@ -4,28 +4,30 @@ document.addEventListener('DOMContentLoaded', function() {
     const loginPage = document.getElementById('login-page');
     const appPage = document.getElementById('app-page');
     const loginForm = document.getElementById('login-form');
-    const loginError = document.getElementById('login-error');
-    const logoutButton = document.getElementById('logout-button');
-    const welcomeMessage = document.getElementById('welcome-message');
-    const academicYearSelect = document.getElementById('academic-year');
-    const contentTitle = document.getElementById('content-title');
     const classGrid = document.getElementById('class-grid');
     
+    // Elemen Enroll Murid
     const enrollSection = document.getElementById('enroll-section');
     const enrollForm = document.getElementById('enroll-form');
-    const classCodeInput = document.getElementById('class-code-input');
-    const enrollMessage = document.getElementById('enroll-message');
 
+    // Elemen Modal Tambah Kelas
     const addClassModal = document.getElementById('add-class-modal');
     const addClassForm = document.getElementById('add-class-form');
-    const modalCancelButton = document.getElementById('modal-cancel-button');
-    const modalError = document.getElementById('modal-error');
-    const courseNameInput = document.getElementById('course-name');
+    const addCancelButton = document.getElementById('add-cancel-button');
     
+    // Elemen Modal Tampilkan Kode
     const showCodeModal = document.getElementById('show-code-modal');
     const generatedClassCode = document.getElementById('generated-class-code');
     const closeCodeModalButton = document.getElementById('close-code-modal-button');
     const copyFeedback = document.getElementById('copy-feedback');
+
+    // Elemen Modal Edit Kelas
+    const editClassModal = document.getElementById('edit-class-modal');
+    const editClassForm = document.getElementById('edit-class-form');
+    const editCancelButton = document.getElementById('edit-cancel-button');
+    const editCourseNameInput = document.getElementById('edit-course-name');
+    const colorPicker = document.getElementById('color-picker');
+    const PRESET_COLORS = ['#0282c6', '#0ea5e9', '#10b981', '#f97316', '#ef4444', '#8b5cf6', '#d946ef', '#ec4899'];
 
     // --- STATE APLIKASI ---
     let currentUser = null;
@@ -38,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const errorData = await response.json().catch(() => ({ message: 'Terjadi kesalahan pada server.' }));
                 throw new Error(errorData.message);
             }
-            if (response.status === 204) return null;
+            if (response.status === 204 || (response.headers.get('Content-Length') === '0')) return { success: true };
             return await response.json();
         } catch (error) {
             console.error(`API Request Error to ${url}:`, error);
@@ -49,7 +51,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- FUNGSI-FUNGSI UTAMA ---
     const handleLogin = async (e) => {
         e.preventDefault();
-        loginError.classList.add('hidden');
         try {
             const data = await apiRequest('/api/login', {
                 method: 'POST',
@@ -61,78 +62,68 @@ document.addEventListener('DOMContentLoaded', function() {
                 await initializeDashboard();
             }
         } catch (error) {
-            loginError.textContent = error.message || "Terjadi kesalahan saat login.";
-            loginError.classList.remove('hidden');
+            document.getElementById('login-error').textContent = error.message || "Terjadi kesalahan.";
+            document.getElementById('login-error').classList.remove('hidden');
         }
     };
 
     const handleLogout = async () => {
-        try {
-            await apiRequest('/api/logout', { method: 'POST' });
-            currentUser = null;
-            showLoginPage();
-        } catch (error) {
-            alert('Gagal untuk logout. Silakan refresh halaman.');
-        }
+        await apiRequest('/api/logout', { method: 'POST' });
+        currentUser = null;
+        showLoginPage();
     };
     
-    const showAppPage = () => {
-        loginPage.classList.add('hidden');
-        appPage.classList.remove('hidden');
-    };
-
-    const showLoginPage = () => {
-        appPage.classList.add('hidden');
-        loginPage.classList.remove('hidden');
-        loginForm.reset();
-    };
+    const showAppPage = () => { loginPage.classList.add('hidden'); appPage.classList.remove('hidden'); };
+    const showLoginPage = () => { appPage.classList.add('hidden'); loginPage.classList.remove('hidden'); loginForm.reset(); };
     
     const initializeDashboard = async () => {
         showAppPage();
-        welcomeMessage.textContent = `Selamat datang, ${currentUser.name}!`;
-
-        if (currentUser.role === 'murid') {
-            enrollSection.classList.remove('hidden');
-        } else {
-            enrollSection.classList.add('hidden');
-        }
-        
+        document.getElementById('welcome-message').textContent = `Selamat datang, ${currentUser.name}!`;
+        if (currentUser.role === 'murid') enrollSection.classList.remove('hidden');
+        else enrollSection.classList.add('hidden');
         try {
             const data = await apiRequest('/api/initial-data');
             renderAcademicYears(data.academicYears);
             renderClassCards(data.courses);
             updateContentTitle();
         } catch(error) {
-            classGrid.innerHTML = `<p class="form-error">Gagal memuat data awal. Coba refresh halaman.</p>`;
+            classGrid.innerHTML = `<p class="form-error">Gagal memuat data awal.</p>`;
         }
     };
 
     const handleYearChange = async () => {
-        const selectedYearId = academicYearSelect.value;
         updateContentTitle();
         classGrid.innerHTML = `<p>Memuat kelas...</p>`;
         try {
-            const data = await apiRequest(`/api/courses/year/${selectedYearId}`);
+            const data = await apiRequest(`/api/courses/year/${document.getElementById('academic-year').value}`);
             renderClassCards(data.courses);
         } catch(error) {
-            classGrid.innerHTML = `<p class="form-error">Gagal memuat data kelas untuk tahun ajaran ini.</p>`;
+            classGrid.innerHTML = `<p class="form-error">Gagal memuat data kelas.</p>`;
         }
     };
 
     // --- Logika Modal ---
     const showAddClassModal = () => addClassModal.classList.remove('hidden');
-    const hideAddClassModal = () => { addClassModal.classList.add('hidden'); addClassForm.reset(); modalError.classList.add('hidden'); };
+    const hideAddClassModal = () => { addClassModal.classList.add('hidden'); addClassForm.reset(); };
+    const showEditModal = (course) => {
+        editClassModal.dataset.courseId = course.id;
+        editCourseNameInput.value = course.name;
+        renderColorPicker(course.color);
+        editClassModal.classList.remove('hidden');
+    };
+    const hideEditModal = () => {
+        editClassModal.classList.add('hidden');
+        editClassForm.reset();
+        delete editClassModal.dataset.courseId;
+    };
     
     const handleAddClassSubmit = async (e) => {
         e.preventDefault();
-        modalError.classList.add('hidden');
-        const courseName = courseNameInput.value.trim();
-        const academicYearId = academicYearSelect.value;
         try {
             const data = await apiRequest('/api/courses', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: courseName, academic_year_id: academicYearId })
+                body: JSON.stringify({ name: document.getElementById('course-name').value.trim(), academic_year_id: document.getElementById('academic-year').value })
             });
             if (data.success) {
                 hideAddClassModal();
@@ -141,139 +132,151 @@ document.addEventListener('DOMContentLoaded', function() {
                 showCodeModal.classList.remove('hidden');
             }
         } catch (error) {
-            modalError.textContent = error.message || "Gagal menyimpan kelas.";
-            modalError.classList.remove('hidden');
+            document.getElementById('add-modal-error').textContent = error.message || "Gagal menyimpan kelas.";
+            document.getElementById('add-modal-error').classList.remove('hidden');
+        }
+    };
+
+    const handleEditClassSubmit = async (e) => {
+        e.preventDefault();
+        const courseId = editClassModal.dataset.courseId;
+        const newName = editCourseNameInput.value.trim();
+        const newColor = colorPicker.querySelector('.selected')?.dataset.color || '#0282c6';
+        
+        try {
+            const data = await apiRequest(`/api/courses/${courseId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: newName, color: newColor })
+            });
+            if (data.success) {
+                const card = document.querySelector(`.class-card[data-course-id="${courseId}"]`);
+                if (card) {
+                    card.querySelector('.class-card-title').textContent = data.course.name;
+                    card.querySelector('.class-card-header').style.backgroundColor = data.course.color;
+                    card.dataset.courseName = data.course.name;
+                    card.dataset.courseColor = data.course.color;
+                }
+                hideEditModal();
+            }
+        } catch (error) {
+            document.getElementById('edit-modal-error').textContent = error.message || "Gagal menyimpan perubahan.";
+            document.getElementById('edit-modal-error').classList.remove('hidden');
         }
     };
 
     // --- Logika Enroll ---
     const handleEnrollSubmit = async (e) => {
         e.preventDefault();
-        enrollMessage.className = 'enroll-message hidden';
-        const classCode = classCodeInput.value.trim();
+        const enrollMsgEl = document.getElementById('enroll-message');
+        enrollMsgEl.className = 'enroll-message hidden';
         try {
             const data = await apiRequest('/api/enroll', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ class_code: classCode })
+                body: JSON.stringify({ class_code: document.getElementById('class-code-input').value.trim() })
             });
             if (data.success) {
-                enrollMessage.textContent = data.message;
-                enrollMessage.className = 'enroll-message success';
+                enrollMsgEl.textContent = data.message;
+                enrollMsgEl.className = 'enroll-message success';
                 appendNewClassCard(data.course);
                 enrollForm.reset();
             }
         } catch (error) {
-            enrollMessage.textContent = error.message || "Gagal bergabung ke kelas.";
-            enrollMessage.className = 'enroll-message error';
+            enrollMsgEl.textContent = error.message || "Gagal bergabung.";
+            enrollMsgEl.className = 'enroll-message error';
         }
-        enrollMessage.classList.remove('hidden');
+        enrollMsgEl.classList.remove('hidden');
     };
 
     // --- Render Functions ---
     const updateContentTitle = () => {
-        const sel = academicYearSelect;
+        const sel = document.getElementById('academic-year');
         const opt = sel.options[sel.selectedIndex];
         const baseTitle = currentUser?.role === 'guru' ? "Kelas yang Anda Ajar" : "Kelas yang Anda Ikuti";
-        if (opt) {
-            contentTitle.textContent = `${baseTitle} di Tahun Ajaran ${opt.text}`;
-        } else {
-            contentTitle.textContent = baseTitle;
-        }
+        document.getElementById('content-title').textContent = opt ? `${baseTitle} di Tahun Ajaran ${opt.text}` : baseTitle;
     };
     
     const renderAcademicYears = (years) => {
-        academicYearSelect.innerHTML = '';
-        if (years && years.length > 0) {
-            years.forEach(year => {
-                const opt = document.createElement('option');
-                opt.value = year.id;
-                opt.textContent = year.year;
-                academicYearSelect.appendChild(opt);
-            });
-        }
+        const sel = document.getElementById('academic-year');
+        sel.innerHTML = '';
+        if (years?.length > 0) years.forEach(year => {
+            const opt = document.createElement('option');
+            opt.value = year.id;
+            opt.textContent = year.year;
+            sel.appendChild(opt);
+        });
+    };
+
+    const renderColorPicker = (selectedColor) => {
+        colorPicker.innerHTML = '';
+        PRESET_COLORS.forEach(color => {
+            const swatch = document.createElement('div');
+            swatch.className = 'color-swatch';
+            swatch.style.backgroundColor = color;
+            swatch.dataset.color = color;
+            if (color === selectedColor) {
+                swatch.classList.add('selected');
+            }
+            colorPicker.appendChild(swatch);
+        });
     };
 
     const renderClassCards = (courses) => {
         classGrid.innerHTML = '';
-        if (courses && courses.length > 0) {
-            courses.forEach(createAndAppendClassCard);
-        }
+        if (courses?.length > 0) courses.forEach(createAndAppendClassCard);
         appendAddClassButtonIfNeeded();
     };
 
     const appendNewClassCard = (cls) => {
-        const addClassButton = document.getElementById('add-class-button');
-        if (addClassButton) addClassButton.remove();
+        document.getElementById('add-class-button')?.remove();
         createAndAppendClassCard(cls);
         appendAddClassButtonIfNeeded();
     };
 
-    /**
-     * PERBAIKAN UTAMA: Membuat kartu kelas menggunakan DOM manipulation
-     * untuk mencegah error dan memastikan struktur yang benar.
-     */
     const createAndAppendClassCard = (cls) => {
         const card = document.createElement('div');
         card.className = 'class-card';
+        card.dataset.courseId = cls.id;
+        card.dataset.courseName = cls.name;
+        card.dataset.courseColor = cls.color;
 
-        // 1. Buat Header
         const header = document.createElement('div');
         header.className = 'class-card-header';
-        const title = document.createElement('h3');
-        title.className = 'class-card-title';
-        title.textContent = cls.name;
-        header.appendChild(title);
+        header.style.backgroundColor = cls.color;
+        header.innerHTML = `<h3 class="class-card-title">${cls.name}</h3>`;
 
-        // 2. Buat Body
         const body = document.createElement('div');
         body.className = 'class-card-body';
-        const teacherInfo = document.createElement('p');
-        teacherInfo.className = 'class-card-info';
-        teacherInfo.textContent = `Wali Kelas: ${cls.teacher}`;
-        const studentInfo = document.createElement('p');
-        studentInfo.className = 'class-card-info';
-        studentInfo.textContent = `${cls.studentCount} Murid`;
-        body.append(teacherInfo, studentInfo);
-
-        // 3. Buat Footer
+        body.innerHTML = `<p class="class-card-info">Wali Kelas: ${cls.teacher}</p><p class="class-card-info">${cls.studentCount} Murid</p>`;
+        
         const footer = document.createElement('div');
         footer.className = 'class-card-footer';
-        const link = document.createElement('a');
-        link.href = `/kelas/${cls.id}`;
-        link.className = 'btn btn-secondary';
-        link.textContent = 'Masuk Kelas';
-        footer.appendChild(link);
+        footer.innerHTML = `<a href="/kelas/${cls.id}" class="btn btn-secondary">Masuk Kelas</a>`;
 
-        // 4. Rakit kartu
         card.append(header, body);
 
-        // 5. Tambahkan bagian kode kelas (jika guru)
         if (cls.is_teacher) {
+            const editBtn = document.createElement('button');
+            editBtn.className = 'edit-course-btn';
+            editBtn.title = 'Edit Kelas';
+            editBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg>`;
+            card.appendChild(editBtn);
+
             const codeSection = document.createElement('div');
             codeSection.className = 'class-card-code-section';
-            codeSection.innerHTML = `
-                <p>Kode Kelas</p>
-                <div class="class-card-code-wrapper">
-                    <span class="class-card-code">${cls.class_code}</span>
-                    <button class="copy-code-btn" title="Salin Kode">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:18px; height:18px;">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m9.75 0h-3.25a1.125 1.125 0 01-1.125-1.125V3.75c0-.621.504-1.125 1.125-1.125h3.25c.621 0 1.125.504 1.125 1.125v3.25a1.125 1.125 0 01-1.125 1.125z" />
-                        </svg>
-                    </button>
-                </div>`;
+            const copyIconSVG = `<svg class="copy-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:18px; height:18px;"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m9.75 0h-3.25a1.125 1.125 0 01-1.125-1.125V3.75c0-.621.504-1.125 1.125-1.125h3.25c.621 0 1.125.504 1.125 1.125v3.25a1.125 1.125 0 01-1.125 1.125z" /></svg>`;
+            const checkIconSVG = `<svg class="check-icon icon-hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width:18px; height:18px;"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>`;
+            codeSection.innerHTML = `<p>Kode Kelas</p><div class="class-card-code-wrapper"><span class="class-card-code">${cls.class_code}</span><button class="copy-code-btn" title="Salin Kode">${copyIconSVG}${checkIconSVG}</button></div>`;
             card.appendChild(codeSection);
         }
         
-        // 6. Tambahkan footer di paling akhir
         card.appendChild(footer);
-        
-        // 7. Masukkan kartu ke dalam grid
         classGrid.appendChild(card);
     };
 
     const appendAddClassButtonIfNeeded = () => {
-        if (currentUser && currentUser.role === 'guru') {
+        if (currentUser?.role === 'guru') {
             const addCard = document.createElement('div');
             addCard.id = 'add-class-button';
             addCard.className = 'add-class-card';
@@ -284,25 +287,51 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- INISIALISASI ---
     const initializeApp = async () => {
+        // Pasang semua event listener sekali saja
         loginForm.addEventListener('submit', handleLogin);
-        logoutButton.addEventListener('click', handleLogout);
-        academicYearSelect.addEventListener('change', handleYearChange);
+        document.getElementById('logout-button').addEventListener('click', handleLogout);
+        document.getElementById('academic-year').addEventListener('change', handleYearChange);
         addClassForm.addEventListener('submit', handleAddClassSubmit);
-        modalCancelButton.addEventListener('click', hideAddClassModal);
+        addCancelButton.addEventListener('click', hideAddClassModal);
         enrollForm.addEventListener('submit', handleEnrollSubmit);
         
         classGrid.addEventListener('click', e => {
             if (e.target.closest('#add-class-button')) showAddClassModal();
+            const editBtn = e.target.closest('.edit-course-btn');
+            if (editBtn) {
+                const card = editBtn.closest('.class-card');
+                showEditModal({
+                    id: card.dataset.courseId,
+                    name: card.dataset.courseName,
+                    color: card.dataset.courseColor
+                });
+            }
             const copyBtn = e.target.closest('.copy-code-btn');
             if (copyBtn) {
                 const codeElement = copyBtn.parentElement.querySelector('.class-card-code');
-                if (codeElement) navigator.clipboard.writeText(codeElement.textContent).then(() => {
-                    copyBtn.title = 'Disalin!';
-                    setTimeout(() => { copyBtn.title = 'Salin Kode'; }, 2000);
+                const copyIcon = copyBtn.querySelector('.copy-icon');
+                const checkIcon = copyBtn.querySelector('.check-icon');
+                if (codeElement && copyIcon && checkIcon) navigator.clipboard.writeText(codeElement.textContent).then(() => {
+                    copyIcon.classList.add('icon-hidden');
+                    checkIcon.classList.remove('icon-hidden');
+                    setTimeout(() => {
+                        copyIcon.classList.remove('icon-hidden');
+                        checkIcon.classList.add('icon-hidden');
+                    }, 2000);
                 });
             }
         });
 
+        editClassForm.addEventListener('submit', handleEditClassSubmit);
+        editCancelButton.addEventListener('click', hideEditModal);
+        colorPicker.addEventListener('click', e => {
+            if (e.target.classList.contains('color-swatch')) {
+                colorPicker.querySelector('.selected')?.classList.remove('selected');
+                e.target.classList.add('selected');
+            }
+        });
+
+        // PERBAIKAN: Memasang event listener untuk modal kode
         closeCodeModalButton.addEventListener('click', () => showCodeModal.classList.add('hidden'));
         generatedClassCode.addEventListener('click', () => {
             navigator.clipboard.writeText(generatedClassCode.textContent).then(() => {
@@ -311,6 +340,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
+        // Cek sesi login
         try {
             const session = await apiRequest('/api/session');
             if (session.isAuthenticated) {
