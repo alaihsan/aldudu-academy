@@ -1,0 +1,14 @@
+[Unit]
+Description=Aldudu Academy Gunicorn Service
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/srv/aldudu-academy
+Environment="DATABASE_URL=postgresql://<user>:<pass>@localhost:5432/aldudu_prod"
+Environment="FLASK_SECRET_KEY=replace-me"
+ExecStart=/srv/aldudu-academy/.venv/bin/gunicorn 'app:create_app()' -w 3 -b 127.0.0.1:8000
+
+[Install]
+WantedBy=multi-user.target
