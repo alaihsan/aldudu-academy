@@ -1,9 +1,12 @@
 import json
 import pytest
-from app import app, db
+from app import create_app
+from models import db
+
 
 @pytest.fixture
-def client(tmp_path, monkeypatch):
+def client(tmp_path):
+    app = create_app()
     # use a temporary DB for tests
     db_fd = tmp_path / "test.db"
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_fd}'

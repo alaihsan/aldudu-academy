@@ -1,5 +1,5 @@
 import pytest
-from app import sanitize_text, is_valid_email, is_valid_color, is_valid_class_code
+from helpers import sanitize_text, is_valid_email, is_valid_color, is_valid_class_code
 
 def test_sanitize_text_basic():
     assert sanitize_text('<b>Hello</b>') == 'Hello'
