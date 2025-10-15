@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 from typing import Optional, Dict
 import os
 
@@ -59,6 +59,11 @@ def create_app(test_config: Optional[Dict] = None):
     # Register blueprints
     for bp in create_blueprints():
         app.register_blueprint(bp)
+
+    # Simple health endpoint for readiness/liveness checks
+    @app.route('/healthz', methods=['GET'])
+    def healthz():
+        return jsonify({'status': 'ok'}), 200
 
     # CLI: initialize DB with sample data
     @app.cli.command('init-db')
