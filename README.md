@@ -89,4 +89,22 @@ Aplikasi sekarang akan berjalan di http://127.0.0.1:5000. Anda bisa login menggu
 
     Murid: murid@aldudu.com (password: 123)
 
+Keamanan: menyimpan SECRET_KEY
+--------------------------------
+
+Untuk mencegah kebocoran kunci rahasia, aplikasi sekarang membaca SECRET_KEY dari:
+
+- Variabel lingkungan `FLASK_SECRET_KEY` (direkomendasikan untuk deployment).
+- File `instance/config.py` yang tidak dilacak oleh Git. Salin `instance/config.py.example` menjadi `instance/config.py` dan masukkan kunci yang kuat.
+
+Contoh (macOS/Linux):
+
+```zsh
+# export ke session saat deploy
+export FLASK_SECRET_KEY="$(python -c 'import secrets; print(secrets.token_urlsafe(48))')"
+FLASK_APP=app .venv/bin/python -m flask run
+```
+
+Jangan menyimpan `instance/config.py` atau variabel rahasia ke repositori publik.
+
 Terima kasih telah melihat proyek ini!

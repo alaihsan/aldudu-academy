@@ -1,0 +1,4 @@
+# Copy this file to instance/config.py and set a strong secret key for production.
+# Keep instance/config.py out of version control.
+
+SECRET_KEY = 'replace-this-with-a-long-random-value'

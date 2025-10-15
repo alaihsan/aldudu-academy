@@ -29,7 +29,8 @@ class User(UserMixin, db.Model):
     courses_enrolled = db.relationship('Course', secondary=enrollments, lazy='subquery', back_populates='students')
 
     def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
+        # Use PBKDF2 to avoid dependency on hashlib.scrypt availability on some platforms
+        self.password_hash = generate_password_hash(password, method='pbkdf2:sha256')
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)

@@ -1,0 +1,16 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+
+# Instance folder contains local config and the sqlite database
+/instance/config.py
+/instance/*.db
+
+# Editor backups
+*.swp
+.DS_Store

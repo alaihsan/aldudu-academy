@@ -4,6 +4,10 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 from models import db, User, AcademicYear, Course, UserRole
 import string
 import random
+import os
+import re
+import html
+from email_validator import validate_email, EmailNotValidError
 
 # --- FUNGSI HELPER ---
 def generate_class_code(length=6):
@@ -31,9 +35,65 @@ def format_course_data(course, user):
         'is_teacher': course.teacher_id == user.id 
     }
 
+
+# ----------------------
+# Input validation helpers
+# ----------------------
+def _strip_tags(value: str) -> str:
+    if not isinstance(value, str):
+        return ''
+    # remove HTML tags
+    return re.sub(r'<[^>]*?>', '', value)
+
+def sanitize_text(value: str, max_len: int = 150) -> str:
+    if value is None:
+        return ''
+    s = value.strip()
+    s = _strip_tags(s)
+    # escape any leftover HTML entities
+    s = html.escape(s)
+    if len(s) > max_len:
+        s = s[:max_len]
+    return s
+
+def is_valid_email(email: str) -> bool:
+    if not isinstance(email, str):
+        return False
+    try:
+        # validate without DNS deliverability checks (avoids network dependency)
+        validate_email(email, check_deliverability=False)
+        return True
+    except EmailNotValidError:
+        return False
+
+def is_valid_color(color: str) -> bool:
+    if not isinstance(color, str):
+        return False
+    return re.match(r'^#[0-9a-fA-F]{6}$', color.strip()) is not None
+
+def is_valid_class_code(code: str) -> bool:
+    if not isinstance(code, str):
+        return False
+    c = code.strip().upper()
+    return re.match(r'^[A-Z0-9]{4,8}$', c) is not None
+
+
 # --- KONFIGURASI APLIKASI ---
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'kunci-rahasia-yang-sangat-aman-dan-sulit-ditebak-sekali'
+app = Flask(__name__, instance_relative_config=True)
+
+# Load SECRET_KEY from environment variable first (recommended for containers/hosting).
+# If not set, try loading from an untracked instance/config.py file (create by copying
+# instance/config.py.example -> instance/config.py). As a last resort we keep a
+# non-secret development fallback; DO NOT use the fallback in production.
+secret = os.environ.get('FLASK_SECRET_KEY')
+if secret:
+    app.config['SECRET_KEY'] = secret
+else:
+    app.config.from_pyfile('config.py', silent=True)
+    if not app.config.get('SECRET_KEY'):
+        # Development fallback only
+        app.config['SECRET_KEY'] = 'dev-secret-change-me'
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///aldudu_academy.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -130,11 +190,17 @@ def update_course(course_id):
     if course.teacher_id != current_user.id:
         abort(403, description="Anda tidak memiliki izin untuk mengedit kelas ini.")
     
-    data = request.get_json()
+    data = request.get_json() or {}
     if 'name' in data:
-        course.name = data['name']
+        name = sanitize_text(data.get('name'), max_len=150)
+        if not name:
+            return jsonify({'success': False, 'message': 'Nama kelas tidak valid'}), 400
+        course.name = name
     if 'color' in data:
-        course.color = data['color']
+        color = data.get('color')
+        if not is_valid_color(color):
+            return jsonify({'success': False, 'message': 'Warna tidak valid'}), 400
+        course.color = color.strip()
     
     db.session.commit()
     return jsonify({'success': True, 'course': format_course_data(course, current_user)})
@@ -144,9 +210,11 @@ def update_course(course_id):
 def api_enroll_in_course():
     if current_user.role != UserRole.MURID:
         return jsonify({'success': False, 'message': 'Hanya murid yang bisa bergabung ke kelas'}), 403
-    code = request.json.get('class_code', '').upper()
-    if not code:
-        return jsonify({'success': False, 'message': 'Kode kelas dibutuhkan'}), 400
+    data = request.get_json() or {}
+    code = data.get('class_code', '')
+    if not is_valid_class_code(code):
+        return jsonify({'success': False, 'message': 'Kode kelas tidak valid'}), 400
+    code = code.strip().upper()
     course_to_join = Course.query.filter_by(class_code=code).first()
     if not course_to_join:
         return jsonify({'success': False, 'message': f'Kelas dengan kode "{code}" tidak ditemukan'}), 404
