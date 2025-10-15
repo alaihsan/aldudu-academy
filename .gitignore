@@ -9,7 +9,16 @@ venv/
 
 # Instance folder contains local config and the sqlite database
 /instance/config.py
+
+# Local sqlite DB (but keep instance config.example committed)
 /instance/*.db
+
+# Deploy artifacts and logs
+/deploy/*.env
+/deploy/*.log
+/backups/
+gunicorn.log
+flask.log
 
 # Editor backups
 *.swp
