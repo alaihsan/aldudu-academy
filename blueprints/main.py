@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, abort
 from flask_login import login_required, current_user
-from models import db, Course
+from models import db, Course, Quiz
 
 main_bp = Blueprint('main', __name__)
 
@@ -24,4 +24,16 @@ def course_detail(course_id):
     course = db.session.get(Course, course_id)
     if course is None:
         abort(404)
-    return render_template('course_detail.html', course=course)
+    # --- TAMBAHKAN LOGIKA INI ---
+    # Cek apakah pengguna saat ini adalah guru dari mata pelajaran ini
+    is_teacher = (current_user.id == course.teacher_id)
+    
+    # Kirim variabel is_teacher dan semua kuis ke template
+    quizzes = course.quizzes.order_by(Quiz.id.desc()).all()
+    
+    return render_template(
+        'course_detail.html', 
+        course=course, 
+        is_teacher=is_teacher,
+        quizzes=quizzes
+    )

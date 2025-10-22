@@ -16,6 +16,10 @@ class UserRole(enum.Enum):
     MURID = 'murid'
     ADMIN = 'admin'
 
+class QuestionType(enum.Enum):
+    MULTIPLE_CHOICE = 'multiple_choice'
+    TRUE_FALSE = 'true_false'
+
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
     
@@ -66,5 +70,52 @@ class Course(db.Model):
     teacher = db.relationship('User', back_populates='courses_taught')
     students = db.relationship('User', secondary=enrollments, lazy='subquery', back_populates='courses_enrolled')
 
+    quizzes = db.relationship('Quiz', back_populates='course', lazy='dynamic', cascade='all, delete-orphan')
+    
     def __repr__(self):
         return f'<Course {self.name}>'
+    
+class Quiz(db.Model):
+    __tablename__ = 'quizzes'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False)
+    course_id = db.Column(db.Integer, db.ForeignKey('courses.id'), nullable=False, index=True)
+
+    # Relasi ke Course
+    course = db.relationship('Course', back_populates='quizzes')
+    # Relasi ke Questions
+    questions = db.relationship('Question', back_populates='quiz', lazy='dynamic', cascade='all, delete-orphan')
+
+    def __repr__(self):
+        return f'<Quiz {self.name}>'
+
+class Question(db.Model):
+    __tablename__ = 'questions'
+
+    id = db.Column(db.Integer, primary_key=True)
+    question_text = db.Column(db.Text, nullable=False)
+    question_type = db.Column(db.Enum(QuestionType), nullable=False, default=QuestionType.MULTIPLE_CHOICE)
+    quiz_id = db.Column(db.Integer, db.ForeignKey('quizzes.id'), nullable=False, index=True)
+
+    # Relasi ke Quiz
+    quiz = db.relationship('Quiz', back_populates='questions')
+    # Relasi ke Options
+    options = db.relationship('Option', back_populates='question', lazy='dynamic', cascade='all, delete-orphan')
+
+    def __repr__(self):
+        return f'<Question {self.question_text[:50]}>'
+
+class Option(db.Model):
+    __tablename__ = 'options'
+
+    id = db.Column(db.Integer, primary_key=True)
+    option_text = db.Column(db.String(500), nullable=False)
+    is_correct = db.Column(db.Boolean, default=False, nullable=False)
+    question_id = db.Column(db.Integer, db.ForeignKey('questions.id'), nullable=False, index=True)
+
+    # Relasi ke Question
+    question = db.relationship('Question', back_populates='options')
+
+    def __repr__(self):
+        return f'<Option {self.option_text}>'

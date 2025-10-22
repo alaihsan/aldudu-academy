@@ -35,6 +35,26 @@
                 <hr style="margin: 2rem 0;">
 
                 <h2 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem;">Materi & Tugas</h2>
+                % if is_teacher %}
+                <div style="margin-bottom: 1.5rem;">
+                    <button id="show-create-quiz-modal" class="btn btn-primary">
+                        + Buat Kuis Baru
+                    </button>
+                </div>
+                {% endif %}
+                <div class="content-placeholder">
+                    {% if quizzes %}
+                        <ul class="quiz-list">
+                        {% for quiz in quizzes %}
+                            <li>
+                                <strong>{{ quiz.name }}</strong>
+                            </li>
+                        {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>Belum ada kuis untuk mata pelajaran ini.</p>
+                    {% endif %}
+                </div>
                 <div class="content-placeholder">
                     <p>Fitur untuk menampilkan daftar tugas, kuis, dan materi akan dibuat di sini.</p>
                 </div>
