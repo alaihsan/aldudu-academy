@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ quiz.name }} - Aldudu Academy</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <div id="app-page">
+        <header class="app-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <a href="{{ url_for('main.dashboard') }}" class="header-logo">Aldudu Academy</a>
+                </div>
+                <div class="header-right">
+                    <a href="{{ url_for('main.course_detail', course_id=course.id) }}" class="btn-link">
+                        &larr; Kembali ke {{ course.name }}
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <main class="container">
+            <h1 class="content-title">{{ quiz.name }}</h1>
+            
+            <div class="course-details-container">
+                <hr style="margin: 2rem 0;">
+
+                <h2 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem;">Daftar Pertanyaan</h2>
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <button id="show-create-question-modal" class="btn btn-primary">
+                        + Buat Pertanyaan Baru
+                    </button>
+                </div>
+                
+                <div class="content-placeholder">
+                    <p>Belum ada pertanyaan untuk kuis ini.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>

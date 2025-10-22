@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, abort
 from flask_login import login_required, current_user
 from models import db, Course, Quiz
 
+
 main_bp = Blueprint('main', __name__)
 
 
@@ -36,4 +37,25 @@ def course_detail(course_id):
         course=course, 
         is_teacher=is_teacher,
         quizzes=quizzes
+    )
+
+@main_bp.route('/quiz/<int:quiz_id>')
+@login_required
+def quiz_detail(quiz_id):
+    quiz = db.session.get(Quiz, quiz_id)
+    if quiz is None:
+        abort(404)
+
+    course = quiz.course # Ambil mata pelajarannya dari kuis
+
+    # Keamanan: Pastikan hanya guru/murid yang terdaftar yang bisa akses
+    if current_user.id == course.teacher_id:
+        pass # Guru boleh akses
+    elif current_user not in course.students:
+        abort(403) # Murid yang tidak terdaftar dilarang
+
+    return render_template(
+        'quiz_detail.html', 
+        quiz=quiz,
+        course=course
     )

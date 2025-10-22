@@ -3,29 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Menggunakan Jinja2 untuk membuat judul dinamis -->
     <title>{{ course.name }} - Aldudu Academy</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
     <div id="app-page">
-        <!-- Header Utama -->
         <header class="app-header">
             <div class="header-content">
                 <div class="header-left">
                     <a href="{{ url_for('main.dashboard') }}" class="header-logo">Aldudu Academy</a>
                 </div>
                 <div class="header-right">
-                    <!-- Anda bisa menambahkan nama user di sini jika diperlukan -->
                     <a href="{{ url_for('main.dashboard') }}" class="btn-link">Kembali ke Dasbor</a>
                 </div>
             </div>
         </header>
 
-        <!-- Konten Utama Halaman Detail Kelas -->
-        <main class="container">
-            <!-- Menampilkan data kelas yang dikirim dari Flask -->
+        <main class="container" data-course-id="{{ course.id }}">
             <h1 class="content-title">{{ course.name }}</h1>
             
             <div class="course-details-container">
@@ -35,6 +30,7 @@
                 <hr style="margin: 2rem 0;">
 
                 <h2 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem;">Materi & Tugas</h2>
+                
                 {% if is_teacher %}
                 <div style="margin-bottom: 1.5rem;">
                     <button id="show-create-quiz-modal" class="btn btn-primary">
@@ -42,21 +38,23 @@
                     </button>
                 </div>
                 {% endif %}
+                
                 <div class="content-placeholder">
-                    {% if quizzes %}
+                   {% if quizzes %}
                         <ul class="quiz-list">
                         {% for quiz in quizzes %}
                             <li>
-                                <strong>{{ quiz.name }}</strong>
+                                <a href="{{ url_for('main.quiz_detail', quiz_id=quiz.id) }}">
+                                    <strong>{{ quiz.name }}</strong>
+                                </a>
                             </li>
                         {% endfor %}
                         </ul>
-                    {% else %}
-                        <p>Belum ada kuis untuk mata pelajaran ini.</p>
+                        <p class="no-quiz-message">Belum ada kuis untuk mata pelajaran ini.</p>
                     {% endif %}
                 </div>
                 <div class="content-placeholder">
-                    <p>Fitur untuk menampilkan daftar tugas, kuis, dan materi akan dibuat di sini.</p>
+                    <p>Fitur untuk menampilkan daftar tugas dan materi akan dibuat di sini.</p>
                 </div>
 
                 <h2 style="font-size: 1.5rem; font-weight: 600; margin-top: 2rem; margin-bottom: 1rem;">Daftar Murid</h2>
@@ -66,6 +64,104 @@
             </div>
         </main>
     </div>
+
+    <div id="create-quiz-modal" class="modal hidden">
+        <div class="modal-content">
+            <form id="create-quiz-form">
+                <div class="modal-header">
+                    <h3>Buat Kuis Baru</h3>
+                    <p>Masukkan nama untuk kuis baru di kelas ini.</p>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="quiz-name-input" class="form-label">Nama Kuis</label>
+                        <input type="text" id="quiz-name-input" class="form-input" required placeholder="Contoh: Ujian Harian 1 - Bab Fotosintesis">
+                        <div id="quiz-modal-error" class="form-error hidden"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="quiz-cancel-button" class="btn btn-secondary">Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan Kuis</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        // --- Elemen Modal Kuis ---
+        const quizModal = document.getElementById('create-quiz-modal');
+        const showQuizModalButton = document.getElementById('show-create-quiz-modal');
+        const quizCancelButton = document.getElementById('quiz-cancel-button');
+        const quizForm = document.getElementById('create-quiz-form');
+        const quizNameInput = document.getElementById('quiz-name-input');
+        const quizModalError = document.getElementById('quiz-modal-error');
+        const quizList = document.querySelector('.quiz-list');
+        const noQuizMessage = document.querySelector('.no-quiz-message'); // Menargetkan p "Belum ada kuis"
+
+        const mainContainer = document.querySelector('main.container');
+        const courseId = mainContainer.dataset.courseId;
+
+        // --- Fungsi untuk tampil/sembunyi modal ---
+        const showModal = () => {
+            quizModal.classList.remove('hidden');
+            quizNameInput.value = ''; // Kosongkan input
+            quizModalError.classList.add('hidden'); // Sembunyikan error
+        };
+        
+        const hideModal = () => {
+            quizModal.classList.add('hidden');
+        };
+
+        // --- Event Listeners ---
+        // Pastikan tombol ada (hanya guru yang melihat)
+        if (showQuizModalButton) {
+            showQuizModalButton.addEventListener('click', showModal);
+        }
+        quizCancelButton.addEventListener('click', hideModal);
+
+        // --- Event Listener untuk Submit Form ---
+        quizForm.addEventListener('submit', async function(e) {
+            e.preventDefault(); // Mencegah form submit biasa
+            const quizName = quizNameInput.value.trim();
+            
+            if (!quizName) {
+                quizModalError.textContent = 'Nama kuis tidak boleh kosong.';
+                quizModalError.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/courses/${courseId}/quizzes`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ name: quizName })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Gagal menyimpan kuis.');
+                }
+
+                // Tambahkan kuis baru ke daftar di halaman
+                // --- Jika Sukses ---
+                hideModal();
+
+                // Alihkan (redirect) halaman ke detail kuis yang baru dibuat
+                window.location.href = `/quiz/${data.quiz.id}`;
+                
+            } catch (error) {
+                quizModalError.textContent = error.message;
+                quizModalError.classList.remove('hidden');
+            }
+        });
+
+    });
+    </script>
 
 </body>
 </html>

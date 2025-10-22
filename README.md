@@ -45,11 +45,15 @@ Proyek ini dibangun menggunakan tumpukan teknologi yang modern dan andal:
 
         JavaScript (Vanilla JS): Digunakan untuk interaktivitas di sisi klien, seperti memuat data secara dinamis (AJAX/Fetch API) dan mengelola modal.
 
-    Database:
-
-        SQLite: Digunakan sebagai database utama untuk kemudahan pengembangan dan portabilitas.
-
-🚀 Cara Menjalankan Proyek
+  
+IInisialisasi Database:
+    Pastikan `DATABASE_URL` Anda sudah di-set di terminal.
+    
+    1. Terapkan skema database (membuat tabel):
+       flask db upgrade
+    
+    2. Isi database dengan data awal (contoh guru, murid):
+       flask init-db
 
 Untuk menjalankan proyek ini di lingkungan lokal Anda, ikuti langkah-langkah berikut:
 

@@ -31,11 +31,13 @@ def create_app(test_config: Optional[Dict] = None):
 
     # Database configuration: prefer DATABASE_URL, otherwise default sqlite file
     database_url = os.environ.get('DATABASE_URL')
-    if database_url:
-        app.config['SQLALCHEMY_DATABASE_URI'] = database_url
-    else:
-        app.config.setdefault('SQLALCHEMY_DATABASE_URI', 'sqlite:///aldudu_academy.db')
-    app.config.setdefault('SQLALCHEMY_TRACK_MODIFICATIONS', False)
+    if not database_url:
+        # Aplikasi akan gagal start jika DATABASE_URL tidak di-set
+        raise ValueError("DATABASE_URL environment variable is not set. "
+                         "Please set it to your PostgreSQL connection string.")
+        
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     # Allow tests to override configuration
     if test_config:
