@@ -33,9 +33,43 @@
                 
                 {% if is_teacher %}
                 <div style="margin-bottom: 1.5rem;">
-                    <button id="show-create-quiz-modal" class="btn btn-primary">
-                        + Buat Kuis Baru
-                    </button>
+                    <div class="dropdown">
+                        <button id="add-topics-button" class="btn btn-primary dropdown-toggle">
+                            + Add Topics
+                        </button>
+                        <div id="topics-dropdown-menu" class="dropdown-menu hidden">
+                            <a href="#" class="dropdown-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="dropdown-item-icon">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                <span>Add Assignment</span>
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="dropdown-item-icon">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
+                                </svg>
+                                <span>Add Folder</span>
+                            </a>
+                            <a href="#" id="show-create-quiz-modal" class="dropdown-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="dropdown-item-icon">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
+                                </svg>
+                                <span>Add Quiz</span>
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="dropdown-item-icon">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.004-.004L18.375 12.74a3 3 0 11-4.242-4.242L6.28 16.162a4.5 4.5 0 006.364 6.364l7.693-7.693z" />
+                                </svg>
+                                <span>Add File/Link</span>
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="dropdown-item-icon">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193l-3.722.06c-.247.007-.48.057-.7.144a4.5 4.5 0 01-2.586 0c-.22-.087-.453-.137-.7-.144l-3.722-.06c-1.133-.093-1.98-1.057-1.98-2.193V10.608c0-.97.616-1.813 1.5-2.097m14.25-6.118c-.228.06-.447.11-.66.162a4.5 4.5 0 00-2.586 0c-.213-.051-.432-.102-.66-.162m14.25 6.118A4.491 4.491 0 0018 10.5c-1.052 0-2.062.18-3 .512a4.5 4.5 0 00-2.586 0c-.938-.333-1.948-.512-3-.512-1.052 0-2.062.18-3 .512a4.5 4.5 0 00-2.586 0c-.938-.333-1.948-.512-3-.512A4.491 4.491 0 001.5 10.5c0 .97.616 1.813 1.5 2.097m14.25-6.118c-.228.06-.447.11-.66.162a4.5 4.5 0 00-2.586 0c-.213-.051-.432-.102-.66-.162" />
+                                </svg>
+                                <span>Add Discussion</span>
+                            </a>
+                        </div>
+                    </div>
                 </div>
                 {% endif %}
                 
@@ -90,6 +124,35 @@
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         
+        // --- LOGIKA UNTUK DROPDOWN "ADD TOPICS" ---
+        const addTopicsButton = document.getElementById('add-topics-button');
+        const topicsDropdownMenu = document.getElementById('topics-dropdown-menu');
+
+        if (addTopicsButton) {
+            addTopicsButton.addEventListener('click', function(e) {
+                e.stopPropagation(); // Mencegah window click listener di bawah
+                
+                // Toggle menu visibility
+                topicsDropdownMenu.classList.toggle('hidden'); 
+                
+                // Toggle button's "pressed" state
+                addTopicsButton.classList.toggle('btn-pressed'); 
+            });
+        }
+
+        // Sembunyikan dropdown jika klik di luar
+        window.addEventListener('click', function(e) {
+            if (topicsDropdownMenu && !topicsDropdownMenu.classList.contains('hidden')) {
+                if (!addTopicsButton.contains(e.target)) {
+                    topicsDropdownMenu.classList.add('hidden'); // Sembunyikan menu
+                    
+                    // Kembalikan tombol ke normal
+                    addTopicsButton.classList.remove('btn-pressed'); 
+                }
+            }
+        });
+        // --- AKHIR LOGIKA DROPDOWN ---
+        
         // --- Elemen Modal Kuis ---
         const quizModal = document.getElementById('create-quiz-modal');
         const showQuizModalButton = document.getElementById('show-create-quiz-modal');
@@ -117,49 +180,68 @@
         // --- Event Listeners ---
         // Pastikan tombol ada (hanya guru yang melihat)
         if (showQuizModalButton) {
-            showQuizModalButton.addEventListener('click', showModal);
+            // Listener ini sekarang terpasang pada <a> "Add Quiz"
+            showQuizModalButton.addEventListener('click', function(e) {
+                e.preventDefault(); // Mencegah <a> melakukan navigasi
+                showModal();
+                
+                if (topicsDropdownMenu) {
+                    topicsDropdownMenu.classList.add('hidden'); // Sembunyikan menu
+                }
+                
+                // Pastikan tombol kembali normal saat item diklik
+                if (addTopicsButton) {
+                    addTopicsButton.classList.remove('btn-pressed'); 
+                }
+            });
         }
-        quizCancelButton.addEventListener('click', hideModal);
+        
+        // Pastikan quizCancelButton ada sebelum menambahkan listener
+        if(quizCancelButton) {
+            quizCancelButton.addEventListener('click', hideModal);
+        }
 
         // --- Event Listener untuk Submit Form ---
-        quizForm.addEventListener('submit', async function(e) {
-            e.preventDefault(); // Mencegah form submit biasa
-            const quizName = quizNameInput.value.trim();
-            
-            if (!quizName) {
-                quizModalError.textContent = 'Nama kuis tidak boleh kosong.';
-                quizModalError.classList.remove('hidden');
-                return;
-            }
-
-            try {
-                const response = await fetch(`/api/courses/${courseId}/quizzes`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ name: quizName })
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.message || 'Gagal menyimpan kuis.');
+        // Pastikan quizForm ada sebelum menambahkan listener
+        if(quizForm) {
+            quizForm.addEventListener('submit', async function(e) {
+                e.preventDefault(); // Mencegah form submit biasa
+                const quizName = quizNameInput.value.trim();
+                
+                if (!quizName) {
+                    quizModalError.textContent = 'Nama kuis tidak boleh kosong.';
+                    quizModalError.classList.remove('hidden');
+                    return;
                 }
 
-                // Tambahkan kuis baru ke daftar di halaman
-                // --- Jika Sukses ---
-                hideModal();
+                try {
+                    const response = await fetch(`/api/courses/${courseId}/quizzes`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ name: quizName })
+                    });
 
-                // Alihkan (redirect) halaman ke detail kuis yang baru dibuat
-                window.location.href = `/quiz/${data.quiz.id}`;
-                
-            } catch (error) {
-                quizModalError.textContent = error.message;
-                quizModalError.classList.remove('hidden');
-            }
-        });
+                    const data = await response.json();
 
+                    if (!response.ok) {
+                        throw new Error(data.message || 'Gagal menyimpan kuis.');
+                    }
+
+                    // Tambahkan kuis baru ke daftar di halaman
+                    // --- Jika Sukses ---
+                    hideModal();
+
+                    // Alihkan (redirect) halaman ke detail kuis yang baru dibuat
+                    window.location.href = `/quiz/${data.quiz.id}`;
+                    
+                } catch (error) {
+                    quizModalError.textContent = error.message;
+                    quizModalError.classList.remove('hidden');
+                }
+            });
+        }
     });
     </script>
 
