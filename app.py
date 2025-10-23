@@ -1,3 +1,5 @@
+# app.py (TERBARU - DENGAN PERBAIKAN IMPORT)
+
 from flask import Flask, jsonify
 from typing import Optional, Dict
 import os
@@ -5,9 +7,9 @@ import os
 from flask_login import LoginManager
 from flask_migrate import Migrate
 
-from models import db, User, AcademicYear, Course, UserRole
+from models import db  # <--- HANYA IMPORT 'db' DI SINI
 from blueprints import create_blueprints
-from helpers import generate_class_code
+# Kita pindahkan import 'generate_class_code' ke bawah
 
 
 migrate = Migrate()
@@ -53,6 +55,8 @@ def create_app(test_config: Optional[Dict] = None):
 
     @login_manager.user_loader
     def load_user(user_id):
+        # --- PERBAIKAN: Import User di sini ---
+        from models import User 
         try:
             return db.session.get(User, int(user_id))
         except Exception:
@@ -70,6 +74,10 @@ def create_app(test_config: Optional[Dict] = None):
     # CLI: initialize DB with sample data
     @app.cli.command('init-db')
     def init_db_command():
+        # --- PERBAIKAN: Import models & helper HANYA di sini ---
+        from models import User, AcademicYear, Course, UserRole
+        from helpers import generate_class_code
+        
         with app.app_context():
             db.drop_all()
             db.create_all()

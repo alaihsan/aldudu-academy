@@ -226,3 +226,39 @@ a:hover { text-decoration: underline; }
 .btn-primary.btn-pressed:hover {
     background-color: var(--primary-dark-color);
 }
+
+/* Untuk layout 'sejajar' (due date & points) */
+.form-row-flex {
+    display: flex;
+    flex-wrap: wrap; /* Agar responsif di layar kecil */
+    gap: 1rem;
+    align-items: flex-end;
+}
+
+.form-row-flex .form-group {
+    margin-bottom: 1.5rem; /* Menyamakan margin bottom */
+    flex-grow: 1;
+}
+
+/* Tombol cancel di dalam input kategori */
+.btn-cancel-inline {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #ccc;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    line-height: 20px;
+    text-align: center;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+    padding: 0;
+}
+.btn-cancel-inline:hover {
+    background: #999;
+}

@@ -20,6 +20,12 @@ class QuestionType(enum.Enum):
     MULTIPLE_CHOICE = 'multiple_choice'
     TRUE_FALSE = 'true_false'
 
+# --- TAMBAHAN BARU ---
+class GradeType(enum.Enum):
+    NUMERIC = 'numeric'
+    LETTER = 'letter'
+# --- AKHIR TAMBAHAN ---
+
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
     
@@ -81,6 +87,14 @@ class Quiz(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200), nullable=False)
     course_id = db.Column(db.Integer, db.ForeignKey('courses.id'), nullable=False, index=True)
+
+    # --- KOLOM BARU YANG DITAMBAHKAN ---
+    start_date = db.Column(db.DateTime, nullable=True)
+    end_date = db.Column(db.DateTime, nullable=True)
+    points = db.Column(db.Integer, nullable=False, default=100)
+    grading_category = db.Column(db.String(100), nullable=True)
+    grade_type = db.Column(db.Enum(GradeType), nullable=False, default=GradeType.NUMERIC)
+    # --- AKHIR KOLOM BARU ---
 
     # Relasi ke Course
     course = db.relationship('Course', back_populates='quizzes')

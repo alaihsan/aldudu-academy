@@ -100,25 +100,69 @@
     </div>
 
     <div id="create-quiz-modal" class="modal hidden">
-        <div class="modal-content">
-            <form id="create-quiz-form">
-                <div class="modal-header">
-                    <h3>Buat Kuis Baru</h3>
-                    <p>Masukkan nama untuk kuis baru di kelas ini.</p>
+    <div class="modal-content">
+        <form id="create-quiz-form">
+            <div class="modal-header">
+                <h3>Buat Kuis Baru</h3>
+                <p>Masukkan detail untuk kuis baru di kelas ini.</p>
+            </div>
+            
+            <div class="modal-body">
+                
+                <div class="form-group">
+                    <label for="quiz-name-input" class="form-label">Nama Kuis</label>
+                    <input type="text" id="quiz-name-input" class="form-input" required placeholder="Contoh: Ujian Harian 1 - Bab Fotosintesis">
                 </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="quiz-name-input" class="form-label">Nama Kuis</label>
-                        <input type="text" id="quiz-name-input" class="form-input" required placeholder="Contoh: Ujian Harian 1 - Bab Fotosintesis">
-                        <div id="quiz-modal-error" class="form-error hidden"></div>
+
+                <div class="form-row-flex">
+                    <div class="form-group" style="flex: 2;">
+                        <label for="quiz-due-start" class="form-label">Mulai (Opsional)</label>
+                        <input type="datetime-local" id="quiz-due-start" class="form-input">
+                    </div>
+                    <div class="form-group" style="flex: 2;">
+                        <label for="quiz-due-finish" class="form-label">Selesai (Opsional)</label>
+                        <input type="datetime-local" id="quiz-due-finish" class="form-input">
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="quiz-points" class="form-label">Point</label>
+                        <input type="number" id="quiz-points" class="form-input" value="100" min="0">
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" id="quiz-cancel-button" class="btn btn-secondary">Batal</button>
-                    <button type="submit" class="btn btn-primary">Simpan Kuis</button>
+
+                <div class="form-group">
+                    <label for="quiz-category" class="form-label">Category</label>
+                    
+                    <div id="category-select-wrapper">
+                        <select id="quiz-category" class="form-input">
+                            <option value="">(blank)</option>
+                            <option value="ungraded">Ungraded</option>
+                            <option value="_create_new_">Create new grading category</option>
+                        </select>
+                    </div>
+                    
+                    <div id="category-input-wrapper" class="hidden" style="position: relative; display: flex; align-items: center;">
+                        <input type="text" id="quiz-category-new" class="form-input" placeholder="Nama Kategori Baru...">
+                        <button type="button" id="category-cancel-button" class="btn-cancel-inline">&times;</button>
+                    </div>
                 </div>
-            </form>
-        </div>
+
+                <div class="form-group">
+                    <label for="quiz-grade-type" class="form-label">Tipe Nilai</label>
+                    <select id="quiz-grade-type" class="form-input">
+                        <option value="numeric">Numeric</option>
+                        <option value="letter">A, B, C, D</option>
+                    </select>
+                </div>
+
+                <div id="quiz-modal-error" class="form-error hidden"></div>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" id="quiz-cancel-button" class="btn btn-secondary">Batal</button>
+                <button type="submit" class="btn btn-primary">Simpan Kuis</button>
+            </div>
+        </form>
+    </div>
     </div>
 
     <script>

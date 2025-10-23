@@ -284,6 +284,147 @@ document.addEventListener('DOMContentLoaded', function() {
             classGrid.appendChild(addCard);
         }
     };
+    
+    // ---
+    // Logika untuk Modal Kuis di course_detail.html
+    // Diletakkan di sini agar script.js bisa digunakan di kedua halaman
+    // ---
+    
+    // Elemen Modal Kuis
+    const quizModal = document.getElementById('create-quiz-modal');
+    const showQuizModalButton = document.getElementById('show-create-quiz-modal');
+    const quizCancelButton = document.getElementById('quiz-cancel-button');
+    const quizForm = document.getElementById('create-quiz-form');
+    const quizNameInput = document.getElementById('quiz-name-input');
+    const quizModalError = document.getElementById('quiz-modal-error');
+    
+    // Elemen baru untuk modal kuis
+    const categorySelectWrapper = document.getElementById('category-select-wrapper');
+    const categoryInputWrapper = document.getElementById('category-input-wrapper');
+    const categorySelect = document.getElementById('quiz-category');
+    const categoryCancelButton = document.getElementById('category-cancel-button');
+    const categoryNewInput = document.getElementById('quiz-category-new');
+    const quizDueStart = document.getElementById('quiz-due-start');
+    const quizDueFinish = document.getElementById('quiz-due-finish');
+    const quizPoints = document.getElementById('quiz-points');
+    const quizGradeType = document.getElementById('quiz-grade-type');
+
+    // Cek jika elemen ada (hanya ada di course_detail.html)
+    if (quizModal) {
+        
+        // Fungsi untuk tampil/sembunyi modal
+        const showQuizModal = () => {
+            quizModal.classList.remove('hidden');
+            quizNameInput.value = ''; // Kosongkan input
+            quizModalError.classList.add('hidden'); // Sembunyikan error
+            
+            // Reset form kategori saat modal dibuka
+            if(categorySelectWrapper) categorySelectWrapper.classList.remove('hidden');
+            if(categoryInputWrapper) categoryInputWrapper.classList.add('hidden');
+            if(categorySelect) categorySelect.value = '';
+            if(categoryNewInput) categoryNewInput.value = '';
+        };
+        
+        const hideQuizModal = () => {
+            quizModal.classList.add('hidden');
+        };
+
+        // Event Listeners
+        if (showQuizModalButton) {
+            showQuizModalButton.addEventListener('click', function(e) {
+                e.preventDefault(); 
+                showQuizModal();
+                
+                // Sembunyikan dropdown "Add Topics" jika ada
+                const topicsDropdownMenu = document.getElementById('topics-dropdown-menu');
+                const addTopicsButton = document.getElementById('add-topics-button');
+                if (topicsDropdownMenu) topicsDropdownMenu.classList.add('hidden');
+                if (addTopicsButton) addTopicsButton.classList.remove('btn-pressed'); 
+            });
+        }
+        
+        if(quizCancelButton) {
+            quizCancelButton.addEventListener('click', hideQuizModal);
+        }
+        
+        // Listener untuk dropdown kategori
+        if (categorySelect) {
+            categorySelect.addEventListener('change', function() {
+                if (this.value === '_create_new_') {
+                    categorySelectWrapper.classList.add('hidden');
+                    categoryInputWrapper.classList.remove('hidden');
+                    categoryNewInput.focus();
+                }
+            });
+        }
+
+        // Listener untuk tombol cancel kategori
+        if (categoryCancelButton) {
+            categoryCancelButton.addEventListener('click', function() {
+                categorySelectWrapper.classList.remove('hidden');
+                categoryInputWrapper.classList.add('hidden');
+                categorySelect.value = ''; 
+            });
+        }
+
+        // Event Listener untuk Submit Form Kuis
+        if(quizForm) {
+            quizForm.addEventListener('submit', async function(e) {
+                e.preventDefault(); 
+                const mainContainer = document.querySelector('main.container');
+                const courseId = mainContainer?.dataset.courseId;
+                if (!courseId) return;
+
+                // Kumpulkan semua data baru
+                const quizName = quizNameInput.value.trim();
+                
+                let categoryValue = categorySelect.value;
+                if (categoryValue === '_create_new_') {
+                    categoryValue = categoryNewInput.value.trim();
+                }
+
+                const payload = {
+                    name: quizName,
+                    start_date: quizDueStart.value || null,
+                    end_date: quizDueFinish.value || null,
+                    points: parseInt(quizPoints.value, 10) || 100,
+                    category: categoryValue,
+                    grade_type: quizGradeType.value
+                };
+
+                if (!payload.name) {
+                    quizModalError.textContent = 'Nama kuis tidak boleh kosong.';
+                    quizModalError.classList.remove('hidden');
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/api/courses/${courseId}/quizzes`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(data.message || 'Gagal menyimpan kuis.');
+                    }
+                    
+                    hideQuizModal();
+                    // Redirect ke halaman detail kuis yang baru dibuat
+                    window.location.href = `/quiz/${data.quiz.id}`;
+                    
+                } catch (error) {
+                    quizModalError.textContent = error.message;
+                    quizModalError.classList.remove('hidden');
+                }
+            });
+        }
+    }
+
 
     // --- INISIALISASI ---
     const initializeApp = async () => {
@@ -331,7 +472,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // PERBAIKAN: Memasang event listener untuk modal kode
         closeCodeModalButton.addEventListener('click', () => showCodeModal.classList.add('hidden'));
         generatedClassCode.addEventListener('click', () => {
             navigator.clipboard.writeText(generatedClassCode.textContent).then(() => {
@@ -354,5 +494,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    initializeApp();
+    // Hanya inisialisasi jika kita berada di halaman utama (index.html)
+    // Kita bisa mengecek keberadaan loginForm
+    if (loginForm) {
+        initializeApp();
+    }
+
 });
