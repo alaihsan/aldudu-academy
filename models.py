@@ -112,6 +112,10 @@ class Question(db.Model):
     question_type = db.Column(db.Enum(QuestionType), nullable=False, default=QuestionType.MULTIPLE_CHOICE)
     quiz_id = db.Column(db.Integer, db.ForeignKey('quizzes.id'), nullable=False, index=True)
 
+    # --- TAMBAHAN BARU (UNTUK FITUR QUIZ BUILDER) ---
+    order = db.Column(db.Integer, nullable=False, default=1)
+    # --- AKHIR TAMBAHAN ---
+
     # Relasi ke Quiz
     quiz = db.relationship('Quiz', back_populates='questions')
     # Relasi ke Options
@@ -128,8 +132,13 @@ class Option(db.Model):
     is_correct = db.Column(db.Boolean, default=False, nullable=False)
     question_id = db.Column(db.Integer, db.ForeignKey('questions.id'), nullable=False, index=True)
 
+    # --- TAMBAHAN BARU (UNTUK FITUR QUIZ BUILDER) ---
+    order = db.Column(db.Integer, nullable=False, default=1)
+    # --- AKHIR TAMBAHAN ---
+
     # Relasi ke Question
     question = db.relationship('Question', back_populates='options')
 
     def __repr__(self):
         return f'<Option {self.option_text}>'
+

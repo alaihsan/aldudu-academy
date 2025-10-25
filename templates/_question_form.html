@@ -1,0 +1,80 @@
+<!-- 
+  File partial ini adalah template untuk SATU pertanyaan.
+  HTMX akan me-render file ini dan menambahkannya ke halaman
+  setiap kali Anda mengklik "Buat Pertanyaan Baru".
+-->
+<div class="question-card" id="question-{{ question.id }}">
+    
+    <!-- Header Pertanyaan: Input Teks dan Dropdown Tipe -->
+    <div class="question-header">
+        <!-- 
+          Input untuk Teks Pertanyaan
+          - hx-post: Kirim pembaruan saat 'blur' (klik keluar)
+          - hx-trigger="blur": Memicu request saat fokus hilang
+          - hx-include="this": Hanya kirim nilai dari input ini
+          - hx-swap="none": Jangan lakukan apa-apa dengan respons (ini adalah auto-save)
+        -->
+        <input type="text"
+               name="question_text_{{ question.id }}"
+               class="form-input question-title-input"
+               placeholder="Tulis pertanyaan Anda di sini..."
+               value="{{ question.question_text or '' }}"
+               hx-post="{{ url_for('quiz.api_update_question', question_id=question.id) }}"
+               hx-trigger="blur"
+               hx-include="this"
+               hx-swap="none">
+
+        <!-- 
+          Dropdown untuk Tipe Pertanyaan
+          - hx-post: Kirim pembaruan saat 'change' (nilai berubah)
+          - hx-target: Targetkan DIV opsi jawaban di bawah
+          - hx-swap: Ganti seluruh isi HTML-nya
+        -->
+        <select name="question_type_{{ question.id }}"
+                class="form-input question-type-select"
+                hx-post="{{ url_for('quiz.api_change_question_type', question_id=question.id) }}"
+                hx-target="#answer-options-{{ question.id }}"
+                hx-swap="innerHTML">
+            
+            <option value="MULTIPLE_CHOICE" {% if question.question_type == QuestionType.MULTIPLE_CHOICE %}selected{% endif %}>
+                Pilihan Ganda
+            </option>
+            <option value="TRUE_FALSE" {% if question.question_type == QuestionType.TRUE_FALSE %}selected{% endif %}>
+                Benar/Salah
+            </option>
+            <!-- Anda bisa tambahkan tipe lain di sini, misal: Isian Singkat -->
+        </select>
+    </div>
+
+    <!-- 
+      Kontainer Opsi Jawaban
+      Ini adalah target (hx-target) untuk dropdown di atas.
+      Isinya akan diganti-ganti oleh HTMX.
+    -->
+    <div class="answer-options-container" id="answer-options-{{ question.id }}">
+        <!-- 
+          Saat dimuat, render partial opsi jawaban yang sesuai 
+          berdasarkan tipe pertanyaan saat ini.
+        -->
+        {% include "_answer_options.html" %}
+    </div>
+
+    <!-- Footer Pertanyaan: Tombol Hapus -->
+    <div class="question-footer">
+        <!-- 
+          Tombol Hapus
+          - hx-delete: Kirim request DELETE
+          - hx-target: Targetkan seluruh kartu pertanyaan ini (div terluar)
+          - hx-swap: Ganti seluruh HTML-nya dengan "tidak ada" (menghapusnya)
+          - hx-confirm: Tampilkan konfirmasi sebelum menghapus
+        -->
+        <button type="button" class="btn-link btn-danger"
+                hx-delete="{{ url_for('quiz.api_delete_question', question_id=question.id) }}"
+                hx-target="#question-{{ question.id }}"
+                hx-swap="outerHTML"
+                hx-confirm="Anda yakin ingin menghapus pertanyaan ini?">
+            Hapus Pertanyaan
+        </button>
+    </div>
+</div>
+

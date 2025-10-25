@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ quiz.name }} - Aldudu Academy</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    
+    <!-- 1. Memuat HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.10" xintegrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLFe8MWR+I" crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -23,25 +26,54 @@
         </header>
 
         <main class="container">
-            <h1 class="content-title">{{ quiz.name }}</h1>
             
-            <div class="course-details-container">
-                <hr style="margin: 2rem 0;">
-
-                <h2 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem;">Daftar Pertanyaan</h2>
-                
-                <div style="margin-bottom: 1.5rem;">
-                    <button id="show-create-question-modal" class="btn btn-primary">
-                        + Buat Pertanyaan Baru
-                    </button>
-                </div>
-                
-                <div class="content-placeholder">
-                    <p>Belum ada pertanyaan untuk kuis ini.</p>
-                </div>
+            <div class="quiz-header">
+                <h1 class="content-title">{{ quiz.name }}</h1>
+                <p>Kelola pertanyaan untuk kuis ini. Semua perubahan disimpan otomatis.</p>
             </div>
+
+            <!-- 2. Kontrol kuis (hanya untuk guru) -->
+            {% if is_teacher %}
+            <div class="quiz-controls">
+                <button 
+                    class="btn btn-primary"
+                    hx-post="/api/quiz/{{ quiz.id }}/question/add"
+                    hx-target="#question-list"
+                    hx-swap="beforeend"
+                    hx-indicator="#loading-spinner">
+                    
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 18px; height: 18px; margin-right: 0.5rem; transform: translateY(2px);">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                    </svg>
+                    Buat Pertanyaan Baru
+                </button>
+                <span id="loading-spinner" class="htmx-indicator" style="margin-left: 1rem;">
+                    Menyimpan...
+                </span>
+            </div>
+            {% endif %}
+
+            <!-- 3. Daftar pertanyaan (target HTMX) -->
+            <div class="question-list-container">
+                <div id="question-list">
+                    
+                    <!-- 4. Render pertanyaan yang sudah ada saat halaman dimuat -->
+                    {% for question in quiz.questions.order_by(Question.order) %}
+                        {% include '_question_form.html' %}
+                    {% endfor %}
+
+                </div>
+                 {% if not quiz.questions.all() and is_teacher %}
+                    <div class="content-placeholder" style="text-align: center; padding: 3rem; border: 2px dashed var(--border-color); border-radius: 12px;">
+                        <p style="font-size: 1.1rem; color: var(--text-secondary-color);">Belum ada pertanyaan.</p>
+                        <p style="color: var(--text-secondary-color);">Klik tombol "Buat Pertanyaan Baru" di atas untuk memulai.</p>
+                    </div>
+                {% endif %}
+            </div>
+
         </main>
     </div>
 
 </body>
 </html>
+

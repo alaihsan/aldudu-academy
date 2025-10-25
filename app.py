@@ -3,6 +3,7 @@
 from flask import Flask, jsonify
 from typing import Optional, Dict
 import os
+import sys # <-- PASTIKAN IMPORT INI DITAMBAHKAN
 
 from flask_login import LoginManager
 from flask_migrate import Migrate
@@ -29,12 +30,14 @@ def create_app(test_config: Optional[Dict] = None):
     else:
         app.config.from_pyfile('config.py', silent=True)
         if not app.config.get('SECRET_KEY'):
+            # --- PERBAIKAN: Menambahkan indentasi yang hilang di sini ---
             app.config['SECRET_KEY'] = 'dev-secret-change-me'
 
     # Database configuration: prefer DATABASE_URL, otherwise default sqlite file
     database_url = os.environ.get('DATABASE_URL')
     if not database_url:
         # Aplikasi akan gagal start jika DATABASE_URL tidak di-set
+        # --- PERBAIKAN: Mengembalikan 'raise ValueError' agar HANYA Postgres yang didukung ---
         raise ValueError("DATABASE_URL environment variable is not set. "
                          "Please set it to your PostgreSQL connection string.")
         
@@ -121,3 +124,4 @@ def create_app(test_config: Optional[Dict] = None):
 
 if __name__ == '__main__':
     create_app().run(debug=True)
+
