@@ -58,7 +58,7 @@
                 <div id="question-list">
                     
                     <!-- 4. Render pertanyaan yang sudah ada saat halaman dimuat -->
-                    {% for question in quiz.questions.order_by(Question.order) %}
+                    {% for question in questions %}
                         {% include '_question_form.html' %}
                     {% endfor %}
 
