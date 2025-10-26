@@ -35,9 +35,14 @@
             <!-- 2. Kontrol kuis (hanya untuk guru) -->
             {% if is_teacher %}
             <div class="quiz-controls">
+                <select id="question-type-select" name="question_type" class="form-input" style="width: auto;">
+                    <option value="MULTIPLE_CHOICE" selected>Pilihan Ganda</option>
+                    <option value="TRUE_FALSE">Benar/Salah</option>
+                </select>
                 <button 
                     class="btn btn-primary"
                     hx-post="/api/quiz/{{ quiz.id }}/question/add"
+                    hx-include="#question-type-select"
                     hx-target="#question-list"
                     hx-swap="beforeend"
                     hx-indicator="#loading-spinner">

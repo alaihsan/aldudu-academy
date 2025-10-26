@@ -1,0 +1,35 @@
+<!-- templates/_answer_options.html -->
+<div class="option-list" id="option-list-{{ question.id }}">
+    {% if question.question_type == QuestionType.MULTIPLE_CHOICE %}
+        {% for option in question.options|sort(attribute='order') %}
+            {% include '_option_form.html' %}
+        {% endfor %}
+    {% elif question.question_type == QuestionType.TRUE_FALSE %}
+        {% for option in question.options|sort(attribute='order') %}
+            <div class="option-row-static">
+                <input type="radio"
+                       id="option-{{ option.id }}"
+                       name="correct_option_q{{ question.id }}"
+                       value="{{ option.id }}"
+                       class="form-radio"
+                       hx-post="{{ url_for('quiz.api_question_set_correct_option', question_id=question.id) }}"
+                       hx-trigger="change"
+                       hx-swap="none"
+                       {% if option.is_correct %}checked{% endif %}>
+                <label for="option-{{ option.id }}">{{ option.option_text }}</label>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+
+{% if question.question_type == QuestionType.MULTIPLE_CHOICE %}
+    <div class="add-option-container" style="margin-top: 1rem;">
+        <button class="btn btn-secondary"
+                style="width: auto;"
+                hx-post="{{ url_for('quiz.api_add_option', question_id=question.id) }}"
+                hx-target="#option-list-{{ question.id }}"
+                hx-swap="beforeend">
+            + Tambah Opsi
+        </button>
+    </div>
+{% endif %}

@@ -73,5 +73,6 @@ def quiz_detail(quiz_id):
         course=course,
         is_teacher=is_teacher,
         questions=questions,      # Kirim daftar pertanyaan
-        QuestionType=QuestionType # <- Ini yang menyebabkan error
+        QuestionType=QuestionType,
+        Option=Option
     )

@@ -4,6 +4,7 @@ from flask import Flask, jsonify
 from typing import Optional, Dict
 import os
 import sys # <-- PASTIKAN IMPORT INI DITAMBAHKAN
+from dotenv import load_dotenv
 
 from flask_login import LoginManager
 from flask_migrate import Migrate
@@ -21,6 +22,7 @@ def create_app(test_config: Optional[Dict] = None):
 
     test_config: optional dict to override configuration (used by tests).
     """
+    load_dotenv() # ADD THIS
     app = Flask(__name__, instance_relative_config=True)
 
     # Load secret key from environment or instance config

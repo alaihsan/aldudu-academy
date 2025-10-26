@@ -146,6 +146,13 @@ def api_add_question(quiz_id):
     """HTMX: Membuat pertanyaan baru dan mengembalikan HTML-nya."""
     quiz = get_quiz_or_abort(quiz_id) # Memvalidasi izin guru
     
+    # Ambil tipe pertanyaan dari form, default ke Pilihan Ganda
+    question_type_str = request.form.get('question_type', 'MULTIPLE_CHOICE')
+    try:
+        question_type = QuestionType(question_type_str)
+    except ValueError:
+        question_type = QuestionType.MULTIPLE_CHOICE
+
     # Tentukan urutan untuk pertanyaan baru
     last_question = quiz.questions.order_by(Question.order.desc()).first()
     new_order = (last_question.order + 1) if last_question else 1
@@ -153,19 +160,25 @@ def api_add_question(quiz_id):
     new_question = Question(
         quiz_id=quiz.id,
         question_text=f"Pertanyaan Baru {new_order}",
-        question_type=QuestionType.MULTIPLE_CHOICE,
+        question_type=question_type, # Gunakan tipe dari form
         order=new_order
     )
-    db.session.add(new_question)
     
-    # Buat 4 opsi default untuk Tipe Pilihan Ganda
-    default_options = [
-        Option(question_id=new_question.id, option_text="Opsi A", order=1),
-        Option(question_id=new_question.id, option_text="Opsi B", order=2),
-        Option(question_id=new_question.id, option_text="Opsi C", order=3),
-        Option(question_id=new_question.id, option_text="Opsi D", order=4),
-    ]
-    db.session.add_all(default_options)
+    # Buat opsi default berdasarkan tipe pertanyaan
+    if question_type == QuestionType.MULTIPLE_CHOICE:
+        # Hanya buat satu opsi default
+        default_options = [
+            Option(option_text="Opsi 1", order=1),
+        ]
+        new_question.options.extend(default_options)
+    elif question_type == QuestionType.TRUE_FALSE:
+        default_options = [
+            Option(option_text="Benar", order=1),
+            Option(option_text="Salah", order=2),
+        ]
+        new_question.options.extend(default_options)
+
+    db.session.add(new_question)
     db.session.commit()
 
     # --- PERBAIKAN PENTING ---
