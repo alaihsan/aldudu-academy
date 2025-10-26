@@ -56,23 +56,24 @@ def quiz_detail(quiz_id):
     if quiz is None:
         abort(404)
 
-    course = quiz.course # Ambil mata pelajarannya dari kuis
-
-    # Keamanan: Pastikan hanya guru/murid yang terdaftar yang bisa akses
+    course = quiz.course
     is_teacher = (current_user.id == course.teacher_id)
-    
+
     if not is_teacher and current_user not in course.students:
-        abort(403) # Murid yang tidak terdaftar dilarang
+        abort(403)
 
-    # Ambil semua pertanyaan untuk kuis ini, diurutkan
-    questions = quiz.questions.order_by(Question.order).all()
-
-    return render_template(
-        'quiz_detail.html', 
-        quiz=quiz,
-        course=course,
-        is_teacher=is_teacher,
-        questions=questions,      # Kirim daftar pertanyaan
-        QuestionType=QuestionType,
-        Option=Option
-    )
+    if is_teacher:
+        # For teachers, render the editor
+        return render_template('quiz_editor.html', quiz=quiz)
+    else:
+        # For students, render the detail/view page
+        questions = quiz.questions.order_by(Question.order).all()
+        return render_template(
+            'quiz_detail.html', 
+            quiz=quiz,
+            course=course,
+            is_teacher=is_teacher,
+            questions=questions,
+            QuestionType=QuestionType,
+            Option=Option
+        )

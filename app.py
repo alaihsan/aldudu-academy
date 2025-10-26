@@ -1,6 +1,6 @@
 # app.py (TERBARU - DENGAN PERBAIKAN IMPORT)
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 from typing import Optional, Dict
 import os
 import sys # <-- PASTIKAN IMPORT INI DITAMBAHKAN

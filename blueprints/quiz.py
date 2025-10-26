@@ -363,3 +363,46 @@ def api_delete_option(option_id):
     
     return "", 200
 
+@quiz_bp.route('/quiz/<int:quiz_id>/save-questions', methods=['POST'])
+@login_required
+def api_save_questions(quiz_id):
+    quiz = get_quiz_or_abort(quiz_id)
+    data = request.get_json()
+
+    # Clear existing questions
+    Question.query.filter_by(quiz_id=quiz.id).delete()
+
+    for i, q_data in enumerate(data):
+        question = Question(
+            quiz_id=quiz.id,
+            question_text=q_data['text'],
+            question_type=q_data['type'],
+            order=i
+        )
+        db.session.add(question)
+        db.session.flush()  # Flush to get the question ID
+
+        if q_data['type'] == 'multiple_choice':
+            for j, o_data in enumerate(q_data['options']):
+                option = Option(
+                    question_id=question.id,
+                    option_text=o_data['text'],
+                    is_correct=j in q_data.get('answer', []),
+                    order=j
+                )
+                db.session.add(option)
+        elif q_data['type'] == 'true_false':
+            for j, o_data in enumerate(q_data['options']):
+                option = Option(
+                    question_id=question.id,
+                    option_text=o_data['text'],
+                    is_correct=j == q_data.get('answer'),
+                    order=j
+                )
+                db.session.add(option)
+        elif q_data['type'] == 'short_answer':
+            # For short answer, the answer is stored directly in the question
+            question.answer_text = q_data.get('answer', '')
+
+    db.session.commit()
+    return jsonify({'success': True, 'message': 'Quiz saved successfully.'})
