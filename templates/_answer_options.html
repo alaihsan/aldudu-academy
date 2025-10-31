@@ -19,6 +19,20 @@
                 <label for="option-{{ option.id }}">{{ option.option_text }}</label>
             </div>
         {% endfor %}
+    {% elif question.question_type == QuestionType.LONG_TEXT %}
+        <div class="long-text-description">
+            <label for="description-{{ question.id }}">Description:</label>
+            <textarea id="description-{{ question.id }}"
+                      name="description"
+                      class="form-textarea"
+                      placeholder="Enter a description for the long text question..."
+                      maxlength="1000"
+                      rows="4"
+                      hx-post="{{ url_for('quiz.api_update_long_text_description', question_id=question.id) }}"
+                      hx-trigger="blur"
+                      hx-swap="none">{{ question.description or '' }}</textarea>
+            <small class="text-muted">Maximum 1000 characters</small>
+        </div>
     {% endif %}
 </div>
 

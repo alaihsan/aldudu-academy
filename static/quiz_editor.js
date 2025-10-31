@@ -1,13 +1,35 @@
 document.addEventListener('DOMContentLoaded', () => {
     const quizContainer = document.getElementById('quiz-container');
     const addQuestionBtn = document.getElementById('add-question-btn');
+    const saveQuizBtn = document.getElementById('save-quiz-btn');
     const container = document.querySelector('.container');
     const quizId = container.dataset.quizId;
     const courseId = container.dataset.courseId;
 
+    const recoveryBanner = document.getElementById('recovery-banner');
+    const restoreBtn = document.getElementById('restore-btn');
+    const discardBtn = document.getElementById('discard-btn');
+
+    const localStorageKey = `quiz-draft-${quizId}`;
+
     let quizData = [];
 
-    // --- Debounce function for autosaving ---
+    const saveToLocalStorage = () => {
+        localStorage.setItem(localStorageKey, JSON.stringify(quizData));
+    };
+
+    const loadFromLocalStorage = () => {
+        const savedData = localStorage.getItem(localStorageKey);
+        if (savedData) {
+            quizData = JSON.parse(savedData);
+            renderQuiz();
+        }
+    };
+
+    const clearLocalStorage = () => {
+        localStorage.removeItem(localStorageKey);
+    };
+
     const debounce = (func, delay) => {
         let timeout;
         return (...args) => {
@@ -16,7 +38,6 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     };
 
-    // --- Autosave function ---
     const autosave = async () => {
         try {
             const response = await fetch(`/api/quiz/${quizId}/save-questions`, {
@@ -31,9 +52,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error('Failed to save the quiz.');
             }
             console.log('Quiz saved automatically.');
+            clearLocalStorage(); // Clear local storage on successful save
         } catch (error) {
             console.error('Error saving quiz:', error);
-            // Optionally, show a non-blocking notification to the user
         }
     };
 
@@ -65,7 +86,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const questionHeader = document.createElement('div');
         questionHeader.className = 'question-header';
         
-        // --- Question Number ---
         const questionNumber = document.createElement('div');
         questionNumber.className = 'question-number';
         questionNumber.textContent = `${index + 1}.`;
@@ -77,6 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
         questionText.value = question.text || '';
         questionText.addEventListener('input', (e) => {
             quizData[index].text = e.target.value;
+            saveToLocalStorage();
             debouncedAutosave();
         });
 
@@ -98,6 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
             quizData[index].options = JSON.parse(JSON.stringify(questionTypes[newType].defaultOptions));
             quizData[index].answer = JSON.parse(JSON.stringify(questionTypes[newType].defaultAnswer));
             renderQuiz();
+            saveToLocalStorage();
             debouncedAutosave();
         });
 
@@ -109,6 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
             questionWrapper.addEventListener('animationend', () => {
                 quizData.splice(index, 1);
                 renderQuiz();
+                saveToLocalStorage();
                 debouncedAutosave();
             });
         });
@@ -132,6 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 optionInput.value = option.text;
                 optionInput.addEventListener('input', (e) => {
                     quizData[index].options[optionIndex].text = e.target.value;
+                    saveToLocalStorage();
                     debouncedAutosave();
                 });
 
@@ -147,6 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         } else {
                             quizData[index].answer = quizData[index].answer.filter(i => i !== optionIndex);
                         }
+                        saveToLocalStorage();
                         debouncedAutosave();
                     });
                 } else { // true_false
@@ -159,6 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (e.target.checked) {
                             quizData[index].answer = optionIndex;
                         }
+                        saveToLocalStorage();
                         debouncedAutosave();
                     });
                 }
@@ -173,6 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     deleteOptionBtn.addEventListener('click', () => {
                         quizData[index].options.splice(optionIndex, 1);
                         renderQuiz();
+                        saveToLocalStorage();
                         debouncedAutosave();
                     });
                     optionWrapper.appendChild(deleteOptionBtn);
@@ -188,6 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 addOptionBtn.addEventListener('click', () => {
                     quizData[index].options.push({ text: `Option ${quizData[index].options.length + 1}` });
                     renderQuiz();
+                    saveToLocalStorage();
                     debouncedAutosave();
                 });
                 optionsContainer.appendChild(addOptionBtn);
@@ -200,6 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
             answerInput.value = question.answer || '';
             answerInput.addEventListener('input', (e) => {
                 quizData[index].answer = e.target.value;
+                saveToLocalStorage();
                 debouncedAutosave();
             });
             optionsContainer.appendChild(answerInput);
@@ -208,7 +237,6 @@ document.addEventListener('DOMContentLoaded', () => {
         questionWrapper.appendChild(questionHeader);
         questionWrapper.appendChild(optionsContainer);
         
-        // For animation
         setTimeout(() => {
             questionWrapper.classList.add('visible');
         }, 10);
@@ -232,19 +260,46 @@ document.addEventListener('DOMContentLoaded', () => {
             answer: []
         });
         renderQuiz();
+        saveToLocalStorage();
         debouncedAutosave();
     });
 
-    // Initial render
-    // In a real app, you would fetch the initial quiz data here
-    // For now, we start with one empty question
-    if (quizData.length === 0) {
-        quizData.push({
-            type: 'multiple_choice',
-            text: '',
-            options: [{ text: 'Option 1' }],
-            answer: []
-        });
+    saveQuizBtn.addEventListener('click', async () => {
+        try {
+            await autosave();
+            alert('Quiz saved successfully!');
+        } catch (error) {
+            alert('Failed to save quiz.');
+        }
+    });
+
+    // Initial Load
+    const savedData = localStorage.getItem(localStorageKey);
+    if (savedData) {
+        recoveryBanner.style.display = 'block';
+    } else {
+        // In a real app, you would fetch the initial quiz data here
+        // For now, we start with one empty question
+        if (quizData.length === 0) {
+            quizData.push({
+                type: 'multiple_choice',
+                text: '',
+                options: [{ text: 'Option 1' }],
+                answer: []
+            });
+        }
+        renderQuiz();
     }
-    renderQuiz();
+
+    restoreBtn.addEventListener('click', () => {
+        loadFromLocalStorage();
+        recoveryBanner.style.display = 'none';
+    });
+
+    discardBtn.addEventListener('click', () => {
+        clearLocalStorage();
+        recoveryBanner.style.display = 'none';
+        // Optionally, reload the page to get the original server data
+        window.location.reload();
+    });
 });

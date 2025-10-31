@@ -69,7 +69,7 @@ def quiz_detail(quiz_id):
         # For students, render the detail/view page
         questions = quiz.questions.order_by(Question.order).all()
         return render_template(
-            'quiz_detail.html', 
+            'quiz_detail.html',
             quiz=quiz,
             course=course,
             is_teacher=is_teacher,
@@ -77,3 +77,19 @@ def quiz_detail(quiz_id):
             QuestionType=QuestionType,
             Option=Option
         )
+
+@main_bp.route('/quiz/<int:quiz_id>/saved', methods=['GET'])
+@login_required
+def quiz_saved(quiz_id):
+    quiz = db.session.get(Quiz, quiz_id)
+    if quiz is None:
+        abort(404)
+
+    course = quiz.course
+    is_teacher = (current_user.id == course.teacher_id)
+
+    if not is_teacher:
+        abort(403)
+
+    # Redirect back to the course page
+    return redirect(url_for('main.course_detail', course_id=course.id))

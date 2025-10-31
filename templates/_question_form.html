@@ -35,14 +35,16 @@
                 hx-post="{{ url_for('quiz.api_change_question_type', question_id=question.id) }}"
                 hx-target="#answer-options-{{ question.id }}"
                 hx-swap="innerHTML">
-            
+
             <option value="MULTIPLE_CHOICE" {% if question.question_type == QuestionType.MULTIPLE_CHOICE %}selected{% endif %}>
                 Pilihan Ganda
             </option>
             <option value="TRUE_FALSE" {% if question.question_type == QuestionType.TRUE_FALSE %}selected{% endif %}>
                 Benar/Salah
             </option>
-            <!-- Anda bisa tambahkan tipe lain di sini, misal: Isian Singkat -->
+            <option value="LONG_TEXT" {% if question.question_type == QuestionType.LONG_TEXT %}selected{% endif %}>
+                Long Text
+            </option>
         </select>
     </div>
 

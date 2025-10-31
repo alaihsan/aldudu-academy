@@ -19,6 +19,7 @@ class UserRole(enum.Enum):
 class QuestionType(enum.Enum):
     MULTIPLE_CHOICE = 'multiple_choice'
     TRUE_FALSE = 'true_false'
+    LONG_TEXT = 'long_text'
 
 # --- TAMBAHAN BARU ---
 class GradeType(enum.Enum):
@@ -114,6 +115,7 @@ class Question(db.Model):
 
     # --- TAMBAHAN BARU (UNTUK FITUR QUIZ BUILDER) ---
     order = db.Column(db.Integer, nullable=False, default=1)
+    description = db.Column(db.Text, nullable=True)  # For LONG_TEXT questions
     # --- AKHIR TAMBAHAN ---
 
     # Relasi ke Quiz

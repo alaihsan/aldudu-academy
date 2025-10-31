@@ -1,8 +1,8 @@
 # blueprints/quiz.py
 
 from flask import (
-    Blueprint, request, jsonify, abort, 
-    render_template, make_response
+    Blueprint, request, jsonify, abort,
+    render_template, make_response, url_for
 )
 from flask_login import login_required, current_user
 # --- Impor model yang diperlukan ---
@@ -177,6 +177,9 @@ def api_add_question(quiz_id):
             Option(option_text="Salah", order=2),
         ]
         new_question.options.extend(default_options)
+    elif question_type == QuestionType.LONG_TEXT:
+        # Tidak ada opsi untuk long text
+        pass
 
     db.session.add(new_question)
     db.session.commit()
@@ -227,17 +230,21 @@ def api_change_question_type(question_id):
     
     # Hapus semua opsi jawaban yang ada
     Option.query.filter_by(question_id=question.id).delete()
-    
+
     # Jika tipenya Benar/Salah, buat opsi B/S yang baru
     if new_type == QuestionType.TRUE_FALSE:
         true_opt = Option(question_id=question.id, option_text="Benar", order=1, is_correct=False)
         false_opt = Option(question_id=question.id, option_text="Salah", order=2, is_correct=False)
         db.session.add_all([true_opt, false_opt])
-    
+
     # Jika tipenya Pilihan Ganda, buat 1 opsi kosong
     elif new_type == QuestionType.MULTIPLE_CHOICE:
         empty_opt = Option(question_id=question.id, option_text="Opsi 1", order=1, is_correct=False)
         db.session.add(empty_opt)
+
+    # Jika tipenya Long Text, tidak ada opsi
+    elif new_type == QuestionType.LONG_TEXT:
+        pass
         
     db.session.commit()
     db.session.refresh(question) # Refresh untuk memuat opsi baru
@@ -363,6 +370,26 @@ def api_delete_option(option_id):
     
     return "", 200
 
+@quiz_bp.route('/question/<int:question_id>/update-long-text-description', methods=['POST'])
+@login_required
+def api_update_long_text_description(question_id):
+    """HTMX: Autosave for long text description."""
+    question = get_question_or_abort(question_id)
+
+    if question.question_type != QuestionType.LONG_TEXT:
+        return "Only long text questions have descriptions", 400
+
+    new_description = request.form.get('description', '').strip()
+    if len(new_description) > 1000:
+        new_description = new_description[:1000]
+
+    question.description = sanitize_text(new_description, max_len=1000) if new_description else None
+    db.session.commit()
+
+    # Return the updated textarea
+    return f'<textarea id="description-{question.id}" name="description" class="form-textarea" placeholder="Enter a description for the long text question..." maxlength="1000" rows="4" hx-post="/api/question/{question.id}/update-long-text-description" hx-trigger="blur" hx-swap="outerHTML">{question.description or ""}</textarea>'
+
+
 @quiz_bp.route('/quiz/<int:quiz_id>/save-questions', methods=['POST'])
 @login_required
 def api_save_questions(quiz_id):
@@ -373,16 +400,27 @@ def api_save_questions(quiz_id):
     Question.query.filter_by(quiz_id=quiz.id).delete()
 
     for i, q_data in enumerate(data):
+        # Convert string type to enum
+        type_str = q_data['type']
+        if type_str == 'multiple_choice':
+            question_type = QuestionType.MULTIPLE_CHOICE
+        elif type_str == 'true_false':
+            question_type = QuestionType.TRUE_FALSE
+        elif type_str == 'long_text':
+            question_type = QuestionType.LONG_TEXT
+        else:
+            question_type = QuestionType.MULTIPLE_CHOICE  # default
+
         question = Question(
             quiz_id=quiz.id,
             question_text=q_data['text'],
-            question_type=q_data['type'],
+            question_type=question_type,
             order=i
         )
         db.session.add(question)
         db.session.flush()  # Flush to get the question ID
 
-        if q_data['type'] == 'multiple_choice':
+        if type_str == 'multiple_choice':
             for j, o_data in enumerate(q_data['options']):
                 option = Option(
                     question_id=question.id,
@@ -391,7 +429,7 @@ def api_save_questions(quiz_id):
                     order=j
                 )
                 db.session.add(option)
-        elif q_data['type'] == 'true_false':
+        elif type_str == 'true_false':
             for j, o_data in enumerate(q_data['options']):
                 option = Option(
                     question_id=question.id,
@@ -400,9 +438,11 @@ def api_save_questions(quiz_id):
                     order=j
                 )
                 db.session.add(option)
-        elif q_data['type'] == 'short_answer':
-            # For short answer, the answer is stored directly in the question
-            question.answer_text = q_data.get('answer', '')
+        elif type_str == 'long_text':
+            # For long text, store description if provided
+            question.description = q_data.get('description', '')
 
     db.session.commit()
-    return jsonify({'success': True, 'message': 'Quiz saved successfully.'})
+    # Redirect to the saved page which will redirect back to course
+    from flask import redirect, url_for
+    return redirect(url_for('main.quiz_saved', quiz_id=quiz_id))
