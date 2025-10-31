@@ -93,6 +93,46 @@ Aplikasi sekarang akan berjalan di http://127.0.0.1:5000. Anda bisa login menggu
 
     Murid: murid@aldudu.com (password: 123)
 
+
+Deployment dengan Docker
+
+Untuk menjalankan aplikasi menggunakan Docker Compose (direkomendasikan untuk lingkungan produksi atau simulasi produksi lokal), ikuti langkah-langkah berikut:
+
+1.  Prasyarat: Pastikan Anda telah menginstal Docker Desktop atau Docker Engine di sistem Anda.
+
+2.  Konfigurasi Environment Variables:
+    Aplikasi membutuhkan variabel lingkungan `DATABASE_URL` dan `FLASK_SECRET_KEY`. Anda dapat membuat file `.env` di root proyek Anda (sejajar dengan `app.py`) atau merujuk pada `deploy/.env.example` untuk contoh.
+
+    Contoh `.env`:
+    ```
+    DATABASE_URL="postgresql://user:password@host:port/database_name"
+    FLASK_SECRET_KEY="your_super_secret_key_here"
+    ```
+
+3.  Bangun dan Jalankan Kontainer Docker:
+    Perintah ini akan membangun image Docker untuk aplikasi web dan memulai semua layanan yang didefinisikan dalam `docker-compose.prod.yml` di latar belakang.
+
+    ```bash
+    docker compose -f deploy/docker-compose.prod.yml up -d --build
+    ```
+
+4.  Jalankan Migrasi Database:
+    Setelah kontainer berjalan, terapkan migrasi database di dalam kontainer `web`.
+
+    ```bash
+    docker compose -f deploy/docker-compose.prod.yml exec -T web .venv/bin/python -m flask db upgrade
+    ```
+
+5.  Lihat Log Aplikasi (Opsional):
+    Untuk melihat log dari layanan `web` secara real-time:
+
+    ```bash
+    docker compose -f deploy/docker-compose.prod.yml logs -f web
+    ```
+
+6.  Akses Aplikasi:
+    Aplikasi akan tersedia di browser Anda pada `http://localhost:8000`.
+
 Keamanan: menyimpan SECRET_KEY
 --------------------------------
 
