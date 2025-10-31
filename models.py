@@ -99,8 +99,8 @@ class Quiz(db.Model):
     # ... existing fields ...
     grade_type = db.Column(db.Enum(GradeType), nullable=False, default=GradeType.NUMERIC)
     grading_category = db.Column(db.String(100))
-    due_start = db.Column(db.DateTime)
-    due_finish = db.Column(db.DateTime)
+    start_date = db.Column(db.DateTime, nullable=True)
+    end_date = db.Column(db.DateTime, nullable=True)
     points = db.Column(db.Integer, default=100)
     questions = db.relationship('Question', back_populates='quiz', lazy='dynamic', cascade="all, delete-orphan")
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow, nullable=False)

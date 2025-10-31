@@ -1,6 +1,6 @@
 # app.py (TERBARU - DENGAN PERBAIKAN IMPORT)
 
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, request
 from typing import Optional, Dict
 import os
 import sys # <-- PASTIKAN IMPORT INI DITAMBAHKAN
@@ -74,6 +74,13 @@ def create_app(test_config: Optional[Dict] = None):
     # Register blueprints
     for bp in create_blueprints():
         app.register_blueprint(bp)
+
+    @app.before_request
+    def before_request():
+        print("--- Request Log ---")
+        print(request.method, request.path)
+        print(request.headers)
+        print("--- End Request Log ---")
 
     # Simple health endpoint for readiness/liveness checks
     @app.route('/healthz', methods=['GET'])
