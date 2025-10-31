@@ -62,6 +62,12 @@
                                 </svg>
                                 <span>Add Link</span>
                             </a>
+                            <a href="#" id="show-create-file-modal" class="dropdown-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="dropdown-item-icon">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625a3.375 3.375 0 00-3.375 3.375v11.25a3.375 3.375 0 003.375 3.375h12.75a3.375 3.375 0 003.375-3.375V11.25a9 9 0 00-9-9z" />
+                                </svg>
+                                <span>Add File</span>
+                            </a>
                             <a href="#" class="dropdown-item">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="dropdown-item-icon">
                                   <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193l-3.722.06c-.247.007-.48.057-.7.144a4.5 4.5 0 01-2.586 0c-.22-.087-.453-.137-.7-.144l-3.722-.06c-1.133-.093-1.98-1.057-1.98-2.193V10.608c0-.97.616-1.813 1.5-2.097m14.25-6.118c-.228.06-.447.11-.66.162a4.5 4.5 0 00-2.586 0c-.213-.051-.432-.102-.66-.162m14.25 6.118A4.491 4.491 0 0018 10.5c-1.052 0-2.062.18-3 .512a4.5 4.5 0 00-2.586 0c-.938-.333-1.948-.512-3-.512-1.052 0-2.062.18-3 .512a4.5 4.5 0 00-2.586 0c-.938-.333-1.948-.512-3-.512A4.491 4.491 0 001.5 10.5c0 .97.616 1.813 1.5 2.097m14.25-6.118c-.228.06-.447.11-.66.162a4.5 4.5 0 00-2.586 0c-.213-.051-.432-.102-.66-.162" />
@@ -88,7 +94,7 @@
                     {% if topics %}
                         {% for topic in topics %}
                             <div class="topic-card">
-                                {% if topic.type == 'Link' %}
+                                {% if topic.type == 'Link' or topic.type == 'Berkas' %}
                                 <a href="{{ topic.url }}" target="_blank" class="topic-link">
                                 {% else %}
                                 <a href="{{ topic.url }}" class="topic-link">
@@ -97,6 +103,10 @@
                                         {% if topic.type == 'Link' %}
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="dropdown-item-icon">
                                           <path stroke-linecap="round" stroke-linejoin="round" d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.004-.004L18.375 12.74a3 3 0 11-4.242-4.242L6.28 16.162a4.5 4.5 0 006.364 6.364l7.693-7.693z" />
+                                        </svg>
+                                        {% elif topic.type == 'Berkas' %}
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="dropdown-item-icon">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625a3.375 3.375 0 00-3.375 3.375v11.25a3.375 3.375 0 003.375 3.375h12.75a3.375 3.375 0 003.375-3.375V11.25a9 9 0 00-9-9z" />
                                         </svg>
                                         {% else %}
                                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="dropdown-item-icon quiz-icon">
@@ -225,6 +235,53 @@
     </div>
     </div>
 
+    <div id="create-file-modal" class="modal hidden">
+    <div class="modal-content">
+        <form id="create-file-form" enctype="multipart/form-data">
+            <div class="modal-header">
+                <h3>Tambah File Baru</h3>
+                <p>Masukkan detail untuk file baru di kelas ini.</p>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="form-group">
+                    <label for="file-name-input" class="form-label">Nama File</label>
+                    <input type="text" id="file-name-input" class="form-input" required placeholder="Contoh: Materi Presentasi Bab 1">
+                </div>
+
+                <div class="form-group">
+                    <label for="file-description-input" class="form-label">Deskripsi</label>
+                    <textarea id="file-description-input" class="form-input" rows="3" placeholder="Deskripsi singkat tentang isi file..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="file-upload-input" class="form-label">Upload File</label>
+                    <input type="file" id="file-upload-input" class="form-input" required>
+                </div>
+
+                <div class="form-row-flex">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="file-start-date-input" class="form-label">Masa Berlaku (Mulai)</label>
+                        <input type="datetime-local" id="file-start-date-input" class="form-input">
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="file-end-date-input" class="form-label">Masa Berlaku (Selesai)</label>
+                        <input type="datetime-local" id="file-end-date-input" class="form-input">
+                    </div>
+                </div>
+
+                <div id="file-modal-error" class="form-error hidden"></div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" id="file-cancel-button" class="btn btn-secondary">Batal</button>
+                <button type="submit" class="btn btn-primary">Simpan File</button>
+            </div>
+        </form>
+    </div>
+    </div>
+
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         
@@ -274,6 +331,18 @@
         const linkUrlInput = document.getElementById('link-url-input');
         const linkModalError = document.getElementById('link-modal-error');
 
+        // --- Elemen Modal File ---
+        const fileModal = document.getElementById('create-file-modal');
+        const showFileModalButton = document.getElementById('show-create-file-modal');
+        const fileCancelButton = document.getElementById('file-cancel-button');
+        const fileForm = document.getElementById('create-file-form');
+        const fileNameInput = document.getElementById('file-name-input');
+        const fileDescriptionInput = document.getElementById('file-description-input');
+        const fileUploadInput = document.getElementById('file-upload-input');
+        const fileStartDateInput = document.getElementById('file-start-date-input');
+        const fileEndDateInput = document.getElementById('file-end-date-input');
+        const fileModalError = document.getElementById('file-modal-error');
+
         const mainContainer = document.querySelector('main.container');
         const courseId = mainContainer.dataset.courseId;
 
@@ -297,6 +366,20 @@
 
         const hideLinkModal = () => {
             linkModal.classList.add('hidden');
+        };
+
+        const showFileModal = () => {
+            fileModal.classList.remove('hidden');
+            fileNameInput.value = '';
+            fileDescriptionInput.value = '';
+            fileUploadInput.value = '';
+            fileStartDateInput.value = '';
+            fileEndDateInput.value = '';
+            fileModalError.classList.add('hidden');
+        };
+
+        const hideFileModal = () => {
+            fileModal.classList.add('hidden');
         };
 
         // --- Event Listeners ---
@@ -343,6 +426,25 @@
         // Pastikan linkCancelButton ada sebelum menambahkan listener
         if(linkCancelButton) {
             linkCancelButton.addEventListener('click', hideLinkModal);
+        }
+
+        if (showFileModalButton) {
+            showFileModalButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                showFileModal();
+
+                if (topicsDropdownMenu) {
+                    topicsDropdownMenu.classList.add('hidden');
+                }
+
+                if (addTopicsButton) {
+                    addTopicsButton.classList.remove('btn-pressed');
+                }
+            });
+        }
+
+        if(fileCancelButton) {
+            fileCancelButton.addEventListener('click', hideFileModal);
         }
 
         // --- Event Listener untuk Submit Form ---
@@ -429,6 +531,50 @@
                 } catch (error) {
                     linkModalError.textContent = error.message;
                     linkModalError.classList.remove('hidden');
+                }
+            });
+        }
+
+        if(fileForm) {
+            fileForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const fileName = fileNameInput.value.trim();
+                const fileDescription = fileDescriptionInput.value.trim();
+                const file = fileUploadInput.files[0];
+                const startDate = fileStartDateInput.value;
+                const endDate = fileEndDateInput.value;
+
+                if (!fileName || !file) {
+                    fileModalError.textContent = 'Nama file dan file upload tidak boleh kosong.';
+                    fileModalError.classList.remove('hidden');
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('name', fileName);
+                formData.append('description', fileDescription);
+                formData.append('file', file);
+                formData.append('start_date', startDate);
+                formData.append('end_date', endDate);
+
+                try {
+                    const response = await fetch(`/api/courses/${courseId}/files`, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(data.message || 'Gagal menyimpan file.');
+                    }
+
+                    hideFileModal();
+                    window.location.reload();
+
+                } catch (error) {
+                    fileModalError.textContent = error.message;
+                    fileModalError.classList.remove('hidden');
                 }
             });
         }

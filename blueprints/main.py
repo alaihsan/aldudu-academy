@@ -1,11 +1,13 @@
 # blueprints/main.py
 
-from flask import Blueprint, render_template, redirect, url_for, abort
+from flask import Blueprint, render_template, redirect, url_for, abort, send_from_directory
+import os
+from datetime import datetime
 from flask_login import login_required, current_user
 # --- PERBAIKAN: Tambahkan impor QuestionType dan model lain ---
 from models import (
     db, Course, Quiz, Question, Option,
-    QuestionType, GradeType, UserRole, Link
+    QuestionType, GradeType, UserRole, Link, File
 )
 
 
@@ -30,32 +32,45 @@ def dashboard():
 @main_bp.route('/kelas/<int:course_id>')
 @login_required
 def course_detail(course_id):
-# ... existing code ...
     course = db.session.get(Course, course_id)
     if course is None:
         abort(404)
-    # --- TAMBAHKAN LOGIKA INI ---
     # Cek apakah pengguna saat ini adalah guru dari mata pelajaran ini
     is_teacher = (current_user.id == course.teacher_id)
     
     # Kirim variabel is_teacher dan semua kuis ke template
-    quizzes = Quiz.query.filter_by(course_id=course.id).order_by(Quiz.id.desc()).all()
-    links = Link.query.filter_by(course_id=course.id).order_by(Link.created_at.desc()).all()
+    quizzes = Quiz.query.filter_by(course_id=course.id).all()
+    links = Link.query.filter_by(course_id=course.id).all()
+    files = File.query.filter_by(course_id=course.id).all()
+    
     topics = []
     for quiz in quizzes:
         topics.append({
             'id': quiz.id,
             'name': quiz.name,
             'type': 'Kuis',
-            'url': url_for('main.quiz_detail', quiz_id=quiz.id)
+            'url': url_for('main.quiz_detail', quiz_id=quiz.id),
+            'created_at': quiz.created_at
         })
     for link in links:
         topics.append({
             'id': link.id,
             'name': link.name,
             'type': 'Link',
-            'url': link.url
+            'url': link.url,
+            'created_at': link.created_at
         })
+    for file in files:
+        topics.append({
+            'id': file.id,
+            'name': file.name,
+            'type': 'Berkas',
+            'url': url_for('main.serve_file', file_id=file.id),
+            'created_at': file.created_at
+        })
+    
+    # Sort topics by creation date, newest first
+    topics.sort(key=lambda x: x['created_at'], reverse=True)
     
     return render_template(
         'course_detail.html', 
@@ -108,3 +123,27 @@ def quiz_saved(quiz_id):
 
     # Redirect back to the course page
     return redirect(url_for('main.course_detail', course_id=course.id))
+
+
+@main_bp.route('/files/<int:file_id>')
+@login_required
+def serve_file(file_id):
+    file = db.session.get(File, file_id)
+    if file is None:
+        abort(404)
+
+    course = file.course
+    is_teacher = (current_user.id == course.teacher_id)
+
+    if not is_teacher and current_user not in course.students:
+        abort(403)
+        
+    # Check if file is within start_date and end_date
+    now = datetime.utcnow()
+    if file.start_date and now < file.start_date:
+        abort(403, description="File is not yet available.")
+    if file.end_date and now > file.end_date:
+        abort(403, description="File has expired.")
+
+    upload_folder = os.path.join(os.getcwd(), 'instance', 'uploads', str(course.id))
+    return send_from_directory(upload_folder, file.filename, as_attachment=False)

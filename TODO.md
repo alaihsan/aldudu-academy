@@ -21,7 +21,8 @@
 - [x] Add JavaScript for modal handling and form submission
 
 ## 6. Test Implementation
-- [ ] Test modal opens and closes
-- [ ] Test form submission creates link
-- [ ] Test link opens in new window
-- [ ] Verify topics list includes links
+- [x] Test modal opens and closes
+- [x] Test form submission creates link
+- [x] Test link opens in new window
+- [x] Verify topics list includes links
+- [x] Test file upload and serving

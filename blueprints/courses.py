@@ -1,6 +1,9 @@
+import os
+from datetime import datetime
 from flask import Blueprint, request, jsonify, abort
 from flask_login import login_required, current_user
-from models import db, Course, AcademicYear, UserRole, Link
+from werkzeug.utils import secure_filename
+from models import db, Course, AcademicYear, UserRole, Link, File
 from helpers import sanitize_text, is_valid_color, is_valid_class_code, generate_class_code, get_courses_for_user, format_course_data
 
 courses_bp = Blueprint('courses', __name__, url_prefix='/api')
@@ -154,3 +157,79 @@ def api_create_link(course_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({'success': False, 'message': f'Terjadi kesalahan server: {e}'}), 500
+
+
+@courses_bp.route('/courses/<int:course_id>/files', methods=['POST'])
+@login_required
+def api_create_file(course_id):
+    if current_user.role != UserRole.GURU:
+        return jsonify({'success': False, 'message': 'Hanya guru yang dapat mengunggah file'}), 403
+
+    course = db.session.get(Course, course_id)
+    if not course:
+        return jsonify({'success': False, 'message': 'Mata pelajaran tidak ditemukan'}), 404
+
+    if course.teacher_id != current_user.id:
+        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin untuk mengunggah file di mata pelajaran ini'}), 403
+
+    if 'file' not in request.files:
+        return jsonify({'success': False, 'message': 'Tidak ada file yang diunggah'}), 400
+
+    file = request.files['file']
+    name = request.form.get('name', '').strip()
+    description = request.form.get('description', '').strip()
+    start_date_str = request.form.get('start_date')
+    end_date_str = request.form.get('end_date')
+
+    if not name:
+        return jsonify({'success': False, 'message': 'Nama file wajib diisi'}), 400
+    
+    if file.filename == '':
+        return jsonify({'success': False, 'message': 'Tidak ada file yang dipilih'}), 400
+
+    start_date = None
+    if start_date_str:
+        try:
+            start_date = datetime.fromisoformat(start_date_str)
+        except ValueError:
+            return jsonify({'success': False, 'message': 'Format tanggal mulai tidak valid'}), 400
+
+    end_date = None
+    if end_date_str:
+        try:
+            end_date = datetime.fromisoformat(end_date_str)
+        except ValueError:
+            return jsonify({'success': False, 'message': 'Format tanggal selesai tidak valid'}), 400
+
+    if file:
+        filename = secure_filename(file.filename)
+        upload_folder = os.path.join(os.getcwd(), 'instance', 'uploads', str(course_id))
+        os.makedirs(upload_folder, exist_ok=True)
+        file_path = os.path.join(upload_folder, filename)
+        file.save(file_path)
+
+        new_file = File(
+            name=name,
+            description=description,
+            filename=filename,
+            course_id=course_id,
+            start_date=start_date,
+            end_date=end_date
+        )
+        db.session.add(new_file)
+        db.session.commit()
+
+        return jsonify({
+            'success': True,
+            'file': {
+                'id': new_file.id,
+                'name': new_file.name,
+                'description': new_file.description,
+                'filename': new_file.filename,
+                'course_id': new_file.course_id,
+                'start_date': new_file.start_date.isoformat() if new_file.start_date else None,
+                'end_date': new_file.end_date.isoformat() if new_file.end_date else None,
+            }
+        }), 201
+
+    return jsonify({'success': False, 'message': 'Terjadi kesalahan saat mengunggah file'}), 500

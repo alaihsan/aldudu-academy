@@ -47,6 +47,11 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+    def __eq__(self, other):
+        if isinstance(other, User):
+            return self.id == other.id
+        return False
+
     def __repr__(self):
         return f'<User {self.name} ({self.role.value})>'
 
@@ -79,32 +84,27 @@ class Course(db.Model):
     students = db.relationship('User', secondary=enrollments, lazy='subquery', back_populates='courses_enrolled')
 
     quizzes = db.relationship('Quiz', back_populates='course', lazy='dynamic', cascade='all, delete-orphan')
+    links = db.relationship('Link', back_populates='course', lazy='dynamic', cascade='all, delete-orphan')
+    files = db.relationship('File', back_populates='course', lazy='dynamic', cascade='all, delete-orphan')
     
     def __repr__(self):
         return f'<Course {self.name}>'
     
 class Quiz(db.Model):
     __tablename__ = 'quizzes'
-
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200), nullable=False)
-    course_id = db.Column(db.Integer, db.ForeignKey('courses.id'), nullable=False, index=True)
-
-    # --- KOLOM BARU YANG DITAMBAHKAN ---
-    start_date = db.Column(db.DateTime, nullable=True)
-    end_date = db.Column(db.DateTime, nullable=True)
-    points = db.Column(db.Integer, nullable=False, default=100)
-    grading_category = db.Column(db.String(100), nullable=True)
-    grade_type = db.Column(db.Enum(GradeType), nullable=False, default=GradeType.NUMERIC)
-    # --- AKHIR KOLOM BARU ---
-
-    # Relasi ke Course
+    course_id = db.Column(db.Integer, db.ForeignKey('courses.id'), nullable=False)
     course = db.relationship('Course', back_populates='quizzes')
-    # Relasi ke Questions
-    questions = db.relationship('Question', back_populates='quiz', lazy='dynamic', cascade='all, delete-orphan')
-
-    def __repr__(self):
-        return f'<Quiz {self.name}>'
+    # ... existing fields ...
+    grade_type = db.Column(db.Enum(GradeType), nullable=False, default=GradeType.NUMERIC)
+    grading_category = db.Column(db.String(100))
+    due_start = db.Column(db.DateTime)
+    due_finish = db.Column(db.DateTime)
+    points = db.Column(db.Integer, default=100)
+    questions = db.relationship('Question', back_populates='quiz', lazy='dynamic', cascade="all, delete-orphan")
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow, nullable=False)
+    updated_at = db.Column(db.DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow, nullable=False)
 
 class Question(db.Model):
     __tablename__ = 'questions'
@@ -155,8 +155,26 @@ class Link(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     # Relasi ke Course
-    course = db.relationship('Course', backref='links')
+    course = db.relationship('Course', back_populates='links')
 
     def __repr__(self):
         return f'<Link {self.name}>'
+
+
+class File(db.Model):
+    __tablename__ = 'files'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    filename = db.Column(db.String(200), nullable=False)
+    course_id = db.Column(db.Integer, db.ForeignKey('courses.id'), nullable=False, index=True)
+    start_date = db.Column(db.DateTime, nullable=True)
+    end_date = db.Column(db.DateTime, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+    course = db.relationship('Course', back_populates='files')
+
+    def __repr__(self):
+        return f'<File {self.name}>'
 
