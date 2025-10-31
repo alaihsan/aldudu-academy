@@ -8,15 +8,15 @@
 </head>
 <body>
     <div id="recovery-banner" class="recovery-banner" style="display: none;">
-        <p>You have unsaved changes. Would you like to restore them?</p>
-        <button id="restore-btn">Restore Progress</button>
-        <button id="discard-btn">Discard</button>
+        <p>Anda memiliki perubahan yang belum disimpan. Apakah Anda ingin memulihkannya?</p>
+        <button id="restore-btn">Pulihkan</button>
+        <button id="discard-btn">Buang</button>
     </div>
     <div class="container" data-quiz-id="{{ quiz.id }}" data-course-id="{{ quiz.course_id }}">
         <h1>{{ quiz.name }}</h1>
         <div id="quiz-container"></div>
-        <button id="add-question-btn">Add Question</button>
-        <button id="save-quiz-btn">Save Quiz</button>
+        <button id="add-question-btn">Tambah Pertanyaan</button>
+        <button id="save-quiz-btn">Simpan Kuis</button>
     </div>
     <script src="{{ url_for('static', filename='quiz_editor.js') }}"></script>
 </body>

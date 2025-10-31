@@ -62,17 +62,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const questionTypes = {
         'multiple_choice': {
-            text: 'Multiple Choice',
-            defaultOptions: [{ text: 'Option 1' }],
+            text: 'Pilihan Ganda',
+            defaultOptions: [{ text: 'Opsi 1' }],
             defaultAnswer: []
         },
         'true_false': {
-            text: 'True/False',
-            defaultOptions: [{ text: 'True' }, { text: 'False' }],
+            text: 'Benar/Salah',
+            defaultOptions: [{ text: 'Benar' }, { text: 'Salah' }],
             defaultAnswer: ''
         },
-        'short_answer': {
-            text: 'Short Answer',
+        'long_text': {
+            text: 'Jawaban Panjang',
             defaultOptions: [],
             defaultAnswer: ''
         }
@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const deleteQuestionBtn = document.createElement('button');
         deleteQuestionBtn.className = 'delete-question-btn';
-        deleteQuestionBtn.textContent = 'Delete';
+        deleteQuestionBtn.textContent = 'Hapus';
         deleteQuestionBtn.addEventListener('click', () => {
             questionWrapper.classList.add('deleting');
             questionWrapper.addEventListener('animationend', () => {
@@ -211,27 +211,28 @@ document.addEventListener('DOMContentLoaded', () => {
             if (question.type === 'multiple_choice') {
                 const addOptionBtn = document.createElement('button');
                 addOptionBtn.className = 'add-option-btn';
-                addOptionBtn.textContent = 'Add Option';
+                addOptionBtn.textContent = 'Tambah Opsi';
                 addOptionBtn.addEventListener('click', () => {
-                    quizData[index].options.push({ text: `Option ${quizData[index].options.length + 1}` });
+                    quizData[index].options.push({ text: `Opsi ${quizData[index].options.length + 1}` });
                     renderQuiz();
                     saveToLocalStorage();
                     debouncedAutosave();
                 });
                 optionsContainer.appendChild(addOptionBtn);
             }
-        } else if (question.type === 'short_answer') {
-            const answerInput = document.createElement('input');
-            answerInput.type = 'text';
-            answerInput.className = 'short-answer-input';
-            answerInput.placeholder = 'Correct Answer';
-            answerInput.value = question.answer || '';
-            answerInput.addEventListener('input', (e) => {
-                quizData[index].answer = e.target.value;
+        } else if (question.type === 'long_text') {
+            const descriptionTextarea = document.createElement('textarea');
+            descriptionTextarea.className = 'long-text-description';
+            descriptionTextarea.placeholder = 'Masukkan deskripsi untuk pertanyaan jawaban panjang...';
+            descriptionTextarea.value = question.description || '';
+            descriptionTextarea.rows = 4;
+            descriptionTextarea.maxLength = 1000;
+            descriptionTextarea.addEventListener('input', (e) => {
+                quizData[index].description = e.target.value;
                 saveToLocalStorage();
                 debouncedAutosave();
             });
-            optionsContainer.appendChild(answerInput);
+            optionsContainer.appendChild(descriptionTextarea);
         }
 
         questionWrapper.appendChild(questionHeader);
@@ -256,7 +257,7 @@ document.addEventListener('DOMContentLoaded', () => {
         quizData.push({
             type: 'multiple_choice',
             text: '',
-            options: [{ text: 'Option 1' }],
+            options: [{ text: 'Opsi 1' }],
             answer: []
         });
         renderQuiz();
@@ -267,9 +268,9 @@ document.addEventListener('DOMContentLoaded', () => {
     saveQuizBtn.addEventListener('click', async () => {
         try {
             await autosave();
-            alert('Quiz saved successfully!');
+            alert('Kuis berhasil disimpan!');
         } catch (error) {
-            alert('Failed to save quiz.');
+            alert('Gagal menyimpan kuis.');
         }
     });
 
@@ -284,7 +285,7 @@ document.addEventListener('DOMContentLoaded', () => {
             quizData.push({
                 type: 'multiple_choice',
                 text: '',
-                options: [{ text: 'Option 1' }],
+                options: [{ text: 'Opsi 1' }],
                 answer: []
             });
         }
