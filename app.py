@@ -42,6 +42,10 @@ def create_app(test_config: Optional[Dict] = None):
         # --- PERBAIKAN: Mengembalikan 'raise ValueError' agar HANYA Postgres yang didukung ---
         raise ValueError("DATABASE_URL environment variable is not set. "
                          "Please set it to your PostgreSQL connection string.")
+
+    db_host = os.environ.get('DB_HOST')
+    if db_host:
+        database_url = database_url.replace('127.0.0.1', db_host)
         
     app.config['SQLALCHEMY_DATABASE_URI'] = database_url
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False

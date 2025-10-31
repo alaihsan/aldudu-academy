@@ -1,12 +1,15 @@
-version: '3.8'
 services:
   web:
-    build: .
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
     image: aldudu-academy:latest
     restart: always
     environment:
+      - FLASK_APP=app.py
       - DATABASE_URL=${DATABASE_URL}
       - FLASK_SECRET_KEY=${FLASK_SECRET_KEY}
+      - DB_HOST=db
     ports:
       - "8000:8000"
     depends_on:

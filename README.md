@@ -94,44 +94,54 @@ Aplikasi sekarang akan berjalan di http://127.0.0.1:5000. Anda bisa login menggu
     Murid: murid@aldudu.com (password: 123)
 
 
-Deployment dengan Docker
+Deployment dengan Docker (Production-like Local Setup)
 
-Untuk menjalankan aplikasi menggunakan Docker Compose (direkomendasikan untuk lingkungan produksi atau simulasi produksi lokal), ikuti langkah-langkah berikut:
+Untuk menjalankan aplikasi menggunakan Docker, yang menyimulasikan lingkungan produksi, ikuti langkah-langkah berikut:
 
-1.  Prasyarat: Pastikan Anda telah menginstal Docker Desktop atau Docker Engine di sistem Anda.
+1.  **Prasyarat**: Pastikan Anda telah menginstal Docker Desktop atau Docker Engine.
 
-2.  Konfigurasi Environment Variables:
-    Aplikasi membutuhkan variabel lingkungan `DATABASE_URL` dan `FLASK_SECRET_KEY`. Anda dapat membuat file `.env` di root proyek Anda (sejajar dengan `app.py`) atau merujuk pada `deploy/.env.example` untuk contoh.
-
-    Contoh `.env`:
-    ```
-    DATABASE_URL="postgresql://user:password@host:port/database_name"
-    FLASK_SECRET_KEY="your_super_secret_key_here"
-    ```
-
-3.  Bangun dan Jalankan Kontainer Docker:
-    Perintah ini akan membangun image Docker untuk aplikasi web dan memulai semua layanan yang didefinisikan dalam `docker-compose.prod.yml` di latar belakang.
+2.  **Buat File Environment (`.env`)**:
+    Konfigurasi aplikasi, seperti koneksi database dan secret key, dikelola melalui environment variables. Salin contoh file environment dan sesuaikan jika perlu.
 
     ```bash
-    docker compose -f deploy/docker-compose.prod.yml up -d --build
+    cp deploy/.env.example .env
     ```
+    *Catatan: Nilai default di `.env` sudah dikonfigurasi untuk berjalan dengan Docker Compose di lingkungan lokal. Anda tidak perlu mengubahnya untuk memulai.*
 
-4.  Jalankan Migrasi Database:
-    Setelah kontainer berjalan, terapkan migrasi database di dalam kontainer `web`.
+3.  **Bangun dan Jalankan Kontainer**:
+    Perintah ini akan membangun image Docker, membuat ulang kontainer untuk memastikan konfigurasi terbaru diterapkan, dan menjalankannya di latar belakang.
 
     ```bash
-    docker compose -f deploy/docker-compose.prod.yml exec -T web .venv/bin/python -m flask db upgrade
+    docker compose -f deploy/docker-compose.prod.yml up -d --build --force-recreate
     ```
 
-5.  Lihat Log Aplikasi (Opsional):
+4.  **Jalankan Migrasi Database**:
+    Setelah kontainer berjalan, terapkan skema database di dalam kontainer `web`.
+
+    ```bash
+    docker compose -f deploy/docker-compose.prod.yml exec web flask db upgrade
+    ```
+
+5.  **Isi Database dengan Data Awal (Seed)**:
+    Jalankan perintah ini untuk mengisi database dengan data contoh, termasuk akun guru dan murid.
+
+    ```bash
+    docker compose -f deploy/docker-compose.prod.yml exec web flask init-db
+    ```
+
+6.  **Akses Aplikasi**:
+    Aplikasi sekarang akan tersedia di browser Anda pada `http://localhost:8000`.
+
+    Anda bisa login menggunakan akun contoh:
+    -   **Guru**: `guru@aldudu.com` (password: `123`)
+    -   **Murid**: `murid@aldudu.com` (password: `123`)
+
+7.  **Lihat Log Aplikasi (Opsional)**:
     Untuk melihat log dari layanan `web` secara real-time:
 
     ```bash
     docker compose -f deploy/docker-compose.prod.yml logs -f web
     ```
-
-6.  Akses Aplikasi:
-    Aplikasi akan tersedia di browser Anda pada `http://localhost:8000`.
 
 Keamanan: menyimpan SECRET_KEY
 --------------------------------
