@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 import enum
+import datetime
 
 db = SQLAlchemy()
 
@@ -143,4 +144,19 @@ class Option(db.Model):
 
     def __repr__(self):
         return f'<Option {self.option_text}>'
+
+class Link(db.Model):
+    __tablename__ = 'links'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False)
+    url = db.Column(db.String(500), nullable=False)
+    course_id = db.Column(db.Integer, db.ForeignKey('courses.id'), nullable=False, index=True)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+    # Relasi ke Course
+    course = db.relationship('Course', backref='links')
+
+    def __repr__(self):
+        return f'<Link {self.name}>'
 

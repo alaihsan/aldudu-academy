@@ -4,8 +4,8 @@ from flask import Blueprint, render_template, redirect, url_for, abort
 from flask_login import login_required, current_user
 # --- PERBAIKAN: Tambahkan impor QuestionType dan model lain ---
 from models import (
-    db, Course, Quiz, Question, Option, 
-    QuestionType, GradeType, UserRole
+    db, Course, Quiz, Question, Option,
+    QuestionType, GradeType, UserRole, Link
 )
 
 
@@ -39,14 +39,29 @@ def course_detail(course_id):
     is_teacher = (current_user.id == course.teacher_id)
     
     # Kirim variabel is_teacher dan semua kuis ke template
-    quizzes = course.quizzes.order_by(Quiz.id.desc()).all()
+    quizzes = Quiz.query.filter_by(course_id=course.id).order_by(Quiz.id.desc()).all()
+    links = Link.query.filter_by(course_id=course.id).order_by(Link.created_at.desc()).all()
+    topics = []
+    for quiz in quizzes:
+        topics.append({
+            'id': quiz.id,
+            'name': quiz.name,
+            'type': 'Kuis',
+            'url': url_for('main.quiz_detail', quiz_id=quiz.id)
+        })
+    for link in links:
+        topics.append({
+            'id': link.id,
+            'name': link.name,
+            'type': 'Link',
+            'url': link.url
+        })
     
     return render_template(
-# ... existing code ...
         'course_detail.html', 
         course=course, 
         is_teacher=is_teacher,
-        quizzes=quizzes
+        topics=topics
     )
 
 @main_bp.route('/quiz/<int:quiz_id>')

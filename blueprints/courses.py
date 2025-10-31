@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, abort
 from flask_login import login_required, current_user
-from models import db, Course, AcademicYear, UserRole
+from models import db, Course, AcademicYear, UserRole, Link
 from helpers import sanitize_text, is_valid_color, is_valid_class_code, generate_class_code, get_courses_for_user, format_course_data
 
 courses_bp = Blueprint('courses', __name__, url_prefix='/api')
@@ -92,3 +92,65 @@ def api_enroll_in_course():
     current_user.courses_enrolled.append(course_to_join)
     db.session.commit()
     return jsonify({'success': True, 'message': f'Anda berhasil bergabung dengan kelas {course_to_join.name}', 'course': format_course_data(course_to_join, current_user)})
+
+
+@courses_bp.route('/courses/<int:course_id>/links', methods=['POST'])
+@login_required
+def api_create_link(course_id):
+    """
+    Membuat link baru untuk sebuah mata pelajaran.
+    Hanya guru yang mengajar mata pelajaran tersebut yang bisa mengakses.
+    """
+
+    # 1. Validasi: Hanya guru yang bisa membuat link
+    if current_user.role != UserRole.GURU:
+        return jsonify({'success': False, 'message': 'Hanya guru yang dapat membuat link'}), 403
+
+    # 2. Validasi: Temukan mata pelajarannya
+    course = db.session.get(Course, course_id)
+    if not course:
+        return jsonify({'success': False, 'message': 'Mata pelajaran tidak ditemukan'}), 404
+
+    # 3. Validasi Keamanan: Pastikan guru ini adalah pemilik mata pelajaran
+    if course.teacher_id != current_user.id:
+        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin untuk menambah link di mata pelajaran ini'}), 403
+
+    # 4. Ambil dan bersihkan data input
+    data = request.get_json() or {}
+    name = sanitize_text(data.get('name', ''), max_len=200)
+    url = data.get('url', '').strip()
+
+    if not name:
+        return jsonify({'success': False, 'message': 'Nama link wajib diisi'}), 400
+
+    if not url:
+        return jsonify({'success': False, 'message': 'URL link wajib diisi'}), 400
+
+    # Basic URL validation
+    if not url.startswith(('http://', 'https://')):
+        return jsonify({'success': False, 'message': 'URL harus dimulai dengan http:// atau https://'}), 400
+
+    # 5. Buat link di database
+    try:
+        new_link = Link(
+            name=name,
+            url=url,
+            course_id=course_id
+        )
+        db.session.add(new_link)
+        db.session.commit()
+
+        # 6. Kembalikan data link yang baru dibuat
+        return jsonify({
+            'success': True,
+            'link': {
+                'id': new_link.id,
+                'name': new_link.name,
+                'url': new_link.url,
+                'course_id': new_link.course_id
+            }
+        }), 201
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': f'Terjadi kesalahan server: {e}'}), 500
