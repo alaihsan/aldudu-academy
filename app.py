@@ -93,9 +93,9 @@ def create_app(test_config: Optional[Dict] = None):
         # --- PERBAIKAN: Import models & helper HANYA di sini ---
         from models import User, AcademicYear, Course, UserRole
         from helpers import generate_class_code
-        
+
         with app.app_context():
-            db.drop_all()
+            # db.drop_all()  # Commented out to avoid error on new sqlite db
             db.create_all()
             guru = User(name='Bapak Budi', email='guru@aldudu.com', role=UserRole.GURU)
             guru.set_password('123')
