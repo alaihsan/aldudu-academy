@@ -135,6 +135,18 @@ document.addEventListener('DOMContentLoaded', function() {
         if (target.classList.contains('like-btn')) {
             const postCard = target.closest('[data-post-id]');
             const postId = postCard.dataset.postId;
+            const likeBtn = target;
+            const isLiked = likeBtn.style.color === 'var(--danger-color)';
+            const currentCount = parseInt(likeBtn.textContent.replace('❤️ ', ''));
+
+            // Optimistic update
+            if (isLiked) {
+                likeBtn.style.color = 'var(--text-secondary-color)';
+                likeBtn.textContent = `❤️ ${currentCount - 1}`;
+            } else {
+                likeBtn.style.color = 'var(--danger-color)';
+                likeBtn.textContent = `❤️ ${currentCount + 1}`;
+            }
 
             try {
                 const response = await fetch(`/api/posts/${postId}/like`, {
@@ -143,10 +155,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 const data = await response.json();
 
-                if (data.success) {
-                    fetchPosts();
+                if (!data.success) {
+                    // Revert optimistic update on failure
+                    if (isLiked) {
+                        likeBtn.style.color = 'var(--danger-color)';
+                        likeBtn.textContent = `❤️ ${currentCount}`;
+                    } else {
+                        likeBtn.style.color = 'var(--text-secondary-color)';
+                        likeBtn.textContent = `❤️ ${currentCount}`;
+                    }
+                    alert(data.message || 'Gagal memberikan like.');
                 }
             } catch (error) {
+                // Revert optimistic update on error
+                if (isLiked) {
+                    likeBtn.style.color = 'var(--danger-color)';
+                    likeBtn.textContent = `❤️ ${currentCount}`;
+                } else {
+                    likeBtn.style.color = 'var(--text-secondary-color)';
+                    likeBtn.textContent = `❤️ ${currentCount}`;
+                }
                 alert('Terjadi kesalahan saat memberikan like.');
             }
         }

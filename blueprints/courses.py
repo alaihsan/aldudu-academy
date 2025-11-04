@@ -289,6 +289,20 @@ def get_discussions(course_id):
     return jsonify({'success': True, 'discussions': [d.to_dict() for d in discussions]})
 
 
+@courses_bp.route('/discussions/<int:discussion_id>/posts', methods=['GET'])
+@login_required
+def get_posts(discussion_id):
+    discussion = db.session.get(Discussion, discussion_id)
+    if not discussion:
+        return jsonify({'success': False, 'message': 'Diskusi tidak ditemukan'}), 404
+
+    if current_user.role != UserRole.GURU and current_user not in discussion.course.students:
+        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin untuk melihat diskusi ini'}), 403
+
+    posts = Post.query.filter_by(discussion_id=discussion_id).order_by(Post.created_at.asc()).all()
+    return jsonify({'success': True, 'posts': [p.to_dict() for p in posts]})
+
+
 @courses_bp.route('/discussions/<int:discussion_id>/posts', methods=['POST'])
 @login_required
 def add_post(discussion_id):

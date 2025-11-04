@@ -1480,6 +1480,9 @@ input[type="radio"] {
     color: var(--text-secondary-color);
     background-color: var(--surface-color);
     border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
 }
 
 .quiz-icon {
