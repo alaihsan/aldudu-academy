@@ -97,38 +97,77 @@ def create_app(test_config: Optional[Dict] = None):
         with app.app_context():
             # db.drop_all()  # Commented out to avoid error on new sqlite db
             db.create_all()
-            guru = User(name='Bapak Budi', email='guru@aldudu.com', role=UserRole.GURU)
-            guru.set_password('123')
-            murid = User(name='Siti Murid', email='murid@aldudu.com', role=UserRole.MURID)
-            murid.set_password('123')
-            ay1 = AcademicYear(year='2025/2026', is_active=True)
-            ay2 = AcademicYear(year='2024/2023')
-            db.session.add_all([guru, murid, ay1, ay2])
+
+            # Check and create users if they don't exist
+            guru = User.query.filter_by(email='guru@aldudu.com').first()
+            if not guru:
+                guru = User(name='Bapak Budi', email='guru@aldudu.com', role=UserRole.GURU)
+                guru.set_password('123')
+                db.session.add(guru)
+
+            murid = User.query.filter_by(email='murid@aldudu.com').first()
+            if not murid:
+                murid = User(name='Siti Murid', email='murid@aldudu.com', role=UserRole.MURID)
+                murid.set_password('123')
+                db.session.add(murid)
+
+            # Check and create academic years if they don't exist
+            ay1 = AcademicYear.query.filter_by(year='2025/2026').first()
+            if not ay1:
+                ay1 = AcademicYear(year='2025/2026', is_active=True)
+                db.session.add(ay1)
+
+            ay2 = AcademicYear.query.filter_by(year='2024/2023').first()
+            if not ay2:
+                ay2 = AcademicYear(year='2024/2023')
+                db.session.add(ay2)
+
             db.session.commit()
 
-            course1 = Course(
-                name='Matematika XI-A',
-                academic_year_id=ay1.id,
-                teacher_id=guru.id,
-                class_code=generate_class_code(),
-                color='#0ea5e9',
-            )
-            course2 = Course(
-                name='Biologi XI-A',
-                academic_year_id=ay1.id,
-                teacher_id=guru.id,
-                class_code=generate_class_code(),
-                color='#10b981',
-            )
-            course3 = Course(
-                name='Sejarah X-B',
-                academic_year_id=ay2.id,
-                teacher_id=guru.id,
-                class_code=generate_class_code(),
-                color='#f97316',
-            )
-            db.session.add_all([course1, course2, course3])
-            murid.courses_enrolled.append(course3)
+            # Ensure ay1 and ay2 have ids after commit
+            if not ay1.id:
+                ay1 = AcademicYear.query.filter_by(year='2025/2026').first()
+            if not ay2.id:
+                ay2 = AcademicYear.query.filter_by(year='2024/2023').first()
+
+            # Check and create courses if they don't exist
+            course1 = Course.query.filter_by(name='Matematika XI-A').first()
+            if not course1:
+                course1 = Course(
+                    name='Matematika XI-A',
+                    academic_year_id=ay1.id,
+                    teacher_id=guru.id,
+                    class_code=generate_class_code(),
+                    color='#0ea5e9',
+                )
+                db.session.add(course1)
+
+            course2 = Course.query.filter_by(name='Biologi XI-A').first()
+            if not course2:
+                course2 = Course(
+                    name='Biologi XI-A',
+                    academic_year_id=ay1.id,
+                    teacher_id=guru.id,
+                    class_code=generate_class_code(),
+                    color='#10b981',
+                )
+                db.session.add(course2)
+
+            course3 = Course.query.filter_by(name='Sejarah X-B').first()
+            if not course3:
+                course3 = Course(
+                    name='Sejarah X-B',
+                    academic_year_id=ay2.id,
+                    teacher_id=guru.id,
+                    class_code=generate_class_code(),
+                    color='#f97316',
+                )
+                db.session.add(course3)
+
+            # Enroll murid in course3 if not already enrolled
+            if course3 not in murid.courses_enrolled:
+                murid.courses_enrolled.append(course3)
+
             db.session.commit()
             print('Initialized the database and added sample data.')
 
