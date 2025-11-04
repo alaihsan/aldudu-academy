@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ discussion.title }} - {{ course.name }} - Aldudu Academy</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body data-user-id="{{ current_user.id }}">
+
+    <div id="app-page">
+        <header class="app-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <a href="{{ url_for('main.course_detail', course_id=course.id) }}" class="header-logo">← Kembali ke {{ course.name }}</a>
+                </div>
+                <div class="header-right">
+                    <a href="{{ url_for('main.dashboard') }}" class="btn-link">Kembali ke Dasbor</a>
+                </div>
+            </div>
+        </header>
+
+        <main class="container">
+            <h1 class="content-title">{{ discussion.title }}</h1>
+
+            <div class="discussion-details">
+                <p><strong>Oleh:</strong> {{ discussion.user.name }}</p>
+                <p><strong>Dibuat pada:</strong> {{ discussion.created_at.strftime('%d %B %Y, %H:%M') }}</p>
+                {% if discussion.closed %}
+                <p><strong>Status:</strong> <span style="color: var(--danger-color);">Diskusi Ditutup</span></p>
+                {% else %}
+                <p><strong>Status:</strong> <span style="color: var(--success-color);">Aktif</span></p>
+                {% endif %}
+            </div>
+
+            <hr style="margin: 2rem 0;">
+
+            <div id="posts-container">
+                <!-- Posts will be loaded here -->
+            </div>
+
+            {% if discussion.closed %}
+            <div class="reply-section" style="margin-top: 2rem; padding: 1rem; background-color: var(--background-color); border-radius: var(--radius-md);">
+                <p style="color: var(--text-secondary-color); margin: 0;">Diskusi ini telah ditutup. Anda masih dapat melihat semua balasan yang ada.</p>
+            </div>
+            {% else %}
+            <div class="reply-section" style="margin-top: 2rem;">
+                <h3>Tambah Balasan</h3>
+                <form id="reply-form">
+                    <div class="form-group">
+                        <textarea id="reply-content" class="form-input" rows="4" placeholder="Tulis balasan Anda..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Kirim Balasan</button>
+                </form>
+            </div>
+            {% endif %}
+
+            {% if is_teacher and not discussion.closed %}
+            <div style="margin-top: 2rem;">
+                <button id="close-discussion-btn" class="btn btn-secondary">Tutup Diskusi</button>
+            </div>
+            {% endif %}
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/discussion_detail.js') }}"></script>
+
+</body>
+</html>

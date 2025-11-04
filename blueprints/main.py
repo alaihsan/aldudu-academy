@@ -8,7 +8,7 @@ from flask_login import login_required, current_user
 from models import (
     db, Course, Quiz, Question, Option,
     QuestionType, GradeType, UserRole, Link, File,
-    QuizSubmission, Answer
+    QuizSubmission, Answer, Discussion
 )
 
 
@@ -164,3 +164,21 @@ def serve_question_image(course_id, filename):
 
     upload_folder = os.path.join(os.getcwd(), 'instance', 'uploads', str(course_id))
     return send_from_directory(upload_folder, filename, as_attachment=False)
+
+
+@main_bp.route('/kelas/<int:course_id>/diskusi/<int:discussion_id>')
+@login_required
+def discussion_detail(course_id, discussion_id):
+    course = db.session.get(Course, course_id)
+    if course is None:
+        abort(404)
+
+    discussion = db.session.get(Discussion, discussion_id)
+    if discussion is None or discussion.course_id != course_id:
+        abort(404)
+
+    is_teacher = (current_user.id == course.teacher_id)
+    if not is_teacher and current_user not in course.students:
+        abort(403)
+
+    return render_template('discussion_detail.html', course=course, discussion=discussion, is_teacher=is_teacher)

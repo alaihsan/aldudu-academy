@@ -70,27 +70,25 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function renderDiscussions(discussions) {
         if (discussions.length === 0) {
-            discussionsContainer.innerHTML = '<p>Belum ada diskusi di kelas ini.</p>';
+            discussionsContainer.innerHTML = '<p class="no-content-message">Belum ada diskusi di kelas ini.</p>';
             return;
         }
 
         discussionsContainer.innerHTML = discussions.map(discussion => `
-            <div class="discussion-card" data-discussion-id="${discussion.id}">
-                <h3>${discussion.title}</h3>
-                <p>Oleh: ${discussion.user.name} pada ${new Date(discussion.created_at).toLocaleString()}</p>
-                ${discussion.closed ? 
-                    `<p><b>Diskusi ditutup</b></p>
-                    <p>Total Respon: ${discussion.posts.length - 1}</p>
-                    <p>Total Like: ${discussion.posts.reduce((acc, post) => acc + post.likes.length, 0)}</p>`
-                    : ''}
-                <div class="posts-container">${renderPosts(discussion.posts)}</div>
-                ${!discussion.closed ? `
-                    <form class="reply-form">
-                        <textarea placeholder="Tulis balasan..."></textarea>
-                        <button type="submit">Balas</button>
-                    </form>
-                ` : ''}
-                ${discussion.user.id === currentUserId && !discussion.closed ? `<button class="close-discussion-btn">Tutup Diskusi</button>` : ''}
+            <div class="topic-card">
+                <a href="/kelas/${courseId}/diskusi/${discussion.id}" class="topic-link">
+                    <div class="topic-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="dropdown-item-icon">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193l-3.722.06c-.247.007-.48.057-.7.144a4.5 4.5 0 01-2.586 0c-.22-.087-.453-.137-.7-.144l-3.722-.06c-1.133-.093-1.98-1.057-1.98-2.193V10.608c0-.97.616-1.813 1.5-2.097m14.25-6.118c-.228.06-.447.11-.66.162a4.5 4.5 0 00-2.586 0c-.213-.051-.432-.102-.66-.162m14.25 6.118A4.491 4.491 0 0018 10.5c-1.052 0-2.062.18-3 .512a4.5 4.5 0 00-2.586 0c-.938-.333-1.948-.512-3-.512-1.052 0-2.062.18-3 .512a4.5 4.5 0 00-2.586 0c-.938-.333-1.948-.512-3-.512A4.491 4.491 0 001.5 10.5c0 .97.616 1.813 1.5 2.097m14.25-6.118c-.228.06-.447.11-.66.162a4.5 4.5 0 00-2.586 0c-.213-.051-.432-.102-.66-.162" />
+                        </svg>
+                    </div>
+                    <div class="topic-info">
+                        <div class="topic-name">${discussion.title}</div>
+                        <div class="topic-details">
+                            <span>Diskusi</span>
+                        </div>
+                    </div>
+                </a>
             </div>
         `).join('');
     }
