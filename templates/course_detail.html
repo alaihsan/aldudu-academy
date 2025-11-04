@@ -6,7 +6,7 @@
     <title>{{ course.name }} - Aldudu Academy</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
+<body data-user-id="{{ current_user.id }}">
 
     <div id="app-page">
         <header class="app-header">
@@ -68,7 +68,7 @@
                                 </svg>
                                 <span>Add File</span>
                             </a>
-                            <a href="#" class="dropdown-item">
+                            <a href="#" id="show-create-discussion-modal" class="dropdown-item">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="dropdown-item-icon">
                                   <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193l-3.722.06c-.247.007-.48.057-.7.144a4.5 4.5 0 01-2.586 0c-.22-.087-.453-.137-.7-.144l-3.722-.06c-1.133-.093-1.98-1.057-1.98-2.193V10.608c0-.97.616-1.813 1.5-2.097m14.25-6.118c-.228.06-.447.11-.66.162a4.5 4.5 0 00-2.586 0c-.213-.051-.432-.102-.66-.162m14.25 6.118A4.491 4.491 0 0018 10.5c-1.052 0-2.062.18-3 .512a4.5 4.5 0 00-2.586 0c-.938-.333-1.948-.512-3-.512-1.052 0-2.062.18-3 .512a4.5 4.5 0 00-2.586 0c-.938-.333-1.948-.512-3-.512A4.491 4.491 0 001.5 10.5c0 .97.616 1.813 1.5 2.097m14.25-6.118c-.228.06-.447.11-.66.162a4.5 4.5 0 00-2.586 0c-.213-.051-.432-.102-.66-.162" />
                                 </svg>
@@ -127,6 +127,9 @@
                         <p class="no-content-message">Belum ada materi atau tugas di kelas ini.</p>
                     {% endif %}
                 </div>
+
+                <h2 style="font-size: 1.5rem; font-weight: 600; margin-top: 2rem; margin-bottom: 1rem;">Diskusi</h2>
+                <div id="discussions-container"></div>
 
 
 
@@ -282,7 +285,39 @@
     </div>
     </div>
 
+    <div id="create-discussion-modal" class="modal hidden">
+    <div class="modal-content">
+        <form id="create-discussion-form">
+            <div class="modal-header">
+                <h3>Buat Diskusi Baru</h3>
+                <p>Mulai topik diskusi baru di kelas ini.</p>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="form-group">
+                    <label for="discussion-title-input" class="form-label">Judul Diskusi</label>
+                    <input type="text" id="discussion-title-input" class="form-input" required placeholder="Contoh: Pertanyaan tentang Bab 3">
+                </div>
+
+                <div class="form-group">
+                    <label for="discussion-content-input" class="form-label">Isi Pertanyaan</label>
+                    <textarea id="discussion-content-input" class="form-input" rows="5" required placeholder="Tulis pertanyaan atau topik diskusi Anda di sini..."></textarea>
+                </div>
+
+                <div id="discussion-modal-error" class="form-error hidden"></div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" id="discussion-cancel-button" class="btn btn-secondary">Batal</button>
+                <button type="submit" class="btn btn-primary">Mulai Diskusi</button>
+            </div>
+        </form>
+    </div>
+    </div>
+
     <script src="{{ url_for('static', filename='js/course_detail.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/discussion.js') }}"></script>
 
 </body>
 </html>
