@@ -351,6 +351,23 @@ def like_post(post_id):
         return jsonify({'success': True, 'action': 'liked'})
 
 
+@courses_bp.route('/posts/<int:post_id>', methods=['DELETE'])
+@login_required
+def delete_post(post_id):
+    post = db.session.get(Post, post_id)
+    if not post:
+        return jsonify({'success': False, 'message': 'Post tidak ditemukan'}), 404
+
+    # Allow deletion if user is the post author or the discussion creator (teacher)
+    if current_user.id != post.user_id and current_user.id != post.discussion.user_id:
+        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin untuk menghapus post ini'}), 403
+
+    db.session.delete(post)
+    db.session.commit()
+
+    return jsonify({'success': True})
+
+
 @courses_bp.route('/discussions/<int:discussion_id>/close', methods=['POST'])
 @login_required
 def close_discussion(discussion_id):

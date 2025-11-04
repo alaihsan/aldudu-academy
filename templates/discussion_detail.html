@@ -6,7 +6,7 @@
     <title>{{ discussion.title }} - {{ course.name }} - Aldudu Academy</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body data-user-id="{{ current_user.id }}">
+<body data-user-id="{{ current_user.id }}" data-user-role="{{ current_user.role.value }}">
 
     <div id="app-page">
         <header class="app-header">
@@ -23,7 +23,7 @@
         <main class="container">
             <h1 class="content-title">{{ discussion.title }}</h1>
 
-            <div class="discussion-details">
+            <div class="discussion-details" data-creator-id="{{ discussion.user.id }}">
                 <p><strong>Oleh:</strong> {{ discussion.user.name }}</p>
                 <p><strong>Dibuat pada:</strong> {{ discussion.created_at.strftime('%d %B %Y, %H:%M') }}</p>
                 {% if discussion.closed %}
@@ -42,16 +42,6 @@
             {% if discussion.closed %}
             <div class="reply-section" style="margin-top: 2rem; padding: 1rem; background-color: var(--background-color); border-radius: var(--radius-md);">
                 <p style="color: var(--text-secondary-color); margin: 0;">Diskusi ini telah ditutup. Anda masih dapat melihat semua balasan yang ada.</p>
-            </div>
-            {% else %}
-            <div class="reply-section" style="margin-top: 2rem;">
-                <h3>Tambah Balasan</h3>
-                <form id="reply-form">
-                    <div class="form-group">
-                        <textarea id="reply-content" class="form-input" rows="4" placeholder="Tulis balasan Anda..." required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Kirim Balasan</button>
-                </form>
             </div>
             {% endif %}
 
