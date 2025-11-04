@@ -7,7 +7,8 @@ from flask_login import login_required, current_user
 # --- PERBAIKAN: Tambahkan impor QuestionType dan model lain ---
 from models import (
     db, Course, Quiz, Question, Option,
-    QuestionType, GradeType, UserRole, Link, File
+    QuestionType, GradeType, UserRole, Link, File,
+    QuizSubmission, Answer
 )
 
 
@@ -94,7 +95,7 @@ def quiz_detail(quiz_id):
 
     if is_teacher:
         # For teachers, render the editor
-        return render_template('quiz_editor.html', quiz=quiz)
+        return render_template('quiz_editor.html', quiz=quiz, QuestionType=QuestionType)
     else:
         # For students, render the detail/view page
         questions = quiz.questions.order_by(Question.order).all()
@@ -147,3 +148,19 @@ def serve_file(file_id):
 
     upload_folder = os.path.join(os.getcwd(), 'instance', 'uploads', str(course.id))
     return send_from_directory(upload_folder, file.filename, as_attachment=False)
+
+@main_bp.route('/uploads/<int:course_id>/<path:filename>')
+@login_required
+def serve_question_image(course_id, filename):
+    course = db.session.get(Course, course_id)
+    if course is None:
+        abort(404)
+
+    is_teacher = (current_user.id == course.teacher_id)
+    is_student = current_user in course.students
+
+    if not is_teacher and not is_student:
+        abort(403)
+
+    upload_folder = os.path.join(os.getcwd(), 'instance', 'uploads', str(course_id))
+    return send_from_directory(upload_folder, filename, as_attachment=False)

@@ -75,24 +75,26 @@ def main():
 
     # Step 1: run alembic upgrades on target
     env = os.environ.copy()
-    env['DATABASE_URL'] = pg_url
-    env['FLASK_APP'] = 'app'
+    env['DATABASE_URL'] = pg_url # This script sets the target DB for the upgrade
+    env['FLASK_APP'] = 'app:create_app' # Point to the app factory
     run_flask_db_upgrade(env)
 
     # Step 2: copy data
     src_engine = create_engine(sqlite_url)
     dst_engine = create_engine(pg_url)
 
-    tables_in_order = [
-        'users',
-        'academic_years',
-        'courses',
-        'enrollments',
-    ]
+    # Reflect the entire schema from the source DB
+    src_meta = MetaData()
+    src_meta.reflect(bind=src_engine)
+    
+    # Get tables in dependency order
+    tables_in_order = src_meta.sorted_tables
 
     try:
+        print("Will copy tables in this order:")
         for t in tables_in_order:
-            copy_table(src_engine, dst_engine, t)
+            print(f"- {t.name}")
+            copy_table(src_engine, dst_engine, t.name)
     except SQLAlchemyError as e:
         print('Migration failed:', e)
         sys.exit(1)

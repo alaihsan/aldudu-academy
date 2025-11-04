@@ -14,7 +14,7 @@
                        class="form-radio"
                        hx-post="{{ url_for('quiz.api_question_set_correct_option', question_id=question.id) }}"
                        hx-trigger="change"
-                       hx-swap="none"
+                       hx-indicator=".htmx-indicator"
                        {% if option.is_correct %}checked{% endif %}>
                 <label for="option-{{ option.id }}">{{ option.option_text }}</label>
             </div>
@@ -30,7 +30,7 @@
                       rows="4"
                       hx-post="{{ url_for('quiz.api_update_long_text_description', question_id=question.id) }}"
                       hx-trigger="blur"
-                      hx-swap="none">{{ question.description or '' }}</textarea>
+                      hx-indicator=".htmx-indicator">{{ question.description or '' }}</textarea>
             <small class="text-muted">Maximum 1000 characters</small>
         </div>
     {% endif %}
@@ -42,7 +42,8 @@
                 style="width: auto;"
                 hx-post="{{ url_for('quiz.api_add_option', question_id=question.id) }}"
                 hx-target="#option-list-{{ question.id }}"
-                hx-swap="beforeend">
+                hx-swap="beforeend"
+                hx-indicator=".htmx-indicator">
             + Tambah Opsi
         </button>
     </div>

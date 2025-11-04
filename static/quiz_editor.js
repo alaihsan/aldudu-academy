@@ -22,6 +22,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const savedData = localStorage.getItem(localStorageKey);
         if (savedData) {
             quizData = JSON.parse(savedData);
+            // Ensure image_path is present for older saved data
+            quizData.forEach(q => {
+                if (!q.hasOwnProperty('image_path')) {
+                    q.image_path = null;
+                }
+            });
             renderQuiz();
         }
     };
@@ -78,6 +84,53 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const uploadImage = async (questionId, file, imagePreviewElement, uploadProgressElement) => {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            uploadProgressElement.style.width = '0%';
+            uploadProgressElement.style.display = 'block';
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', `/api/question/${questionId}/image`);
+            xhr.upload.addEventListener('progress', (event) => {
+                if (event.lengthComputable) {
+                    const percent = (event.loaded / event.total) * 100;
+                    uploadProgressElement.style.width = `${percent}%`;
+                }
+            });
+            xhr.addEventListener('load', () => {
+                uploadProgressElement.style.display = 'none';
+                if (xhr.status === 200) {
+                    const response = JSON.parse(xhr.responseText);
+                    if (response.success) {
+                        imagePreviewElement.innerHTML = `<img src="${response.image_path}" alt="Question Image" class="question-image">`;
+                        const questionIndex = quizData.findIndex(q => q.id === questionId);
+                        if (questionIndex !== -1) {
+                            quizData[questionIndex].image_path = response.image_path.split('/').slice(2).join('/'); // Store relative path
+                            saveToLocalStorage();
+                            debouncedAutosave();
+                        }
+                    } else {
+                        alert(`Error uploading image: ${response.message}`);
+                    }
+                } else {
+                    alert(`Error uploading image: ${xhr.statusText}`);
+                }
+            });
+            xhr.addEventListener('error', () => {
+                uploadProgressElement.style.display = 'none';
+                alert('Error uploading image.');
+            });
+            xhr.send(formData);
+
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            alert('Error uploading image.');
+        }
+    };
+
     const createQuestionElement = (question, index) => {
         const questionWrapper = document.createElement('div');
         questionWrapper.className = 'question-wrapper';
@@ -99,6 +152,22 @@ document.addEventListener('DOMContentLoaded', () => {
             quizData[index].text = e.target.value;
             saveToLocalStorage();
             debouncedAutosave();
+        });
+
+        const addImageBtn = document.createElement('button');
+        addImageBtn.className = 'btn-icon';
+        addImageBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-image"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>';
+        addImageBtn.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.style.display = 'none';
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                uploadImage(question.id, e.target.files[0], imagePreview, uploadProgress);
+            }
         });
 
         const questionTypeSelector = document.createElement('select');
@@ -138,8 +207,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
         questionHeader.appendChild(questionNumber);
         questionHeader.appendChild(questionText);
+        questionHeader.appendChild(addImageBtn);
+        questionHeader.appendChild(fileInput);
         questionHeader.appendChild(questionTypeSelector);
         questionHeader.appendChild(deleteQuestionBtn);
+
+        const imagePreview = document.createElement('div');
+        imagePreview.className = 'image-preview-container';
+        if (question.image_path) {
+            const img = document.createElement('img');
+            img.src = `/uploads/${question.image_path}`;
+            img.alt = 'Question Image';
+            img.className = 'question-image';
+            imagePreview.appendChild(img);
+        }
+
+        const uploadProgress = document.createElement('div');
+        uploadProgress.className = 'upload-progress';
 
         const optionsContainer = document.createElement('div');
         optionsContainer.className = 'options-container';
@@ -236,6 +320,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         questionWrapper.appendChild(questionHeader);
+        questionWrapper.appendChild(imagePreview);
+        questionWrapper.appendChild(uploadProgress);
         questionWrapper.appendChild(optionsContainer);
         
         setTimeout(() => {
@@ -253,16 +339,35 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    addQuestionBtn.addEventListener('click', () => {
-        quizData.push({
-            type: 'multiple_choice',
-            text: '',
-            options: [{ text: 'Opsi 1' }],
-            answer: []
-        });
-        renderQuiz();
-        saveToLocalStorage();
-        debouncedAutosave();
+    addQuestionBtn.addEventListener('click', async () => {
+        try {
+            const response = await fetch(`/api/quiz/${quizId}/question/add-json`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to add a new question.');
+            }
+
+            const newQuestion = await response.json();
+            quizData.push({
+                id: newQuestion.id,
+                type: newQuestion.type,
+                text: newQuestion.text,
+                options: newQuestion.options,
+                answer: newQuestion.answer,
+                image_path: newQuestion.image_path || null
+            });
+            renderQuiz();
+            saveToLocalStorage();
+            debouncedAutosave();
+        } catch (error) {
+            console.error('Error adding question:', error);
+            alert('Gagal menambahkan pertanyaan baru.');
+        }
     });
 
     saveQuizBtn.addEventListener('click', async () => {
@@ -286,7 +391,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 type: 'multiple_choice',
                 text: '',
                 options: [{ text: 'Opsi 1' }],
-                answer: []
+                answer: [],
+                image_path: null
             });
         }
         renderQuiz();

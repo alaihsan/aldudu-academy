@@ -1,0 +1,96 @@
+<div class="question-card" data-question-id="{{ question.id }}" data-question-type="{{ question.question_type }}">
+    <div class="question-header">
+        <div class="question-number-badge">
+            <span class="question-number">{{ loop.index }}</span>
+        </div>
+        <div class="question-header-content">
+            <h3 class="question-title">Pertanyaan {{ loop.index }}</h3>
+            <div class="question-type-indicator">
+                {% if question.question_type == QuestionType.MULTIPLE_CHOICE %}
+                <span class="type-badge multiple-choice">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                    </svg>
+                    Pilihan Ganda
+                </span>
+                {% elif question.question_type == QuestionType.TRUE_FALSE %}
+                <span class="type-badge true-false">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.623 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+                    </svg>
+                    Benar/Salah
+                </span>
+                {% elif question.question_type == QuestionType.LONG_TEXT %}
+                <span class="type-badge long-text">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
+                    </svg>
+                    Teks Panjang
+                </span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% if question.image_path %}
+    <div class="question-image-container">
+        <img src="{{ url_for('main.serve_question_image', course_id=course.id, filename=question.image_path.split('/')[-1]) }}" alt="Question Image" class="question-image">
+    </div>
+    {% endif %}
+
+    <div class="question-content">
+        <div class="question-text-container">
+            <p class="question-text">{{ question.question_text }}</p>
+        </div>
+
+        {% if question.question_type == QuestionType.MULTIPLE_CHOICE %}
+            <div class="options-list multiple-choice-options">
+                {% for option in question.options|sort(attribute='order') %}
+                <label class="option-item multiple-choice-option">
+                    <div class="option-input-wrapper">
+                        <input type="radio" name="question_{{ question.id }}" value="{{ option.id }}" required>
+                        <div class="option-radio-custom"></div>
+                    </div>
+                    <div class="option-content">
+                        <span class="option-letter">{{ 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[loop.index0] }}.</span>
+                        <span class="option-text">{{ option.option_text }}</span>
+                    </div>
+                </label>
+                {% endfor %}
+            </div>
+        {% elif question.question_type == QuestionType.TRUE_FALSE %}
+            <div class="options-list true-false-options">
+                {% for option in question.options|sort(attribute='order') %}
+                <label class="option-item true-false-option">
+                    <div class="option-input-wrapper">
+                        <input type="radio" name="question_{{ question.id }}" value="{{ option.id }}" required>
+                        <div class="option-radio-custom"></div>
+                    </div>
+                    <div class="option-content">
+                        <span class="option-text">{{ option.option_text }}</span>
+                    </div>
+                </label>
+                {% endfor %}
+            </div>
+        {% elif question.question_type == QuestionType.LONG_TEXT %}
+            <div class="long-text-answer">
+                {% if question.description %}
+                <div class="question-description-card">
+                    <div class="description-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+                        </svg>
+                    </div>
+                    <p class="question-description">{{ question.description }}</p>
+                </div>
+                {% endif %}
+                <div class="textarea-wrapper">
+                    <textarea name="question_{{ question.id }}" class="form-textarea" rows="6" placeholder="Tulis jawaban Anda di sini..." maxlength="5000"></textarea>
+                    <div class="textarea-footer">
+                        <span class="character-count">0/5000 karakter</span>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>

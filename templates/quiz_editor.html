@@ -1,23 +1,50 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz Editor</title>
+    <title>Editor Kuis: {{ quiz.name }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='quiz_editor.css') }}">
+    <!-- Impor HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.6/dist/htmx.min.js"></script>
 </head>
 <body>
-    <div id="recovery-banner" class="recovery-banner" style="display: none;">
-        <p>Anda memiliki perubahan yang belum disimpan. Apakah Anda ingin memulihkannya?</p>
-        <button id="restore-btn">Pulihkan</button>
-        <button id="discard-btn">Buang</button>
+    <div class="container">
+        <h1>Editor Kuis: <strong>{{ quiz.name }}</strong></h1>
+        <p>Gunakan formulir di bawah ini untuk membuat dan mengedit pertanyaan untuk kuis Anda.</p>
+
+        <!-- Daftar Pertanyaan yang Ada -->
+        <div id="question-list">
+            {% for question in quiz.questions.order_by('order') %}
+                {% include '_question_form.html' %}
+            {% endfor %}
+        </div>
+
+        <!-- Tombol untuk Menambah Pertanyaan Baru -->
+        <div class="add-question-container">
+            <form 
+                hx-post="{{ url_for('quiz.api_add_question', quiz_id=quiz.id) }}"
+                hx-target="#question-list"
+                hx-swap="beforeend"
+                class="add-question-form">
+                
+                <select name="question_type" class="question-type-select">
+                    <option value="MULTIPLE_CHOICE">Pilihan Ganda</option>
+                    <option value="TRUE_FALSE">Benar/Salah</option>
+                    <option value="LONG_TEXT">Teks Panjang</option>
+                </select>
+                
+                <button type="submit" class="btn-add-question">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    <span>Tambah Pertanyaan</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- Tombol Simpan (jika diperlukan) -->
+        <div class="save-container">
+            <a href="{{ url_for('main.course_detail', course_id=quiz.course_id) }}" class="btn-save">Selesai & Kembali ke Mata Pelajaran</a>
+        </div>
     </div>
-    <div class="container" data-quiz-id="{{ quiz.id }}" data-course-id="{{ quiz.course_id }}">
-        <h1>{{ quiz.name }}</h1>
-        <div id="quiz-container"></div>
-        <button id="add-question-btn">Tambah Pertanyaan</button>
-        <button id="save-quiz-btn">Simpan Kuis</button>
-    </div>
-    <script src="{{ url_for('static', filename='quiz_editor.js') }}"></script>
 </body>
 </html>

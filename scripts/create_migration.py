@@ -5,7 +5,7 @@ import sys
 def run_flask_db_migrate(message):
     """Run 'flask db migrate' using the current Python interpreter."""
     env = os.environ.copy()
-    env['FLASK_APP'] = 'app.py'
+    env['FLASK_APP'] = 'app:create_app'
     
     cmd = [sys.executable, '-m', 'flask', 'db', 'migrate', '-m', message]
     print('Running:', ' '.join(cmd))

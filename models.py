@@ -112,6 +112,7 @@ class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     question_text = db.Column(db.Text, nullable=False)
     question_type = db.Column(db.Enum(QuestionType), nullable=False, default=QuestionType.MULTIPLE_CHOICE)
+    image_path = db.Column(db.String(500), nullable=True)  # Path to image file
     quiz_id = db.Column(db.Integer, db.ForeignKey('quizzes.id'), nullable=False, index=True)
 
     # --- TAMBAHAN BARU (UNTUK FITUR QUIZ BUILDER) ---
@@ -178,3 +179,35 @@ class File(db.Model):
     def __repr__(self):
         return f'<File {self.name}>'
 
+class QuizSubmission(db.Model):
+    __tablename__ = 'quiz_submissions'
+
+    id = db.Column(db.Integer, primary_key=True)
+    quiz_id = db.Column(db.Integer, db.ForeignKey('quizzes.id'), nullable=False, index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
+    submitted_at = db.Column(db.DateTime, default=datetime.datetime.utcnow, nullable=False)
+    score = db.Column(db.Float, nullable=True)  # Calculated score
+    total_points = db.Column(db.Integer, nullable=False)
+
+    quiz = db.relationship('Quiz', backref='submissions')
+    user = db.relationship('User', backref='quiz_submissions')
+    answers = db.relationship('Answer', back_populates='submission', lazy='dynamic', cascade='all, delete-orphan')
+
+    def __repr__(self):
+        return f'<QuizSubmission quiz={self.quiz_id} user={self.user_id} score={self.score}>'
+
+class Answer(db.Model):
+    __tablename__ = 'answers'
+
+    id = db.Column(db.Integer, primary_key=True)
+    submission_id = db.Column(db.Integer, db.ForeignKey('quiz_submissions.id'), nullable=False, index=True)
+    question_id = db.Column(db.Integer, db.ForeignKey('questions.id'), nullable=False, index=True)
+    answer_text = db.Column(db.Text, nullable=True)  # For long text answers
+    selected_option_id = db.Column(db.Integer, db.ForeignKey('options.id'), nullable=True)  # For multiple choice
+
+    submission = db.relationship('QuizSubmission', back_populates='answers')
+    question = db.relationship('Question', backref='answers')
+    selected_option = db.relationship('Option', backref='answers')
+
+    def __repr__(self):
+        return f'<Answer question={self.question_id} text={self.answer_text[:50] if self.answer_text else None}>'

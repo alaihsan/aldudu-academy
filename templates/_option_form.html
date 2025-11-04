@@ -6,7 +6,7 @@
            class="form-radio"
            hx-post="{{ url_for('quiz.api_question_set_correct_option', question_id=question.id) }}"
            hx-trigger="change"
-           hx-swap="none"
+           hx-indicator=".htmx-indicator"
            {% if option.is_correct %}checked{% endif %}>
 
     <input type="text"
@@ -15,7 +15,7 @@
            value="{{ option.option_text }}"
            hx-put="{{ url_for('quiz.api_update_option', option_id=option.id) }}"
            hx-trigger="blur"
-           hx-swap="none">
+           hx-swap="outerHTML">
 
     <button class="btn-icon-delete"
             hx-delete="{{ url_for('quiz.api_delete_option', option_id=option.id) }}"

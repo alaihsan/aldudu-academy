@@ -1,28 +1,20 @@
-# TODO: Add Link Feature
+# TODO: Add Quiz Submission Feature for Students
 
-## 1. Add Link Model
-- [x] Add Link model to models.py with fields: id, name, url, course_id, created_at
+## Current Status
+- Quiz builder for teachers is implemented.
+- Students can view quiz but cannot submit answers.
+- Missing models for submissions and answers.
 
-## 2. Create Migration
-- [x] Generate Alembic migration for Link model
-- [x] Run migration to create links table
+## Tasks
+- [x] Add QuizSubmission and Answer models to models.py
+- [x] Create migration for new tables
+- [x] Add API endpoints for submitting quiz answers
+- [x] Update quiz_detail.html for student submission form
+- [x] Add score calculation logic
+- [x] Test the submission flow
 
-## 3. Add API Endpoint
-- [x] Add POST /api/courses/<course_id>/links endpoint in blueprints/courses.py
-- [x] Validate teacher permission, sanitize inputs, create link
-
-## 4. Update Main Blueprint
-- [x] Update course_detail route in blueprints/main.py to include links in topics list
-
-## 5. Update Template
-- [x] Add create-link-modal in course_detail.html similar to quiz modal
-- [x] Update "Add File/Link" dropdown item to trigger modal
-- [x] Update topics display to show links with target="_blank" and link icon
-- [x] Add JavaScript for modal handling and form submission
-
-## 6. Test Implementation
-- [x] Test modal opens and closes
-- [x] Test form submission creates link
-- [x] Test link opens in new window
-- [x] Verify topics list includes links
-- [x] Test file upload and serving
+## Next Steps
+1. Test the quiz submission functionality
+2. Add submission viewing for teachers
+3. Add submission history for students
+4. Implement quiz timing/deadlines
