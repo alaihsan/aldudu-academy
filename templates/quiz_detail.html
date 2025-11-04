@@ -112,7 +112,7 @@
                         {% if is_teacher %}
                             {% include '_question_form.html' %}
                         {% else %}
-                            {% include '_question_student.html' %}
+                            {% with loop_index = loop.index %}{% include '_question_student.html' %}{% endwith %}
                         {% endif %}
                     {% endfor %}
 

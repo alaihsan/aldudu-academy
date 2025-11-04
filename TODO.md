@@ -1,20 +1,34 @@
-# TODO: Add Quiz Submission Feature for Students
+# Refactoring TODO List
 
 ## Current Status
-- Quiz builder for teachers is implemented.
-- Students can view quiz but cannot submit answers.
-- Missing models for submissions and answers.
+- Codebase analysis complete
+- Refactoring plan approved
+- Starting systematic refactoring
 
 ## Tasks
-- [x] Add QuizSubmission and Answer models to models.py
-- [x] Create migration for new tables
-- [x] Add API endpoints for submitting quiz answers
-- [x] Update quiz_detail.html for student submission form
-- [x] Add score calculation logic
-- [x] Test the submission flow
+- [ ] Standardize imports across all Python files
+- [ ] Add type hints throughout codebase
+- [ ] Break down long functions in blueprints/quiz.py
+- [ ] Break down long functions in app.py
+- [ ] Improve naming and consistency
+- [ ] Remove commented/unused code
+- [ ] Enhance error handling
+- [ ] Add docstrings to functions and classes
+- [ ] Fix PEP8 compliance issues
+- [ ] Test refactored code functionality
 
-## Next Steps
-1. Test the quiz submission functionality
-2. Add submission viewing for teachers
-3. Add submission history for students
-4. Implement quiz timing/deadlines
+## Files to Refactor
+- [ ] app.py
+- [ ] models.py
+- [ ] blueprints/quiz.py
+- [ ] blueprints/main.py
+- [ ] blueprints/auth.py
+- [ ] blueprints/courses.py
+- [ ] helpers.py
+- [ ] scripts/*.py (minor cleanup)
+
+## Followup Steps
+- [ ] Run tests to ensure functionality preserved
+- [ ] Check code with linter (flake8/black)
+- [ ] Test application startup and basic features
+- [ ] Verify database migrations still work

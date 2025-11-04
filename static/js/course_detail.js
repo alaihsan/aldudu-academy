@@ -4,9 +4,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const addTopicsButton = document.getElementById('add-topics-button');
     const topicsDropdownMenu = document.getElementById('topics-dropdown-menu');
 
+    console.log('addTopicsButton:', addTopicsButton);
+    console.log('topicsDropdownMenu:', topicsDropdownMenu);
+
     if (addTopicsButton) {
         addTopicsButton.addEventListener('click', function(e) {
             e.stopPropagation(); // Mencegah window click listener di bawah
+            console.log('Add Topics button clicked!');
             
             // Toggle menu visibility
             topicsDropdownMenu.classList.toggle('hidden'); 
