@@ -1,104 +1,35 @@
-<!-- 
-  File partial ini adalah template untuk SATU pertanyaan.
-  HTMX akan me-render file ini dan menambahkannya ke halaman
-  setiap kali Anda mengklik "Buat Pertanyaan Baru".
--->
-<div class="question-card" id="question-{{ question.id }}">
-    
-    <!-- Header Pertanyaan: Input Teks dan Dropdown Tipe -->
-        <div class="question-header">
-            <!-- 
-              Input untuk Teks Pertanyaan
-              - hx-put: Kirim pembaruan saat 'blur' (klik keluar)
-              - hx-trigger="blur": Memicu request saat fokus hilang
-              - hx-swap="outerHTML": Ganti seluruh input dengan respons dari server
-            -->
-            <input type="text"
-                   name="question_text"
-                   class="form-input question-title-input"
-                   placeholder="Tulis pertanyaan Anda di sini..."
-                   value="{{ question.question_text or '' }}"
-                   hx-put="{{ url_for('quiz.api_update_question', question_id=question.id) }}"
-                   hx-trigger="blur"
-                   hx-swap="outerHTML">
-    
-            <button type="button" class="btn-icon" onclick="document.getElementById('file-upload-{{ question.id }}').click()">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-image"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-            </button>
-    
-            <input type="file" id="file-upload-{{ question.id }}" name="file" style="display: none;"
-                   hx-post="{{ url_for('quiz.api_upload_question_image', question_id=question.id) }}"
-                   hx-target="#image-preview-{{ question.id }}"
-                   hx-swap="innerHTML"
-                   hx-trigger="change"
-                   hx-indicator="#upload-progress-{{ question.id }}">
-    
-            <!-- 
-              Dropdown untuk Tipe Pertanyaan
-              - hx-post: Kirim pembaruan saat 'change' (nilai berubah)
-              - hx-target: Targetkan seluruh kartu pertanyaan ini
-              - hx-swap: Ganti seluruh HTML-nya
-            -->
+<div class="question-card-teacher" id="question-{{ question.id }}" hx-target="this" hx-swap="outerHTML">
+    <div class="question-header">
+        <textarea name="question_text"
+                  class="question-text-input"
+                  placeholder="Tulis pertanyaan Anda di sini..."
+                  rows="2"
+                  hx-put="{{ url_for('quiz.api_update_question', question_id=question.id) }}"
+                  hx-trigger="blur"
+                  hx-indicator="#spinner-{{ question.id }}">{{ question.question_text or '' }}</textarea>
+
+        <div class="question-toolbar">
             <select name="question_type"
-                    class="form-input question-type-select"
+                    class="question-type-select-small"
                     hx-post="{{ url_for('quiz.api_change_question_type', question_id=question.id) }}"
-                    hx-target="#question-{{ question.id }}"
-                    hx-swap="outerHTML">
-    
-                <option value="MULTIPLE_CHOICE" {% if question.question_type == QuestionType.MULTIPLE_CHOICE %}selected{% endif %}>
-                    Pilihan Ganda
-                </option>
-                <option value="TRUE_FALSE" {% if question.question_type == QuestionType.TRUE_FALSE %}selected{% endif %}>
-                    Benar/Salah
-                </option>
-                <option value="LONG_TEXT" {% if question.question_type == QuestionType.LONG_TEXT %}selected{% endif %}>
-                    Teks Panjang
-                </option>
+                    hx-indicator="#spinner-{{ question.id }}">
+                <option value="MULTIPLE_CHOICE" {% if question.question_type == QuestionType.MULTIPLE_CHOICE %}selected{% endif %}>Pilihan Ganda</option>
+                <option value="TRUE_FALSE" {% if question.question_type == QuestionType.TRUE_FALSE %}selected{% endif %}>Benar/Salah</option>
+                <option value="LONG_TEXT" {% if question.question_type == QuestionType.LONG_TEXT %}selected{% endif %}>Esai Singkat</option>
             </select>
+            <button type="button" class="btn-icon" title="Hapus Pertanyaan"
+                    hx-delete="{{ url_for('quiz.api_delete_question', question_id=question.id) }}"
+                    hx-swap="delete"
+                    hx-confirm="Anda yakin ingin menghapus pertanyaan ini?">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
+                    <path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.58.22-2.365.468a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z" clip-rule="evenodd" />
+                </svg>
+            </button>
+            <div id="spinner-{{ question.id }}" class="htmx-indicator spinner"></div>
         </div>
-    
-        <div id="image-preview-{{ question.id }}" class="image-preview-container">
-            {% if question.image_path %}
-                <img src="{{ url_for('main.serve_question_image', course_id=question.quiz.course_id, filename=question.image_path.split('/')[-1]) }}" alt="Question Image" class="question-image">
-            {% else %}
-                <div class="image-placeholder">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
-                    </svg>
-                    <p>Klik tombol gambar di atas untuk menambah gambar</p>
-                </div>
-            {% endif %}
-        </div>
-        <div id="upload-progress-{{ question.id }}" class="upload-progress"></div>
-    
-        <!-- 
-          Kontainer Opsi Jawaban
-          Ini adalah target (hx-target) untuk dropdown di atas.
-          Isinya akan diganti-ganti oleh HTMX.
-        -->
-    <div class="answer-options-container" id="answer-options-{{ question.id }}">
-        <!-- 
-          Saat dimuat, render partial opsi jawaban yang sesuai 
-          berdasarkan tipe pertanyaan saat ini.
-        -->
-        {% include "_answer_options.html" %}
     </div>
 
-    <!-- Footer Pertanyaan: Tombol Hapus -->
-    <div class="question-footer">
-        <!-- 
-          Tombol Hapus
-          - hx-delete: Kirim request DELETE
-          - hx-target: Targetkan seluruh kartu pertanyaan ini (div terluar)
-          - hx-swap: Ganti seluruh HTML-nya dengan "tidak ada" (menghapusnya)
-          - hx-confirm: Tampilkan konfirmasi sebelum menghapus
-        -->
-        <button type="button" class="btn-link btn-danger"
-                hx-delete="{{ url_for('quiz.api_delete_question', question_id=question.id) }}"
-                hx-target="#question-{{ question.id }}"
-                hx-swap="outerHTML"
-                hx-confirm="Anda yakin ingin menghapus pertanyaan ini?">
-            Hapus Pertanyaan
-        </button>
+    <div class="answer-options-container" id="answer-options-{{ question.id }}">
+        {% include "_answer_options.html" %}
     </div>
 </div>

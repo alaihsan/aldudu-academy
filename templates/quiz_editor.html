@@ -5,22 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editor Kuis: {{ quiz.name }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='quiz_editor.css') }}">
-    <!-- Impor HTMX -->
     <script src="https://unpkg.com/htmx.org@1.9.6/dist/htmx.min.js"></script>
 </head>
 <body>
     <div class="container">
-        <h1>Editor Kuis: <strong>{{ quiz.name }}</strong></h1>
-        <p>Gunakan formulir di bawah ini untuk membuat dan mengedit pertanyaan untuk kuis Anda.</p>
+        <div class="quiz-header-nav">
+            <a href="{{ url_for('main.course_detail', course_id=quiz.course_id) }}" class="back-link">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
+                    <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" />
+                </svg>
+                Selesai & Kembali
+            </a>
+        </div>
 
-        <!-- Daftar Pertanyaan yang Ada -->
+        <h1>Editor Kuis: <strong>{{ quiz.name }}</strong></h1>
+        <p class="page-description">Gunakan formulir di bawah ini untuk membuat dan mengedit pertanyaan untuk kuis Anda. Semua perubahan disimpan secara otomatis.</p>
+
         <div id="question-list">
             {% for question in quiz.questions.order_by('order') %}
                 {% include '_question_form.html' %}
             {% endfor %}
         </div>
 
-        <!-- Tombol untuk Menambah Pertanyaan Baru -->
         <div class="add-question-container">
             <form 
                 hx-post="{{ url_for('quiz.api_add_question', quiz_id=quiz.id) }}"
@@ -28,22 +34,19 @@
                 hx-swap="beforeend"
                 class="add-question-form">
                 
-                <select name="question_type" class="question-type-select">
+                <select name="question_type" class="question-type-selector">
                     <option value="MULTIPLE_CHOICE">Pilihan Ganda</option>
                     <option value="TRUE_FALSE">Benar/Salah</option>
                     <option value="LONG_TEXT">Teks Panjang</option>
                 </select>
                 
                 <button type="submit" class="btn-add-question">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
+                        <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+                    </svg>
                     <span>Tambah Pertanyaan</span>
                 </button>
             </form>
-        </div>
-
-        <!-- Tombol Simpan (jika diperlukan) -->
-        <div class="save-container">
-            <a href="{{ url_for('main.course_detail', course_id=quiz.course_id) }}" class="btn-save">Selesai & Kembali ke Mata Pelajaran</a>
         </div>
     </div>
 </body>
