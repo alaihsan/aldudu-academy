@@ -1,119 +1,122 @@
-﻿<div class="question-card bg-white rounded-2xl shadow-md border border-gray-200 overflow-hidden animate-slide-up" data-question-id="{{ question.id }}">
-    <div class="question-header bg-gradient-to-r from-gray-50 to-white px-6 py-5 border-b border-gray-200 flex items-center justify-between flex-wrap gap-3">
-        <div class="flex items-center space-x-4">
-            <div class="question-number-badge w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-700 rounded-full flex items-center justify-center text-white font-bold shadow-md flex-shrink-0">
-                {{ loop_index }}
-            </div>
-            <div>
-                <h3 class="font-semibold text-gray-900 text-lg">Pertanyaan {{ loop_index }}</h3>
-                <div class="flex items-center space-x-2 mt-1">
-                    {% if question.question_type == 'MULTIPLE_CHOICE' %}
-                    <span class="inline-flex items-center px-2.5 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
-                        Pilihan Ganda
-                    </span>
-                    {% elif question.question_type == 'TRUE_FALSE' %}
-                    <span class="inline-flex items-center px-2.5 py-0.5 bg-amber-100 text-amber-700 rounded-full text-xs font-medium">
-                        Benar/Salah
-                    </span>
-                    {% else %}
-                    <span class="inline-flex items-center px-2.5 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">
-                        Esai
-                    </span>
-                    {% endif %}
-                    <span class="text-xs text-gray-500">{{ question.points|default(10) }} poin</span>
-                </div>
-            </div>
-        </div>
-        <div class="flex items-center space-x-2">
-            <button class="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                title="Edit Pertanyaan"
-                hx-get="/api/quiz/{{ quiz.id }}/question/{{ question.id }}/edit"
-                hx-target=".question-content"
-                hx-swap="innerHTML">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                </svg>
-            </button>
-            <button class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                title="Hapus Pertanyaan"
-                hx-delete="/api/quiz/{{ quiz.id }}/question/{{ question.id }}/delete"
-                hx-confirm="Yakin ingin menghapus pertanyaan ini?"
-                hx-target=".question-card[data-question-id='{{ question.id }}']"
-                hx-swap="outerHTML">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                </svg>
-            </button>
-        </div>
+{# Partial template for question form #}
+<div class="question-card" data-question-id="{{ question.id }}">
+  <div class="question-header">
+    <div class="question-number">{{ loop.index if loop else 1 }}</div>
+    <div class="question-header-content">
+      <div class="question-type-badge {{ 'mc' if question.question_type.name == 'MULTIPLE_CHOICE' else 'tf' if question.question_type.name == 'TRUE_FALSE' else 'essay' }}">
+        {% if question.question_type.name == 'MULTIPLE_CHOICE' %}
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+          Pilihan Ganda
+        {% elif question.question_type.name == 'TRUE_FALSE' %}
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20,6 9,17 4,12"/>
+          </svg>
+          Benar/Salah
+        {% else %}
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="21" y1="10" x2="3" y2="10"/>
+            <line x1="21" y1="6" x2="3" y2="6"/>
+            <line x1="21" y1="14" x2="3" y2="14"/>
+            <line x1="21" y1="18" x2="3" y2="18"/>
+          </svg>
+          Esai
+        {% endif %}
+      </div>
+      <div class="question-points">{{ question.points|default(10) }} poin</div>
+    </div>
+    <button class="btn-delete-question" onclick="deleteQuestion({{ question.id }})">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="3,6 5,6 21,6"/>
+        <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2v2"/>
+      </svg>
+    </button>
+  </div>
+  <div class="question-body">
+    <div class="question-text-field">
+      <label class="field-label">Teks Pertanyaan</label>
+      <textarea 
+        class="question-textarea" 
+        data-question-id="{{ question.id }}"
+        onblur="updateQuestionText(this)"
+      >{{ question.question_text }}</textarea>
     </div>
     
-    <div class="question-content p-6">
-        <div class="mb-6">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Teks Pertanyaan</label>
-            <div class="bg-gray-50 rounded-xl p-4 border border-gray-200">
-                <p class="text-gray-800">{{ question.text }}</p>
-            </div>
-        </div>
-        
-        {% if question.image_url %}
-        <div class="mb-6">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Gambar</label>
-            <img src="{{ question.image_url }}" alt="Question image" class="max-h-64 rounded-xl border border-gray-200 shadow-sm mx-auto">
-        </div>
-        {% endif %}
-        
-        {% if question.question_type == 'MULTIPLE_CHOICE' %}
-        <div class="options-list space-y-2">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Pilihan Jawaban</label>
-            {% for option in question.options %}
-            <div class="option-item flex items-center space-x-3 p-3 border border-gray-300 rounded-xl {% if option.is_correct %}bg-green-50 border-green-300{% endif %}">
-                <span class="w-8 h-8 bg-primary-100 text-primary-700 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">{{ loop.index + 64 | chr }}</span>
-                <span class="flex-1 text-gray-800">{{ option.text }}</span>
-                {% if option.is_correct %}
-                <div class="flex items-center space-x-1 text-green-600">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <span class="text-xs font-medium">Benar</span>
-                </div>
-                {% endif %}
-            </div>
-            {% endfor %}
-        </div>
-        {% elif question.question_type == 'TRUE_FALSE' %}
-        <div class="options-list space-y-2">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Jawaban Benar</label>
-            {% for option in question.options %}
-            <div class="option-item flex items-center space-x-3 p-3 border border-gray-300 rounded-xl {% if option.is_correct %}bg-green-50 border-green-300{% endif %}">
-                <span class="w-8 h-8 {% if option.text == 'True' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %} rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">
-                    {% if option.text == 'True' %}âœ“{% else %}âœ—{% endif %}
-                </span>
-                <span class="flex-1 text-gray-800">{{ option.text }}</span>
-                {% if option.is_correct %}
-                <div class="flex items-center space-x-1 text-green-600">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <span class="text-xs font-medium">Benar</span>
-                </div>
-                {% endif %}
-            </div>
-            {% endfor %}
-        </div>
-        {% elif question.question_type == 'LONG_TEXT' %}
-        <div class="bg-purple-50 border border-purple-200 rounded-xl p-4">
-            <div class="flex items-start space-x-3">
-                <div class="flex-shrink-0">
-                    <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                </div>
-                <div>
-                    <p class="text-sm text-purple-800 font-medium">Jawaban esai - nilai secara manual</p>
-                    <p class="text-xs text-purple-700 mt-1">Berikan nilai berdasarkan kriteria penilaian Anda untuk jawaban esai ini.</p>
-                </div>
-            </div>
-        </div>
-        {% endif %}
+    {% if question.question_type.name == 'MULTIPLE_CHOICE' %}
+    <div class="options-list">
+      <label class="field-label">Pilihan Jawaban</label>
+      {% for option in question.options.all() %}
+      <div class="option-item" data-option-id="{{ option.id }}">
+        <button class="btn-correct" onclick="setCorrectOption({{ option.id }})" title="Set jawaban benar">
+          {% if option.is_correct %}
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="9,12 11,14 15,10" stroke="white" stroke-width="2" fill="none"/>
+          </svg>
+          {% else %}
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+          </svg>
+          {% endif %}
+        </button>
+        <span class="option-letter">{{ 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[loop.index0] }}</span>
+        <input 
+          type="text" 
+          class="option-input" 
+          value="{{ option.option_text }}"
+          data-option-id="{{ option.id }}"
+          onblur="updateOptionText(this)"
+        />
+        <button class="btn-delete-option" onclick="deleteOption({{ option.id }})">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      {% endfor %}
+      <button class="btn-add-option" onclick="addOption({{ question.id }})">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Tambah Pilihan
+      </button>
     </div>
+    {% elif question.question_type.name == 'TRUE_FALSE' %}
+    <div class="true-false-options">
+      <label class="field-label">Jawaban Benar</label>
+      {% for option in question.options.all() %}
+      <div class="tf-option" data-option-id="{{ option.id }}">
+        <button class="btn-correct" onclick="setCorrectOption({{ option.id }})">
+          {% if option.is_correct %}
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="9,12 11,14 15,10" stroke="white" stroke-width="2" fill="none"/>
+          </svg>
+          {% else %}
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+          </svg>
+          {% endif %}
+        </button>
+        <span>{{ 'Benar' if option.option_text == 'True' else 'Salah' }}</span>
+      </div>
+      {% endfor %}
+    </div>
+    {% elif question.question_type.name == 'LONG_TEXT' %}
+    <div class="essay-description">
+      <label class="field-label">Deskripsi (Opsional)</label>
+      <textarea 
+        class="description-textarea"
+        data-question-id="{{ question.id }}"
+        onblur="updateEssayDescription(this)"
+        placeholder="Berikan instruksi atau kriteria penilaian..."
+      >{{ question.description or '' }}</textarea>
+      <p class="field-hint">Jawaban esai akan dinilai secara manual</p>
+    </div>
+    {% endif %}
+  </div>
 </div>
