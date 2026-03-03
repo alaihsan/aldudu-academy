@@ -15,42 +15,85 @@
 {% endblock %}
 
 {% block body %}
-<div class="min-h-screen bg-gray-50">
+<div class="min-h-screen bg-gradient-to-b from-gray-50 to-white">
     <!-- Header Nav -->
-    <nav class="bg-white border-b border-gray-200 sticky top-0 z-40">
+    <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center h-14">
-                <a href="{{ url_for('main.course_detail', course_id=course.id) }}" class="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                    </svg>
+            <div class="flex items-center justify-between h-16">
+                <a href="{{ url_for('main.course_detail', course_id=course.id) }}" class="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors group">
+                    <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-gray-200 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                    </div>
                     <span class="font-medium">Kembali ke {{ course.name }}</span>
                 </a>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm text-gray-500 hidden sm:block">{{ quiz.questions.count() }} Pertanyaan</span>
+                </div>
             </div>
         </div>
     </nav>
 
     <!-- Quiz Header -->
-    <div class="bg-gradient-to-r from-amber-500 to-amber-600 py-8">
+    <div class="bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 py-10 shadow-lg">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h1 class="text-3xl font-bold text-white mb-2">{{ quiz.name }}</h1>
-            <p class="text-amber-100">
-                Diselenggarakan oleh <strong>{{ course.teacher.name }}</strong> di kelas <strong>{{ course.name }}</strong>
-            </p>
+            <div class="flex items-start space-x-4">
+                <div class="flex-shrink-0">
+                    <div class="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                        <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="flex-1">
+                    <h1 class="text-3xl font-bold text-white mb-2">{{ quiz.name }}</h1>
+                    <p class="text-amber-100 text-sm">
+                        <span class="font-medium">{{ course.teacher.name }}</span> â€¢ 
+                        <span class="font-medium">{{ course.name }}</span>
+                    </p>
+                    {% if quiz.start_date or quiz.end_date %}
+                    <div class="flex items-center space-x-4 mt-3 text-amber-100 text-xs">
+                        {% if quiz.start_date %}
+                        <div class="flex items-center space-x-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <span>Mulai: {{ quiz.start_date.strftime('%d %b %Y') }}</span>
+                        </div>
+                        {% endif %}
+                        {% if quiz.end_date %}
+                        <div class="flex items-center space-x-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <span>Selesai: {{ quiz.end_date.strftime('%d %b %Y') }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </div>
 
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {% if is_teacher %}
         <!-- Teacher Controls -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6 flex flex-wrap items-center gap-4">
-            <select id="question-type-select" name="question_type" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none bg-white">
+        <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 mb-6 flex flex-wrap items-center gap-3">
+            <div class="flex items-center space-x-2">
+                <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                </svg>
+                <span class="font-medium text-gray-700">Tambah Pertanyaan:</span>
+            </div>
+            <select id="question-type-select" name="question_type" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none bg-white text-sm">
                 <option value="MULTIPLE_CHOICE" selected>Pilihan Ganda</option>
                 <option value="TRUE_FALSE">Benar/Salah</option>
                 <option value="LONG_TEXT">Esai Singkat</option>
             </select>
             <button
-                class="px-4 py-2 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-lg font-medium shadow hover:shadow-md transform hover:-translate-y-0.5 transition-all inline-flex items-center space-x-2"
+                class="px-5 py-2 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-lg font-medium shadow hover:shadow-md transform hover:-translate-y-0.5 transition-all inline-flex items-center space-x-2"
                 hx-post="/api/quiz/{{ quiz.id }}/question/add"
                 hx-include="#question-type-select"
                 hx-target="#question-list"
@@ -59,9 +102,9 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
-                <span>Tambah Pertanyaan</span>
+                <span>Tambah</span>
             </button>
-            <span id="loading-spinner" class="htmx-indicator text-amber-600 font-medium">Menyimpan...</span>
+            <span id="loading-spinner" class="htmx-indicator text-amber-600 font-medium text-sm">Menyimpan...</span>
         </div>
         {% endif %}
 
@@ -77,35 +120,37 @@
         </div>
 
         {% if not quiz.questions.all() and is_teacher %}
-            <div class="text-center py-12 bg-white rounded-xl border border-gray-200">
-                <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/>
-                </svg>
-                <h3 class="text-lg font-semibold text-gray-900 mb-2">Kuis Ini Masih Kosong</h3>
-                <p class="text-gray-500">Tambahkan pertanyaan pertama menggunakan tombol "Tambah Pertanyaan" di atas.</p>
+            <div class="text-center py-16 bg-white rounded-2xl shadow-sm border border-gray-200">
+                <div class="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-10 h-10 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Kuis Ini Masih Kosong</h3>
+                <p class="text-gray-500 mb-6 max-w-md mx-auto">Mulai tambahkan pertanyaan menggunakan tombol "Tambah Pertanyaan" di atas untuk membuat kuis Anda.</p>
             </div>
         {% endif %}
 
         {% if not is_teacher and questions %}
         <!-- Submit Section -->
-        <div class="mt-8 bg-gradient-to-r from-primary-50 to-primary-100 rounded-xl border border-primary-200 p-6">
-            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="mt-8 bg-gradient-to-r from-primary-500 to-primary-700 rounded-2xl shadow-lg p-6 text-white">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
                 <div class="flex items-center space-x-4">
-                    <div class="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-700 rounded-full flex items-center justify-center">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    <div class="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center flex-shrink-0">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                         </svg>
                     </div>
                     <div>
-                        <h3 class="font-semibold text-gray-900">Siap mengirim jawaban?</h3>
-                        <p class="text-sm text-gray-600">Pastikan semua pertanyaan telah dijawab.</p>
+                        <h3 class="text-lg font-semibold">Siap mengirim jawaban?</h3>
+                        <p class="text-primary-100 text-sm">Pastikan semua pertanyaan telah dijawab sebelum mengirim.</p>
                     </div>
                 </div>
-                <button id="submit-quiz-btn" class="px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-700 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all inline-flex items-center space-x-2">
+                <button id="submit-quiz-btn" class="px-8 py-3 bg-white text-primary-600 rounded-lg font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all inline-flex items-center space-x-2 whitespace-nowrap">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                     </svg>
-                    <span>Kirim Semua Jawaban</span>
+                    <span>Kirim Jawaban</span>
                 </button>
             </div>
         </div>

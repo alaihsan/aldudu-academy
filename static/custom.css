@@ -15,7 +15,7 @@
 
 /* Class card styles */
 .class-card {
-    @apply bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden group hover:shadow-xl transition-all duration-300 animate-slide-up;
+    @apply bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden group hover:shadow-xl transition-all duration-300 animate-slide-up relative;
 }
 
 .class-card-header {
@@ -386,12 +386,49 @@
 
 /* Question card student */
 .question-card-student {
-    @apply bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden animate-slide-up mb-6;
+    @apply bg-white rounded-2xl shadow-md border border-gray-200 overflow-hidden animate-slide-up mb-6;
+}
+
+/* Question card teacher */
+.question-card {
+    @apply bg-white rounded-2xl shadow-md border border-gray-200 overflow-hidden animate-slide-up mb-6;
+}
+
+/* Question header */
+.question-header {
+    @apply bg-gradient-to-r from-gray-50 to-white px-6 py-5 border-b border-gray-200;
+}
+
+.question-number-badge {
+    @apply w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-700 rounded-full flex items-center justify-center text-white font-bold shadow-md flex-shrink-0;
+}
+
+/* Question content */
+.question-content {
+    @apply p-6;
+}
+
+.question-text {
+    @apply text-gray-800 font-medium mb-6 text-base leading-relaxed;
+}
+
+/* Options list */
+.options-list {
+    @apply space-y-3;
 }
 
 /* Option item */
 .option-item {
-    @apply flex items-center space-x-4 p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-primary-500 transition-all;
+    @apply flex items-center space-x-4 p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-primary-500 hover:bg-blue-50/50 transition-all;
+}
+
+/* Option item student */
+.option-item:hover {
+    @apply border-primary-500 bg-blue-50/50;
+}
+
+.option-item:has(input:checked) {
+    @apply border-primary-500 bg-blue-50;
 }
 
 /* Long text answer */
@@ -428,7 +465,27 @@
     @apply bg-red-100 text-red-700;
 }
 
+/* Question image */
+.question-image {
+    @apply max-h-80 rounded-xl border border-gray-200 shadow-sm mx-auto object-contain bg-gray-50;
+}
+
+/* Quiz submit section */
+.quiz-submit-section {
+    @apply mt-8 bg-gradient-to-r from-primary-500 to-primary-700 rounded-2xl shadow-lg p-6 text-white;
+}
+
 /* Utility classes */
 .hidden {
     display: none !important;
+}
+
+/* Block link */
+.block {
+    display: block;
+}
+
+/* Text center */
+.text-center {
+    text-align: center;
 }
