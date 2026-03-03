@@ -47,7 +47,7 @@ def create_app(test_config: Optional[Dict] = None) -> Flask:
     if not database_url:
         raise ValueError(
             "DATABASE_URL environment variable is not set. "
-            "Please set it to your PostgreSQL connection string."
+            "Please set it to your database connection string (e.g., mysql+pymysql://user:password@host:port/database)."
         )
 
     db_host = os.environ.get('DB_HOST')
