@@ -1,0 +1,434 @@
+﻿/* Custom styles for Aldudu Academy - Tailwind CSS enhancements */
+
+/* Color swatches for color picker */
+.color-swatch {
+    @apply w-10 h-10 rounded-full cursor-pointer border-2 border-gray-300 transition-all duration-200;
+}
+
+.color-swatch:hover {
+    @apply transform scale-110;
+}
+
+.color-swatch.selected {
+    @apply border-gray-900 ring-2 ring-primary-500 ring-offset-2;
+}
+
+/* Class card styles */
+.class-card {
+    @apply bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden group hover:shadow-xl transition-all duration-300 animate-slide-up;
+}
+
+.class-card-header {
+    @apply p-5 text-white transition-all duration-300;
+}
+
+.class-card-title {
+    @apply text-xl font-bold truncate;
+}
+
+.class-card-body {
+    @apply p-5 space-y-2;
+}
+
+.class-card-info {
+    @apply text-sm text-gray-600;
+}
+
+.class-card-footer {
+    @apply p-5 pt-0;
+}
+
+.class-card-code-section {
+    @apply px-5 pb-5;
+}
+
+.class-card-code-section p {
+    @apply text-xs text-gray-500 mb-1;
+}
+
+.class-card-code-wrapper {
+    @apply flex items-center space-x-2;
+}
+
+.class-card-code {
+    @apply font-mono font-bold text-gray-900 bg-gray-100 px-3 py-1.5 rounded-lg;
+}
+
+.copy-code-btn {
+    @apply p-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded transition-all duration-200;
+}
+
+.copy-icon, .check-icon {
+    @apply transition-all duration-200;
+}
+
+.icon-hidden {
+    @apply hidden;
+}
+
+.edit-course-btn {
+    @apply absolute top-3 right-3 p-2 text-white/70 hover:text-white hover:bg-white/20 rounded-lg transition-all duration-200;
+}
+
+/* Add class card */
+.add-class-card {
+    @apply bg-gray-50 rounded-2xl border-2 border-dashed border-gray-300 p-6 flex flex-col items-center justify-center text-gray-500 cursor-pointer hover:border-primary-500 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200 min-h-[200px];
+}
+
+.add-class-card svg {
+    @apply w-12 h-12 mb-3;
+}
+
+.add-class-card span {
+    @apply font-medium text-center;
+}
+
+/* Modal styles */
+.modal {
+    @apply fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4;
+}
+
+.modal-content {
+    @apply bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden;
+}
+
+.modal-header {
+    @apply bg-gradient-to-r from-primary-500 to-primary-700 px-6 py-4;
+}
+
+.modal-header h3 {
+    @apply text-xl font-bold text-white;
+}
+
+.modal-header p {
+    @apply text-primary-100 text-sm mt-1;
+}
+
+.modal-body {
+    @apply p-6;
+}
+
+.modal-footer {
+    @apply bg-gray-50 px-6 py-4 flex justify-end space-x-3;
+}
+
+/* Form elements */
+.form-input {
+    @apply w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 outline-none;
+}
+
+.form-label {
+    @apply block text-sm font-medium text-gray-700 mb-2;
+}
+
+.form-group {
+    @apply mb-4;
+}
+
+.form-error {
+    @apply text-red-600 text-sm mt-2;
+}
+
+.form-row-flex {
+    @apply grid grid-cols-2 gap-4;
+}
+
+/* Buttons */
+.btn {
+    @apply px-6 py-3 rounded-xl font-semibold transition-all duration-200 inline-flex items-center justify-center;
+}
+
+.btn-primary {
+    @apply bg-gradient-to-r from-primary-500 to-primary-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5;
+}
+
+.btn-secondary {
+    @apply bg-white text-gray-700 border border-gray-300 hover:bg-gray-50;
+}
+
+.btn-link {
+    @apply text-primary-600 hover:text-primary-800 font-medium;
+}
+
+.btn-cancel-inline {
+    @apply absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-xl;
+}
+
+/* Dropdown */
+.dropdown {
+    @apply relative inline-block;
+}
+
+.dropdown-toggle {
+    @apply inline-flex items-center space-x-2;
+}
+
+.dropdown-menu {
+    @apply absolute right-0 mt-2 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-50 min-w-[200px];
+}
+
+.dropdown-item {
+    @apply flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors;
+}
+
+.dropdown-item-icon {
+    @apply w-5 h-5 text-primary-500;
+}
+
+/* Class code display in modal */
+.class-code-display {
+    @apply bg-gray-100 rounded-xl p-4 mb-4;
+}
+
+.class-code-display span {
+    @apply text-2xl font-mono font-bold text-gray-900 tracking-wider;
+}
+
+.copy-feedback {
+    @apply text-sm text-gray-500;
+}
+
+/* Enroll section */
+.enroll-container {
+    @apply bg-white rounded-2xl shadow-sm border border-gray-200 p-6;
+}
+
+.enroll-container h3 {
+    @apply text-lg font-semibold text-gray-900 mb-4;
+}
+
+.enroll-form {
+    @apply flex flex-col sm:flex-row gap-4;
+}
+
+.enroll-message {
+    @apply mt-4 p-4 rounded-xl;
+}
+
+.enroll-message.success {
+    @apply bg-green-50 border border-green-200 text-green-700;
+}
+
+.enroll-message.error {
+    @apply bg-red-50 border border-red-200 text-red-700;
+}
+
+.enroll-message.hidden {
+    @apply hidden;
+}
+
+/* Academic year selector */
+.academic-year-selector {
+    @apply flex items-center space-x-3;
+}
+
+/* Content title */
+.content-title {
+    @apply text-3xl font-bold text-gray-900;
+}
+
+/* View controls */
+.view-controls {
+    @apply flex justify-end mb-6;
+}
+
+.view-switcher {
+    @apply inline-flex border border-gray-300 rounded-lg overflow-hidden;
+}
+
+.view-btn {
+    @apply px-4 py-2 hover:bg-gray-50 transition-colors;
+}
+
+.view-btn.active {
+    @apply bg-primary-50 text-primary-600 border-r border-gray-300;
+}
+
+/* Topics grid */
+.topics-grid-view {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6;
+}
+
+.topic-card {
+    @apply bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden group hover:shadow-xl hover:-translate-y-1 transition-all duration-300;
+}
+
+.topic-link {
+    @apply block p-5;
+}
+
+.topic-icon {
+    @apply flex-shrink-0 w-12 h-12 bg-gradient-to-br from-primary-100 to-primary-200 rounded-xl flex items-center justify-center group-hover:from-primary-200 group-hover:to-primary-300 transition-all mb-3;
+}
+
+.topic-info {
+    @apply min-w-0;
+}
+
+.topic-name {
+    @apply font-semibold text-gray-900 group-hover:text-primary-600 transition-colors truncate;
+}
+
+.topic-details {
+    @apply text-sm text-gray-500 mt-1;
+}
+
+/* No content message */
+.no-content-message {
+    @apply col-span-full text-center py-12 bg-white rounded-2xl border border-gray-200;
+}
+
+/* Discussion styles */
+.discussion-details {
+    @apply bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-6;
+}
+
+.discussion-details p {
+    @apply text-gray-700 mb-2;
+}
+
+/* Quiz editor styles */
+.question-type-selector {
+    @apply px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none bg-white;
+}
+
+.btn-add-question {
+    @apply px-4 py-2 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-lg font-medium shadow hover:shadow-md transform hover:-translate-y-0.5 transition-all inline-flex items-center space-x-2;
+}
+
+/* Loading spinner */
+.htmx-indicator {
+    @apply text-amber-600 font-medium;
+}
+
+/* Animations */
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.animate-slide-up {
+    animation: slideUp 0.4s ease-out;
+}
+
+.animate-slide-down {
+    animation: slideDown 0.3s ease-out;
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Quiz detail styles */
+.student-submit-area {
+    @apply mt-8 bg-gradient-to-r from-primary-50 to-primary-100 rounded-xl border border-primary-200 p-6;
+}
+
+.btn-submit-quiz {
+    @apply px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-700 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all inline-flex items-center space-x-2;
+}
+
+/* Back link */
+.back-link {
+    @apply flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors;
+}
+
+/* Quiz header nav */
+.quiz-header-nav {
+    @apply bg-white border-b border-gray-200 sticky top-0 z-40;
+}
+
+.quiz-title-container {
+    @apply bg-gradient-to-r from-amber-500 to-amber-600 py-8;
+}
+
+.quiz-title-container h1 {
+    @apply text-3xl font-bold text-white mb-2;
+}
+
+.quiz-sub-info {
+    @apply text-amber-100;
+}
+
+.teacher-controls {
+    @apply bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6 flex flex-wrap items-center gap-4;
+}
+
+.placeholder-empty-quiz {
+    @apply text-center py-12 bg-white rounded-xl border border-gray-200;
+}
+
+/* Question card student */
+.question-card-student {
+    @apply bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden animate-slide-up mb-6;
+}
+
+/* Option item */
+.option-item {
+    @apply flex items-center space-x-4 p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-primary-500 transition-all;
+}
+
+/* Long text answer */
+.long-text-answer {
+    @apply space-y-4;
+}
+
+.textarea-wrapper {
+    @apply relative;
+}
+
+.form-textarea {
+    @apply w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none resize-none;
+}
+
+.textarea-footer {
+    @apply flex justify-end mt-2;
+}
+
+.character-count {
+    @apply text-sm text-gray-500 font-medium;
+}
+
+/* Status badges */
+.status-badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium;
+}
+
+.status-badge.active {
+    @apply bg-green-100 text-green-700;
+}
+
+.status-badge.closed {
+    @apply bg-red-100 text-red-700;
+}
+
+/* Utility classes */
+.hidden {
+    display: none !important;
+}

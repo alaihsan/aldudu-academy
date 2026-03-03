@@ -1,109 +1,202 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aldudu Academy</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
+﻿{% extends "base.html" %}
 
-    <!-- HALAMAN LOGIN -->
-    <div id="login-page" class="login-page">
-        <div class="login-container">
-            <div class="login-header"><h1>Aldudu Academy</h1><p>Selamat datang! Silakan login.</p></div>
-            <form id="login-form">
-                <div class="form-group"><label for="email" class="form-label">Email</label><input type="email" id="email" name="email" value="guru@aldudu.com" required class="form-input"></div>
-                <div class="form-group"><label for="password" class="form-label">Password</label><input type="password" id="password" name="password" value="123" required class="form-input"></div>
-                <div id="login-error" class="form-error hidden"></div>
-                <div class="form-group" style="margin-top: 2rem;"><button type="submit" class="btn btn-primary">Login</button></div>
+{% block title %}Aldudu Academy - Learning Management System{% endblock %}
+
+{% block body %}
+<!-- LOGIN PAGE -->
+<div id="login-page" class="min-h-screen bg-gradient-to-br from-primary-50 via-white to-primary-100 flex items-center justify-center p-4">
+    <div class="w-full max-w-md">
+        <!-- Logo & Header -->
+        <div class="text-center mb-8 animate-fade-in">
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary-500 to-primary-700 rounded-2xl shadow-lg mb-4">
+                <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                </svg>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Aldudu Academy</h1>
+            <p class="text-gray-600">Selamat datang! Silakan login untuk melanjutkan.</p>
+        </div>
+
+        <!-- Login Card -->
+        <div class="bg-white rounded-2xl shadow-xl p-8 animate-slide-up">
+            <form id="login-form" class="space-y-6">
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                    <input type="email" id="email" name="email" value="guru@aldudu.com" required 
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 outline-none">
+                </div>
+
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <input type="password" id="password" name="password" value="123" required 
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 outline-none">
+                </div>
+
+                <div id="login-error" class="hidden p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm"></div>
+
+                <button type="submit" 
+                    class="w-full bg-gradient-to-r from-primary-500 to-primary-700 text-white py-3 px-4 rounded-xl font-semibold shadow-lg hover:shadow-xl hover:from-primary-600 hover:to-primary-800 transform hover:-translate-y-0.5 transition-all duration-200">
+                    Login
+                </button>
             </form>
         </div>
-    </div>
 
-    <!-- HALAMAN APLIKASI UTAMA -->
-    <div id="app-page" class="hidden">
-        <header class="app-header">
-            <div class="header-content">
-                <div class="header-left"><a href="{{ url_for('main.dashboard') }}" class="header-logo">Aldudu Academy</a></div>
-                <div class="header-right"><span id="welcome-message"></span><button id="logout-button" class="btn-link">Logout</button></div>
-            </div>
-        </header>
-
-        <main class="container">
-            <div id="enroll-section" class="hidden">
-                <div class="enroll-container">
-                    <h3>Gabung ke Kelas Baru</h3>
-                    <form id="enroll-form" class="enroll-form">
-                        <input type="text" id="class-code-input" placeholder="Masukkan Kode Kelas..." class="form-input" required>
-                        <button type="submit" class="btn btn-primary">Gabung</button>
-                    </form>
-                    <div id="enroll-message" class="enroll-message"></div>
-                </div>
-            </div>
-            <div class="sub-header">
-                <h1 id="content-title" class="content-title"></h1>
-                <div class="academic-year-selector">
-                    <label for="academic-year" class="form-label" style="margin-bottom: 0;">Tahun Ajaran:</label>
-                    <select id="academic-year" name="academic-year" class="form-input" style="padding: 0.4rem 0.8rem; width: auto;"></select>
-                </div>
-            </div>
-            <div id="class-grid" class="class-grid"></div>
-        </main>
+        <!-- Footer -->
+        <p class="text-center text-gray-500 text-sm mt-6">&copy; 2025 Aldudu Academy. All rights reserved.</p>
     </div>
+</div>
 
-    <!-- MODAL TAMBAH KELAS -->
-    <div id="add-class-modal" class="modal hidden">
-        <div class="modal-content">
-            <form id="add-class-form">
-                <div class="modal-header"><h3>Buat Kelas Baru</h3><p>Buat kelas baru untuk tahun ajaran yang sedang aktif.</p></div>
-                <div class="modal-body"><div class="form-group"><label for="course-name" class="form-label">Nama Kelas</label><input type="text" id="course-name" name="course-name" required placeholder="Contoh: Kimia XII - IPA 1" class="form-input"><div id="add-modal-error" class="form-error hidden"></div></div></div>
-                <div class="modal-footer"><button type="button" id="add-cancel-button" class="btn btn-secondary">Batal</button><button type="submit" class="btn btn-primary">Simpan Kelas</button></div>
-            </form>
-        </div>
-    </div>
-    
-    <!-- MODAL TAMPILKAN KODE KELAS -->
-    <div id="show-code-modal" class="modal hidden">
-        <div class="modal-content" style="text-align: center;">
-            <div class="modal-header"><h3>Kelas Berhasil Dibuat!</h3><p>Bagikan kode berikut kepada murid Anda untuk bergabung.</p></div>
-            <div class="modal-body">
-                <div id="generated-class-code" class="class-code-display"></div>
-                <p id="copy-feedback" class="copy-feedback"></p>
-            </div>
-            <div class="modal-footer" style="justify-content: center;"><button type="button" id="close-code-modal-button" class="btn btn-primary">Selesai</button></div>
-        </div>
-    </div>
-
-    <!-- MODAL BARU: EDIT KELAS -->
-    <div id="edit-class-modal" class="modal hidden">
-        <div class="modal-content">
-            <form id="edit-class-form">
-                <div class="modal-header">
-                    <h3>Edit Kelas</h3>
-                    <p>Ubah nama dan warna latar belakang untuk kelas ini.</p>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="edit-course-name" class="form-label">Nama Kelas</label>
-                        <input type="text" id="edit-course-name" class="form-input" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Warna Latar</label>
-                        <div id="color-picker" class="color-picker">
-                            <!-- Opsi warna akan di-generate oleh JavaScript -->
+<!-- APP PAGE -->
+<div id="app-page" class="hidden min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <a href="{{ url_for('main.dashboard') }}" class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                            </svg>
                         </div>
-                    </div>
-                    <div id="edit-modal-error" class="form-error hidden"></div>
+                        <span class="text-xl font-bold text-gray-900">Aldudu Academy</span>
+                    </a>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" id="edit-cancel-button" class="btn btn-secondary">Batal</button>
-                    <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                <div class="flex items-center space-x-4">
+                    <span id="welcome-message" class="text-gray-600 hidden sm:block"></span>
+                    <button id="logout-button" 
+                        class="px-4 py-2 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors duration-200">
+                        Logout
+                    </button>
                 </div>
-            </form>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Enroll Section -->
+        <div id="enroll-section" class="hidden mb-8">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Gabung ke Kelas Baru</h3>
+                <form id="enroll-form" class="flex flex-col sm:flex-row gap-4">
+                    <input type="text" id="class-code-input" placeholder="Masukkan Kode Kelas..." required 
+                        class="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 outline-none">
+                    <button type="submit" 
+                        class="px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-700 text-white rounded-xl font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200">
+                        Gabung
+                    </button>
+                </form>
+                <div id="enroll-message" class="mt-4"></div>
+            </div>
+        </div>
+
+        <!-- Page Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+            <h1 id="content-title" class="text-3xl font-bold text-gray-900"></h1>
+            <div class="flex items-center space-x-3">
+                <label for="academic-year" class="text-sm font-medium text-gray-700">Tahun Ajaran:</label>
+                <select id="academic-year" name="academic-year" 
+                    class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none bg-white">
+                </select>
+            </div>
+        </div>
+
+        <!-- Class Grid -->
+        <div id="class-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+    </main>
+</div>
+
+<!-- ADD CLASS MODAL -->
+<div id="add-class-modal" class="modal fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-slide-up">
+        <form id="add-class-form">
+            <div class="bg-gradient-to-r from-primary-500 to-primary-700 px-6 py-4">
+                <h3 class="text-xl font-bold text-white">Buat Kelas Baru</h3>
+                <p class="text-primary-100 text-sm mt-1">Buat kelas baru untuk tahun ajaran yang sedang aktif.</p>
+            </div>
+            <div class="p-6">
+                <div class="mb-4">
+                    <label for="course-name" class="block text-sm font-medium text-gray-700 mb-2">Nama Kelas</label>
+                    <input type="text" id="course-name" name="course-name" required placeholder="Contoh: Kimia XII - IPA 1" 
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none">
+                    <div id="add-modal-error" class="hidden mt-2 text-red-600 text-sm"></div>
+                </div>
+            </div>
+            <div class="bg-gray-50 px-6 py-4 flex justify-end space-x-3">
+                <button type="button" id="add-cancel-button" 
+                    class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                    Batal
+                </button>
+                <button type="submit" 
+                    class="px-4 py-2 bg-gradient-to-r from-primary-500 to-primary-700 text-white rounded-lg font-medium shadow hover:shadow-md transition-all">
+                    Simpan Kelas
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- SHOW CODE MODAL -->
+<div id="show-code-modal" class="modal fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md text-center animate-slide-up">
+        <div class="p-6">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Kelas Berhasil Dibuat!</h3>
+            <p class="text-gray-600 mb-6">Bagikan kode berikut kepada murid Anda untuk bergabung.</p>
+            <div id="generated-class-code" class="bg-gray-100 rounded-xl p-4 mb-4">
+                <span class="text-2xl font-mono font-bold text-gray-900 tracking-wider"></span>
+            </div>
+            <p id="copy-feedback" class="text-sm text-gray-500"></p>
+        </div>
+        <div class="bg-gray-50 px-6 py-4">
+            <button type="button" id="close-code-modal-button" 
+                class="w-full px-4 py-2 bg-gradient-to-r from-primary-500 to-primary-700 text-white rounded-lg font-medium shadow hover:shadow-md transition-all">
+                Selesai
+            </button>
         </div>
     </div>
+</div>
 
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
-</body>
-</html>
+<!-- EDIT CLASS MODAL -->
+<div id="edit-class-modal" class="modal fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-slide-up">
+        <form id="edit-class-form">
+            <div class="bg-gradient-to-r from-primary-500 to-primary-700 px-6 py-4">
+                <h3 class="text-xl font-bold text-white">Edit Kelas</h3>
+                <p class="text-primary-100 text-sm mt-1">Ubah nama dan warna latar belakang untuk kelas ini.</p>
+            </div>
+            <div class="p-6">
+                <div class="mb-4">
+                    <label for="edit-course-name" class="block text-sm font-medium text-gray-700 mb-2">Nama Kelas</label>
+                    <input type="text" id="edit-course-name" 
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Warna Latar</label>
+                    <div id="color-picker" class="grid grid-cols-5 gap-3"></div>
+                </div>
+                <div id="edit-modal-error" class="hidden text-red-600 text-sm"></div>
+            </div>
+            <div class="bg-gray-50 px-6 py-4 flex justify-end space-x-3">
+                <button type="button" id="edit-cancel-button" 
+                    class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                    Batal
+                </button>
+                <button type="submit" 
+                    class="px-4 py-2 bg-gradient-to-r from-primary-500 to-primary-700 text-white rounded-lg font-medium shadow hover:shadow-md transition-all">
+                    Simpan Perubahan
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+{% endblock %}

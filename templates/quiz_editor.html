@@ -1,53 +1,79 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editor Kuis: {{ quiz.name }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='quiz_editor.css') }}">
-    <script src="https://unpkg.com/htmx.org@1.9.6/dist/htmx.min.js"></script>
-</head>
-<body>
-    <div class="container">
-        <div class="quiz-header-nav">
-            <a href="{{ url_for('main.course_detail', course_id=quiz.course_id) }}" class="back-link">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
-                    <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" />
+﻿{% extends "base.html" %}
+
+{% block title %}Edit Quiz - {{ quiz.name }} - Aldudu Academy{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='quiz_editor.css') }}">
+<script src="https://unpkg.com/htmx.org@1.9.10" integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLFe8MWR+I" crossorigin="anonymous"></script>
+{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-40">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-14">
+                <a href="{{ url_for('main.course_detail', course_id=course.id) }}" class="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                    <span class="font-medium">Kembali ke {{ course.name }}</span>
+                </a>
+                <button class="px-4 py-2 bg-gradient-to-r from-primary-500 to-primary-700 text-white rounded-lg font-medium shadow hover:shadow-md transition-all">
+                    Publikasikan Kuis
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Quiz Header -->
+    <div class="bg-gradient-to-r from-amber-500 to-amber-600 py-8">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h1 class="text-3xl font-bold text-white mb-2">{{ quiz.name }}</h1>
+            <p class="text-amber-100">Editor Kuis - {{ course.name }}</p>
+        </div>
+    </div>
+
+    <!-- Editor Content -->
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Add Question Controls -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6 flex flex-wrap items-center gap-4">
+            <select id="question-type-select" name="question_type" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none bg-white">
+                <option value="MULTIPLE_CHOICE" selected>Pilihan Ganda</option>
+                <option value="TRUE_FALSE">Benar/Salah</option>
+                <option value="LONG_TEXT">Esai Singkat</option>
+            </select>
+            <button
+                class="px-4 py-2 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-lg font-medium shadow hover:shadow-md transition-all inline-flex items-center space-x-2"
+                hx-post="/api/quiz/{{ quiz.id }}/question/add"
+                hx-include="#question-type-select"
+                hx-target="#question-list"
+                hx-swap="beforeend"
+                hx-indicator="#loading-spinner">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
-                Selesai & Kembali
-            </a>
+                <span>Tambah Pertanyaan</span>
+            </button>
+            <span id="loading-spinner" class="htmx-indicator text-amber-600 font-medium">Menyimpan...</span>
         </div>
 
-        <h1>Editor Kuis: <strong>{{ quiz.name }}</strong></h1>
-        <p class="page-description">Gunakan formulir di bawah ini untuk membuat dan mengedit pertanyaan untuk kuis Anda. Semua perubahan disimpan secara otomatis.</p>
-
-        <div id="question-list">
-            {% for question in quiz.questions.order_by('order') %}
+        <!-- Question List -->
+        <div id="question-list" class="space-y-6">
+            {% for question in questions %}
                 {% include '_question_form.html' %}
             {% endfor %}
         </div>
 
-        <div class="add-question-container">
-            <form 
-                hx-post="{{ url_for('quiz.api_add_question', quiz_id=quiz.id) }}"
-                hx-target="#question-list"
-                hx-swap="beforeend"
-                class="add-question-form">
-                
-                <select name="question_type" class="question-type-selector">
-                    <option value="MULTIPLE_CHOICE">Pilihan Ganda</option>
-                    <option value="TRUE_FALSE">Benar/Salah</option>
-                    <option value="LONG_TEXT">Teks Panjang</option>
-                </select>
-                
-                <button type="submit" class="btn-add-question">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
-                        <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
-                    </svg>
-                    <span>Tambah Pertanyaan</span>
-                </button>
-            </form>
+        {% if not quiz.questions.all() %}
+        <div class="text-center py-12 bg-white rounded-xl border border-gray-200">
+            <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/>
+            </svg>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Kuis Ini Masih Kosong</h3>
+            <p class="text-gray-500">Tambahkan pertanyaan pertama menggunakan tombol "Tambah Pertanyaan" di atas.</p>
         </div>
+        {% endif %}
     </div>
-</body>
-</html>
+</div>
+{% endblock %}

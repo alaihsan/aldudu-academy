@@ -1,59 +1,115 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ discussion.title }} - {{ course.name }} - Aldudu Academy</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body data-user-id="{{ current_user.id }}" data-user-role="{{ current_user.role.value }}">
+﻿{% extends "base.html" %}
 
-    <div id="app-page">
-        <header class="app-header">
-            <div class="header-content">
-                <div class="header-left">
-                    <a href="{{ url_for('main.course_detail', course_id=course.id) }}" class="header-logo">← Kembali ke {{ course.name }}</a>
+{% block title %}{{ discussion.title }} - {{ course.name }} - Aldudu Academy{% endblock %}
+
+{% block body %}
+<div id="app-page" class="min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <a href="{{ url_for('main.course_detail', course_id=course.id) }}" class="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                        <span class="font-medium">Kembali ke {{ course.name }}</span>
+                    </a>
                 </div>
-                <div class="header-right">
-                    <a href="{{ url_for('main.dashboard') }}" class="btn-link">Kembali ke Dasbor</a>
+                <div class="flex items-center space-x-4">
+                    <a href="{{ url_for('main.dashboard') }}" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+                        â† Kembali ke Dasbor
+                    </a>
                 </div>
             </div>
-        </header>
+        </div>
+    </header>
 
-        <main class="container">
-            <h1 class="content-title">{{ discussion.title }}</h1>
-
-            <div class="discussion-details" data-creator-id="{{ discussion.user.id }}">
-                <p><strong>Oleh:</strong> {{ discussion.user.name }}</p>
-                <p><strong>Dibuat pada:</strong> {{ discussion.created_at.strftime('%d %B %Y, %H:%M') }}</p>
+    <!-- Main Content -->
+    <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Discussion Header -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-6">
+            <h1 class="text-2xl font-bold text-gray-900 mb-4">{{ discussion.title }}</h1>
+            
+            <div class="flex flex-wrap gap-4 text-sm text-gray-600 mb-4">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center text-white font-semibold">
+                        {{ discussion.user.name[0] | upper }}
+                    </div>
+                    <span class="font-medium">{{ discussion.user.name }}</span>
+                </div>
+                <div class="flex items-center space-x-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    <span>{{ discussion.created_at.strftime('%d %B %Y, %H:%M') }}</span>
+                </div>
                 {% if discussion.closed %}
-                <p><strong>Status:</strong> <span style="color: var(--danger-color);">Diskusi Ditutup</span></p>
+                <div class="flex items-center space-x-1 text-red-600">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                    </svg>
+                    <span class="font-medium">Diskusi Ditutup</span>
+                </div>
                 {% else %}
-                <p><strong>Status:</strong> <span style="color: var(--success-color);">Aktif</span></p>
+                <div class="flex items-center space-x-1 text-green-600">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span class="font-medium">Aktif</span>
+                </div>
                 {% endif %}
             </div>
 
-            <hr style="margin: 2rem 0;">
+            <hr class="border-gray-200">
 
-            <div id="posts-container">
-                <!-- Posts will be loaded here -->
+            <div class="mt-4 text-gray-700 leading-relaxed">
+                {{ discussion.content }}
             </div>
+        </div>
 
-            {% if discussion.closed %}
-            <div class="reply-section" style="margin-top: 2rem; padding: 1rem; background-color: var(--background-color); border-radius: var(--radius-md);">
-                <p style="color: var(--text-secondary-color); margin: 0;">Diskusi ini telah ditutup. Anda masih dapat melihat semua balasan yang ada.</p>
-            </div>
-            {% endif %}
+        <!-- Posts Container -->
+        <div id="posts-container" class="space-y-4"></div>
 
-            {% if is_teacher and not discussion.closed %}
-            <div style="margin-top: 2rem;">
-                <button id="close-discussion-btn" class="btn btn-secondary">Tutup Diskusi</button>
-            </div>
-            {% endif %}
-        </main>
-    </div>
+        <!-- Reply Section -->
+        {% if discussion.closed %}
+        <div class="mt-6 bg-gray-100 rounded-xl p-6 text-center">
+            <svg class="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+            <p class="text-gray-600">Diskusi ini telah ditutup. Anda masih dapat melihat semua balasan yang ada.</p>
+        </div>
+        {% else %}
+        <div class="mt-6 bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Balas Diskusi</h3>
+            <form id="reply-form" class="space-y-4">
+                <div>
+                    <textarea id="reply-content" rows="4" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none resize-none" placeholder="Tulis balasan Anda di sini..."></textarea>
+                </div>
+                <div class="flex justify-end">
+                    <button type="submit" class="px-6 py-2 bg-gradient-to-r from-primary-500 to-primary-700 text-white rounded-lg font-medium shadow hover:shadow-md transform hover:-translate-y-0.5 transition-all">
+                        Kirim Balasan
+                    </button>
+                </div>
+            </form>
+        </div>
+        {% endif %}
 
-    <script src="{{ url_for('static', filename='js/discussion_detail.js') }}"></script>
+        <!-- Close Discussion Button (Teacher Only) -->
+        {% if is_teacher and not discussion.closed %}
+        <div class="mt-6">
+            <button id="close-discussion-btn" class="px-6 py-3 bg-red-600 text-white rounded-lg font-medium shadow hover:bg-red-700 transition-colors inline-flex items-center space-x-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                </svg>
+                <span>Tutup Diskusi</span>
+            </button>
+        </div>
+        {% endif %}
+    </main>
+</div>
+{% endblock %}
 
-</body>
-</html>
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/discussion_detail.js') }}"></script>
+{% endblock %}
