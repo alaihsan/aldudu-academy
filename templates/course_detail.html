@@ -9,34 +9,39 @@
     .dropdown-menu { 
         display: none; 
         position: absolute; 
-        right: 0; 
+        left: 0;
         top: 100%; 
         margin-top: 0.5rem;
-        min-width: 200px;
-        z-index: 50;
+        min-width: 220px;
+        z-index: 100;
+        animation: slideDown 0.2s ease;
     }
-    .dropdown:hover .dropdown-menu { display: block; animation: slideDown 0.2s ease; }
+    .dropdown.open .dropdown-menu { display: block; }
+    @keyframes slideDown {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
 </style>
 {% endblock %}
 
 {% block body %}
-<div id="app-page" class="min-h-screen">
+<div id="app-page" class="min-h-screen bg-gray-50">
     <!-- Header -->
     <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center">
-                    <a href="{{ url_for('main.dashboard') }}" class="flex items-center space-x-3">
-                        <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center">
+                    <a href="{{ url_for('main.dashboard') }}" class="flex items-center space-x-3 hover:opacity-80 transition-opacity">
+                        <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center shadow-md">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                             </svg>
                         </div>
-                        <span class="text-xl font-bold text-gray-900">Aldudu Academy</span>
+                        <span class="text-xl font-bold text-gray-900 hidden sm:block">Aldudu Academy</span>
                     </a>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{{ url_for('main.dashboard') }}" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+                    <a href="{{ url_for('main.dashboard') }}" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors hidden md:block">
                         â† Kembali ke Dasbor
                     </a>
                 </div>
@@ -47,20 +52,24 @@
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Course Header -->
-        <div class="bg-gradient-to-r from-primary-500 to-primary-700 rounded-2xl shadow-lg p-6 mb-8 text-white">
-            <h1 class="text-3xl font-bold mb-2">{{ course.name }}</h1>
-            <div class="flex flex-wrap gap-4 text-primary-100">
-                <div class="flex items-center space-x-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                    </svg>
-                    <span>{{ course.teacher.name }}</span>
-                </div>
-                <div class="flex items-center space-x-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                    </svg>
-                    <span>{{ course.academic_year.year }}</span>
+        <div class="bg-gradient-to-r from-primary-500 via-primary-600 to-primary-700 rounded-2xl shadow-lg p-6 mb-6 text-white">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h1 class="text-2xl sm:text-3xl font-bold mb-3">{{ course.name }}</h1>
+                    <div class="flex flex-wrap gap-3 text-primary-100 text-sm">
+                        <div class="flex items-center space-x-2 bg-white/10 px-3 py-1.5 rounded-lg backdrop-blur-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                            <span>{{ course.teacher.name }}</span>
+                        </div>
+                        <div class="flex items-center space-x-2 bg-white/10 px-3 py-1.5 rounded-lg backdrop-blur-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            <span>{{ course.academic_year.year }}</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -68,12 +77,15 @@
         {% if is_teacher %}
         <!-- Teacher Controls -->
         <div class="mb-6 relative">
-            <div class="dropdown inline-block">
+            <div class="dropdown inline-block relative" id="add-topics-dropdown">
                 <button id="add-topics-button" class="px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 inline-flex items-center space-x-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                     </svg>
                     <span>Add Topics</span>
+                    <svg class="w-4 h-4 ml-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
                 </button>
                 <div id="topics-dropdown-menu" class="dropdown-menu bg-white rounded-xl shadow-xl border border-gray-200 py-2">
                     <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors">
@@ -118,14 +130,15 @@
         {% endif %}
 
         <!-- View Controls -->
-        <div class="flex justify-end mb-6">
-            <div class="inline-flex border border-gray-300 rounded-lg overflow-hidden">
-                <button id="grid-view-btn" class="view-btn active px-4 py-2 bg-primary-50 text-primary-600 border-r border-gray-300 hover:bg-gray-50 transition-colors" title="Grid View">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+            <h2 class="text-xl font-bold text-gray-900">Materi & Tugas</h2>
+            <div class="inline-flex self-start sm:self-auto border border-gray-300 rounded-lg overflow-hidden bg-white">
+                <button id="grid-view-btn" class="view-btn active px-4 py-2 bg-primary-50 text-primary-600 hover:bg-gray-50 transition-colors" title="Grid View">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 8.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25v2.25A2.25 2.25 0 018.25 21H6a2.25 2.25 0 01-2.25-2.25v-2.25zM13.5 6A2.25 2.25 0 0115.75 3.75h2.25A2.25 2.25 0 0120.25 6v2.25a2.25 2.25 0 01-2.25 2.25h-2.25A2.25 2.25 0 0113.5 8.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25h2.25a2.25 2.25 0 012.25 2.25v2.25a2.25 2.25 0 01-2.25 2.25h-2.25a2.25 2.25 0 01-2.25-2.25v-2.25z"/>
                     </svg>
                 </button>
-                <button id="row-view-btn" class="view-btn px-4 py-2 bg-white text-gray-600 hover:bg-gray-50 transition-colors" title="List View">
+                <button id="row-view-btn" class="view-btn px-4 py-2 text-gray-600 hover:bg-gray-50 transition-colors" title="List View">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.75 5.25h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5"/>
                     </svg>
@@ -134,7 +147,6 @@
         </div>
 
         <!-- Topics Container -->
-        <h2 class="text-xl font-bold text-gray-900 mb-4">Materi & Tugas</h2>
         <div id="topics-container" class="topics-grid-view grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
             {% if topics %}
                 {% for topic in topics %}
@@ -179,11 +191,11 @@
         </div>
 
         <!-- Discussions Section -->
-        <h2 class="text-xl font-bold text-gray-900 mb-4 mt-8">Diskusi</h2>
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Diskusi</h2>
         <div id="discussions-container" class="topics-grid-view grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"></div>
 
         <!-- Students List -->
-        <h2 class="text-xl font-bold text-gray-900 mb-4 mt-8">Daftar Murid</h2>
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Daftar Murid</h2>
         <div class="bg-white rounded-2xl border border-gray-200 p-8 text-center">
             <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/>
@@ -192,6 +204,9 @@
         </div>
     </main>
 </div>
+
+<!-- Modals remain the same, just include them -->
+{% include '_modals.html' ignore missing %}
 
 <!-- Create Quiz Modal -->
 <div id="create-quiz-modal" class="modal fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
@@ -347,6 +362,42 @@
         </form>
     </div>
 </div>
+
+<!-- Dropdown Toggle Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const addTopicsButton = document.getElementById('add-topics-button');
+    const dropdown = document.getElementById('add-topics-dropdown');
+    const dropdownMenu = document.getElementById('topics-dropdown-menu');
+    
+    if (addTopicsButton && dropdown) {
+        addTopicsButton.addEventListener('click', function(e) {
+            e.stopPropagation();
+            dropdown.classList.toggle('open');
+            const arrow = this.querySelector('svg:last-child');
+            if (arrow) {
+                arrow.style.transform = dropdown.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
+            }
+        });
+        
+        document.addEventListener('click', function(e) {
+            if (dropdown && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('open');
+                const arrow = addTopicsButton.querySelector('svg:last-child');
+                if (arrow) arrow.style.transform = 'rotate(0deg)';
+            }
+        });
+        
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                dropdown.classList.remove('open');
+                const arrow = addTopicsButton.querySelector('svg:last-child');
+                if (arrow) arrow.style.transform = 'rotate(0deg)';
+            }
+        });
+    }
+});
+</script>
 {% endblock %}
 
 {% block extra_scripts %}
