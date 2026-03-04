@@ -209,7 +209,7 @@ def api_add_question(quiz_id):
     )
 
     # Buat opsi default berdasarkan tipe pertanyaan
-    if question_type == QuestionType.MULTIPLE_CHOICE:
+    if question_type in [QuestionType.MULTIPLE_CHOICE, QuestionType.DROPDOWN]:
         # Hanya buat satu opsi default
         default_options = [
             Option(option_text="Opsi 1", order=1),
@@ -281,8 +281,8 @@ def api_change_question_type(question_id):
         false_opt = Option(question_id=question.id, option_text="Salah", order=2, is_correct=False)
         db.session.add_all([true_opt, false_opt])
 
-    # Jika tipenya Pilihan Ganda, buat 1 opsi kosong
-    elif new_type == QuestionType.MULTIPLE_CHOICE:
+    # Jika tipenya Pilihan Ganda atau Dropdown, buat 1 opsi kosong
+    elif new_type in [QuestionType.MULTIPLE_CHOICE, QuestionType.DROPDOWN]:
         empty_opt = Option(question_id=question.id, option_text="Opsi 1", order=1, is_correct=False)
         db.session.add(empty_opt)
 
@@ -481,7 +481,7 @@ def api_submit_quiz(quiz_id):
 
         answer = Answer(submission_id=submission.id, question_id=question_id)
 
-        if question.question_type == QuestionType.MULTIPLE_CHOICE:
+        if question.question_type in [QuestionType.MULTIPLE_CHOICE, QuestionType.DROPDOWN]:
             selected_option_id = answer_data.get('selected_option_id')
             if selected_option_id:
                 option = db.session.get(Option, selected_option_id)

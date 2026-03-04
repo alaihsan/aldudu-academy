@@ -33,13 +33,24 @@ const CourseDetail = {
     },
 
     bindEvents() {
-        // Dropdown Toggle
+        // ... previous events ...
         this.addTopicsBtn?.addEventListener('click', (e) => {
             e.stopPropagation();
             this.addTopicsMenu.classList.toggle('hidden');
         });
 
         window.addEventListener('click', () => this.addTopicsMenu?.classList.add('hidden'));
+
+        // Quiz Grade Type Logic
+        const gradeTypeSelect = document.getElementById('quiz-grade-type');
+        const pointsContainer = document.getElementById('points-container');
+        const letterInfoContainer = document.getElementById('letter-info-container');
+
+        gradeTypeSelect?.addEventListener('change', (e) => {
+            const isLetter = e.target.value === 'letter';
+            pointsContainer.classList.toggle('hidden', isLetter);
+            letterInfoContainer.classList.toggle('hidden', !isLetter);
+        });
 
         // Tab Switching Logic
         this.tabBtns.forEach(btn => {

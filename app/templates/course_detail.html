@@ -2,57 +2,50 @@
 
 {% block title %}{{ course.name }} - Aldudu Academy{% endblock %}
 
+{% block extra_head %}
+<style>
+    :root {
+        --course-theme: {{ course.color or '#2563eb' }};
+        --course-theme-light: {{ course.color }}15; /* 10% opacity */
+    }
+    .bg-theme { background-color: var(--course-theme) !important; }
+    .text-theme { color: var(--course-theme) !important; }
+    .border-theme { border-color: var(--course-theme) !important; }
+    .bg-theme-light { background-color: var(--course-theme-light) !important; }
+    
+    .tab-btn.active {
+        background-color: var(--course-theme) !important;
+        box-shadow: 0 10px 15px -3px var(--course-theme-light);
+    }
+    
+    .btn-shine-theme:hover {
+        background-color: var(--course-theme);
+        filter: brightness(90%);
+    }
+
+    /* Modal Theme Overrides */
+    .modal-header-theme {
+        background: linear-gradient(to bottom right, var(--course-theme), var(--course-theme));
+        filter: brightness(90%);
+    }
+    .btn-primary-theme {
+        background-color: var(--course-theme) !important;
+        box-shadow: 0 10px 15px -3px var(--course-theme-light);
+    }
+    .btn-primary-theme:hover {
+        filter: brightness(110%);
+    }
+    .focus-theme:focus {
+        border-color: var(--course-theme) !important;
+        box-shadow: 0 0 0 2px var(--course-theme-light) !important;
+    }
+</style>
+{% endblock %}
+
 {% block body %}
 <div id="app-page" class="min-h-screen bg-gray-50 flex">
-    <!-- Sidebar (Same as Dashboard) -->
-    <aside class="w-64 bg-white border-r border-gray-200 hidden lg:flex flex-col sticky top-0 h-screen">
-        <div class="p-6 border-b border-gray-100">
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center shadow-lg shadow-primary-200">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                    </svg>
-                </div>
-                <span class="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">Aldudu</span>
-            </div>
-        </div>
-        
-        <nav class="flex-1 p-4 space-y-1">
-            <a href="{{ url_for('main.dashboard') }}" class="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl transition-all duration-200">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-                </svg>
-                <span>Dashboard</span>
-            </a>
-            <div class="pt-4 space-y-1">
-                <p class="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Navigasi Kelas</p>
-                <a href="#materi" class="flex items-center space-x-3 px-4 py-3 bg-primary-50 text-primary-700 rounded-xl font-semibold">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13"/>
-                    </svg>
-                    <span>Materi & Tugas</span>
-                </a>
-                <a href="#diskusi" class="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl transition-all">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"/>
-                    </svg>
-                    <span>Forum Diskusi</span>
-                </a>
-            </div>
-        </nav>
-
-        <div class="p-4 border-t border-gray-100">
-            <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-2xl">
-                <div class="w-10 h-10 rounded-xl bg-primary-100 text-primary-700 flex items-center justify-center font-bold text-lg">
-                    {{ current_user.name[0] | upper }}
-                </div>
-                <div class="flex-1 min-w-0">
-                    <p class="text-sm font-bold text-gray-900 truncate">{{ current_user.name }}</p>
-                    <p class="text-xs text-gray-500 capitalize">{{ current_user.role.value }}</p>
-                </div>
-            </div>
-        </div>
-    </aside>
+    <!-- Sidebar (Shared Partial) -->
+    {% include '_sidebar.html' %}
 
     <!-- Main Content Area -->
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
@@ -252,15 +245,21 @@
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Poin</label>
-                        <input type="number" id="quiz-points" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-amber-500 focus:ring-0 font-bold outline-none" value="100">
-                    </div>
-                    <div>
                         <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Tipe Nilai</label>
-                        <select id="quiz-grade-type" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-amber-500 focus:ring-0 font-bold outline-none bg-white">
-                            <option value="numeric">Numeric</option>
-                            <option value="letter">Letter</option>
+                        <select id="quiz-grade-type" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-amber-500 focus:ring-0 font-bold outline-none bg-white transition-all">
+                            <option value="numeric">Numeric (0-100)</option>
+                            <option value="letter">Letter (A, B, C, D)</option>
                         </select>
+                    </div>
+                    <div id="points-container">
+                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Maksimal Poin</label>
+                        <input type="number" id="quiz-points" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-amber-500 focus:ring-0 font-bold outline-none transition-all" value="100">
+                    </div>
+                    <div id="letter-info-container" class="hidden">
+                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Format Nilai</label>
+                        <div class="w-full px-6 py-4 bg-amber-50 border-2 border-amber-100 rounded-2xl text-amber-700 font-bold text-center animate-fade-in">
+                            A, B, C, D
+                        </div>
                     </div>
                 </div>
                 <div id="quiz-modal-error" class="hidden p-4 bg-red-50 text-red-600 rounded-2xl text-xs font-bold text-center"></div>

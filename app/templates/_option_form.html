@@ -1,17 +1,37 @@
-﻿<div class="option-item flex items-center space-x-3 p-3 border border-gray-300 rounded-xl" data-option-id="{{ option.id }}">
-    <span class="w-8 h-8 bg-primary-100 text-primary-700 rounded-full flex items-center justify-center font-bold text-sm">{{ loop.index + 64 | chr }}</span>
-    <input type="text" name="option_{{ option.id }}" value="{{ option.text }}" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none">
-    <label class="flex items-center space-x-2 cursor-pointer">
-        <input type="radio" name="correct_option" value="{{ option.id }}" {% if option.is_correct %}checked{% endif %} class="text-primary-600 focus:ring-primary-500">
-        <span class="text-sm text-gray-600">Benar</span>
-    </label>
-    <button type="button" class="text-red-500 hover:text-red-700 transition-colors"
-        hx-delete="/api/quiz/{{ quiz.id }}/option/{{ option.id }}/delete"
-        hx-confirm="Hapus pilihan ini?"
-        hx-target=".option-item[data-option-id='{{ option.id }}']"
-        hx-swap="outerHTML">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-        </svg>
-    </button>
+<div class="option-row group/opt" id="option-{{ option.id }}">
+    <div class="flex items-center space-x-3 w-full">
+        <!-- Radio/Icon indicator -->
+        <div class="flex-shrink-0">
+            {% if question.question_type.name == 'MULTIPLE_CHOICE' %}
+                <input type="radio" 
+                    name="correct_option_q{{ question.id }}" 
+                    value="{{ option.id }}"
+                    {% if option.is_correct %}checked{% endif %}
+                    hx-post="/api/question/{{ question.id }}/set-correct"
+                    hx-trigger="change"
+                    class="w-4 h-4 text-primary-600 focus:ring-primary-500"
+                >
+            {% else %}
+                <span class="text-gray-400 font-bold text-xs">{{ loop.index }}</span>
+            {% endif %}
+        </div>
+
+        <!-- Option Text Input -->
+        <input type="text" 
+            class="option-input text-sm" 
+            value="{{ option.option_text }}"
+            name="option_text"
+            hx-put="/api/option/{{ option.id }}/update"
+            hx-trigger="blur"
+            placeholder="Opsi {{ loop.index }}"
+        >
+
+        <!-- Delete Option -->
+        <button class="p-1.5 text-gray-300 hover:text-red-500 opacity-0 group-hover/opt:opacity-100 transition-all"
+            hx-delete="/api/option/{{ option.id }}/delete"
+            hx-target="#option-{{ option.id }}"
+            hx-swap="outerHTML">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+    </div>
 </div>

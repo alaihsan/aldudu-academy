@@ -82,7 +82,7 @@ def quiz_detail(quiz_id):
         abort(403)
 
     if is_teacher:
-        return render_template('quiz_editor.html', quiz=quiz, QuestionType=QuestionType)
+        return render_template('quiz_editor.html', quiz=quiz, QuestionType=QuestionType, Question=Question, Option=Option)
     else:
         questions = quiz.questions.order_by(Question.order).all()
         return render_template(

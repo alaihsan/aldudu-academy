@@ -8,6 +8,7 @@ class QuestionType(enum.Enum):
     """Question type enumeration."""
     MULTIPLE_CHOICE = 'multiple_choice'
     TRUE_FALSE = 'true_false'
+    DROPDOWN = 'dropdown'
     LONG_TEXT = 'long_text'
 
 

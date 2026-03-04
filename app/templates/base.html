@@ -119,14 +119,23 @@
     <div class="page-transition">
         {% block body %}{% endblock %}
     </div>
+
     
     {% block extra_scripts %}{% endblock %}
     
+    <!-- Sidebar & Global Logic -->
+    <script src="{{ url_for('static', filename='js/sidebar.js') }}?v={{ range(1, 9999) | random }}"></script>
+    
     <script>
-        // Force refresh dashboard logic on HTMX swaps
+        // Force refresh dashboard/page logic on HTMX swaps
         document.body.addEventListener('htmx:afterSwap', function(evt) {
+            // If we're on dashboard, re-init it
             if (window.Dashboard && typeof window.Dashboard.init === 'function') {
                 window.Dashboard.init();
+            }
+            // If we're on course detail, re-init it
+            if (window.CourseDetail && typeof window.CourseDetail.init === 'function') {
+                window.CourseDetail.init();
             }
         });
     </script>
