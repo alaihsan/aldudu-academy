@@ -25,11 +25,14 @@ function showSaveIndicator() {
     const indicator = document.getElementById('save-indicator');
     if (!indicator) return;
     
+    // If already showing, reset timer
+    if (window.saveToastTimer) clearTimeout(window.saveToastTimer);
+    
     indicator.classList.add('show');
     
-    setTimeout(() => {
+    window.saveToastTimer = setTimeout(() => {
         indicator.classList.remove('show');
-    }, 2500);
+    }, 3000);
 }
 
 // Global HTMX Event Listeners for Quiz Editor

@@ -26,6 +26,13 @@ class Quiz(db.Model):
     id: Mapped[int] = mapped_column(db.Integer, primary_key=True)
     name: Mapped[str] = mapped_column(db.String(200), nullable=False)
     description: Mapped[Optional[str]] = mapped_column(db.Text, nullable=True)
+    
+    # Theme & Style Settings
+    theme_color: Mapped[str] = mapped_column(db.String(7), default='#673ab7')
+    bg_pattern: Mapped[str] = mapped_column(db.String(50), default='none') # pattern1 to pattern5
+    font_question: Mapped[str] = mapped_column(db.String(50), default='Inter')
+    font_answer: Mapped[str] = mapped_column(db.String(50), default='Inter')
+
     course_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('courses.id'), nullable=False)
     grade_type: Mapped[GradeType] = mapped_column(db.Enum(GradeType), nullable=False, default=GradeType.NUMERIC)
     grading_category: Mapped[Optional[str]] = mapped_column(db.String(100))

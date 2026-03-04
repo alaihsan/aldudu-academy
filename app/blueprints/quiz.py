@@ -185,13 +185,71 @@ def api_delete_question(question_id):
     db.session.commit()
     return "", 200
 
-@quiz_bp.route('/quiz/<int:quiz_id>/publish', methods=['POST'])
+@quiz_bp.route('/quiz/<int:quiz_id>/stats', methods=['GET'])
 @login_required
-def api_publish_quiz(quiz_id):
+def api_get_quiz_stats(quiz_id):
     quiz = get_quiz_or_abort(quiz_id)
-    quiz.is_published = not quiz.is_published
-    db.session.commit()
-    return jsonify({'success': True, 'message': 'Status kuis diperbarui'})
+    
+    # Get all submissions
+    submissions = QuizSubmission.query.filter_by(quiz_id=quiz_id).all()
+    total_submissions = len(submissions)
+    
+    if total_submissions == 0:
+        return jsonify({
+            'success': True,
+            'total_submissions': 0,
+            'questions_stats': []
+        })
+
+    # Stats per question
+    questions_stats = []
+    for q in quiz.questions.order_by(Question.order).all():
+        correct_count = 0
+        incorrect_count = 0
+        
+        # Count for each question
+        for sub in submissions:
+            # Find answer for this specific question in this submission
+            ans = Answer.query.filter_by(submission_id=sub.id, question_id=q.id).first()
+            if ans:
+                if q.question_type in [QuestionType.MULTIPLE_CHOICE, QuestionType.DROPDOWN, QuestionType.TRUE_FALSE]:
+                    if ans.selected_option and ans.selected_option.is_correct:
+                        correct_count += 1
+                    else:
+                        incorrect_count += 1
+                # For Long Text/Upload, we count as "answered" for now
+                elif ans.answer_text:
+                    correct_count += 1
+        
+        questions_stats.append({
+            'question_text': q.question_text,
+            'type': q.question_type.name,
+            'correct': correct_count,
+            'incorrect': incorrect_count,
+            'total': correct_count + incorrect_count
+        })
+
+    # Calculate stats
+    scores = [s.score for s in submissions if s.score is not None]
+    avg_score = sum(scores) / total_submissions if total_submissions > 0 else 0
+    max_score = max(scores) if scores else 0
+    min_score = min(scores) if scores else 0
+
+    return jsonify({
+        'success': True,
+        'total_submissions': total_submissions,
+        'average_score': round(avg_score, 1),
+        'max_score': round(max_score, 1),
+        'min_score': round(min_score, 1),
+        'questions_stats': questions_stats,
+        'submissions': [
+            {
+                'student_name': s.user.name,
+                'score': s.score,
+                'submitted_at': s.submitted_at.strftime('%Y-%m-%d %H:%M')
+            } for s in submissions
+        ]
+    })
 
 @quiz_bp.route('/quiz/<int:quiz_id>/update-meta', methods=['PUT'])
 @login_required
@@ -202,6 +260,20 @@ def api_update_quiz_meta(quiz_id):
     db.session.commit()
     # Return minimal response or nothing
     return "", 204
+
+@quiz_bp.route('/quiz/<int:quiz_id>/update-theme', methods=['PUT'])
+@login_required
+def api_update_quiz_theme(quiz_id):
+    quiz = get_quiz_or_abort(quiz_id)
+    data = request.get_json() or {}
+    
+    quiz.theme_color = data.get('theme_color', quiz.theme_color)
+    quiz.bg_pattern = data.get('bg_pattern', quiz.bg_pattern)
+    quiz.font_question = data.get('font_question', quiz.font_question)
+    quiz.font_answer = data.get('font_answer', quiz.font_answer)
+    
+    db.session.commit()
+    return jsonify({'success': True})
 
 @quiz_bp.route('/quiz/<int:quiz_id>/submit', methods=['POST'])
 @login_required
