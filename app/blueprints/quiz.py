@@ -237,7 +237,9 @@ def api_add_question(quiz_id):
     return render_template(
         '_question_form.html',
         question=new_question,
-        QuestionType=QuestionType
+        QuestionType=QuestionType,
+        Question=Question,
+        Option=Option
     )
 
 @quiz_bp.route('/question/<int:question_id>/update', methods=['PUT'])
@@ -433,6 +435,38 @@ def api_update_long_text_description(question_id):
 
     # Return the updated textarea
     return f'<textarea id="description-{question.id}" name="description" class="form-textarea" placeholder="Enter a description for the long text question..." maxlength="1000" rows="4" hx-post="/api/question/{question.id}/update-long-text-description" hx-trigger="blur" hx-swap="outerHTML">{question.description or ""}</textarea>'
+
+@quiz_bp.route('/question/<int:question_id>/toggle-required', methods=['POST'])
+@login_required
+def api_toggle_question_required(question_id):
+    question = get_question_or_abort(question_id)
+    question.is_required = not question.is_required
+    db.session.commit()
+    # Re-render the form to reflect changes
+    return render_template('_question_form.html', question=question, QuestionType=QuestionType, Option=Option)
+
+
+@quiz_bp.route('/question/<int:question_id>/update-points', methods=['PUT'])
+@login_required
+def api_update_question_points(question_id):
+    question = get_question_or_abort(question_id)
+    points = request.form.get('points', 0)
+    try:
+        question.points = int(points)
+        db.session.commit()
+    except ValueError:
+        pass
+    return render_template('_question_form.html', question=question, QuestionType=QuestionType, Option=Option)
+
+
+@quiz_bp.route('/quiz/<int:quiz_id>/publish', methods=['POST'])
+@login_required
+def api_publish_quiz(quiz_id):
+    quiz = get_quiz_or_abort(quiz_id)
+    quiz.is_published = not quiz.is_published
+    db.session.commit()
+    return jsonify({'success': True, 'is_published': quiz.is_published, 'message': 'Status publikasi diperbarui'})
+
 
 @quiz_bp.route('/quiz/<int:quiz_id>/submit', methods=['POST'])
 @login_required

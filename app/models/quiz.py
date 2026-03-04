@@ -28,7 +28,10 @@ class Quiz(db.Model):
     grading_category: Mapped[Optional[str]] = mapped_column(db.String(100))
     start_date: Mapped[Optional[datetime.datetime]] = mapped_column(db.DateTime, nullable=True)
     end_date: Mapped[Optional[datetime.datetime]] = mapped_column(db.DateTime, nullable=True)
-    points: Mapped[int] = mapped_column(db.Integer, default=100)
+    points: Mapped[int] = mapped_column(db.Integer, default=100) # Total points
+    is_published: Mapped[bool] = mapped_column(db.Boolean, default=False, nullable=False)
+    allow_responses: Mapped[bool] = mapped_column(db.Boolean, default=True, nullable=False)
+    shuffle_questions: Mapped[bool] = mapped_column(db.Boolean, default=False, nullable=False)
     created_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=datetime.datetime.utcnow, nullable=False)
     updated_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow, nullable=False)
 
@@ -46,6 +49,9 @@ class Question(db.Model):
     quiz_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('quizzes.id'), nullable=False, index=True)
     order: Mapped[int] = mapped_column(db.Integer, nullable=False, default=1)
     description: Mapped[Optional[str]] = mapped_column(db.Text, nullable=True)  # For LONG_TEXT questions
+    is_required: Mapped[bool] = mapped_column(db.Boolean, default=True, nullable=False)
+    points: Mapped[int] = mapped_column(db.Integer, default=0, nullable=False)
+    explanation: Mapped[Optional[str]] = mapped_column(db.Text, nullable=True)
 
     quiz: Mapped[Quiz] = relationship('Quiz', back_populates='questions')
     options: Mapped[List['Option']] = relationship('Option', back_populates='question', lazy='dynamic', cascade='all, delete-orphan')

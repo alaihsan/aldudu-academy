@@ -1,9 +1,12 @@
-<div class="form-card p-6 md:p-8" id="question-{{ question.id }}" data-question-id="{{ question.id }}">
-    <div class="flex flex-col md:flex-row gap-6 mb-6">
+<div class="form-card p-6 md:p-8 animate-fade-in group/card" id="question-{{ question.id }}" data-question-id="{{ question.id }}">
+    <!-- Card Active Indicator -->
+    <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary-500 opacity-0 group-hover/card:opacity-100 transition-opacity rounded-l-lg"></div>
+
+    <div class="flex flex-col md:flex-row gap-6 mb-8">
         <!-- Question Text -->
         <div class="flex-1">
             <input type="text" 
-                class="question-title-input font-bold" 
+                class="question-title-input font-bold text-xl" 
                 value="{{ question.question_text }}" 
                 placeholder="Pertanyaan Tanpa Judul"
                 hx-put="/api/question/{{ question.id }}/update"
@@ -13,87 +16,106 @@
         </div>
         
         <!-- Type Selector -->
-        <div class="md:w-48">
-            <select class="type-select w-full" 
-                name="question_type"
-                hx-post="/api/question/{{ question.id }}/change-type"
-                hx-target="#question-{{ question.id }}"
-                hx-swap="outerHTML"
-            >
-                <option value="MULTIPLE_CHOICE" {% if question.question_type.name == 'MULTIPLE_CHOICE' %}selected{% endif %}>Pilihan Ganda</option>
-                <option value="TRUE_FALSE" {% if question.question_type.name == 'TRUE_FALSE' %}selected{% endif %}>Benar / Salah</option>
-                <option value="DROPDOWN" {% if question.question_type.name == 'DROPDOWN' %}selected{% endif %}>Dropdown</option>
-                <option value="LONG_TEXT" {% if question.question_type.name == 'LONG_TEXT' %}selected{% endif %}>Esai Singkat</option>
-            </select>
+        <div class="md:w-56">
+            <div class="relative">
+                <select class="type-select w-full appearance-none cursor-pointer font-bold text-gray-700 bg-gray-50 border-2 border-gray-100 hover:border-gray-200 transition-all px-4 py-3 rounded-xl focus:ring-0 focus:border-primary-500" 
+                    name="question_type"
+                    hx-post="/api/question/{{ question.id }}/change-type"
+                    hx-target="#question-{{ question.id }}"
+                    hx-swap="outerHTML"
+                >
+                    <option value="MULTIPLE_CHOICE" {% if question.question_type.name == 'MULTIPLE_CHOICE' %}selected{% endif %}>Pilihan Ganda</option>
+                    <option value="TRUE_FALSE" {% if question.question_type.name == 'TRUE_FALSE' %}selected{% endif %}>Benar / Salah</option>
+                    <option value="DROPDOWN" {% if question.question_type.name == 'DROPDOWN' %}selected{% endif %}>Dropdown</option>
+                    <option value="LONG_TEXT" {% if question.question_type.name == 'LONG_TEXT' %}selected{% endif %}>Esai Singkat</option>
+                </select>
+                <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Options Container -->
-    <div class="options-container space-y-3 mb-8">
+    <div class="options-container space-y-4 mb-10">
         {% if question.question_type.name in ['MULTIPLE_CHOICE', 'DROPDOWN'] %}
-            <div id="options-list-{{ question.id }}" class="space-y-2">
+            <div id="options-list-{{ question.id }}" class="space-y-3">
                 {% for option in question.options.order_by(Option.order).all() %}
                     {% include '_option_form.html' %}
                 {% endfor %}
             </div>
-            <button class="text-sm text-gray-500 hover:text-primary-600 font-medium flex items-center space-x-2 mt-4" 
+            <button class="text-sm text-primary-600 hover:text-primary-700 font-black flex items-center space-x-2 mt-6 px-4 py-2 bg-primary-50 rounded-xl transition-all active:scale-95" 
                 hx-post="/api/question/{{ question.id }}/option/add"
                 hx-target="#options-list-{{ question.id }}"
                 hx-swap="beforeend">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
                 <span>Tambah Opsi</span>
             </button>
             
         {% elif question.question_type.name == 'TRUE_FALSE' %}
             <div class="grid grid-cols-2 gap-4">
                 {% for option in question.options.order_by(Option.order).all() %}
-                    <div class="flex items-center p-4 bg-gray-50 rounded-xl border-2 {% if option.is_correct %}border-primary-500 bg-primary-50{% else %}border-gray-100{% endif %}">
+                    <label class="flex items-center p-5 rounded-[1.5rem] border-2 cursor-pointer transition-all active:scale-95
+                        {% if option.is_correct %} border-primary-500 bg-primary-50 shadow-sm shadow-primary-100 {% else %} border-gray-100 bg-gray-50/50 hover:border-gray-200 {% endif %}">
                         <input type="radio" 
                             name="correct_option_q{{ question.id }}" 
                             value="{{ option.id }}"
                             {% if option.is_correct %}checked{% endif %}
                             hx-post="/api/question/{{ question.id }}/set-correct"
-                            hx-trigger="change"
-                            class="w-4 h-4 text-primary-600 focus:ring-primary-500"
+                            hx-target="#question-{{ question.id }}"
+                            hx-swap="outerHTML"
+                            class="w-5 h-5 text-primary-600 focus:ring-primary-500 border-gray-300"
                         >
-                        <span class="ml-3 font-bold text-gray-700">{{ option.option_text }}</span>
-                    </div>
+                        <span class="ml-4 font-black text-gray-700">{{ option.option_text }}</span>
+                    </label>
                 {% endfor %}
             </div>
 
         {% elif question.question_type.name == 'LONG_TEXT' %}
-            <div class="p-4 bg-gray-50 rounded-xl border border-dashed border-gray-300">
-                <textarea class="w-full bg-transparent border-none focus:ring-0 text-gray-400 italic pointer-events-none" rows="2" placeholder="Teks jawaban panjang..."></textarea>
-            </div>
-            <div class="mt-4">
-                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Instruksi Penilaian (Opsional)</label>
-                <textarea 
-                    name="description" 
-                    class="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:border-primary-500 focus:ring-0 text-sm"
-                    rows="2"
-                    hx-post="/api/question/{{ question.id }}/update-long-text-description"
-                    hx-trigger="blur"
-                    placeholder="Contoh: Jawaban minimal 50 kata..."
-                >{{ question.description or '' }}</textarea>
+            <div class="p-6 bg-gray-50 rounded-[1.5rem] border-2 border-dashed border-gray-200">
+                <textarea class="w-full bg-transparent border-none focus:ring-0 text-gray-400 italic pointer-events-none" rows="2" placeholder="Murid akan menulis jawaban di sini..."></textarea>
             </div>
         {% endif %}
     </div>
 
     <!-- Question Actions Footer -->
-    <div class="pt-6 border-t border-gray-100 flex items-center justify-end space-x-4">
-        <button class="p-2 text-gray-400 hover:text-red-600 transition-all" 
-            hx-delete="/api/question/{{ question.id }}/delete"
-            hx-confirm="Hapus pertanyaan ini?"
-            hx-target="#question-{{ question.id }}"
-            hx-swap="outerHTML">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-        </button>
-        <div class="h-6 w-px bg-gray-200"></div>
-        <div class="flex items-center space-x-2">
-            <span class="text-xs font-bold text-gray-400 uppercase">Wajib diisi</span>
-            <div class="w-10 h-5 bg-gray-200 rounded-full relative cursor-pointer opacity-50">
-                <div class="absolute left-1 top-1 w-3 h-3 bg-white rounded-full"></div>
-            </div>
+    <div class="pt-8 border-t border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <!-- Points Input -->
+        <div class="flex items-center space-x-3 bg-gray-50 px-4 py-2 rounded-2xl border border-gray-100">
+            <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Poin Soal</span>
+            <input type="number" 
+                class="w-16 bg-transparent border-none focus:ring-0 font-black text-primary-600 text-center" 
+                value="{{ question.points }}"
+                hx-put="/api/question/{{ question.id }}/update-points"
+                hx-trigger="blur"
+                name="points"
+            >
+        </div>
+
+        <div class="flex items-center justify-end space-x-6">
+            <!-- Delete Button -->
+            <button class="p-3 text-gray-300 hover:text-red-600 hover:bg-red-50 rounded-2xl transition-all active:scale-90" 
+                hx-delete="/api/question/{{ question.id }}/delete"
+                hx-confirm="Apakah Anda yakin ingin menghapus pertanyaan ini?"
+                hx-target="#question-{{ question.id }}"
+                hx-swap="outerHTML">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            </button>
+
+            <div class="h-8 w-px bg-gray-100"></div>
+
+            <!-- Required Toggle -->
+            <label class="flex items-center cursor-pointer group/toggle">
+                <span class="mr-3 text-xs font-black text-gray-400 uppercase tracking-widest group-hover/toggle:text-gray-600 transition-colors">Wajib diisi</span>
+                <div class="relative" 
+                    hx-post="/api/question/{{ question.id }}/toggle-required"
+                    hx-trigger="click"
+                    hx-target="#question-{{ question.id }}"
+                    hx-swap="outerHTML">
+                    <div class="w-12 h-6 {% if question.is_required %} bg-primary-500 {% else %} bg-gray-200 {% endif %} rounded-full transition-colors shadow-inner"></div>
+                    <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform shadow-md {% if question.is_required %} translate-x-6 {% endif %}"></div>
+                </div>
+            </label>
         </div>
     </div>
 </div>

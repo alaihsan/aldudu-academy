@@ -152,18 +152,19 @@
         {% for question in quiz.questions.order_by(Question.order).all() %}
             {% include '_question_form.html' %}
         {% endfor %}
+    <div class="quiz-container pt-8 pb-32" data-quiz-id="{{ quiz.id }}">
+        <!-- Quiz Header Card -->
+    ...
+    <!-- Floating Side Menu -->
+    <div class="floating-actions">
+        <button type="button" onclick="addQuestion('MULTIPLE_CHOICE')" class="action-btn" title="Tambah Pertanyaan">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+        </button>
+        <button type="button" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="action-btn" title="Ke Atas">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+        </button>
     </div>
-</div>
 
-<!-- Floating Side Menu -->
-<div class="floating-actions">
-    <button onclick="addQuestion('MULTIPLE_CHOICE')" class="action-btn" title="Tambah Pertanyaan">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
-    </button>
-    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="action-btn" title="Ke Atas">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
-    </button>
-</div>
 
 <!-- Save Toast -->
 <div id="save-indicator" class="fixed bottom-8 left-8 bg-gray-800 text-white px-4 py-2 rounded-lg text-sm shadow-2xl opacity-0 transition-opacity flex items-center space-x-2">

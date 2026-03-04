@@ -12,7 +12,7 @@
                     class="w-4 h-4 text-primary-600 focus:ring-primary-500"
                 >
             {% else %}
-                <span class="text-gray-400 font-bold text-xs">{{ loop.index }}</span>
+                <span class="text-gray-400 font-bold text-xs">{{ option.order }}</span>
             {% endif %}
         </div>
 
@@ -23,7 +23,7 @@
             name="option_text"
             hx-put="/api/option/{{ option.id }}/update"
             hx-trigger="blur"
-            placeholder="Opsi {{ loop.index }}"
+            placeholder="Opsi {{ option.order }}"
         >
 
         <!-- Delete Option -->

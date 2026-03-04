@@ -17,17 +17,29 @@ function addQuestion(type = 'MULTIPLE_CHOICE') {
     .then(res => res.text())
     .then(html => {
         const container = document.getElementById('questions-list');
-        container.insertAdjacentHTML('beforeend', html);
-        // HTMX will handle the new elements
-        showSaveIndicator();
+        if (container) {
+            container.insertAdjacentHTML('beforeend', html);
+            // Process the new HTML with HTMX to ensure listeners are bound
+            htmx.process(container);
+            showSaveIndicator();
+        }
     });
 }
 
 function publishQuiz() {
-    // Everything is autosaved via HTMX blur/change
-    // This button can just show a success or redirect
-    alert('Seluruh perubahan telah disimpan secara otomatis.');
-    window.location.reload();
+    const quizId = document.querySelector('[data-quiz-id]')?.dataset.quizId;
+    if (!quizId) return;
+
+    fetch(`/api/quiz/${quizId}/publish`, {
+        method: 'POST'
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            window.location.reload();
+        }
+    });
 }
 
 function showSaveIndicator() {
@@ -44,22 +56,16 @@ function showSaveIndicator() {
 }
 
 // Global HTMX Event Listeners for Quiz Editor
-document.body.addEventListener('htmx:beforeRequest', function() {
-    // Show a small saving state if needed
-});
-
 document.body.addEventListener('htmx:afterRequest', function(evt) {
     if (evt.detail.successful) {
         showSaveIndicator();
-    } else {
-        console.error('HTMX Request failed', evt.detail);
     }
 });
 
-// Auto-focus new inputs if added
+// Re-init HTMX on elements if needed after swap
 document.body.addEventListener('htmx:afterSwap', function(evt) {
-    const newInputs = evt.detail.elt.querySelectorAll('input[type="text"]');
-    if (newInputs.length > 0) {
-        newInputs[newInputs.length - 1].focus();
+    // Scroll to new question if added
+    if (evt.detail.elt.id.startsWith('question-')) {
+        evt.detail.elt.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 });
