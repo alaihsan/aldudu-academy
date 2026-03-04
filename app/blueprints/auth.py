@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_login import login_user, logout_user, current_user
-from models import User
-from helpers import is_valid_email
+from app.models import User
+from app.helpers import is_valid_email
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/api')
 

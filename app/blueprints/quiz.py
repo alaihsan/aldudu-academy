@@ -1,17 +1,14 @@
-# blueprints/quiz.py
-
 from flask import (
     Blueprint, request, jsonify, abort,
     render_template, make_response, url_for
 )
 from flask_login import login_required, current_user
-# --- Impor model yang diperlukan ---
-from models import (
+from app.models import (
     db, Course, Quiz, UserRole, GradeType,
     Question, Option, QuestionType,
     QuizSubmission, Answer
 )
-from helpers import sanitize_text
+from app.helpers import sanitize_text
 import datetime
 import os
 from werkzeug.utils import secure_filename

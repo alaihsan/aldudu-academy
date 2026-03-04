@@ -3,7 +3,7 @@ import random
 import re
 import html
 from sqlalchemy.orm import joinedload
-from models import Course, User, UserRole
+from app.models import Course, User, UserRole
 
 
 def generate_class_code(length=6):

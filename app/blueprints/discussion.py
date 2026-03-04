@@ -1,10 +1,7 @@
-
-# blueprints/discussion.py
-
 from flask import Blueprint, request, jsonify, abort
 from flask_login import login_required, current_user
-from models import db, Post, Discussion
-from helpers import sanitize_text
+from app.models import db, Post, Discussion
+from app.helpers import sanitize_text
 
 discussion_bp = Blueprint('discussion', __name__, url_prefix='/api')
 

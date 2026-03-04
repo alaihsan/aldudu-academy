@@ -4,8 +4,8 @@ from flask import Blueprint, request, jsonify, abort
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 from sqlalchemy.orm import joinedload, selectinload
-from models import db, Course, AcademicYear, UserRole, Link, File, Discussion, Post, Like
-from helpers import sanitize_text, is_valid_color, is_valid_class_code, generate_class_code, get_courses_for_user, format_course_data
+from app.models import db, Course, AcademicYear, UserRole, Link, File, Discussion, Post, Like
+from app.helpers import sanitize_text, is_valid_color, is_valid_class_code, generate_class_code, get_courses_for_user, format_course_data
 
 courses_bp = Blueprint('courses', __name__, url_prefix='/api')
 
