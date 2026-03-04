@@ -49,11 +49,14 @@ def create_app(test_config: Optional[Dict] = None) -> Flask:
         'script-src': [
             "'self'",
             'https://cdn.tailwindcss.com',
+            'https://unpkg.com',
+            'https://cdn.jsdelivr.net',
             "'unsafe-inline'",
         ],
         'style-src': [
             "'self'",
             'https://fonts.googleapis.com',
+            'https://cdn.jsdelivr.net',
             "'unsafe-inline'",
         ],
         'font-src': [

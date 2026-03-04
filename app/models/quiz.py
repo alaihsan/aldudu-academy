@@ -9,7 +9,9 @@ class QuestionType(enum.Enum):
     MULTIPLE_CHOICE = 'multiple_choice'
     TRUE_FALSE = 'true_false'
     DROPDOWN = 'dropdown'
+    CHECKBOX = 'checkbox'
     LONG_TEXT = 'long_text'
+    UPLOAD = 'upload'
 
 
 class GradeType(enum.Enum):
@@ -23,6 +25,7 @@ class Quiz(db.Model):
 
     id: Mapped[int] = mapped_column(db.Integer, primary_key=True)
     name: Mapped[str] = mapped_column(db.String(200), nullable=False)
+    description: Mapped[Optional[str]] = mapped_column(db.Text, nullable=True)
     course_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('courses.id'), nullable=False)
     grade_type: Mapped[GradeType] = mapped_column(db.Enum(GradeType), nullable=False, default=GradeType.NUMERIC)
     grading_category: Mapped[Optional[str]] = mapped_column(db.String(100))
@@ -52,6 +55,10 @@ class Question(db.Model):
     is_required: Mapped[bool] = mapped_column(db.Boolean, default=True, nullable=False)
     points: Mapped[int] = mapped_column(db.Integer, default=0, nullable=False)
     explanation: Mapped[Optional[str]] = mapped_column(db.Text, nullable=True)
+    
+    # Upload settings
+    max_file_size: Mapped[int] = mapped_column(db.Integer, default=10, nullable=False) # In MB
+    allowed_file_types: Mapped[Optional[str]] = mapped_column(db.String(200), default='document') # comma separated: document,video,audio
 
     quiz: Mapped[Quiz] = relationship('Quiz', back_populates='questions')
     options: Mapped[List['Option']] = relationship('Option', back_populates='question', lazy='dynamic', cascade='all, delete-orphan')

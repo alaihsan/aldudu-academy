@@ -3,29 +3,6 @@
  * Google Forms-style interactions
  */
 
-function addQuestion(type = 'MULTIPLE_CHOICE') {
-    const quizId = document.querySelector('[data-quiz-id]')?.dataset.quizId;
-    if (!quizId) return;
-
-    const formData = new FormData();
-    formData.append('question_type', type);
-
-    fetch(`/api/quiz/${quizId}/question/add`, {
-        method: 'POST',
-        body: formData
-    })
-    .then(res => res.text())
-    .then(html => {
-        const container = document.getElementById('questions-list');
-        if (container) {
-            container.insertAdjacentHTML('beforeend', html);
-            // Process the new HTML with HTMX to ensure listeners are bound
-            htmx.process(container);
-            showSaveIndicator();
-        }
-    });
-}
-
 function publishQuiz() {
     const quizId = document.querySelector('[data-quiz-id]')?.dataset.quizId;
     if (!quizId) return;
@@ -36,8 +13,10 @@ function publishQuiz() {
     .then(res => res.json())
     .then(data => {
         if (data.success) {
-            alert(data.message);
-            window.location.reload();
+            showSaveIndicator();
+            setTimeout(() => {
+                alert("Kuis telah dipublikasikan!");
+            }, 500);
         }
     });
 }
@@ -46,26 +25,30 @@ function showSaveIndicator() {
     const indicator = document.getElementById('save-indicator');
     if (!indicator) return;
     
-    indicator.classList.remove('opacity-0');
-    indicator.classList.add('opacity-100');
+    indicator.classList.add('show');
     
     setTimeout(() => {
-        indicator.classList.remove('opacity-100');
-        indicator.classList.add('opacity-0');
-    }, 2000);
+        indicator.classList.remove('show');
+    }, 2500);
 }
 
 // Global HTMX Event Listeners for Quiz Editor
 document.body.addEventListener('htmx:afterRequest', function(evt) {
     if (evt.detail.successful) {
         showSaveIndicator();
+        
+        // If the navbar name needs updating
+        const nameInput = document.querySelector('input[name="name"]');
+        const navbarName = document.getElementById('navbar-quiz-name');
+        if (nameInput && navbarName) {
+            navbarName.textContent = nameInput.value;
+        }
     }
 });
 
-// Re-init HTMX on elements if needed after swap
+// Re-init logic after HTMX swaps if needed
 document.body.addEventListener('htmx:afterSwap', function(evt) {
-    // Scroll to new question if added
     if (evt.detail.elt.id.startsWith('question-')) {
-        evt.detail.elt.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // evt.detail.elt.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 });

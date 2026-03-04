@@ -1,37 +1,48 @@
-<div class="option-row group/opt" id="option-{{ option.id }}">
-    <div class="flex items-center space-x-3 w-full">
-        <!-- Radio/Icon indicator -->
-        <div class="flex-shrink-0">
-            {% if question.question_type.name == 'MULTIPLE_CHOICE' %}
-                <input type="radio" 
-                    name="correct_option_q{{ question.id }}" 
-                    value="{{ option.id }}"
-                    {% if option.is_correct %}checked{% endif %}
-                    hx-post="/api/question/{{ question.id }}/set-correct"
-                    hx-trigger="change"
-                    class="w-4 h-4 text-primary-600 focus:ring-primary-500"
-                >
-            {% else %}
-                <span class="text-gray-400 font-bold text-xs">{{ option.order }}</span>
-            {% endif %}
-        </div>
+<div class="option-row group/opt flex items-center space-x-3 py-1" id="option-{{ option.id }}">
+    <!-- Type Indicator (Dynamic Icon) -->
+    <div class="w-6 flex justify-center">
+        {% if question.question_type.name == 'CHECKBOX' %}
+            <input type="checkbox" 
+                name="correct_option_q{{ question.id }}" 
+                value="{{ option.id }}"
+                {% if option.is_correct %}checked{% endif %}
+                hx-post="/api/question/{{ question.id }}/set-correct"
+                hx-target="#question-{{ question.id }}"
+                hx-swap="outerHTML"
+                class="w-4 h-4 text-primary-600 rounded-sm border-2 border-gray-300 focus:ring-0 cursor-pointer"
+            >
+        {% elif question.question_type.name == 'MULTIPLE_CHOICE' %}
+            <input type="radio" 
+                name="correct_option_q{{ question.id }}" 
+                value="{{ option.id }}"
+                {% if option.is_correct %}checked{% endif %}
+                hx-post="/api/question/{{ question.id }}/set-correct"
+                hx-target="#question-{{ question.id }}"
+                hx-swap="outerHTML"
+                class="w-4 h-4 text-primary-600 border-2 border-gray-300 focus:ring-0 cursor-pointer"
+            >
+        {% elif question.question_type.name == 'DROPDOWN' %}
+            <span class="text-gray-400 font-medium text-sm">{{ option.order }}.</span>
+        {% endif %}
+    </div>
 
-        <!-- Option Text Input -->
+    <!-- Option Text Input -->
+    <div class="flex-1">
         <input type="text" 
-            class="option-input text-sm" 
+            class="option-input w-full" 
             value="{{ option.option_text }}"
             name="option_text"
             hx-put="/api/option/{{ option.id }}/update"
             hx-trigger="blur"
             placeholder="Opsi {{ option.order }}"
         >
-
-        <!-- Delete Option -->
-        <button class="p-1.5 text-gray-300 hover:text-red-500 opacity-0 group-hover/opt:opacity-100 transition-all"
-            hx-delete="/api/option/{{ option.id }}/delete"
-            hx-target="#option-{{ option.id }}"
-            hx-swap="outerHTML">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
     </div>
+
+    <!-- Delete Option Button -->
+    <button class="p-1.5 text-gray-300 hover:text-red-500 opacity-0 group-hover/opt:opacity-100 transition-all active:scale-90"
+        hx-delete="/api/option/{{ option.id }}/delete"
+        hx-target="#option-{{ option.id }}"
+        hx-swap="outerHTML">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+    </button>
 </div>

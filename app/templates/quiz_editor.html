@@ -3,6 +3,9 @@
 {% block title %}{{ quiz.name }} - Editor Kuis{% endblock %}
 
 {% block extra_head %}
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
 <style>
     :root {
         --quiz-theme: {{ quiz.course.color or '#673ab7' }};
@@ -10,7 +13,7 @@
     }
     body { background-color: var(--quiz-bg); }
     
-    .quiz-container { max-width: 770px; margin: 0 auto; }
+    .quiz-container { max-width: 770px; margin: 0 auto; padding-top: 12px; }
     
     .form-card {
         background: white;
@@ -21,7 +24,7 @@
         transition: box-shadow 0.2s;
     }
     
-    .form-card.active {
+    .form-card:focus-within {
         box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         border-left: 6px solid #4285f4;
     }
@@ -33,20 +36,55 @@
         border-top-right-radius: 8px;
     }
     
+    .quiz-title-input {
+        width: 100%;
+        font-size: 32px;
+        font-weight: 700;
+        border: none;
+        border-bottom: 1px solid transparent;
+        padding: 8px 0;
+        margin-bottom: 8px;
+        outline: none;
+    }
+    .quiz-title-input:focus { border-bottom: 2px solid var(--quiz-theme); }
+
+    .quiz-desc-input {
+        width: 100%;
+        font-size: 14px;
+        border: none;
+        border-bottom: 1px solid transparent;
+        padding: 4px 0;
+        outline: none;
+        color: #70757a;
+    }
+    .quiz-desc-input:focus { border-bottom: 1px solid #dadce0; }
+
     .question-title-input {
         width: 100%;
         padding: 12px 15px;
         font-size: 16px;
         border: none;
-        border-bottom: 1px solid #f0f0f0;
+        border-bottom: 1px solid transparent;
         background: #f8f9fa;
         margin-bottom: 15px;
-        transition: border-bottom 0.2s;
+        transition: all 0.2s;
     }
     .question-title-input:focus {
         outline: none;
         border-bottom: 2px solid var(--quiz-theme);
         background: #eee;
+    }
+    
+    .option-input {
+        border: none;
+        border-bottom: 1px solid transparent;
+        padding: 4px 0;
+        flex: 1;
+        font-size: 14px;
+    }
+    .option-input:focus {
+        outline: none;
+        border-bottom: 1px solid #70757a;
     }
     
     .type-select {
@@ -55,24 +93,7 @@
         border-radius: 4px;
         background: white;
         font-size: 14px;
-    }
-    
-    .option-row {
-        display: flex;
-        items-center: center;
-        margin-bottom: 8px;
-        gap: 10px;
-    }
-    
-    .option-input {
-        border: none;
-        border-bottom: 1px solid transparent;
-        padding: 4px 0;
-        flex: 1;
-    }
-    .option-input:focus {
-        outline: none;
-        border-bottom: 1px solid #70757a;
+        cursor: pointer;
     }
     
     .floating-actions {
@@ -96,6 +117,7 @@
             right: 20px;
             top: auto;
             flex-direction: row;
+            z-index: 40;
         }
     }
     
@@ -107,69 +129,99 @@
         justify-content: center;
         border-radius: 50%;
         color: #5f6368;
-        hover: background: #f8f9fa;
-        transition: all 0.2s;
+        transition: background 0.2s;
     }
+    .action-btn:hover { background: #f8f9fa; }
     
     .btn-publish-pill {
         background: var(--quiz-theme);
         color: white;
-        padding: 10px 24px;
+        padding: 8px 24px;
         border-radius: 4px;
         font-weight: 600;
         box-shadow: 0 1px 2px rgba(0,0,0,0.1);
     }
+    
+    .save-toast {
+        position: fixed;
+        bottom: 24px;
+        left: 24px;
+        background: #323336;
+        color: white;
+        padding: 14px 24px;
+        border-radius: 4px;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        z-index: 100;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.3s;
+    }
+    .save-toast.show { opacity: 1; transform: translateY(0); }
 </style>
 {% endblock %}
 
 {% block body %}
-<!-- Top Header -->
-<div class="bg-white border-b border-gray-200 sticky top-0 z-50 px-6 py-3 flex items-center justify-between">
+<!-- Navbar Editor -->
+<div class="bg-white border-b border-gray-200 sticky top-0 z-50 px-6 py-2 flex items-center justify-between">
     <div class="flex items-center space-x-4">
-        <a href="{{ url_for('main.course_detail', course_id=quiz.course_id) }}" class="text-gray-500 hover:bg-gray-100 p-2 rounded-full">
+        <a href="{{ url_for('main.course_detail', course_id=quiz.course_id) }}" class="text-gray-500 hover:bg-gray-100 p-2 rounded-full transition-colors">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
         </a>
-        <span class="font-medium text-gray-700">{{ quiz.name }}</span>
+        <div class="flex flex-col">
+            <span class="text-xs text-gray-400 font-bold uppercase tracking-widest leading-none mb-1">Editor Kuis</span>
+            <span class="font-bold text-gray-800 leading-none" id="navbar-quiz-name">{{ quiz.name }}</span>
+        </div>
     </div>
     <div class="flex items-center space-x-4">
-        <button class="btn-publish-pill hover:opacity-90 transition-all active:scale-95" onclick="publishQuiz()">Kirim / Simpan</button>
-        {% include '_sidebar_toggle.html' ignore missing %}
+        <button class="btn-publish-pill hover:opacity-90 active:scale-95 transition-all" onclick="publishQuiz()">Publikasikan</button>
     </div>
 </div>
 
-<div class="quiz-container pt-8 pb-32">
-    <!-- Quiz Header Card -->
+<div class="quiz-container pb-32" data-quiz-id="{{ quiz.id }}">
+    <!-- Quiz Title Card -->
     <div class="form-card overflow-hidden">
         <div class="form-header-strip"></div>
         <div class="p-8">
-            <h1 class="text-3xl font-bold mb-4 outline-none focus:border-b-2 border-gray-200" contenteditable="true" id="quiz-title-display">{{ quiz.name }}</h1>
-            <p class="text-gray-500 text-sm">Editor Kuis &bull; {{ quiz.course.name }}</p>
+            <input type="text" name="name" value="{{ quiz.name }}" 
+                class="quiz-title-input" placeholder="Judul Formulir"
+                hx-put="/api/quiz/{{ quiz.id }}/update-meta" hx-trigger="blur" hx-include="next .quiz-desc-input">
+            
+            <input type="text" name="description" value="{{ quiz.description or '' }}" 
+                class="quiz-desc-input" placeholder="Deskripsi formulir"
+                hx-put="/api/quiz/{{ quiz.id }}/update-meta" hx-trigger="blur" hx-include="previous .quiz-title-input">
         </div>
     </div>
 
-    <!-- Questions Container -->
-    <div id="questions-list" class="space-y-4">
+    <!-- Questions List -->
+    <div id="questions-list" class="space-y-3">
         {% for question in quiz.questions.order_by(Question.order).all() %}
             {% include '_question_form.html' %}
         {% endfor %}
-    <div class="quiz-container pt-8 pb-32" data-quiz-id="{{ quiz.id }}">
-        <!-- Quiz Header Card -->
-    ...
-    <!-- Floating Side Menu -->
-    <div class="floating-actions">
-        <button type="button" onclick="addQuestion('MULTIPLE_CHOICE')" class="action-btn" title="Tambah Pertanyaan">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
-        </button>
-        <button type="button" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="action-btn" title="Ke Atas">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
-        </button>
     </div>
+</div>
 
+<!-- Floating Action Bar -->
+<div class="floating-actions">
+    <button type="button" 
+        hx-post="/api/quiz/{{ quiz.id }}/question/add"
+        hx-vals='{"question_type": "MULTIPLE_CHOICE"}'
+        hx-target="#questions-list"
+        hx-swap="beforeend"
+        class="action-btn" title="Tambah Pertanyaan">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+    </button>
+    <button type="button" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="action-btn" title="Ke Atas">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+    </button>
+</div>
 
 <!-- Save Toast -->
-<div id="save-indicator" class="fixed bottom-8 left-8 bg-gray-800 text-white px-4 py-2 rounded-lg text-sm shadow-2xl opacity-0 transition-opacity flex items-center space-x-2">
-    <svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.001 0 01-15.357-2m15.357 2H15"/></svg>
-    <span>Menyimpan perubahan...</span>
+<div id="save-indicator" class="save-toast">
+    <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+    <span>Perubahan disimpan</span>
 </div>
 
 {% endblock %}
