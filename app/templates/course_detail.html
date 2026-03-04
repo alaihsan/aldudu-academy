@@ -1,406 +1,361 @@
-﻿{% extends "base.html" %}
+{% extends "base.html" %}
 
 {% block title %}{{ course.name }} - Aldudu Academy{% endblock %}
 
-{% block extra_head %}
-<style>
-    .course-card { transition: all 0.2s ease; }
-    .course-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.1); }
-    .dropdown-menu { 
-        display: none; 
-        position: absolute; 
-        left: 0;
-        top: 100%; 
-        margin-top: 0.5rem;
-        min-width: 220px;
-        z-index: 100;
-        animation: slideDown 0.2s ease;
-    }
-    .dropdown.open .dropdown-menu { display: block; }
-    @keyframes slideDown {
-        from { opacity: 0; transform: translateY(-10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-</style>
-{% endblock %}
-
 {% block body %}
-<div id="app-page" class="min-h-screen bg-gray-50">
-    <!-- Header -->
-    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center">
-                    <a href="{{ url_for('main.dashboard') }}" class="flex items-center space-x-3 hover:opacity-80 transition-opacity">
-                        <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center shadow-md">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                            </svg>
-                        </div>
-                        <span class="text-xl font-bold text-gray-900 hidden sm:block">Aldudu Academy</span>
-                    </a>
+<div id="app-page" class="min-h-screen bg-gray-50 flex">
+    <!-- Sidebar (Same as Dashboard) -->
+    <aside class="w-64 bg-white border-r border-gray-200 hidden lg:flex flex-col sticky top-0 h-screen">
+        <div class="p-6 border-b border-gray-100">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center shadow-lg shadow-primary-200">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
                 </div>
-                <div class="flex items-center space-x-4">
-                    <a href="{{ url_for('main.dashboard') }}" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors hidden md:block">
-                        â† Kembali ke Dasbor
-                    </a>
+                <span class="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">Aldudu</span>
+            </div>
+        </div>
+        
+        <nav class="flex-1 p-4 space-y-1">
+            <a href="{{ url_for('main.dashboard') }}" class="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl transition-all duration-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                </svg>
+                <span>Dashboard</span>
+            </a>
+            <div class="pt-4 space-y-1">
+                <p class="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Navigasi Kelas</p>
+                <a href="#materi" class="flex items-center space-x-3 px-4 py-3 bg-primary-50 text-primary-700 rounded-xl font-semibold">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13"/>
+                    </svg>
+                    <span>Materi & Tugas</span>
+                </a>
+                <a href="#diskusi" class="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl transition-all">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"/>
+                    </svg>
+                    <span>Forum Diskusi</span>
+                </a>
+            </div>
+        </nav>
+
+        <div class="p-4 border-t border-gray-100">
+            <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-2xl">
+                <div class="w-10 h-10 rounded-xl bg-primary-100 text-primary-700 flex items-center justify-center font-bold text-lg">
+                    {{ current_user.name[0] | upper }}
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-bold text-gray-900 truncate">{{ current_user.name }}</p>
+                    <p class="text-xs text-gray-500 capitalize">{{ current_user.role.value }}</p>
                 </div>
             </div>
         </div>
-    </header>
+    </aside>
 
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Course Header -->
-        <div class="bg-gradient-to-r from-primary-500 via-primary-600 to-primary-700 rounded-2xl shadow-lg p-6 mb-6 text-white">
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div>
-                    <h1 class="text-2xl sm:text-3xl font-bold mb-3">{{ course.name }}</h1>
-                    <div class="flex flex-wrap gap-3 text-primary-100 text-sm">
-                        <div class="flex items-center space-x-2 bg-white/10 px-3 py-1.5 rounded-lg backdrop-blur-sm">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                            </svg>
-                            <span>{{ course.teacher.name }}</span>
-                        </div>
-                        <div class="flex items-center space-x-2 bg-white/10 px-3 py-1.5 rounded-lg backdrop-blur-sm">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                            </svg>
-                            <span>{{ course.academic_year.year }}</span>
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <!-- Top Header -->
+        <header class="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-8 sticky top-0 z-30">
+            <div class="flex items-center space-x-4">
+                <a href="{{ url_for('main.dashboard') }}" class="p-2 text-gray-400 hover:text-primary-600 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                </a>
+                <h2 class="text-lg font-bold text-gray-900 truncate">{{ course.name }}</h2>
+            </div>
+            
+            <div class="flex items-center space-x-3">
+                <div class="px-4 py-1.5 bg-gray-100 rounded-full text-[10px] font-black uppercase tracking-widest text-gray-500">
+                    Kode: {{ course.class_code }}
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Scrollable Area -->
+        <main class="flex-1 overflow-y-auto p-8" data-course-id="{{ course.id }}">
+            <div class="max-w-6xl mx-auto space-y-10 animate-fade-in">
+                
+                <!-- Hero Section -->
+                <div class="relative rounded-[3rem] overflow-hidden shadow-2xl shadow-primary-100 h-64 flex items-center px-12 group" style="background-color: {{ course.color }}">
+                    <!-- Decor -->
+                    <div class="absolute inset-0 opacity-20 group-hover:scale-110 transition-transform duration-1000">
+                        <svg class="w-full h-full" fill="currentColor" viewBox="0 0 100 100" preserveAspectRatio="none">
+                            <path d="M0 100 C 20 0 50 0 100 100 Z" />
+                        </svg>
+                    </div>
+                    <div class="absolute -right-20 -bottom-20 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+                    
+                    <div class="relative z-10 text-white max-w-2xl">
+                        <span class="inline-block px-4 py-1.5 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-4">Mata Pelajaran</span>
+                        <h1 class="text-4xl sm:text-5xl font-black mb-4 drop-shadow-lg leading-tight">{{ course.name }}</h1>
+                        <div class="flex items-center space-x-6 text-primary-50">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center mr-2.5">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                    </svg>
+                                </div>
+                                <span class="font-bold text-sm">{{ course.teacher.name }}</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center mr-2.5">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                                    </svg>
+                                </div>
+                                <span class="font-bold text-sm">{{ course.students | length }} Peserta</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        {% if is_teacher %}
-        <!-- Teacher Controls -->
-        <div class="mb-6 relative">
-            <div class="dropdown inline-block relative" id="add-topics-dropdown">
-                <button id="add-topics-button" class="px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 inline-flex items-center space-x-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                    </svg>
-                    <span>Add Topics</span>
-                    <svg class="w-4 h-4 ml-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                    </svg>
-                </button>
-                <div id="topics-dropdown-menu" class="dropdown-menu bg-white rounded-xl shadow-xl border border-gray-200 py-2">
-                    <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors">
-                        <svg class="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                        </svg>
-                        <span class="font-medium text-gray-700">Add Assignment</span>
-                    </a>
-                    <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors">
-                        <svg class="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"/>
-                        </svg>
-                        <span class="font-medium text-gray-700">Add Folder</span>
-                    </a>
-                    <a href="#" id="show-create-quiz-modal" class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors">
-                        <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/>
-                        </svg>
-                        <span class="font-medium text-gray-700">Add Quiz</span>
-                    </a>
-                    <a href="#" id="show-create-link-modal" class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors">
-                        <svg class="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/>
-                        </svg>
-                        <span class="font-medium text-gray-700">Add Link</span>
-                    </a>
-                    <a href="#" id="show-create-file-modal" class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors">
-                        <svg class="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625a3.375 3.375 0 00-3.375 3.375v11.25a3.375 3.375 0 003.375 3.375h12.75a3.375 3.375 0 003.375-3.375V11.25a9 9 0 00-9-9z"/>
-                        </svg>
-                        <span class="font-medium text-gray-700">Add File</span>
-                    </a>
-                    <a href="#" id="show-create-discussion-modal" class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors">
-                        <svg class="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/>
-                        </svg>
-                        <span class="font-medium text-gray-700">Add Discussion</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-        {% endif %}
+                <!-- Tabs & Controls -->
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div class="flex space-x-1 bg-white p-1.5 rounded-2xl border border-gray-200 shadow-sm self-start overflow-x-auto no-scrollbar">
+                        <button data-tab="all" class="tab-btn active px-6 py-2.5 bg-primary-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-primary-100 transition-all whitespace-nowrap">Semua Konten</button>
+                        <button data-tab="Kuis" class="tab-btn px-6 py-2.5 text-gray-500 hover:bg-gray-50 rounded-xl font-bold text-sm transition-all whitespace-nowrap">Kuis</button>
+                        <button data-tab="Berkas" class="tab-btn px-6 py-2.5 text-gray-500 hover:bg-gray-50 rounded-xl font-bold text-sm transition-all whitespace-nowrap">Berkas</button>
+                        <button data-tab="Link" class="tab-btn px-6 py-2.5 text-gray-500 hover:bg-gray-50 rounded-xl font-bold text-sm transition-all whitespace-nowrap">Link</button>
+                        <button data-tab="Diskusi" class="tab-btn px-6 py-2.5 text-gray-500 hover:bg-gray-50 rounded-xl font-bold text-sm transition-all whitespace-nowrap">Diskusi</button>
+                    </div>
 
-        <!-- View Controls -->
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-            <h2 class="text-xl font-bold text-gray-900">Materi & Tugas</h2>
-            <div class="inline-flex self-start sm:self-auto border border-gray-300 rounded-lg overflow-hidden bg-white">
-                <button id="grid-view-btn" class="view-btn active px-4 py-2 bg-primary-50 text-primary-600 hover:bg-gray-50 transition-colors" title="Grid View">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 8.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25v2.25A2.25 2.25 0 018.25 21H6a2.25 2.25 0 01-2.25-2.25v-2.25zM13.5 6A2.25 2.25 0 0115.75 3.75h2.25A2.25 2.25 0 0120.25 6v2.25a2.25 2.25 0 01-2.25 2.25h-2.25A2.25 2.25 0 0113.5 8.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25h2.25a2.25 2.25 0 012.25 2.25v2.25a2.25 2.25 0 01-2.25 2.25h-2.25a2.25 2.25 0 01-2.25-2.25v-2.25z"/>
-                    </svg>
-                </button>
-                <button id="row-view-btn" class="view-btn px-4 py-2 text-gray-600 hover:bg-gray-50 transition-colors" title="List View">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.75 5.25h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5"/>
-                    </svg>
-                </button>
-            </div>
-        </div>
-
-        <!-- Topics Container -->
-        <div id="topics-container" class="topics-grid-view grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-            {% if topics %}
-                {% for topic in topics %}
-                <div class="course-card bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden group">
-                    {% if topic.type == 'Link' or topic.type == 'Berkas' %}
-                    <a href="{{ topic.url }}" target="_blank" class="block p-5">
-                    {% else %}
-                    <a href="{{ topic.url }}" class="block p-5">
+                    {% if is_teacher %}
+                    <!-- Button Tambah Konten tetap sama -->
+                    <div class="flex items-center space-x-3">
+                        <div class="relative" id="add-topics-dropdown">
+                            <button id="add-topics-button" class="px-6 py-3 bg-white border-2 border-primary-600 text-primary-600 rounded-2xl font-black text-sm flex items-center space-x-2 hover:bg-primary-50 transition-all active:scale-95 shadow-sm">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"/>
+                                </svg>
+                                <span>Tambah Konten</span>
+                            </button>
+                            <!-- Dropdown Menu (Styled like Dashboard) -->
+                            <div id="topics-dropdown-menu" class="hidden absolute right-0 mt-3 w-64 bg-white rounded-[2rem] shadow-2xl border border-gray-100 py-4 z-50 animate-slide-up overflow-hidden">
+                                <p class="px-6 py-2 text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Pilih Jenis</p>
+                                <a href="#" id="show-create-quiz-modal" class="flex items-center space-x-4 px-6 py-3.5 hover:bg-amber-50 group transition-all">
+                                    <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center group-hover:bg-amber-600 group-hover:text-white transition-all">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                    </div>
+                                    <span class="font-bold text-gray-700">Buat Kuis</span>
+                                </a>
+                                <a href="#" id="show-create-file-modal" class="flex items-center space-x-4 px-6 py-3.5 hover:bg-blue-50 group transition-all">
+                                    <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                        </svg>
+                                    </div>
+                                    <span class="font-bold text-gray-700">Unggah Berkas</span>
+                                </a>
+                                <a href="#" id="show-create-link-modal" class="flex items-center space-x-4 px-6 py-3.5 hover:bg-indigo-50 group transition-all">
+                                    <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                                        </svg>
+                                    </div>
+                                    <span class="font-bold text-gray-700">Sematkan Link</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                     {% endif %}
-                        <div class="flex items-start space-x-4">
-                            <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-primary-100 to-primary-200 rounded-xl flex items-center justify-center group-hover:from-primary-200 group-hover:to-primary-300 transition-all">
-                                {% if topic.type == 'Link' %}
-                                <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/>
-                                </svg>
-                                {% elif topic.type == 'Berkas' %}
-                                <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625a3.375 3.375 0 00-3.375 3.375v11.25a3.375 3.375 0 003.375 3.375h12.75a3.375 3.375 0 003.375-3.375V11.25a9 9 0 00-9-9z"/>
-                                </svg>
-                                {% else %}
-                                <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/>
-                                </svg>
-                                {% endif %}
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <h3 class="font-semibold text-gray-900 group-hover:text-primary-600 transition-colors truncate">{{ topic.name }}</h3>
-                                <p class="text-sm text-gray-500 mt-1">{{ topic.type }}</p>
+                </div>
+
+                <!-- Materials Grid -->
+                <div id="topics-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {% if topics %}
+                        {% for topic in topics %}
+                        <div class="group bg-white rounded-[2.5rem] border border-gray-100 shadow-premium hover:shadow-2xl transition-all duration-500 overflow-hidden flex flex-col h-full transform hover:-translate-y-2">
+                            <a href="{{ topic.url }}" {% if topic.type != 'Kuis' %}target="_blank"{% endif %} class="block p-8 flex-1">
+                                <div class="flex items-start justify-between mb-6">
+                                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500
+                                        {% if topic.type == 'Kuis' %} bg-amber-100 text-amber-600 group-hover:bg-amber-600 {% endif %}
+                                        {% if topic.type == 'Berkas' %} bg-blue-100 text-blue-600 group-hover:bg-blue-600 {% endif %}
+                                        {% if topic.type == 'Link' %} bg-indigo-100 text-indigo-600 group-hover:bg-indigo-600 {% endif %}
+                                        group-hover:text-white shadow-sm">
+                                        {% if topic.type == 'Kuis' %}
+                                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
+                                        {% elif topic.type == 'Berkas' %}
+                                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                                        {% else %}
+                                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                                        {% endif %}
+                                    </div>
+                                    <div class="px-3 py-1 bg-gray-50 text-gray-400 rounded-lg text-[9px] font-black uppercase tracking-widest group-hover:bg-gray-100 transition-colors">
+                                        {{ topic.created_at.strftime('%d %b') }}
+                                    </div>
+                                </div>
+                                <h3 class="text-xl font-bold text-gray-900 group-hover:text-primary-600 transition-colors leading-tight mb-2">{{ topic.name }}</h3>
+                                <p class="text-sm text-gray-500">{{ topic.type }} Terlampir</p>
+                            </a>
+                            <div class="px-8 py-5 bg-gray-50/50 border-t border-gray-100 flex items-center justify-between">
+                                <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Aksi</span>
+                                <div class="flex space-x-2">
+                                    <button class="p-2 text-gray-400 hover:text-primary-600 transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></button>
+                                    {% if is_teacher %}
+                                    <button class="p-2 text-gray-400 hover:text-red-600 transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
-                    </a>
+                        {% endfor %}
+                    {% else %}
+                        <div class="col-span-full py-20 text-center bg-white rounded-[3rem] border-2 border-dashed border-gray-200">
+                            <div class="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                                <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-2">Belum ada materi</h3>
+                            <p class="text-gray-500">Materi, kuis, atau link yang Anda buat akan muncul di sini.</p>
+                        </div>
+                    {% endif %}
                 </div>
-                {% endfor %}
-            {% else %}
-                <div class="col-span-full text-center py-12 bg-white rounded-2xl border border-gray-200">
-                    <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/>
-                    </svg>
-                    <p class="text-gray-500">Belum ada materi atau tugas di kelas ini.</p>
+
+                <!-- Discussions Header -->
+                <div class="flex items-center justify-between pt-10 border-t border-gray-200" id="diskusi">
+                    <div>
+                        <h2 class="text-2xl font-black text-gray-900">Forum Diskusi</h2>
+                        <p class="text-sm text-gray-500 mt-1">Ruang interaksi tanya jawab antara guru dan murid.</p>
+                    </div>
+                    <button id="show-create-discussion-modal" class="px-6 py-3 bg-primary-50 text-primary-700 rounded-2xl font-black text-sm flex items-center space-x-2 hover:bg-primary-100 transition-all active:scale-95">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                        </svg>
+                        <span>Mulai Diskusi</span>
+                    </button>
                 </div>
-            {% endif %}
-        </div>
+                <div id="discussions-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 pb-20"></div>
 
-        <!-- Discussions Section -->
-        <h2 class="text-xl font-bold text-gray-900 mb-4">Diskusi</h2>
-        <div id="discussions-container" class="topics-grid-view grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"></div>
-
-        <!-- Students List -->
-        <h2 class="text-xl font-bold text-gray-900 mb-4">Daftar Murid</h2>
-        <div class="bg-white rounded-2xl border border-gray-200 p-8 text-center">
-            <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/>
-            </svg>
-            <p class="text-gray-500">Fitur untuk menambah dan melihat daftar murid akan dibuat di sini.</p>
-        </div>
-    </main>
+            </div>
+        </main>
+    </div>
 </div>
 
-<!-- Modals remain the same, just include them -->
-{% include '_modals.html' ignore missing %}
-
+<!-- All the same modals, but restyled inside -->
 <!-- Create Quiz Modal -->
-<div id="create-quiz-modal" class="modal fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-slide-up">
+<div id="create-quiz-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden animate-slide-up border border-amber-50">
         <form id="create-quiz-form">
-            <div class="bg-gradient-to-r from-amber-500 to-amber-600 px-6 py-4">
-                <h3 class="text-xl font-bold text-white">Buat Kuis Baru</h3>
-                <p class="text-amber-100 text-sm mt-1">Masukkan detail untuk kuis baru di kelas ini.</p>
+            <div class="bg-gradient-to-br from-amber-500 to-amber-700 px-8 py-8">
+                <h3 class="text-2xl font-black text-white">Buat Kuis Baru</h3>
+                <p class="text-amber-100 text-sm mt-1">Siapkan tantangan belajar untuk murid Anda.</p>
             </div>
-            <div class="p-6 space-y-4">
+            <div class="p-8 space-y-6">
                 <div>
-                    <label for="quiz-name-input" class="block text-sm font-medium text-gray-700 mb-2">Nama Kuis</label>
-                    <input type="text" id="quiz-name-input" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none" required placeholder="Contoh: Ujian Harian 1 - Bab Fotosintesis">
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Nama Kuis</label>
+                    <input type="text" id="quiz-name-input" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-amber-500 focus:ring-0 font-bold outline-none transition-all" required placeholder="...">
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label for="quiz-due-start" class="block text-sm font-medium text-gray-700 mb-2">Mulai (Opsional)</label>
-                        <input type="datetime-local" id="quiz-due-start" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none">
+                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Poin</label>
+                        <input type="number" id="quiz-points" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-amber-500 focus:ring-0 font-bold outline-none" value="100">
                     </div>
                     <div>
-                        <label for="quiz-due-finish" class="block text-sm font-medium text-gray-700 mb-2">Selesai (Opsional)</label>
-                        <input type="datetime-local" id="quiz-due-finish" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none">
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label for="quiz-points" class="block text-sm font-medium text-gray-700 mb-2">Point</label>
-                        <input type="number" id="quiz-points" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none" value="100" min="0">
-                    </div>
-                    <div>
-                        <label for="quiz-grade-type" class="block text-sm font-medium text-gray-700 mb-2">Tipe Nilai</label>
-                        <select id="quiz-grade-type" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none bg-white">
+                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Tipe Nilai</label>
+                        <select id="quiz-grade-type" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-amber-500 focus:ring-0 font-bold outline-none bg-white">
                             <option value="numeric">Numeric</option>
-                            <option value="letter">A, B, C, D</option>
+                            <option value="letter">Letter</option>
                         </select>
                     </div>
                 </div>
-                <div>
-                    <label for="quiz-category" class="block text-sm font-medium text-gray-700 mb-2">Category</label>
-                    <div id="category-select-wrapper">
-                        <select id="quiz-category" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none bg-white">
-                            <option value="">(blank)</option>
-                            <option value="ungraded">Ungraded</option>
-                            <option value="_create_new_">Create new grading category</option>
-                        </select>
-                    </div>
-                    <div id="category-input-wrapper" class="hidden relative">
-                        <input type="text" id="quiz-category-new" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none" placeholder="Nama Kategori Baru...">
-                        <button type="button" id="category-cancel-button" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">&times;</button>
-                    </div>
-                </div>
-                <div id="quiz-modal-error" class="hidden text-red-600 text-sm"></div>
+                <div id="quiz-modal-error" class="hidden p-4 bg-red-50 text-red-600 rounded-2xl text-xs font-bold text-center"></div>
             </div>
-            <div class="bg-gray-50 px-6 py-4 flex justify-end space-x-3">
-                <button type="button" id="quiz-cancel-button" class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">Batal</button>
-                <button type="submit" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-lg font-medium shadow hover:shadow-md transition-all">Simpan Kuis</button>
+            <div class="px-8 pb-8 flex space-x-3">
+                <button type="button" class="quiz-cancel-btn flex-1 px-6 py-4 text-gray-500 bg-gray-100 rounded-2xl font-bold hover:bg-gray-200 transition-all">Batal</button>
+                <button type="submit" class="flex-[2] px-6 py-4 bg-amber-600 text-white rounded-2xl font-bold shadow-lg shadow-amber-200 hover:bg-amber-700 transition-all active:scale-95">Simpan & Lanjut</button>
             </div>
         </form>
     </div>
 </div>
 
-<!-- Create Link Modal -->
-<div id="create-link-modal" class="modal fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-slide-up">
+<!-- Modal File & Link restyled similarly -->
+<div id="create-file-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden animate-slide-up border border-blue-50">
+        <form id="create-file-form">
+            <div class="bg-gradient-to-br from-blue-500 to-blue-700 px-8 py-8 text-white">
+                <h3 class="text-2xl font-black">Unggah Materi</h3>
+                <p class="text-blue-100 text-sm mt-1">Bagikan dokumen atau modul pembelajaran.</p>
+            </div>
+            <div class="p-8 space-y-6">
+                <div>
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Nama Berkas</label>
+                    <input type="text" id="file-name-input" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-blue-500 outline-none font-bold" required>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Pilih File</label>
+                    <input type="file" id="file-upload-input" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-blue-500 outline-none font-bold">
+                </div>
+                <div id="file-modal-error" class="hidden p-4 bg-red-50 text-red-600 rounded-2xl text-xs font-bold text-center"></div>
+            </div>
+            <div class="px-8 pb-8 flex space-x-3">
+                <button type="button" class="file-cancel-btn flex-1 px-6 py-4 text-gray-500 bg-gray-100 rounded-2xl font-bold hover:bg-gray-200 transition-all">Batal</button>
+                <button type="submit" class="flex-[2] px-6 py-4 bg-blue-600 text-white rounded-2xl font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 active:scale-95">Simpan Berkas</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="create-link-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden animate-slide-up border border-indigo-50">
         <form id="create-link-form">
-            <div class="bg-gradient-to-r from-primary-500 to-primary-700 px-6 py-4">
-                <h3 class="text-xl font-bold text-white">Tambah Link Baru</h3>
-                <p class="text-primary-100 text-sm mt-1">Masukkan detail untuk link baru di kelas ini.</p>
+            <div class="bg-gradient-to-br from-indigo-500 to-indigo-700 px-8 py-8 text-white">
+                <h3 class="text-2xl font-black">Sematkan Link</h3>
+                <p class="text-indigo-100 text-sm mt-1">Bagikan referensi website atau video eksternal.</p>
             </div>
-            <div class="p-6 space-y-4">
+            <div class="p-8 space-y-6">
                 <div>
-                    <label for="link-name-input" class="block text-sm font-medium text-gray-700 mb-2">Nama Link</label>
-                    <input type="text" id="link-name-input" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none" required placeholder="Contoh: Materi Pembelajaran Online">
-                </div>
-                <div>
-                    <label for="link-url-input" class="block text-sm font-medium text-gray-700 mb-2">Link URL</label>
-                    <input type="url" id="link-url-input" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none" required placeholder="https://example.com">
-                </div>
-                <div id="link-modal-error" class="hidden text-red-600 text-sm"></div>
-            </div>
-            <div class="bg-gray-50 px-6 py-4 flex justify-end space-x-3">
-                <button type="button" id="link-cancel-button" class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">Batal</button>
-                <button type="submit" class="px-4 py-2 bg-gradient-to-r from-primary-500 to-primary-700 text-white rounded-lg font-medium shadow hover:shadow-md transition-all">Simpan Link</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- Create File Modal -->
-<div id="create-file-modal" class="modal fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-slide-up">
-        <form id="create-file-form" enctype="multipart/form-data">
-            <div class="bg-gradient-to-r from-primary-500 to-primary-700 px-6 py-4">
-                <h3 class="text-xl font-bold text-white">Tambah File Baru</h3>
-                <p class="text-primary-100 text-sm mt-1">Masukkan detail untuk file baru di kelas ini.</p>
-            </div>
-            <div class="p-6 space-y-4">
-                <div>
-                    <label for="file-name-input" class="block text-sm font-medium text-gray-700 mb-2">Nama File</label>
-                    <input type="text" id="file-name-input" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none" required placeholder="Contoh: Materi Presentasi Bab 1">
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Judul Link</label>
+                    <input type="text" id="link-name-input" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-indigo-500 outline-none font-bold" required>
                 </div>
                 <div>
-                    <label for="file-description-input" class="block text-sm font-medium text-gray-700 mb-2">Deskripsi</label>
-                    <textarea id="file-description-input" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none" rows="3" placeholder="Deskripsi singkat tentang isi file..."></textarea>
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">URL (http/https)</label>
+                    <input type="url" id="link-url-input" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-indigo-500 outline-none font-bold" required>
                 </div>
-                <div>
-                    <label for="file-upload-input" class="block text-sm font-medium text-gray-700 mb-2">Upload File</label>
-                    <input type="file" id="file-upload-input" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none" required>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label for="file-start-date-input" class="block text-sm font-medium text-gray-700 mb-2">Masa Berlaku (Mulai)</label>
-                        <input type="datetime-local" id="file-start-date-input" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none">
-                    </div>
-                    <div>
-                        <label for="file-end-date-input" class="block text-sm font-medium text-gray-700 mb-2">Masa Berlaku (Selesai)</label>
-                        <input type="datetime-local" id="file-end-date-input" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none">
-                    </div>
-                </div>
-                <div id="file-modal-error" class="hidden text-red-600 text-sm"></div>
+                <div id="link-modal-error" class="hidden p-4 bg-red-50 text-red-600 rounded-2xl text-xs font-bold text-center"></div>
             </div>
-            <div class="bg-gray-50 px-6 py-4 flex justify-end space-x-3">
-                <button type="button" id="file-cancel-button" class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">Batal</button>
-                <button type="submit" class="px-4 py-2 bg-gradient-to-r from-primary-500 to-primary-700 text-white rounded-lg font-medium shadow hover:shadow-md transition-all">Simpan File</button>
+            <div class="px-8 pb-8 flex space-x-3">
+                <button type="button" class="link-cancel-btn flex-1 px-6 py-4 text-gray-500 bg-gray-100 rounded-2xl font-bold hover:bg-gray-200 transition-all">Batal</button>
+                <button type="submit" class="flex-[2] px-6 py-4 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700 active:scale-95">Simpan Link</button>
             </div>
         </form>
     </div>
 </div>
 
 <!-- Create Discussion Modal -->
-<div id="create-discussion-modal" class="modal fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-slide-up">
+<div id="create-discussion-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden animate-slide-up border border-primary-50">
         <form id="create-discussion-form">
-            <div class="bg-gradient-to-r from-primary-500 to-primary-700 px-6 py-4">
-                <h3 class="text-xl font-bold text-white">Buat Diskusi Baru</h3>
-                <p class="text-primary-100 text-sm mt-1">Mulai topik diskusi baru di kelas ini.</p>
+            <div class="bg-gradient-to-br from-primary-500 to-primary-700 px-8 py-8 text-white">
+                <h3 class="text-2xl font-black">Mulai Diskusi Baru</h3>
+                <p class="text-primary-100 text-sm mt-1">Bangun interaksi positif di kelas Anda.</p>
             </div>
-            <div class="p-6 space-y-4">
+            <div class="p-8 space-y-6">
                 <div>
-                    <label for="discussion-title-input" class="block text-sm font-medium text-gray-700 mb-2">Judul Diskusi</label>
-                    <input type="text" id="discussion-title-input" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none" required placeholder="Contoh: Pertanyaan tentang Bab 3">
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Judul Topik</label>
+                    <input type="text" id="discussion-title-input" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold" required>
                 </div>
                 <div>
-                    <label for="discussion-content-input" class="block text-sm font-medium text-gray-700 mb-2">Isi Pertanyaan</label>
-                    <textarea id="discussion-content-input" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none" rows="5" required placeholder="Tulis pertanyaan atau topik diskusi Anda di sini..."></textarea>
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Isi Pertanyaan</label>
+                    <textarea id="discussion-content-input" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold" rows="4" required></textarea>
                 </div>
-                <div id="discussion-modal-error" class="hidden text-red-600 text-sm"></div>
+                <div id="discussion-modal-error" class="hidden p-4 bg-red-50 text-red-600 rounded-2xl text-xs font-bold text-center"></div>
             </div>
-            <div class="bg-gray-50 px-6 py-4 flex justify-end space-x-3">
-                <button type="button" id="discussion-cancel-button" class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">Batal</button>
-                <button type="submit" class="px-4 py-2 bg-gradient-to-r from-primary-500 to-primary-700 text-white rounded-lg font-medium shadow hover:shadow-md transition-all">Mulai Diskusi</button>
+            <div class="px-8 pb-8 flex space-x-3">
+                <button type="button" class="discussion-cancel-btn flex-1 px-6 py-4 text-gray-500 bg-gray-100 rounded-2xl font-bold hover:bg-gray-200 transition-all">Batal</button>
+                <button type="submit" class="flex-[2] px-6 py-4 bg-primary-600 text-white rounded-2xl font-bold shadow-lg shadow-primary-200 hover:bg-primary-700 active:scale-95">Mulai Forum</button>
             </div>
         </form>
     </div>
 </div>
 
-<!-- Dropdown Toggle Script -->
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const addTopicsButton = document.getElementById('add-topics-button');
-    const dropdown = document.getElementById('add-topics-dropdown');
-    const dropdownMenu = document.getElementById('topics-dropdown-menu');
-    
-    if (addTopicsButton && dropdown) {
-        addTopicsButton.addEventListener('click', function(e) {
-            e.stopPropagation();
-            dropdown.classList.toggle('open');
-            const arrow = this.querySelector('svg:last-child');
-            if (arrow) {
-                arrow.style.transform = dropdown.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
-            }
-        });
-        
-        document.addEventListener('click', function(e) {
-            if (dropdown && !dropdown.contains(e.target)) {
-                dropdown.classList.remove('open');
-                const arrow = addTopicsButton.querySelector('svg:last-child');
-                if (arrow) arrow.style.transform = 'rotate(0deg)';
-            }
-        });
-        
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                dropdown.classList.remove('open');
-                const arrow = addTopicsButton.querySelector('svg:last-child');
-                if (arrow) arrow.style.transform = 'rotate(0deg)';
-            }
-        });
-    }
-});
-</script>
 {% endblock %}
 
 {% block extra_scripts %}
-<script src="{{ url_for('static', filename='js/course_detail.js') }}"></script>
-<script src="{{ url_for('static', filename='js/discussion.js') }}"></script>
+<script src="{{ url_for('static', filename='js/course_detail.js') }}?v={{ range(1, 9999) | random }}"></script>
+<script src="{{ url_for('static', filename='js/discussion.js') }}?v={{ range(1, 9999) | random }}"></script>
 {% endblock %}
