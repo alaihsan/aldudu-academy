@@ -47,64 +47,190 @@
 </div>
 
 <!-- APP PAGE -->
-<div id="app-page" class="hidden min-h-screen">
-    <!-- Header -->
-    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center">
-                    <a href="{{ url_for('main.dashboard') }}" class="flex items-center space-x-3">
-                        <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+<div id="app-page" class="hidden min-h-screen bg-gray-50 flex">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white border-r border-gray-200 hidden lg:flex flex-col sticky top-0 h-screen">
+        <div class="p-6 border-b border-gray-100">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center shadow-lg shadow-primary-200">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                </div>
+                <span class="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">Aldudu</span>
+            </div>
+        </div>
+        
+        <nav class="flex-1 p-4 space-y-1">
+            <a href="{{ url_for('main.dashboard') }}" class="flex items-center space-x-3 px-4 py-3 bg-primary-50 text-primary-700 rounded-xl font-semibold transition-all duration-200 group">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                </svg>
+                <span>Dashboard</span>
+            </a>
+            <!-- Teacher specific links will be shown/hidden via JS -->
+            <div id="teacher-nav" class="hidden pt-4 space-y-1">
+                <p class="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Manajemen</p>
+                <a href="javascript:void(0)" class="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl transition-all duration-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                    <span>Daftar Murid</span>
+                </a>
+            </div>
+        </nav>
+
+        <div class="p-4 border-t border-gray-100">
+            <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-2xl">
+                <div id="user-avatar-sidebar" class="w-10 h-10 rounded-xl bg-primary-100 text-primary-700 flex items-center justify-center font-bold text-lg">A</div>
+                <div class="flex-1 min-w-0">
+                    <p id="user-name-sidebar" class="text-sm font-bold text-gray-900 truncate">User Name</p>
+                    <p id="user-role-sidebar" class="text-xs text-gray-500 capitalize">Role</p>
+                </div>
+                <button id="logout-button-sidebar" class="flex items-center space-x-2 p-2 text-gray-400 hover:text-red-600 transition-colors group">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                    </svg>
+                    <span class="text-xs font-bold uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity">Log Out</span>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <!-- Top Header -->
+        <header class="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-4 sm:px-8 sticky top-0 z-30">
+            <div class="flex items-center lg:hidden">
+                <button class="p-2 text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="flex items-center space-x-4 ml-auto">
+                <div class="flex items-center space-x-2 bg-primary-50 px-4 py-2 rounded-xl border border-primary-100 shadow-sm">
+                    <span class="text-xs font-black text-primary-400 uppercase tracking-widest">Tahun Ajaran</span>
+                    <span class="text-sm font-bold text-primary-700">2025/2026</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Scrollable Area -->
+        <main class="flex-1 overflow-y-auto p-4 sm:p-8">
+            <div class="max-w-6xl mx-auto space-y-8">
+                <!-- Welcome & Stats -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 bg-gradient-to-br from-primary-600 to-primary-800 rounded-3xl p-8 text-white relative overflow-hidden shadow-xl shadow-primary-200">
+                        <div class="relative z-10">
+                            <h1 id="welcome-title" class="text-3xl font-bold mb-2">Selamat Datang!</h1>
+                            <p class="text-primary-100 opacity-90 max-w-md">Lanjutkan perjalanan belajarmu hari ini. Kamu memiliki beberapa aktivitas yang menunggu.</p>
+                        </div>
+                        <div class="absolute right-0 bottom-0 opacity-10 pointer-events-none transform translate-y-1/4 translate-x-1/4">
+                            <svg class="w-64 h-64" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                             </svg>
                         </div>
-                        <span class="text-xl font-bold text-gray-900">Aldudu Academy</span>
-                    </a>
+                    </div>
+                    
+                    <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm flex flex-col justify-between">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-sm font-bold text-gray-400 uppercase tracking-wider">Ringkasan</span>
+                            <div class="p-2 bg-primary-50 text-primary-600 rounded-xl">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p id="total-classes" class="text-3xl font-bold text-gray-900">0</p>
+                                <p class="text-xs text-gray-500 font-medium mt-1">Total Kelas</p>
+                            </div>
+                            <div>
+                                <p id="total-students" class="text-3xl font-bold text-gray-900">0</p>
+                                <p class="text-xs text-gray-500 font-medium mt-1">Total Murid</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="flex items-center space-x-4">
-                    <span id="welcome-message" class="text-gray-600 hidden sm:block"></span>
-                    <button id="logout-button" 
-                        class="px-4 py-2 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors duration-200">
-                        Logout
-                    </button>
-                </div>
-            </div>
-        </div>
-    </header>
 
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Enroll Section -->
-        <div id="enroll-section" class="hidden mb-8">
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Gabung ke Kelas Baru</h3>
-                <form id="enroll-form" class="flex flex-col sm:flex-row gap-4">
-                    <input type="text" id="class-code-input" placeholder="Masukkan Kode Kelas..." required 
-                        class="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 outline-none">
-                    <button type="submit" 
-                        class="px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-700 text-white rounded-xl font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200">
-                        Gabung
-                    </button>
-                </form>
-                <div id="enroll-message" class="mt-4"></div>
-            </div>
-        </div>
+                <!-- Quick Actions / Enroll -->
+                <section id="enroll-section" class="hidden">
+                    <div class="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm">
+                        <div class="flex items-center space-x-4 mb-6">
+                            <div class="w-12 h-12 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h2 class="text-xl font-bold text-gray-900">Gabung Kelas Baru</h2>
+                                <p class="text-sm text-gray-500">Gunakan kode kelas yang diberikan oleh gurumu.</p>
+                            </div>
+                        </div>
+                        <form id="enroll-form" class="flex items-center space-x-4">
+                            <input type="text" id="class-code-input" placeholder="KODE-KELAS" 
+                                class="flex-1 px-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-primary-500 text-lg font-bold tracking-widest placeholder:font-normal placeholder:tracking-normal">
+                            <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white px-8 py-4 rounded-2xl font-bold transition-all shadow-lg shadow-primary-200 active:scale-95">
+                                Gabung
+                            </button>
+                        </form>
+                    </div>
+                </section>
 
-        <!-- Page Header -->
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-            <h1 id="content-title" class="text-3xl font-bold text-gray-900"></h1>
-            <div class="flex items-center space-x-3">
-                <label for="academic-year" class="text-sm font-medium text-gray-700">Tahun Ajaran:</label>
-                <select id="academic-year" name="academic-year" 
-                    class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none bg-white">
-                </select>
-            </div>
-        </div>
+                <!-- Class List Section -->
+                <section>
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-900">Kelas Saya</h2>
+                            <p class="text-sm text-gray-500 mt-1">Kelola dan pantau aktivitas belajar di setiap kelas.</p>
+                        </div>
+                        <button id="create-class-btn" class="hidden px-5 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl font-bold text-sm hover:bg-gray-50 transition-all flex items-center space-x-2 shadow-sm">
+                            <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                            </svg>
+                            <span>Buat Kelas</span>
+                        </button>
+                    </div>
 
-        <!-- Class Grid -->
-        <div id="class-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
-    </main>
+                    <!-- Skeleton Loading -->
+                    <div id="class-skeleton" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="bg-white rounded-3xl h-64 animate-pulse border border-gray-100 p-6 flex flex-col space-y-4">
+                            <div class="h-8 bg-gray-100 rounded-xl w-3/4"></div>
+                            <div class="h-4 bg-gray-100 rounded-lg w-1/2"></div>
+                            <div class="flex-1"></div>
+                            <div class="h-12 bg-gray-50 rounded-2xl"></div>
+                        </div>
+                        <div class="bg-white rounded-3xl h-64 animate-pulse border border-gray-100 p-6 hidden md:flex flex-col space-y-4">
+                            <div class="h-8 bg-gray-100 rounded-xl w-3/4"></div>
+                            <div class="h-4 bg-gray-100 rounded-lg w-1/2"></div>
+                            <div class="flex-1"></div>
+                            <div class="h-12 bg-gray-50 rounded-2xl"></div>
+                        </div>
+                    </div>
+
+                    <!-- Grid Kelas -->
+                    <div id="class-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                    
+                    <!-- Empty State -->
+                    <div id="empty-state" class="hidden bg-white rounded-3xl p-12 text-center border-2 border-dashed border-gray-200">
+                        <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Belum ada kelas</h3>
+                        <p class="text-gray-500 mb-8 max-w-sm mx-auto">Mulai dengan membuat kelas baru atau bergabung ke kelas yang sudah ada.</p>
+                        <button id="empty-create-btn" class="px-8 py-3 bg-primary-600 text-white rounded-2xl font-bold shadow-lg shadow-primary-200">
+                            Buat Kelas Pertama
+                        </button>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
 </div>
 
 <!-- ADD CLASS MODAL -->
@@ -116,12 +242,23 @@
                 <p class="text-primary-100 text-sm mt-1">Buat kelas baru untuk tahun ajaran yang sedang aktif.</p>
             </div>
             <div class="p-6">
-                <div class="mb-4">
+                <div class="mb-6">
                     <label for="course-name" class="block text-sm font-medium text-gray-700 mb-2">Nama Kelas</label>
                     <input type="text" id="course-name" name="course-name" required placeholder="Contoh: Kimia XII - IPA 1" 
-                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none">
-                    <div id="add-modal-error" class="hidden mt-2 text-red-600 text-sm"></div>
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all">
                 </div>
+                <div class="mb-4">
+                    <label for="add-color-input" class="block text-sm font-medium text-gray-700 mb-3">Pilih Warna Kartu</label>
+                    <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                        <input type="color" id="add-color-input" name="color" value="#3b82f6" 
+                            class="w-16 h-16 rounded-xl cursor-pointer border-none bg-transparent">
+                        <div>
+                            <p class="text-xs font-black text-gray-400 uppercase tracking-widest">Custom Color</p>
+                            <p class="text-sm text-gray-500">Pilih warna sesuka hati untuk identitas kelas ini.</p>
+                        </div>
+                    </div>
+                </div>
+                <div id="add-modal-error" class="hidden mt-2 text-red-600 text-sm"></div>
             </div>
             <div class="bg-gray-50 px-6 py-4 flex justify-end space-x-3">
                 <button type="button" id="add-cancel-button" 
@@ -177,27 +314,85 @@
                         class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none">
                 </div>
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-3">Warna Latar</label>
-                    <div id="color-picker" class="grid grid-cols-5 gap-3"></div>
+                    <label for="edit-color-input" class="block text-sm font-medium text-gray-700 mb-3">Warna Latar</label>
+                    <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                        <input type="color" id="edit-color-input" name="color" 
+                            class="w-16 h-16 rounded-xl cursor-pointer border-none bg-transparent">
+                        <div>
+                            <p class="text-xs font-black text-gray-400 uppercase tracking-widest">Custom Color</p>
+                            <p class="text-sm text-gray-500">Ubah nuansa warna untuk kelas ini.</p>
+                        </div>
+                    </div>
                 </div>
                 <div id="edit-modal-error" class="hidden text-red-600 text-sm"></div>
             </div>
-            <div class="bg-gray-50 px-6 py-4 flex justify-end space-x-3">
-                <button type="button" id="edit-cancel-button" 
-                    class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                    Batal
+            <div class="bg-gray-50 px-6 py-4 flex justify-between items-center">
+                <button type="button" onclick="Dashboard.openDeleteModal()" 
+                    class="px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg font-bold transition-all flex items-center space-x-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                    <span>Hapus Kelas</span>
                 </button>
-                <button type="submit" 
-                    class="px-4 py-2 bg-gradient-to-r from-primary-500 to-primary-700 text-white rounded-lg font-medium shadow hover:shadow-md transition-all">
-                    Simpan Perubahan
-                </button>
+                <div class="flex space-x-3">
+                    <button type="button" id="edit-cancel-button" 
+                        class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                        Batal
+                    </button>
+                    <button type="submit" 
+                        class="px-4 py-2 bg-gradient-to-r from-primary-500 to-primary-700 text-white rounded-lg font-medium shadow hover:shadow-md transition-all">
+                        Simpan Perubahan
+                    </button>
+                </div>
             </div>
         </form>
+    </div>
+</div>
+
+<!-- DELETE CLASS MODAL -->
+<div id="delete-class-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden animate-slide-up border border-red-50">
+        <div class="bg-gradient-to-br from-red-500 to-red-700 px-8 py-10 text-center relative overflow-hidden">
+            <div class="absolute inset-0 opacity-10">
+                <svg class="w-full h-full" fill="currentColor" viewBox="0 0 100 100" preserveAspectRatio="none">
+                    <path d="M0 0 L100 100 L100 0 Z" />
+                </svg>
+            </div>
+            <div class="relative z-10">
+                <div class="w-20 h-20 bg-white/20 rounded-3xl flex items-center justify-center mx-auto mb-6 backdrop-blur-md shadow-inner">
+                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-black text-white mb-2">Hapus Kelas?</h3>
+                <p class="text-red-100 font-medium">Tindakan ini permanen dan tidak bisa dibatalkan.</p>
+            </div>
+        </div>
+        <div class="p-8">
+            <p class="text-gray-600 text-center mb-6 leading-relaxed">Seluruh data materi, kuis, dan diskusi di dalam kelas ini akan terhapus selamanya.</p>
+            
+            <div class="space-y-4">
+                <p class="text-xs font-black text-gray-400 uppercase tracking-widest text-center">Ketik <span class="text-red-600">"setuju"</span> untuk konfirmasi</p>
+                <input type="text" id="delete-confirm-input" placeholder="..." 
+                    class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-red-500 focus:ring-0 text-center font-bold text-lg transition-all outline-none">
+            </div>
+            
+            <div id="delete-modal-error" class="hidden mt-4 text-red-600 text-sm font-bold text-center bg-red-50 p-3 rounded-xl"></div>
+        </div>
+        <div class="px-8 pb-8 flex space-x-3">
+            <button type="button" id="delete-cancel-btn" 
+                class="flex-1 px-6 py-4 text-gray-500 bg-gray-100 rounded-2xl hover:bg-gray-200 font-bold transition-all active:scale-95">
+                Batal
+            </button>
+            <button type="button" id="delete-final-btn" disabled
+                class="flex-[2] px-6 py-4 bg-red-600 text-white rounded-2xl font-bold shadow-lg shadow-red-200 transition-all opacity-50 cursor-not-allowed hover:bg-red-700 active:scale-95">
+                Ya, Hapus Kelas
+            </button>
+        </div>
     </div>
 </div>
 {% endblock %}
 
 {% block extra_scripts %}
-<script src="{{ url_for('static', filename='dashboard.js') }}"></script>
-<script src="{{ url_for('static', filename='script.js') }}"></script>
+<script src="{{ url_for('static', filename='dashboard.js') }}?v={{ range(1, 9999) | random }}"></script>
 {% endblock %}

@@ -1,716 +1,357 @@
 /**
  * Aldudu Academy - Dashboard JavaScript
- * Handles all dashboard interactions
+ * Refined for Free Color Picker and Elegant Card UI
  */
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Initialize dashboard
-  Dashboard.init();
+    Dashboard.init();
 });
 
 const Dashboard = {
-  state: {
-    currentUser: null,
-    academicYears: [],
-    courses: [],
-    selectedYearId: null,
-    isTeacher: false
-  },
+    state: {
+        currentUser: null,
+        isTeacher: false,
+        courses: [],
+        selectedYearId: null,
+        editingCourseId: null
+    },
 
-  // Initialize dashboard
-  async init() {
-    this.cacheElements();
-    this.bindEvents();
-    await this.checkAuth();
-  },
+    init() {
+        this.cacheElements();
+        this.bindEvents();
+        this.checkAuth();
+        window.Dashboard = this;
+    },
 
-  // Cache DOM elements
-  cacheElements() {
-    // Sections
-    this.elements = {
-      loginSection: document.getElementById('login-section'),
-      dashboardWrapper: document.querySelector('.dashboard-wrapper'),
-      
-      // Forms
-      loginForm: document.getElementById('login-form'),
-      joinClassForm: document.getElementById('join-class-form'),
-      createClassForm: document.getElementById('create-class-form'),
-      editClassForm: document.getElementById('edit-class-form'),
-      
-      // Buttons
-      logoutBtn: document.getElementById('logout-btn'),
-      createClassBtn: document.getElementById('create-class-btn'),
-      createFirstClassBtn: document.getElementById('create-first-class-btn'),
-      saveClassBtn: document.getElementById('save-class'),
-      saveEditBtn: document.getElementById('save-edit'),
-      copyCodeBtn: document.getElementById('copy-code-btn'),
-      
-      // Modals
-      createClassModal: document.getElementById('create-class-modal'),
-      successModal: document.getElementById('success-modal'),
-      editClassModal: document.getElementById('edit-class-modal'),
-      
-      // Modal close buttons
-      closeCreateModal: document.getElementById('close-create-modal'),
-      closeSuccessModal: document.getElementById('close-success-modal'),
-      closeEditModal: document.getElementById('close-edit-modal'),
-      cancelCreate: document.getElementById('cancel-create'),
-      cancelEdit: document.getElementById('cancel-edit'),
-      closeSuccess: document.getElementById('close-success'),
-      
-      // Inputs
-      yearSelect: document.getElementById('year-select'),
-      classCodeDisplay: document.getElementById('class-code-display'),
-      classCode: document.getElementById('class-code'),
-      copyFeedback: document.getElementById('copy-feedback'),
-      
-      // Color pickers
-      classColorPicker: document.getElementById('class-color-picker'),
-      editColorPicker: document.getElementById('edit-color-picker'),
-      selectedColorInput: document.getElementById('selected-color'),
-      editSelectedColorInput: document.getElementById('edit-selected-color'),
-      
-      // Edit inputs
-      editClassId: document.getElementById('edit-class-id'),
-      editClassName: document.getElementById('edit-class-name'),
-      
-      // Displays
-      classesList: document.getElementById('classes-list'),
-      emptyState: document.getElementById('empty-state'),
-      totalClasses: document.getElementById('total-classes'),
-      totalStudents: document.getElementById('total-students'),
-      totalQuizzes: document.getElementById('total-quizzes'),
-      activeYear: document.getElementById('active-year'),
-      
-      // User info
-      userAvatar: document.querySelector('.user-avatar'),
-      userName: document.querySelector('.user-name'),
-      userRole: document.querySelector('.user-role')
-    };
-  },
+    cacheElements() {
+        this.elements = {
+            loginPage: document.getElementById('login-page'),
+            appPage: document.getElementById('app-page'),
+            loginForm: document.getElementById('login-form'),
+            loginError: document.getElementById('login-error'),
+            
+            // Sidebar & Header
+            userNameSidebar: document.getElementById('user-name-sidebar'),
+            userRoleSidebar: document.getElementById('user-role-sidebar'),
+            userAvatarSidebar: document.getElementById('user-avatar-sidebar'),
+            teacherNav: document.getElementById('teacher-nav'),
+            logoutBtn: document.getElementById('logout-button-sidebar'),
+            welcomeTitle: document.getElementById('welcome-title'),
+            
+            // Stats
+            totalClasses: document.getElementById('total-classes'),
+            totalStudents: document.getElementById('total-students'),
+            
+            // Sections
+            enrollSection: document.getElementById('enroll-section'),
+            enrollForm: document.getElementById('enroll-form'),
+            classGrid: document.getElementById('class-grid'),
+            classSkeleton: document.getElementById('class-skeleton'),
+            emptyState: document.getElementById('empty-state'),
+            createClassBtn: document.getElementById('create-class-btn'),
+            emptyCreateBtn: document.getElementById('empty-create-btn'),
+            
+            // Modals
+            addClassModal: document.getElementById('add-class-modal'),
+            editClassModal: document.getElementById('edit-class-modal'),
+            showCodeModal: document.getElementById('show-code-modal'),
+            deleteClassModal: document.getElementById('delete-class-modal'),
+            
+            // Add/Edit Forms
+            addClassForm: document.getElementById('add-class-form'),
+            addColorInput: document.getElementById('add-color-input'),
+            addCancelBtn: document.getElementById('add-cancel-button'),
+            
+            editClassForm: document.getElementById('edit-class-form'),
+            editCourseName: document.getElementById('edit-course-name'),
+            editColorInput: document.getElementById('edit-color-input'),
+            editCancelBtn: document.getElementById('edit-cancel-button'),
+            
+            // Delete Confirmation
+            deleteConfirmInput: document.getElementById('delete-confirm-input'),
+            deleteFinalBtn: document.getElementById('delete-final-btn'),
+            deleteCancelBtn: document.getElementById('delete-cancel-btn'),
+            
+            // Code Modal
+            generatedCode: document.querySelector('#generated-class-code span'),
+            closeCodeBtn: document.getElementById('close-code-modal-button')
+        };
+    },
 
-  // Bind event listeners
-  bindEvents() {
-    // Auth
-    this.elements.loginForm?.addEventListener('submit', (e) => this.handleLogin(e));
-    this.elements.logoutBtn?.addEventListener('click', () => this.handleLogout());
-    
-    // Create class
-    this.elements.createClassBtn?.addEventListener('click', () => this.openCreateModal());
-    this.elements.createFirstClassBtn?.addEventListener('click', () => this.openCreateModal());
-    this.elements.createClassForm?.addEventListener('submit', (e) => this.handleCreateClass(e));
-    this.elements.closeCreateModal?.addEventListener('click', () => this.closeCreateModal());
-    this.elements.cancelCreate?.addEventListener('click', () => this.closeCreateModal());
-    
-    // Edit class
-    this.elements.editClassForm?.addEventListener('submit', (e) => this.handleEditClass(e));
-    this.elements.closeEditModal?.addEventListener('click', () => this.closeEditModal());
-    this.elements.cancelEdit?.addEventListener('click', () => this.closeEditModal());
-    
-    // Success modal
-    this.elements.closeSuccessModal?.addEventListener('click', () => this.closeSuccessModal());
-    this.elements.closeSuccess?.addEventListener('click', () => this.closeSuccessModal());
-    this.elements.copyCodeBtn?.addEventListener('click', () => this.copyClassCode());
-    this.elements.classCodeDisplay?.addEventListener('click', () => this.copyClassCode());
-    
-    // Join class
-    this.elements.joinClassForm?.addEventListener('submit', (e) => this.handleJoinClass(e));
-    
-    // Year selector
-    this.elements.yearSelect?.addEventListener('change', (e) => this.handleYearChange(e));
-    
-    // Color pickers
-    this.setupColorPicker(this.elements.classColorPicker, this.elements.selectedColorInput);
-    this.setupColorPicker(this.elements.editColorPicker, this.elements.editSelectedColorInput);
-    
-    // Close modals on overlay click
-    this.elements.createClassModal?.querySelector('.modal-overlay')?.addEventListener('click', () => this.closeCreateModal());
-    this.elements.successModal?.querySelector('.modal-overlay')?.addEventListener('click', () => this.closeSuccessModal());
-    this.elements.editClassModal?.querySelector('.modal-overlay')?.addEventListener('click', () => this.closeEditModal());
-  },
+    bindEvents() {
+        // Login/Logout
+        this.elements.loginForm?.addEventListener('submit', (e) => this.handleLogin(e));
+        this.elements.logoutBtn?.addEventListener('click', (e) => {
+            e.preventDefault();
+            this.handleLogout();
+        });
+        
+        // Modal Toggles
+        const openAddModal = () => this.elements.addClassModal.classList.remove('hidden');
+        this.elements.createClassBtn?.addEventListener('click', (e) => { e.preventDefault(); openAddModal(); });
+        this.elements.emptyCreateBtn?.addEventListener('click', (e) => { e.preventDefault(); openAddModal(); });
+        this.elements.addCancelBtn?.addEventListener('click', (e) => { e.preventDefault(); this.elements.addClassModal.classList.add('hidden'); });
+        this.elements.editCancelBtn?.addEventListener('click', (e) => { e.preventDefault(); this.elements.editClassModal.classList.add('hidden'); });
+        this.elements.deleteCancelBtn?.addEventListener('click', (e) => { e.preventDefault(); this.elements.deleteClassModal.classList.add('hidden'); });
+        this.elements.closeCodeBtn?.addEventListener('click', (e) => { e.preventDefault(); this.elements.showCodeModal.classList.add('hidden'); });
+        
+        // Forms
+        this.elements.addClassForm?.addEventListener('submit', (e) => this.handleCreateClass(e));
+        this.elements.editClassForm?.addEventListener('submit', (e) => this.handleUpdateClass(e));
+        this.elements.enrollForm?.addEventListener('submit', (e) => this.handleEnroll(e));
+        
+        // Delete Confirmation Logic
+        this.elements.deleteConfirmInput?.addEventListener('input', (e) => {
+            const val = e.target.value.toLowerCase().trim();
+            const isValid = val === 'setuju';
+            this.elements.deleteFinalBtn.disabled = !isValid;
+            this.elements.deleteFinalBtn.classList.toggle('opacity-50', !isValid);
+            this.elements.deleteFinalBtn.classList.toggle('cursor-not-allowed', !isValid);
+        });
+        this.elements.deleteFinalBtn?.addEventListener('click', (e) => {
+            e.preventDefault();
+            this.handleDeleteClass();
+        });
+    },
 
-  // Check authentication status
-  async checkAuth() {
-    try {
-      const response = await fetch('/api/session');
-      const data = await response.json();
-      
-      if (data.isAuthenticated) {
-        this.state.currentUser = data.user;
-        this.state.isTeacher = data.user.role === 'GURU';
-        this.showDashboard();
-        await this.loadInitialData();
-      } else {
-        this.showLogin();
-      }
-    } catch (error) {
-      console.error('Auth check failed:', error);
-      this.showLogin();
-    }
-  },
+    async checkAuth() {
+        try {
+            const res = await fetch('/api/session');
+            const data = await res.json();
+            if (data.isAuthenticated) {
+                this.state.currentUser = data.user;
+                this.state.isTeacher = data.user.role === 'guru';
+                this.setupUI();
+                await this.loadInitialData();
+            } else {
+                this.elements.loginPage.classList.remove('hidden');
+                this.elements.appPage.classList.add('hidden');
+            }
+        } catch (err) { console.error('Auth check failed', err); }
+    },
 
-  // Show dashboard section
-  showDashboard() {
-    if (this.elements.loginSection) {
-      this.elements.loginSection.classList.add('hidden');
-    }
-    if (this.elements.dashboardWrapper) {
-      this.elements.dashboardWrapper.classList.remove('hidden');
-    }
-    
-    // Update user info
-    if (this.state.currentUser) {
-      if (this.elements.userAvatar) {
-        this.elements.userAvatar.textContent = this.state.currentUser.name.charAt(0).toUpperCase();
-      }
-      if (this.elements.userName) {
-        this.elements.userName.textContent = this.state.currentUser.name;
-      }
-      if (this.elements.userRole) {
-        this.elements.userRole.textContent = this.state.currentUser.role === 'GURU' ? 'Guru' : 'Murid';
-      }
-    }
-  },
-
-  // Show login section
-  showLogin() {
-    if (this.elements.loginSection) {
-      this.elements.loginSection.classList.remove('hidden');
-    }
-    if (this.elements.dashboardWrapper) {
-      this.elements.dashboardWrapper.classList.add('hidden');
-    }
-  },
-
-  // Handle login
-  async handleLogin(e) {
-    e.preventDefault();
-    const email = document.getElementById('login-email')?.value;
-    const password = document.getElementById('login-password')?.value;
-    
-    if (!email || !password) {
-      this.showNotification('Email dan password harus diisi', 'error');
-      return;
-    }
-    
-    try {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-      
-      const data = await response.json();
-      
-      if (data.success) {
-        this.state.currentUser = data.user;
-        this.state.isTeacher = data.user.role === 'GURU';
-        this.showDashboard();
-        await this.loadInitialData();
-        this.showNotification('Login berhasil!', 'success');
-      } else {
-        this.showNotification(data.message || 'Email atau password salah', 'error');
-      }
-    } catch (error) {
-      console.error('Login failed:', error);
-      this.showNotification('Terjadi kesalahan. Silakan coba lagi.', 'error');
-    }
-  },
-
-  // Handle logout
-  async handleLogout() {
-    if (!confirm('Apakah Anda yakin ingin logout?')) return;
-    
-    try {
-      await fetch('/api/logout', { method: 'POST' });
-      this.state.currentUser = null;
-      this.state.courses = [];
-      this.state.academicYears = [];
-      this.showLogin();
-      this.showNotification('Anda telah logout', 'success');
-    } catch (error) {
-      console.error('Logout failed:', error);
-      this.showNotification('Gagal logout', 'error');
-    }
-  },
-
-  // Load initial data
-  async loadInitialData() {
-    try {
-      const response = await fetch('/api/initial-data');
-      const data = await response.json();
-      
-      this.state.academicYears = data.academicYears || [];
-      this.state.courses = data.courses || [];
-      
-      // Populate year selector
-      this.populateYearSelector(data.academicYears);
-      
-      // Find active year
-      const activeYear = data.academicYears?.find(y => y.isActive);
-      if (activeYear) {
-        this.state.selectedYearId = activeYear.id;
-        this.elements.yearSelect.value = activeYear.id;
-        if (this.elements.activeYear) {
-          this.elements.activeYear.textContent = activeYear.year;
+    setupUI() {
+        this.elements.loginPage.classList.add('hidden');
+        this.elements.appPage.classList.remove('hidden');
+        const user = this.state.currentUser;
+        this.elements.userNameSidebar.textContent = user.name;
+        this.elements.userRoleSidebar.textContent = user.role;
+        this.elements.userAvatarSidebar.textContent = user.name.charAt(0).toUpperCase();
+        this.elements.welcomeTitle.textContent = `Selamat Datang, ${user.name.split(' ')[0]}!`;
+        
+        if (this.state.isTeacher) {
+            this.elements.teacherNav.classList.remove('hidden');
+            this.elements.createClassBtn.classList.remove('hidden');
+            this.elements.enrollSection.classList.add('hidden');
+        } else {
+            this.elements.enrollSection.classList.remove('hidden');
         }
-      }
-      
-      // Load courses for selected year
-      await this.loadCourses(this.state.selectedYearId);
-      
-    } catch (error) {
-      console.error('Failed to load initial data:', error);
-      this.showNotification('Gagal memuat data', 'error');
-    }
-  },
+    },
 
-  // Populate year selector
-  populateYearSelector(years) {
-    if (!this.elements.yearSelect) return;
-    
-    this.elements.yearSelect.innerHTML = years.map(year => 
-      `<option value="${year.id}">${year.year}</option>`
-    ).join('');
-  },
+    async loadInitialData() {
+        try {
+            const res = await fetch('/api/initial-data');
+            const data = await res.json();
+            this.state.selectedYearId = data.currentYearId;
+            this.state.courses = data.courses;
+            this.renderCourses();
+            this.updateStats();
+        } catch (err) { console.error('Load initial data failed', err); }
+    },
 
-  // Handle year change
-  async handleYearChange(e) {
-    const yearId = e.target.value;
-    this.state.selectedYearId = yearId;
-    await this.loadCourses(yearId);
-  },
+    async loadCourses() {
+        this.elements.classGrid.innerHTML = '';
+        this.elements.classSkeleton.classList.remove('hidden');
+        this.elements.emptyState.classList.add('hidden');
+        try {
+            const res = await fetch(`/api/courses/year/${this.state.selectedYearId}`);
+            const data = await res.json();
+            this.state.courses = data.courses;
+            this.renderCourses();
+            this.updateStats();
+        } catch (err) { console.error('Load courses failed', err); }
+        finally { this.elements.classSkeleton.classList.add('hidden'); }
+    },
 
-  // Load courses for a year
-  async loadCourses(yearId) {
-    if (!yearId) return;
-    
-    try {
-      const response = await fetch(`/api/courses/year/${yearId}`);
-      const data = await response.json();
-      
-      this.state.courses = data.courses || [];
-      this.renderCourses(data.courses);
-      this.updateStats(data.courses);
-      
-    } catch (error) {
-      console.error('Failed to load courses:', error);
-      this.showNotification('Gagal memuat kelas', 'error');
-    }
-  },
+    renderCourses() {
+        const courses = this.state.courses;
+        if (courses.length === 0) {
+            this.elements.emptyState.classList.remove('hidden');
+            return;
+        }
+        
+        this.elements.classGrid.innerHTML = courses.map(c => `
+            <div class="group bg-white rounded-[2.5rem] border border-gray-100 shadow-premium hover:shadow-2xl transition-all duration-500 overflow-hidden flex flex-col h-full transform hover:-translate-y-3">
+                <!-- Card Header -->
+                <div class="h-40 relative overflow-hidden flex items-center justify-center p-8" style="background-color: ${c.color || '#0284c7'}">
+                    <div class="absolute inset-0 opacity-20 group-hover:scale-150 transition-transform duration-1000 ease-in-out">
+                        <svg class="w-full h-full" fill="currentColor" viewBox="0 0 100 100" preserveAspectRatio="none">
+                            <path d="M0 100 C 20 0 50 0 100 100 Z" />
+                        </svg>
+                    </div>
+                    <h3 class="relative z-10 text-2xl font-black text-white text-center leading-tight drop-shadow-md group-hover:scale-105 transition-transform duration-500">${c.name}</h3>
+                    
+                    ${this.state.isTeacher ? `
+                        <button type="button" onclick="event.preventDefault(); Dashboard.openEditClass(${c.id})" 
+                            class="absolute top-5 right-5 p-2.5 bg-white/20 hover:bg-white text-white hover:text-gray-900 rounded-2xl backdrop-blur-md shadow-lg transition-all duration-300 z-20">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                            </svg>
+                        </button>
+                    ` : ''}
+                </div>
+                
+                <!-- Card Body -->
+                <div class="p-10 flex-1 flex flex-col space-y-8">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 rounded-2xl bg-primary-50 flex items-center justify-center text-primary-600 group-hover:bg-primary-600 group-hover:text-white transition-all duration-500">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                </svg>
+                            </div>
+                            <div class="min-w-0">
+                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1.5">Pengajar</p>
+                                <p class="text-sm font-bold text-gray-700 truncate">${c.teacher.name}</p>
+                            </div>
+                        </div>
+                        <div class="px-5 py-2.5 bg-green-50 text-green-600 rounded-2xl text-[11px] font-black uppercase tracking-widest border border-green-100/50 shadow-sm">
+                            ${c.studentCount} Murid
+                        </div>
+                    </div>
 
-  // Render courses grid
-  renderCourses(courses) {
-    if (!this.elements.classesList) return;
-    
-    if (!courses || courses.length === 0) {
-      this.elements.classesList.classList.add('hidden');
-      if (this.elements.emptyState) {
-        this.elements.emptyState.classList.remove('hidden');
-      }
-      return;
-    }
-    
-    this.elements.classesList.classList.remove('hidden');
-    if (this.elements.emptyState) {
-      this.elements.emptyState.classList.add('hidden');
-    }
-    
-    this.elements.classesList.innerHTML = courses.map(course => `
-      <div class="class-card" data-course-id="${course.id}">
-        <div class="class-card-header" style="background: linear-gradient(135deg, ${course.color || '#1a73e8'} 0%, ${this.darkenColor(course.color || '#1a73e8')} 100%)">
-          <h3 class="class-card-title">${this.escapeHtml(course.name)}</h3>
-          ${this.state.isTeacher ? `
-            <button class="edit-course-btn" onclick="Dashboard.openEditModal(${course.id}, '${this.escapeHtml(course.name)}', '${course.color || '#1a73e8'}')" title="Edit kelas">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
-                <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
-              </svg>
-            </button>
-          ` : ''}
-        </div>
-        <div class="class-card-body">
-          <div class="class-card-info">
-            <div class="class-card-info-item">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
-                <circle cx="12" cy="7" r="4"/>
-              </svg>
-              <span>${this.escapeHtml(course.teacher?.name || 'Guru')}</span>
+                    <div class="flex items-center p-5 bg-gray-50/50 rounded-2xl border border-gray-100 group-hover:border-primary-100 transition-all duration-500">
+                        <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm mr-4">
+                            <svg class="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1.5">Kode Akses</p>
+                            <p class="text-base font-mono font-black text-primary-600">${c.classCode}</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-auto flex items-center space-x-4 pt-6 border-t border-gray-50">
+                        <a href="/kelas/${c.id}" class="flex-1 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white py-5 rounded-[1.75rem] text-center font-bold text-sm transition-all shadow-xl shadow-primary-200 active:scale-95 btn-shine">
+                            Buka Kelas
+                        </a>
+                        <button type="button" onclick="event.preventDefault(); Dashboard.copyCode('${c.classCode}')" 
+                            class="p-5 bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-primary-600 rounded-[1.75rem] transition-all active:scale-90 group/btn">
+                            <svg class="w-6 h-6 transition-transform group-hover/btn:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m-7 10h7m-7-4h7"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
             </div>
-            <div class="class-card-info-item">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
-                <circle cx="9" cy="7" r="4"/>
-                <path d="M23 21v-2a4 4 0 00-3-3.87"/>
-                <path d="M16 3.13a4 4 0 010 7.75"/>
-              </svg>
-              <span>${course.studentCount || 0} Murid</span>
-            </div>
-          </div>
-        </div>
-        <div class="class-card-footer">
-          <div class="class-code-wrapper">
-            <span class="class-code-label">Kode:</span>
-            <span class="class-code">${course.classCode || 'N/A'}</span>
-          </div>
-          <button class="copy-code-btn" onclick="Dashboard.copyToClipboard('${course.classCode || ''}')" title="Salin kode">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-              <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-    `).join('');
-  },
+        `).join('');
+    },
 
-  // Update statistics
-  updateStats(courses) {
-    if (this.elements.totalClasses) {
-      this.elements.totalClasses.textContent = courses?.length || 0;
-    }
-    
-    // Calculate total students
-    const totalStudents = courses?.reduce((sum, course) => sum + (course.studentCount || 0), 0) || 0;
-    if (this.elements.totalStudents) {
-      this.elements.totalStudents.textContent = totalStudents;
-    }
-    
-    // Total quizzes would need additional API call
-    if (this.elements.totalQuizzes) {
-      this.elements.totalQuizzes.textContent = '-';
-    }
-  },
+    updateStats() {
+        this.elements.totalClasses.textContent = this.state.courses.length;
+        this.elements.totalStudents.textContent = this.state.courses.reduce((acc, c) => acc + c.studentCount, 0);
+    },
 
-  // Open create class modal
-  openCreateModal() {
-    if (this.elements.createClassModal) {
-      this.elements.createClassModal.classList.remove('hidden');
-    }
-    // Reset form
-    if (this.elements.createClassForm) {
-      this.elements.createClassForm.reset();
-    }
-    // Reset color picker
-    this.resetColorPicker(this.elements.classColorPicker, this.elements.selectedColorInput);
-  },
+    async handleLogin(e) {
+        e.preventDefault();
+        const res = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: e.target.email.value, password: e.target.password.value })
+        });
+        const data = await res.json();
+        if (data.success) window.location.reload();
+        else { this.elements.loginError.textContent = data.message; this.elements.loginError.classList.remove('hidden'); }
+    },
 
-  // Close create class modal
-  closeCreateModal() {
-    if (this.elements.createClassModal) {
-      this.elements.createClassModal.classList.add('hidden');
-    }
-  },
+    async handleLogout() {
+        await fetch('/api/logout', { method: 'POST' });
+        window.location.reload();
+    },
 
-  // Handle create class
-  async handleCreateClass(e) {
-    e.preventDefault();
-    
-    const name = document.getElementById('new-class-name')?.value;
-    const color = this.elements.selectedColorInput?.value || '#1a73e8';
-    
-    if (!name) {
-      this.showNotification('Nama kelas harus diisi', 'error');
-      return;
-    }
-    
-    // Get active year ID
-    const activeYear = this.state.academicYears?.find(y => y.isActive);
-    if (!activeYear) {
-      this.showNotification('Tidak ada tahun ajaran aktif', 'error');
-      return;
-    }
-    
-    try {
-      const response = await fetch('/api/courses', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: name,
-          academic_year_id: activeYear.id,
-          color: color
-        })
-      });
-      
-      const data = await response.json();
-      
-      if (data.success) {
-        this.closeCreateModal();
-        this.showSuccessModal(data.course);
-        await this.loadCourses(this.state.selectedYearId);
-        this.showNotification('Kelas berhasil dibuat', 'success');
-      } else {
-        this.showNotification(data.message || 'Gagal membuat kelas', 'error');
-      }
-    } catch (error) {
-      console.error('Create class failed:', error);
-      this.showNotification('Terjadi kesalahan. Silakan coba lagi.', 'error');
-    }
-  },
+    async handleCreateClass(e) {
+        e.preventDefault();
+        const res = await fetch('/api/courses', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                name: e.target['course-name'].value, 
+                academic_year_id: this.state.selectedYearId,
+                color: this.elements.addColorInput.value
+            })
+        });
+        const data = await res.json();
+        if (data.success) {
+            this.elements.addClassModal.classList.add('hidden');
+            e.target.reset();
+            this.elements.generatedCode.textContent = data.course.classCode;
+            this.elements.showCodeModal.classList.remove('hidden');
+            await this.loadCourses();
+        }
+    },
 
-  // Open edit modal
-  openEditModal(courseId, courseName, courseColor) {
-    if (this.elements.editClassId) {
-      this.elements.editClassId.value = courseId;
-    }
-    if (this.elements.editClassName) {
-      this.elements.editClassName.value = courseName;
-    }
-    if (this.elements.editSelectedColorInput) {
-      this.elements.editSelectedColorInput.value = courseColor || '#1a73e8';
-    }
-    
-    // Update color picker
-    this.resetColorPicker(this.elements.editColorPicker, this.elements.editSelectedColorInput);
-    if (this.elements.editColorPicker) {
-      const swatch = this.elements.editColorPicker.querySelector(`[data-color="${courseColor || '#1a73e8'}"]`);
-      if (swatch) {
-        swatch.classList.add('selected');
-      }
-    }
-    
-    if (this.elements.editClassModal) {
-      this.elements.editClassModal.classList.remove('hidden');
-    }
-  },
+    openEditClass(id) {
+        const course = this.state.courses.find(c => c.id === id);
+        if (!course) return;
+        this.state.editingCourseId = id;
+        this.elements.editCourseName.value = course.name;
+        this.elements.editColorInput.value = course.color || '#0284c7';
+        this.elements.editClassModal.classList.remove('hidden');
+    },
 
-  // Close edit modal
-  closeEditModal() {
-    if (this.elements.editClassModal) {
-      this.elements.editClassModal.classList.add('hidden');
-    }
-  },
+    async handleUpdateClass(e) {
+        e.preventDefault();
+        const res = await fetch(`/api/courses/${this.state.editingCourseId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                name: this.elements.editCourseName.value, 
+                color: this.elements.editColorInput.value 
+            })
+        });
+        const data = await res.json();
+        if (data.success) {
+            this.elements.editClassModal.classList.add('hidden');
+            await this.loadCourses();
+        }
+    },
 
-  // Handle edit class
-  async handleEditClass(e) {
-    e.preventDefault();
-    
-    const courseId = this.elements.editClassId?.value;
-    const name = this.elements.editClassName?.value;
-    const color = this.elements.editSelectedColorInput?.value;
-    
-    if (!courseId || !name) {
-      this.showNotification('Data tidak valid', 'error');
-      return;
-    }
-    
-    try {
-      const response = await fetch(`/api/courses/${courseId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, color })
-      });
-      
-      const data = await response.json();
-      
-      if (data.success) {
-        this.closeEditModal();
-        await this.loadCourses(this.state.selectedYearId);
-        this.showNotification('Kelas berhasil diperbarui', 'success');
-      } else {
-        this.showNotification(data.message || 'Gagal memperbarui kelas', 'error');
-      }
-    } catch (error) {
-      console.error('Edit class failed:', error);
-      this.showNotification('Terjadi kesalahan. Silakan coba lagi.', 'error');
-    }
-  },
+    openDeleteModal() {
+        this.elements.editClassModal.classList.add('hidden');
+        this.elements.deleteConfirmInput.value = '';
+        this.elements.deleteFinalBtn.disabled = true;
+        this.elements.deleteFinalBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        this.elements.deleteClassModal.classList.remove('hidden');
+    },
 
-  // Show success modal
-  showSuccessModal(course) {
-    if (this.elements.classCode) {
-      this.elements.classCode.textContent = course.classCode || 'N/A';
+    async handleDeleteClass() {
+        if (this.elements.deleteConfirmInput.value.toLowerCase().trim() !== 'setuju') return;
+        try {
+            const res = await fetch(`/api/courses/${this.state.editingCourseId}`, { method: 'DELETE' });
+            const data = await res.json();
+            if (data.success) {
+                this.elements.deleteClassModal.classList.add('hidden');
+                await this.loadCourses();
+                alert('Kelas telah berhasil dihapus.');
+            } else { alert(data.message || 'Gagal menghapus kelas.'); }
+        } catch (err) { alert('Terjadi kesalahan koneksi.'); }
+    },
+
+    async handleEnroll(e) {
+        e.preventDefault();
+        const res = await fetch('/api/enroll', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ class_code: e.target['class-code-input'].value })
+        });
+        const data = await res.json();
+        if (data.success) { e.target.reset(); await this.loadCourses(); alert('Berhasil bergabung!'); }
+        else { alert(data.message); }
+    },
+
+    copyCode(code) {
+        navigator.clipboard.writeText(code);
+        alert('Kode kelas disalin!');
     }
-    if (this.elements.successModal) {
-      this.elements.successModal.classList.remove('hidden');
-    }
-    if (this.elements.copyFeedback) {
-      this.elements.copyFeedback.textContent = 'Klik kode untuk menyalin';
-    }
-  },
-
-  // Close success modal
-  closeSuccessModal() {
-    if (this.elements.successModal) {
-      this.elements.successModal.classList.add('hidden');
-    }
-  },
-
-  // Copy class code
-  copyClassCode() {
-    const code = this.elements.classCode?.textContent || '';
-    this.copyToClipboard(code);
-  },
-
-  // Copy to clipboard utility
-  copyToClipboard(text) {
-    if (!text) return;
-    
-    navigator.clipboard.writeText(text).then(() => {
-      if (this.elements.copyFeedback) {
-        this.elements.copyFeedback.textContent = '✓ Kode berhasil disalin!';
-        setTimeout(() => {
-          this.elements.copyFeedback.textContent = 'Klik kode untuk menyalin';
-        }, 2000);
-      }
-      this.showNotification('Kode berhasil disalin', 'success');
-    }).catch(err => {
-      console.error('Copy failed:', err);
-      this.showNotification('Gagal menyalin kode', 'error');
-    });
-  },
-
-  // Handle join class
-  async handleJoinClass(e) {
-    e.preventDefault();
-    
-    const classCode = this.elements.joinClassForm?.querySelector('input')?.value;
-    
-    if (!classCode) {
-      this.showNotification('Kode kelas harus diisi', 'error');
-      return;
-    }
-    
-    if (this.state.isTeacher) {
-      this.showNotification('Guru tidak dapat bergabung dengan kelas', 'error');
-      return;
-    }
-    
-    try {
-      const response = await fetch('/api/enroll', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ class_code: classCode.trim().toUpperCase() })
-      });
-      
-      const data = await response.json();
-      
-      if (data.success) {
-        this.elements.joinClassForm?.reset();
-        await this.loadCourses(this.state.selectedYearId);
-        this.showNotification('Berhasil bergabung dengan kelas', 'success');
-      } else {
-        this.showNotification(data.message || 'Kode kelas tidak valid', 'error');
-      }
-    } catch (error) {
-      console.error('Join class failed:', error);
-      this.showNotification('Terjadi kesalahan. Silakan coba lagi.', 'error');
-    }
-  },
-
-  // Setup color picker
-  setupColorPicker(container, input) {
-    if (!container || !input) return;
-    
-    const swatches = container.querySelectorAll('.color-swatch');
-    swatches.forEach(swatch => {
-      swatch.addEventListener('click', () => {
-        // Remove selected from all
-        swatches.forEach(s => s.classList.remove('selected'));
-        // Add selected to clicked
-        swatch.classList.add('selected');
-        // Update input value
-        input.value = swatch.dataset.color;
-      });
-    });
-  },
-
-  // Reset color picker
-  resetColorPicker(container, input) {
-    if (!container || !input) return;
-    
-    const swatches = container.querySelectorAll('.color-swatch');
-    swatches.forEach(s => s.classList.remove('selected'));
-    
-    // Select first swatch
-    if (swatches.length > 0) {
-      swatches[0].classList.add('selected');
-      input.value = swatches[0].dataset.color;
-    }
-  },
-
-  // Darken color for gradient
-  darkenColor(color) {
-    // Simple color darkening
-    const hex = color.replace('#', '');
-    const r = Math.max(0, parseInt(hex.substr(0, 2), 16) - 20);
-    const g = Math.max(0, parseInt(hex.substr(2, 2), 16) - 20);
-    const b = Math.max(0, parseInt(hex.substr(4, 2), 16) - 20);
-    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
-  },
-
-  // Escape HTML
-  escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  },
-
-  // Show notification
-  showNotification(message, type = 'info') {
-    // Create notification element
-    const notification = document.createElement('div');
-    notification.className = `notification notification-${type}`;
-    notification.innerHTML = `
-      <div class="notification-content">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          ${type === 'success' 
-            ? '<polyline points="20,6 9,17 4,12"/>'
-            : type === 'error'
-            ? '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>'
-            : '<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>'
-          }
-        </svg>
-        <span>${this.escapeHtml(message)}</span>
-      </div>
-    `;
-    
-    // Add styles
-    notification.style.cssText = `
-      position: fixed;
-      top: 24px;
-      right: 24px;
-      padding: 16px 20px;
-      border-radius: 12px;
-      background: ${type === 'success' ? '#e8f5e9' : type === 'error' ? '#ffebee' : '#e3f2fd'};
-      color: ${type === 'success' ? '#2e7d32' : type === 'error' ? '#c62828' : '#1976d2'};
-      border: 1px solid ${type === 'success' ? '#4caf50' : type === 'error' ? '#f44336' : '#2196f3'};
-      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-      z-index: 10000;
-      animation: slideInRight 0.3s ease;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-weight: 500;
-      font-size: 14px;
-    `;
-    
-    document.body.appendChild(notification);
-    
-    // Remove after 3 seconds
-    setTimeout(() => {
-      notification.style.animation = 'slideOutRight 0.3s ease';
-      setTimeout(() => notification.remove(), 300);
-    }, 3000);
-  }
 };
-
-// Add animations
-const style = document.createElement('style');
-style.textContent = `
-  @keyframes slideInRight {
-    from { transform: translateX(100%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
-  }
-  @keyframes slideOutRight {
-    from { transform: translateX(0); opacity: 1; }
-    to { transform: translateX(100%); opacity: 0; }
-  }
-  .notification-content {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-`;
-document.head.appendChild(style);

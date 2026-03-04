@@ -13,12 +13,22 @@ courses_bp = Blueprint('courses', __name__, url_prefix='/api')
 @courses_bp.route('/initial-data', methods=['GET'])
 @login_required
 def api_initial_data():
-    academic_years_query = AcademicYear.query.order_by(AcademicYear.year.desc()).all()
-    academic_years = [{'id': ay.id, 'year': ay.year} for ay in academic_years_query]
-    active_year_id = academic_years[0]['id'] if academic_years else None
-    courses_query = get_courses_for_user(current_user, active_year_id)
+    # Only use the current academic year 2025/2026
+    current_year = AcademicYear.query.filter_by(year='2025/2026').first()
+    if not current_year:
+        # Create it if it doesn't exist to prevent errors
+        current_year = AcademicYear(year='2025/2026', is_active=True)
+        db.session.add(current_year)
+        db.session.commit()
+    
+    courses_query = get_courses_for_user(current_user, current_year.id)
     courses = [format_course_data(c, current_user) for c in courses_query]
-    return jsonify({'academicYears': academic_years, 'courses': courses})
+    
+    return jsonify({
+        'academicYears': [{'id': current_year.id, 'year': current_year.year}], 
+        'courses': courses,
+        'currentYearId': current_year.id
+    })
 
 
 @courses_bp.route('/courses/year/<int:year_id>', methods=['GET'])
@@ -48,7 +58,8 @@ def api_create_course():
         name=name,
         academic_year_id=academic_year_id,
         teacher_id=current_user.id,
-        class_code=generate_class_code()
+        class_code=generate_class_code(),
+        color=data.get('color', '#0282c6')
     )
     db.session.add(new_course)
     db.session.commit()
@@ -76,6 +87,25 @@ def update_course(course_id):
         course.color = color.strip()
     db.session.commit()
     return jsonify({'success': True, 'course': format_course_data(course, current_user)})
+
+
+@courses_bp.route('/courses/<int:course_id>', methods=['DELETE'])
+@login_required
+def api_delete_course(course_id):
+    course = db.session.get(Course, course_id)
+    if not course:
+        return jsonify({'success': False, 'message': 'Kelas tidak ditemukan'}), 404
+    
+    if course.teacher_id != current_user.id:
+        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin untuk menghapus kelas ini'}), 403
+    
+    try:
+        db.session.delete(course)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Kelas berhasil dihapus'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': f'Gagal menghapus kelas: {str(e)}'}), 500
 
 
 @courses_bp.route('/enroll', methods=['POST'])

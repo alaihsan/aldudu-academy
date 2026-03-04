@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -59,14 +59,46 @@
         }
     </script>
     
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='custom.css') }}">
+    <!-- Custom CSS with versioning to bypass cache -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='custom.css') }}?v={{ range(1, 9999) | random }}">
+    
+    <!-- HTMX for SPA feel -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     
     <style>
         [x-cloak] { display: none !important; }
-        .htmx-indicator { display: none; }
-        .htmx-request .htmx-indicator { display: inline; }
-        .htmx-request.htmx-indicator { display: inline; }
+        
+        /* Page Transitions */
+        .page-transition {
+            animation: fadeIn 0.4s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Loading Bar (NProgress style) */
+        .htmx-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: #2563eb;
+            z-index: 9999;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px rgba(37, 99, 235, 0.5);
+        }
+        .htmx-request .htmx-progress {
+            width: 40%;
+            animation: progress-run 2s infinite ease-in-out;
+        }
+        @keyframes progress-run {
+            0% { width: 0%; left: 0%; }
+            50% { width: 70%; left: 15%; }
+            100% { width: 100%; left: 100%; }
+        }
         
         /* Custom scrollbar */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -83,7 +115,20 @@
     {% block extra_head %}{% endblock %}
 </head>
 <body class="font-sans antialiased bg-gray-50 text-gray-900">
-    {% block body %}{% endblock %}
+    <div class="htmx-progress"></div>
+    <div class="page-transition">
+        {% block body %}{% endblock %}
+    </div>
+    
     {% block extra_scripts %}{% endblock %}
+    
+    <script>
+        // Force refresh dashboard logic on HTMX swaps
+        document.body.addEventListener('htmx:afterSwap', function(evt) {
+            if (window.Dashboard && typeof window.Dashboard.init === 'function') {
+                window.Dashboard.init();
+            }
+        });
+    </script>
 </body>
 </html>

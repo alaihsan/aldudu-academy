@@ -31,9 +31,11 @@ def format_course_data(course, user):
     return {
         'id': course.id,
         'name': course.name,
-        'teacher': course.teacher.name,
+        'teacher': {
+            'name': course.teacher.name
+        },
         'studentCount': len(course.students),
-        'class_code': course.class_code,
+        'classCode': course.class_code,
         'color': course.color,
         'is_teacher': course.teacher_id == user.id,
     }
