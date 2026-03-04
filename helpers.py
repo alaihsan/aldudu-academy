@@ -2,6 +2,7 @@ import string
 import random
 import re
 import html
+from sqlalchemy.orm import joinedload
 from models import Course, User, UserRole
 
 
@@ -16,10 +17,14 @@ def generate_class_code(length=6):
 def get_courses_for_user(user, year_id):
     if not year_id:
         return []
+    
+    # Eager load 'teacher' and 'students' to avoid N+1 in format_course_data
+    query = Course.query.options(joinedload(Course.teacher))
+    
     if user.role == UserRole.GURU:
-        return Course.query.filter_by(teacher_id=user.id, academic_year_id=year_id).order_by(Course.name).all()
+        return query.filter_by(teacher_id=user.id, academic_year_id=year_id).order_by(Course.name).all()
     else:
-        return Course.query.join(User.courses_enrolled).filter(User.id == user.id, Course.academic_year_id == year_id).order_by(Course.name).all()
+        return query.join(Course.students).filter(User.id == user.id, Course.academic_year_id == year_id).order_by(Course.name).all()
 
 
 def format_course_data(course, user):

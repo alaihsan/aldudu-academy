@@ -12,6 +12,7 @@ from dotenv import load_dotenv
 from flask import Flask, jsonify, render_template, request
 from flask_login import LoginManager
 from flask_migrate import Migrate
+from flask_talisman import Talisman
 
 from blueprints import create_blueprints
 from models import db, User
@@ -65,6 +66,30 @@ def create_app(test_config: Optional[Dict] = None) -> Flask:
     db.init_app(app)
     migrate.init_app(app, db)
 
+    # Configure Talisman for Security Headers
+    csp = {
+        'default-src': '\'self\'',
+        'script-src': [
+            '\'self\'',
+            'https://cdn.tailwindcss.com',
+            '\'unsafe-inline\'',  # Needed for inline tailwind config and htmx/alpine logic
+        ],
+        'style-src': [
+            '\'self\'',
+            'https://fonts.googleapis.com',
+            '\'unsafe-inline\'',  # Needed for inline styles in base.html
+        ],
+        'font-src': [
+            '\'self\'',
+            'https://fonts.gstatic.com',
+        ],
+        'img-src': ['\'self\'', 'data:'],
+    }
+    
+    # In development, we might not want to force HTTPS
+    is_prod = os.environ.get('FLASK_ENV') == 'production'
+    Talisman(app, content_security_policy=csp, force_https=is_prod)
+
     login_manager = LoginManager()
     login_manager.init_app(app)
     login_manager.login_view = 'main.index'
@@ -81,6 +106,24 @@ def create_app(test_config: Optional[Dict] = None) -> Flask:
     # Register blueprints
     for bp in create_blueprints():
         app.register_blueprint(bp)
+
+    # Global Error Handlers
+    @app.errorhandler(400)
+    def bad_request(e):
+        return jsonify({'success': False, 'message': str(e.description) or 'Request tidak valid'}), 400
+
+    @app.errorhandler(403)
+    def forbidden(e):
+        return jsonify({'success': False, 'message': str(e.description) or 'Anda tidak memiliki izin'}), 403
+
+    @app.errorhandler(404)
+    def not_found(e):
+        return jsonify({'success': False, 'message': str(e.description) or 'Sumber daya tidak ditemukan'}), 404
+
+    @app.errorhandler(500)
+    def server_error(e):
+        app.logger.error(f"Server Error: {e}")
+        return jsonify({'success': False, 'message': 'Terjadi kesalahan internal pada server'}), 500
 
     @app.before_request
     def before_request() -> None:

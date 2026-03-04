@@ -3,6 +3,7 @@ from datetime import datetime
 from flask import Blueprint, request, jsonify, abort
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
+from sqlalchemy.orm import joinedload, selectinload
 from models import db, Course, AcademicYear, UserRole, Link, File, Discussion, Post, Like
 from helpers import sanitize_text, is_valid_color, is_valid_class_code, generate_class_code, get_courses_for_user, format_course_data
 
@@ -285,7 +286,9 @@ def get_discussions(course_id):
     if current_user.role != UserRole.GURU and current_user not in course.students:
         return jsonify({'success': False, 'message': 'Anda tidak memiliki izin untuk melihat diskusi di kelas ini'}), 403
 
-    discussions = Discussion.query.filter_by(course_id=course_id).order_by(Discussion.created_at.desc()).all()
+    discussions = Discussion.query.filter_by(course_id=course_id)\
+        .options(joinedload(Discussion.user), selectinload(Discussion.posts).joinedload(Post.user))\
+        .order_by(Discussion.created_at.desc()).all()
     return jsonify({'success': True, 'discussions': [d.to_dict() for d in discussions]})
 
 
@@ -299,7 +302,9 @@ def get_posts(discussion_id):
     if current_user.role != UserRole.GURU and current_user not in discussion.course.students:
         return jsonify({'success': False, 'message': 'Anda tidak memiliki izin untuk melihat diskusi ini'}), 403
 
-    posts = Post.query.filter_by(discussion_id=discussion_id).order_by(Post.created_at.asc()).all()
+    posts = Post.query.filter_by(discussion_id=discussion_id)\
+        .options(joinedload(Post.user), selectinload(Post.replies).joinedload(Post.user), selectinload(Post.likes).joinedload(Like.user))\
+        .order_by(Post.created_at.asc()).all()
     return jsonify({'success': True, 'posts': [p.to_dict() for p in posts]})
 
 
