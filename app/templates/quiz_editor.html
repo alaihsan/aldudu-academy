@@ -5,6 +5,9 @@
 {% block extra_head %}
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Preload popular fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Playfair+Display:wght@700&family=Montserrat:wght@400;700&family=Poppins:wght@400;700&family=Merriweather:wght@400;700&family=Open+Sans:wght@400;700&family=Lora:wght@400;700&family=Nunito:wght@400;700&family=Raleway:wght@400;700&family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
+
 <style>
     :root {
         --quiz-theme: {{ quiz.theme_color or '#673ab7' }};
@@ -12,10 +15,10 @@
         --font-q: '{{ quiz.font_question or 'Inter' }}', sans-serif;
         --font-a: '{{ quiz.font_answer or 'Inter' }}', sans-serif;
     }
-    body { background-color: var(--quiz-bg); min-height: 100vh; }
+    body { background-color: var(--quiz-bg); min-height: 100vh; transition: background 0.3s; }
     
-    .font-question { font-family: var(--font-q); }
-    .font-answer { font-family: var(--font-a); }
+    .font-question { font-family: var(--font-q) !important; }
+    .font-answer { font-family: var(--font-a) !important; }
 
     .quiz-container { max-width: 770px; margin: 0 auto; padding-top: 12px; }
     
@@ -25,12 +28,12 @@
         border: 1px solid #dadce0;
         margin-bottom: 12px;
         position: relative;
-        transition: box-shadow 0.2s;
+        transition: all 0.2s;
     }
     
     .form-card:focus-within {
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        border-left: 6px solid #4285f4;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        border-left: 6px solid var(--quiz-theme);
     }
     
     .form-header-strip {
@@ -41,91 +44,36 @@
     }
 
     .quiz-title-input {
-        width: 100%;
-        font-size: 36px;
-        font-weight: 800;
-        border: none;
-        border-bottom: 2px solid transparent;
-        padding: 4px 0;
-        margin-bottom: 12px;
-        outline: none;
-        color: #202124;
-        transition: border-color 0.3s;
+        width: 100%; font-size: 36px; font-weight: 800; border: none; border-bottom: 2px solid transparent; padding: 4px 0; margin-bottom: 12px; outline: none; color: #202124; transition: border-color 0.3s;
     }
     .quiz-title-input:focus { border-bottom-color: var(--quiz-theme); }
 
     .quiz-desc-input {
-        width: 100%;
-        font-size: 15px;
-        font-weight: 500;
-        border: none;
-        border-bottom: 1px solid transparent;
-        padding: 4px 0;
-        outline: none;
-        color: #5f6368;
-        transition: border-color 0.3s;
+        width: 100%; font-size: 15px; font-weight: 500; border: none; border-bottom: 1px solid transparent; padding: 4px 0; outline: none; color: #5f6368; transition: border-color 0.3s;
     }
     .quiz-desc-input:focus { border-bottom-color: #dadce0; color: #202124; }
     
     .nav-tab {
-        padding: 12px 24px;
-        font-weight: 600;
-        color: #5f6368;
-        border-bottom: 3px solid transparent;
-        cursor: pointer;
-        transition: all 0.2s;
+        padding: 12px 24px; font-weight: 600; color: #5f6368; border-bottom: 3px solid transparent; cursor: pointer; transition: all 0.2s;
     }
-    .nav-tab.active {
-        color: var(--quiz-theme);
-        border-bottom-color: var(--quiz-theme);
+    .nav-tab.active { color: var(--quiz-theme); border-bottom-color: var(--quiz-theme); }
+    
+    #theme-panel {
+        position: fixed; right: -320px; top: 0; bottom: 0; width: 320px; background: white; box-shadow: -5px 0 30px rgba(0,0,0,0.15); z-index: 1000; transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); padding: 32px; overflow-y: auto;
     }
-    
-    .floating-actions {
-        position: fixed;
-        right: calc(50% - 440px);
-        top: 150px;
-        background: white;
-        border: 1px solid #dadce0;
-        border-radius: 8px;
-        display: flex;
-        flex-direction: column;
-        padding: 8px;
-        gap: 15px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.12);
-    }
-    
-    .chart-container { width: 300px; height: 300px; margin: 0 auto; }
-    
-    #results-section.hidden { display: none; }
+    #theme-panel.open { right: 0; }
 
-    /* Toast Premium Design */
     .save-toast {
-        position: fixed;
-        bottom: 32px;
-        left: 32px;
-        background: #202124;
-        color: white;
-        padding: 12px 20px;
-        border-radius: 12px;
-        font-size: 14px;
-        font-weight: 500;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        z-index: 1000;
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
-        opacity: 0;
-        visibility: hidden;
-        transform: translateY(20px) scale(0.95);
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        pointer-events: none;
+        position: fixed; bottom: 32px; left: 32px; background: #202124; color: white; padding: 12px 20px; border-radius: 12px; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 12px; z-index: 1000; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3); opacity: 0; visibility: hidden; transform: translateY(20px) scale(0.95); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none;
     }
-    .save-toast.show { 
-        opacity: 1; 
-        visibility: visible;
-        transform: translateY(0) scale(1); 
+    .save-toast.show { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
+
+    .publish-dropdown-content {
+        position: absolute; top: 100%; right: 0; margin-top: 8px; width: 240px; background: white; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid #eee; overflow: hidden; z-index: 100; opacity: 0; transform: translateY(10px) scale(0.95); pointer-events: none; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
-    .save-toast svg { color: #81c995; }
+    .publish-dropdown-content.show { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+    .publish-item { padding: 14px 20px; display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; transition: background 0.2s; }
+    .publish-item:hover { background: #f8f9fa; }
 </style>
 {% endblock %}
 
@@ -137,16 +85,62 @@
             <a href="{{ url_for('main.course_detail', course_id=quiz.course_id) }}" class="text-gray-500 hover:bg-gray-100 p-2 rounded-full">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
             </a>
-            <span class="font-bold text-gray-800" id="navbar-quiz-name">{{ quiz.name }}</span>
+            <div class="flex items-center space-x-3">
+                <span class="font-bold text-gray-800" id="navbar-quiz-name">{{ quiz.name }}</span>
+                <div id="status-badge" class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest 
+                    {% if quiz.status.value == 'published' %} bg-green-100 text-green-600
+                    {% elif quiz.status.value == 'unpublished' %} bg-red-100 text-red-600
+                    {% else %} bg-amber-100 text-amber-600 {% endif %}">
+                    {% if quiz.status.value == 'published' %} Publikasikan
+                    {% elif quiz.status.value == 'unpublished' %} Tidak Diterbitkan
+                    {% else %} Draft {% endif %}
+                </div>
+            </div>
         </div>
-        <div class="flex items-center space-x-2">
-            <button onclick="toggleThemePanel()" class="p-2 text-gray-500 hover:bg-gray-100 rounded-full" title="Sesuaikan Tema">
+        <div class="flex items-center space-x-3">
+            <button onclick="toggleThemePanel()" class="p-2.5 text-gray-500 hover:bg-gray-100 rounded-full" title="Sesuaikan Tema">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg>
             </button>
-            <a href="{{ url_for('main.quiz_detail', quiz_id=quiz.id) }}" target="_blank" class="p-2 text-gray-500 hover:bg-gray-100 rounded-full" title="Pratinjau">
+            <a href="{{ url_for('main.quiz_detail', quiz_id=quiz.id) }}" target="_blank" class="p-2.5 text-gray-500 hover:bg-gray-100 rounded-full" title="Pratinjau">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
             </a>
-            <button class="bg-primary-600 text-white px-6 py-2 rounded font-bold text-sm" onclick="publishQuiz()">Publikasikan</button>
+            
+            <div class="relative">
+                <button onclick="togglePublishDropdown()" class="flex items-center space-x-2 bg-primary-600 hover:bg-primary-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-primary-100 transition-all active:scale-95" id="publish-main-btn">
+                    <span>Ubah Status</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+                
+                <div id="publish-dropdown" class="publish-dropdown-content">
+                    <button onclick="setQuizStatus('published')" class="publish-item group">
+                        <div class="w-8 h-8 rounded-lg bg-green-100 text-green-600 flex items-center justify-center group-hover:bg-green-600 group-hover:text-white transition-all">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                        </div>
+                        <div>
+                            <p class="font-bold text-gray-800 text-sm">Publikasikan</p>
+                            <p class="text-[10px] text-gray-400">Terlihat oleh murid</p>
+                        </div>
+                    </button>
+                    <button onclick="setQuizStatus('unpublished')" class="publish-item group">
+                        <div class="w-8 h-8 rounded-lg bg-red-100 text-red-600 flex items-center justify-center group-hover:bg-red-600 group-hover:text-white transition-all">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </div>
+                        <div>
+                            <p class="font-bold text-gray-800 text-sm">Tidak Diterbitkan</p>
+                            <p class="text-[10px] text-gray-400">Menyembunyikan kuis</p>
+                        </div>
+                    </button>
+                    <button onclick="setQuizStatus('draft')" class="publish-item group border-t border-gray-50">
+                        <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center group-hover:bg-amber-600 group-hover:text-white transition-all">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                        </div>
+                        <div>
+                            <p class="font-bold text-gray-800 text-sm">Simpan Draft</p>
+                            <p class="text-[10px] text-gray-400">Tahap pengerjaan</p>
+                        </div>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
     <!-- Tabs -->
@@ -156,9 +150,8 @@
     </div>
 </div>
 
-<!-- QUESTIONS MODE -->
+<!-- All remaining sections same as previous -->
 <div id="questions-section" class="quiz-container pb-32">
-    <!-- Quiz Title Card -->
     <div class="form-card overflow-hidden">
         <div class="form-header-strip"></div>
         <div class="p-8">
@@ -173,21 +166,19 @@
     </div>
 </div>
 
-<!-- RESULTS MODE -->
 <div id="results-section" class="quiz-container pb-32 hidden">
     <div id="results-content" class="space-y-6">
-        <!-- Stats Summary Card -->
         <div class="form-card p-8">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <div class="border-r border-gray-100 pr-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 text-center md:text-left">
+                <div class="md:border-r border-gray-100 pr-4">
                     <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Total Jawaban</p>
                     <h2 class="text-3xl font-black text-gray-800" id="total-responses">0</h2>
                 </div>
-                <div class="border-r border-gray-100 px-4">
+                <div class="md:border-r border-gray-100 px-4">
                     <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Rata-rata Skor</p>
                     <h2 class="text-3xl font-black text-primary-600" id="avg-score">0%</h2>
                 </div>
-                <div class="border-r border-gray-100 px-4">
+                <div class="md:border-r border-gray-100 px-4">
                     <p class="text-[10px] font-black text-green-400 uppercase tracking-widest mb-1">Nilai Tertinggi</p>
                     <h2 class="text-3xl font-black text-green-600" id="max-score">0%</h2>
                 </div>
@@ -196,13 +187,9 @@
                     <h2 class="text-3xl font-black text-red-600" id="min-score">0%</h2>
                 </div>
             </div>
-            <div id="no-responses-view" class="text-center py-10 text-gray-400">Belum ada murid yang mengerjakan kuis ini.</div>
+            <div id="no-responses-view" class="text-center py-10 text-gray-400">Belum ada jawaban.</div>
         </div>
-
-        <!-- Question Breakdown Container -->
         <div id="question-breakdown" class="space-y-4"></div>
-
-        <!-- Student List Card -->
         <div id="student-results-list" class="form-card overflow-hidden hidden">
             <div class="p-6 bg-gray-50 border-b border-gray-100 font-bold text-gray-700">Daftar Nilai Murid</div>
             <div class="divide-y divide-gray-100" id="student-rows"></div>
@@ -210,119 +197,165 @@
     </div>
 </div>
 
-<!-- Floating Action Bar -->
+<!-- Theme Panel Modal -->
+<div id="theme-panel">
+    <div class="flex items-center justify-between mb-8 pb-4 border-b">
+        <h3 class="font-black text-gray-800 uppercase tracking-tighter text-sm">Opsi Tema</h3>
+        <button onclick="toggleThemePanel()" class="p-2 hover:bg-gray-100 rounded-full transition-colors">
+            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+    </div>
+    <div class="space-y-8">
+        <div>
+            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Warna Tema</label>
+            <input type="color" id="theme-color-input" value="{{ quiz.theme_color or '#673ab7' }}" 
+                onchange="updateQuizTheme()" class="w-full h-10 rounded-lg cursor-pointer border-none bg-transparent">
+        </div>
+        <div>
+            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Font Pertanyaan</label>
+            <select id="font-q-select" onchange="updateQuizTheme()" class="w-full p-2 bg-gray-50 border rounded-lg text-sm font-bold">
+                <option value="Inter">Standard (Inter)</option>
+                <option value="Roboto">Roboto</option>
+                <option value="Poppins">Poppins</option>
+                <option value="Merriweather">Merriweather</option>
+            </select>
+        </div>
+    </div>
+</div>
+
 <div class="floating-actions" id="editor-actions">
     <button type="button" hx-post="/api/quiz/{{ quiz.id }}/question/add" hx-vals='{"question_type": "MULTIPLE_CHOICE"}' hx-target="#questions-list" hx-swap="beforeend" class="action-btn" title="Tambah Pertanyaan">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
     </button>
 </div>
 
-<!-- Save Toast -->
 <div id="save-indicator" class="save-toast">
     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
     <span>Perubahan disimpan otomatis</span>
 </div>
 
+<!-- Modal Delete -->
+<div id="delete-q-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm z-[1100] flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-sm overflow-hidden border border-red-50">
+        <div class="p-8 text-center">
+            <div class="w-20 h-20 bg-red-50 text-red-500 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-inner">
+                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            </div>
+            <h3 class="text-xl font-black text-gray-900 mb-2">Hapus Pertanyaan?</h3>
+            <p class="text-sm text-gray-500">Tindakan ini tidak bisa dibatalkan.</p>
+        </div>
+        <div class="px-8 pb-8 flex space-x-3">
+            <button type="button" onclick="closeDeleteQModal()" class="flex-1 px-6 py-3.5 text-gray-500 bg-gray-50 rounded-2xl font-bold">Batal</button>
+            <button type="button" id="confirm-delete-q-btn" class="flex-1 px-6 py-3.5 bg-red-600 text-white rounded-2xl font-bold shadow-lg shadow-red-200">Hapus</button>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_scripts %}
 <script src="{{ url_for('static', filename='quiz-editor.js') }}?v={{ range(1, 9999) | random }}"></script>
 <script>
-function switchMode(mode) {
-    const qSection = document.getElementById('questions-section');
-    const rSection = document.getElementById('results-section');
-    const qTab = document.getElementById('tab-questions');
-    const rTab = document.getElementById('tab-results');
-    const fActions = document.getElementById('editor-actions');
-
-    if (mode === 'results') {
-        qSection.classList.add('hidden');
-        rSection.classList.remove('hidden');
-        qTab.classList.remove('active');
-        rTab.classList.add('active');
-        fActions.classList.add('hidden');
-        loadResults();
-    } else {
-        qSection.classList.remove('hidden');
-        rSection.classList.add('hidden');
-        qTab.classList.add('active');
-        rTab.classList.remove('active');
-        fActions.classList.remove('hidden');
+    function togglePublishDropdown() {
+        document.getElementById('publish-dropdown').classList.toggle('show');
     }
-}
 
-async function loadResults() {
-    const quizId = document.querySelector('[data-quiz-id]').dataset.quizId;
-    const res = await fetch(`/api/quiz/${quizId}/stats`);
-    const data = await res.json();
+    window.addEventListener('click', (e) => {
+        if (!e.target.closest('#publish-main-btn')) {
+            document.getElementById('publish-dropdown')?.classList.remove('show');
+        }
+    });
 
-    if (data.total_submissions > 0) {
-        document.getElementById('no-responses-view').classList.add('hidden');
-        document.getElementById('total-responses').textContent = data.total_submissions;
-        document.getElementById('avg-score').textContent = `${data.average_score}%`;
-        document.getElementById('max-score').textContent = `${data.max_score}%`;
-        document.getElementById('min-score').textContent = `${data.min_score}%`;
-        
-        // Render Charts
-        const breakdown = document.getElementById('question-breakdown');
-        breakdown.innerHTML = '';
-        
-        data.questions_stats.forEach((stat, index) => {
-            const card = document.createElement('div');
-            card.className = 'form-card p-8';
-            card.innerHTML = `
-                <h3 class="font-bold text-gray-800 mb-6">${index + 1}. ${stat.question_text || 'Pertanyaan Tanpa Judul'}</h3>
-                <div class="flex flex-col md:flex-row items-center gap-10">
-                    <div class="chart-container"><canvas id="chart-${index}"></canvas></div>
-                    <div class="flex-1 space-y-3 w-full">
-                        <div class="flex items-center justify-between text-sm">
-                            <span class="text-green-600 font-bold">Benar / Terisi</span>
-                            <span class="font-black">${stat.correct}</span>
-                        </div>
-                        <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
-                            <div class="bg-green-500 h-full" style="width: ${(stat.correct/stat.total)*100}%"></div>
-                        </div>
-                        <div class="flex items-center justify-between text-sm">
-                            <span class="text-red-600 font-bold">Salah / Kosong</span>
-                            <span class="font-black">${stat.incorrect}</span>
-                        </div>
-                        <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
-                            <div class="bg-red-500 h-full" style="width: ${(stat.incorrect/stat.total)*100}%"></div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            breakdown.appendChild(card);
-            
-            // Pie Chart
-            new Chart(document.getElementById(`chart-${index}`), {
-                type: 'pie',
-                data: {
-                    labels: ['Benar', 'Salah'],
-                    datasets: [{
-                        data: [stat.correct, stat.incorrect],
-                        backgroundColor: ['#10b981', '#ef4444'],
-                        borderWidth: 0
-                    }]
-                },
-                options: { plugins: { legend: { position: 'bottom' } } }
-            });
+    async function setQuizStatus(newStatus) {
+        const res = await fetch(`/api/quiz/{{ quiz.id }}/status`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: newStatus })
         });
-
-        // Render Student List
-        const studentList = document.getElementById('student-results-list');
-        const studentRows = document.getElementById('student-rows');
-        studentList.classList.remove('hidden');
-        studentRows.innerHTML = data.submissions.map(s => `
-            <div class="flex items-center justify-between p-4 px-6 hover:bg-gray-50 transition-colors">
-                <span class="font-bold text-gray-700">${s.student_name}</span>
-                <div class="flex items-center space-x-6">
-                    <span class="text-xs text-gray-400">${s.submitted_at}</span>
-                    <span class="font-black text-primary-600">${s.score}%</span>
-                </div>
-            </div>
-        `).join('');
+        const data = await res.json();
+        if (data.success) {
+            const badge = document.getElementById('status-badge');
+            let label = 'Draft';
+            let classes = 'px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ';
+            
+            if (newStatus === 'published') {
+                label = 'Publikasikan';
+                classes += 'bg-green-100 text-green-600';
+            } else if (newStatus === 'unpublished') {
+                label = 'Tidak Diterbitkan';
+                classes += 'bg-red-100 text-red-600';
+            } else {
+                label = 'Draft';
+                classes += 'bg-amber-100 text-amber-600';
+            }
+            
+            badge.textContent = label;
+            badge.className = classes;
+            togglePublishDropdown();
+            showSaveIndicator();
+        }
     }
-}
+
+    function toggleThemePanel() {
+        document.getElementById('theme-panel').classList.toggle('open');
+    }
+
+    async function updateQuizTheme() {
+        const data = {
+            theme_color: document.getElementById('theme-color-input').value,
+            font_question: document.getElementById('font-q-select').value,
+            font_answer: 'Inter',
+            bg_pattern: 'none'
+        };
+        document.documentElement.style.setProperty('--quiz-theme', data.theme_color);
+        await fetch(`/api/quiz/{{ quiz.id }}/update-theme`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        showSaveIndicator();
+    }
+
+    function switchMode(mode) {
+        const qSection = document.getElementById('questions-section');
+        const rSection = document.getElementById('results-section');
+        const qTab = document.getElementById('tab-questions');
+        const rTab = document.getElementById('tab-results');
+        if (mode === 'results') {
+            qSection.classList.add('hidden'); rSection.classList.remove('hidden');
+            qTab.classList.remove('active'); rTab.classList.add('active');
+            loadResults();
+        } else {
+            qSection.classList.remove('hidden'); rSection.classList.add('hidden');
+            qTab.classList.add('active'); rTab.classList.remove('active');
+        }
+    }
+
+    async function loadResults() {
+        const res = await fetch(`/api/quiz/{{ quiz.id }}/stats`);
+        const data = await res.json();
+        if (data.total_submissions > 0) {
+            document.getElementById('no-responses-view').classList.add('hidden');
+            document.getElementById('total-responses').textContent = data.total_submissions;
+            document.getElementById('avg-score').textContent = `${data.average_score}%`;
+            document.getElementById('max-score').textContent = `${data.max_score}%`;
+            document.getElementById('min-score').textContent = `${data.min_score}%`;
+            const breakdown = document.getElementById('question-breakdown');
+            breakdown.innerHTML = '';
+            data.questions_stats.forEach((stat, index) => {
+                const card = document.createElement('div');
+                card.className = 'form-card p-8';
+                card.innerHTML = `<h3 class="font-bold text-gray-800 mb-6">${index + 1}. ${stat.question_text || 'Tanpa Judul'}</h3><div class="flex flex-col md:flex-row items-center gap-10"><div class="chart-container"><canvas id="chart-${index}"></canvas></div><div class="flex-1 space-y-3 w-full"><div class="flex items-center justify-between text-sm"><span class="text-green-600 font-bold">Benar</span><span class="font-black">${stat.correct}</span></div><div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden"><div class="bg-green-500 h-full" style="width: ${(stat.correct/stat.total)*100}%"></div></div><div class="flex items-center justify-between text-sm"><span class="text-red-600 font-bold">Salah</span><span class="font-black">${stat.incorrect}</span></div><div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden"><div class="bg-red-500 h-full" style="width: ${(stat.incorrect/stat.total)*100}%"></div></div></div></div>`;
+                breakdown.appendChild(card);
+                new Chart(document.getElementById(`chart-${index}`), {
+                    type: 'pie',
+                    data: { labels: ['Benar', 'Salah'], datasets: [{ data: [stat.correct, stat.incorrect], backgroundColor: ['#10b981', '#ef4444'], borderWidth: 0 }] },
+                    options: { plugins: { legend: { position: 'bottom' } } }
+                });
+            });
+            const studentRows = document.getElementById('student-rows');
+            document.getElementById('student-results-list').classList.remove('hidden');
+            studentRows.innerHTML = data.submissions.map(s => `<div class="flex items-center justify-between p-4 px-6 hover:bg-gray-50"><span>${s.student_name}</span><span class="font-black text-primary-600">${s.score}%</span></div>`).join('');
+        }
+    }
 </script>
 {% endblock %}
