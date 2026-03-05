@@ -117,7 +117,13 @@
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
             </a>
             <div class="flex items-center space-x-3">
-                <span class="font-bold text-gray-800" id="navbar-quiz-name">{{ quiz.name }}</span>
+                <input type="text" id="navbar-quiz-name-input" value="{{ quiz.name }}" 
+                    class="font-bold text-gray-800 bg-transparent border-none focus:ring-2 focus:ring-primary-500 rounded-lg px-2 py-1 w-auto min-w-[150px] hover:bg-gray-50 transition-all"
+                    hx-put="/api/quiz/{{ quiz.id }}/update-meta" 
+                    hx-trigger="blur" 
+                    name="name"
+                    hx-include=".quiz-desc-input"
+                    oninput="syncQuizName(this.value, 'main')">
                 <div id="status-badge" class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest 
                     {% if quiz.status.value == 'published' %} bg-green-100 text-green-600
                     {% elif quiz.status.value == 'unpublished' %} bg-red-100 text-red-600
@@ -178,6 +184,7 @@
     <div class="flex justify-center border-t border-gray-100">
         <button onclick="switchMode('questions')" id="tab-questions" class="nav-tab active">Pertanyaan</button>
         <button onclick="switchMode('results')" id="tab-results" class="nav-tab">Jawaban</button>
+        <button onclick="switchMode('settings')" id="tab-settings" class="nav-tab">Setelan</button>
     </div>
 </div>
 
@@ -195,7 +202,11 @@
     <div class="form-card overflow-hidden">
         <div class="form-header-strip"></div>
         <div class="p-8">
-            <input type="text" name="name" value="{{ quiz.name }}" class="quiz-title-input" hx-put="/api/quiz/{{ quiz.id }}/update-meta" hx-trigger="blur" hx-include="next .quiz-desc-input">
+            <input type="text" name="name" value="{{ quiz.name }}" class="quiz-title-input" 
+                hx-put="/api/quiz/{{ quiz.id }}/update-meta" 
+                hx-trigger="blur" 
+                hx-include="next .quiz-desc-input"
+                oninput="syncQuizName(this.value, 'navbar')">
             <input type="text" name="description" value="{{ quiz.description or '' }}" class="quiz-desc-input" placeholder="Deskripsi formulir" hx-put="/api/quiz/{{ quiz.id }}/update-meta" hx-trigger="blur" hx-include="previous .quiz-title-input">
         </div>
     </div>
@@ -263,6 +274,107 @@
     </div>
 </div>
 
+<div id="settings-section" class="quiz-container pb-32 hidden">
+    <div class="space-y-4">
+        <!-- Kuis Toggle -->
+        <div class="form-card p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="font-bold text-gray-800 text-lg">Jadikan ini sebagai kuis</h3>
+                    <p class="text-sm text-gray-500">Tetapkan nilai poin, tetapkan jawaban, dan berikan masukan secara otomatis</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" checked class="sr-only peer">
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+                </label>
+            </div>
+        </div>
+
+        <!-- Jawaban Settings -->
+        <div class="form-card overflow-hidden">
+            <div class="p-6 border-b border-gray-100 bg-gray-50/30">
+                <h4 class="font-bold text-primary-600 uppercase tracking-widest text-[10px]">Jawaban</h4>
+                <p class="text-xs text-gray-400">Kelola cara jawaban dikumpulkan dan dilindungi</p>
+            </div>
+            <div class="divide-y divide-gray-100">
+                <div class="p-6 flex items-center justify-between">
+                    <div>
+                        <p class="font-medium text-gray-700">Kumpulkan alamat email</p>
+                        <p class="text-xs text-gray-400">Responden akan diminta masuk ke Aldudu Academy</p>
+                    </div>
+                    <select class="bg-gray-50 border border-gray-200 text-sm rounded-lg p-2 outline-none">
+                        <option>Jangan kumpulkan</option>
+                        <option selected>Terverifikasi</option>
+                    </select>
+                </div>
+                <div class="p-6 flex items-center justify-between">
+                    <div>
+                        <p class="font-medium text-gray-700">Batasi ke 1 jawaban</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Presentasi Settings -->
+        <div class="form-card overflow-hidden">
+            <div class="p-6 border-b border-gray-100 bg-gray-50/30">
+                <h4 class="font-bold text-primary-600 uppercase tracking-widest text-[10px]">Presentasi</h4>
+                <p class="text-xs text-gray-400">Kelola cara formulir dan jawaban ditampilkan</p>
+            </div>
+            <div class="divide-y divide-gray-100">
+                <div class="p-6 flex items-center justify-between">
+                    <div>
+                        <p class="font-medium text-gray-700">Acak urutan pertanyaan</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+                    </label>
+                </div>
+                <div class="p-6">
+                    <p class="font-medium text-gray-700 mb-2">Pesan konfirmasi</p>
+                    <div class="flex items-center justify-between">
+                        <p class="text-sm text-gray-500">Jawaban Anda telah direkam.</p>
+                        <button class="text-primary-600 font-bold text-sm hover:underline">Edit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nilai Default -->
+        <div class="form-card overflow-hidden">
+            <div class="p-6 border-b border-gray-100 bg-gray-50/30">
+                <h4 class="font-bold text-primary-600 uppercase tracking-widest text-[10px]">Default</h4>
+                <p class="text-xs text-gray-400">Setelan yang diterapkan ke formulir ini dan formulir baru</p>
+            </div>
+            <div class="divide-y divide-gray-100">
+                <div class="p-6 flex items-center justify-between">
+                    <div>
+                        <p class="font-medium text-gray-700">Nilai poin default kuis</p>
+                    </div>
+                    <div class="flex items-center border-b border-primary-500 pb-1">
+                        <input type="number" value="10" class="w-12 bg-transparent text-center font-bold text-primary-600 border-none focus:ring-0">
+                    </div>
+                </div>
+                <div class="p-6 flex items-center justify-between">
+                    <div>
+                        <p class="font-medium text-gray-700">Wajib diisi secara default</p>
+                        <p class="text-xs text-gray-400">Pertanyaan baru akan disetel sebagai wajib diisi</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div id="save-indicator" class="save-toast">
     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
     <span>Perubahan disimpan otomatis</span>
@@ -291,6 +403,14 @@
 <script>
     function togglePublishDropdown() {
         document.getElementById('publish-dropdown').classList.toggle('show');
+    }
+
+    function syncQuizName(value, targetId) {
+        if (targetId === 'main') {
+            document.querySelector('.quiz-title-input').value = value;
+        } else {
+            document.getElementById('navbar-quiz-name-input').value = value;
+        }
     }
 
     window.addEventListener('click', (e) => {
@@ -352,15 +472,25 @@
     function switchMode(mode) {
         const qSection = document.getElementById('questions-section');
         const rSection = document.getElementById('results-section');
+        const sSection = document.getElementById('settings-section');
         const qTab = document.getElementById('tab-questions');
         const rTab = document.getElementById('tab-results');
+        const sTab = document.getElementById('tab-settings');
+        const toolbar = document.getElementById('side-toolbar');
+
+        // Hide toolbar when switching away from questions
+        if (mode !== 'questions' && toolbar) toolbar.style.display = 'none';
+
         if (mode === 'results') {
-            qSection.classList.add('hidden'); rSection.classList.remove('hidden');
-            qTab.classList.remove('active'); rTab.classList.add('active');
+            qSection.classList.add('hidden'); rSection.classList.remove('hidden'); sSection.classList.add('hidden');
+            qTab.classList.remove('active'); rTab.classList.add('active'); sTab.classList.remove('active');
             loadResults();
+        } else if (mode === 'settings') {
+            qSection.classList.add('hidden'); rSection.classList.add('hidden'); sSection.classList.remove('hidden');
+            qTab.classList.remove('active'); rTab.classList.remove('active'); sTab.classList.add('active');
         } else {
-            qSection.classList.remove('hidden'); rSection.classList.add('hidden');
-            qTab.classList.add('active'); rTab.classList.remove('active');
+            qSection.classList.remove('hidden'); rSection.classList.add('hidden'); sSection.classList.add('hidden');
+            qTab.classList.add('active'); rTab.classList.remove('active'); sTab.classList.remove('active');
         }
     }
 
@@ -371,7 +501,7 @@
         let activeCard = null;
         
         function updateToolbar(card) {
-            if (card && toolbar) {
+            if (card && toolbar && !document.getElementById('questions-section').classList.contains('hidden')) {
                 const isHeader = card.querySelector('.form-header-strip') !== null;
                 activeCard = card;
                 activeQuestionId = card.dataset.questionId;
