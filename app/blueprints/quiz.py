@@ -77,16 +77,72 @@ def api_change_question_type(question_id):
         question.question_text = sanitize_text(current_text)
 
     if question.question_type != new_type:
+        old_type = question.question_type
         question.question_type = new_type
-        Option.query.filter_by(question_id=question.id).delete()
-        if new_type in [QuestionType.MULTIPLE_CHOICE, QuestionType.DROPDOWN, QuestionType.CHECKBOX]:
-            db.session.add(Option(question_id=question.id, option_text="Opsi 1", order=1))
-        elif new_type == QuestionType.TRUE_FALSE:
-            db.session.add_all([Option(question_id=question.id, option_text="Benar", order=1), Option(question_id=question.id, option_text="Salah", order=2)])
+        
+        option_types = [QuestionType.MULTIPLE_CHOICE, QuestionType.DROPDOWN, QuestionType.CHECKBOX]
+        
+        # Only clear options if switching from/to types that are incompatible
+        if (old_type in option_types and new_type not in option_types) or \
+           (old_type not in option_types and new_type in option_types) or \
+           (new_type == QuestionType.TRUE_FALSE):
+            
+            Option.query.filter_by(question_id=question.id).delete()
+            
+            if new_type in option_types:
+                db.session.add(Option(question_id=question.id, option_text="Opsi 1", order=1))
+            elif new_type == QuestionType.TRUE_FALSE:
+                db.session.add_all([Option(question_id=question.id, option_text="Benar", order=1), Option(question_id=question.id, option_text="Salah", order=2)])
+        
+        # If switching from CHECKBOX to a single-choice type, ensure only one correct answer remains
+        if old_type == QuestionType.CHECKBOX and new_type in [QuestionType.MULTIPLE_CHOICE, QuestionType.DROPDOWN]:
+            first_correct = False
+            for opt in question.options:
+                if opt.is_correct:
+                    if not first_correct:
+                        first_correct = True
+                    else:
+                        opt.is_correct = False
 
     db.session.commit()
     db.session.refresh(question)
     return render_template('_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question)
+
+@quiz_bp.route('/question/<int:question_id>/duplicate', methods=['POST'])
+@login_required
+def api_duplicate_question(question_id):
+    original_q = get_question_or_abort(question_id)
+    
+    # Create new question based on original
+    new_q = Question(
+        quiz_id=original_q.quiz_id,
+        question_text=f"{original_q.question_text} (Salinan)",
+        question_type=original_q.question_type,
+        points=original_q.points,
+        is_required=original_q.is_required,
+        order=original_q.order + 1
+    )
+    
+    # Shift orders of subsequent questions
+    Question.query.filter(Question.quiz_id == original_q.quiz_id, Question.order > original_q.order).update({Question.order: Question.order + 1})
+    
+    db.session.add(new_q)
+    db.session.flush() # Get new_q.id
+    
+    # Copy options
+    for opt in original_q.options:
+        new_opt = Option(
+            question_id=new_q.id,
+            option_text=opt.option_text,
+            is_correct=opt.is_correct,
+            order=opt.order
+        )
+        db.session.add(new_opt)
+    
+    db.session.commit()
+    db.session.refresh(new_q)
+    
+    return render_template('_question_form.html', question=new_q, QuestionType=QuestionType, Option=Option, Question=Question)
 
 @quiz_bp.route('/question/<int:question_id>/update', methods=['PUT'])
 @login_required
@@ -105,7 +161,7 @@ def api_update_question_points(question_id):
         question.points = int(request.form.get('points', 0))
         db.session.commit()
     except: pass
-    return render_template('_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question)
+    return ""
 
 @quiz_bp.route('/question/<int:question_id>/toggle-required', methods=['POST'])
 @login_required
@@ -126,7 +182,7 @@ def api_set_correct(question_id):
         selected_id = int(request.form.get(f'correct_option_q{question.id}', 0))
         for opt in question.options: opt.is_correct = (opt.id == selected_id)
     db.session.commit()
-    return render_template('_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question)
+    return ""
 
 @quiz_bp.route('/question/<int:question_id>/option/add', methods=['POST'])
 @login_required
@@ -219,3 +275,110 @@ def api_update_quiz_theme(quiz_id):
     quiz.font_question = data.get('font_question', quiz.font_question)
     db.session.commit()
     return jsonify({'success': True})
+
+@quiz_bp.route('/quiz/<int:quiz_id>/questions/reorder', methods=['POST'])
+@login_required
+def api_reorder_questions(quiz_id):
+    quiz = get_quiz_or_abort(quiz_id)
+    data = request.get_json()
+    if not data or 'order' not in data:
+        abort(400)
+    
+    for item in data['order']:
+        question = Question.query.filter_by(id=item['id'], quiz_id=quiz.id).first()
+        if question:
+            question.order = item['order']
+            
+    db.session.commit()
+    return jsonify({'success': True})
+
+@quiz_bp.route('/question/<int:question_id>/update-upload-settings', methods=['PUT'])
+@login_required
+def api_update_upload_settings(question_id):
+    question = get_question_or_abort(question_id)
+    try:
+        question.max_file_size = int(request.form.get('max_file_size', 10))
+        allowed_types = request.form.getlist('allowed_types')
+        if allowed_types:
+            question.allowed_file_types = ",".join(allowed_types)
+        db.session.commit()
+    except: pass
+    return render_template('_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question)
+
+@quiz_bp.route('/quiz/<int:quiz_id>/submit', methods=['POST'])
+@login_required
+def api_submit_quiz(quiz_id):
+    quiz = db.session.get(Quiz, quiz_id)
+    if not quiz:
+        abort(404, description="Kuis tidak ditemukan.")
+    
+    data = request.get_json()
+    if not data or 'answers' not in data:
+        abort(400, description="Data jawaban tidak lengkap.")
+
+    # Create submission
+    submission = QuizSubmission(
+        quiz_id=quiz.id,
+        user_id=current_user.id,
+        total_points=0 # Will be calculated
+    )
+    db.session.add(submission)
+    db.session.flush() # Get submission ID
+
+    total_possible_points = 0
+    earned_points = 0
+    
+    # Process answers
+    for ans_data in data['answers']:
+        question_id = ans_data.get('question_id')
+        question = db.session.get(Question, question_id)
+        if not question or question.quiz_id != quiz.id:
+            continue
+        
+        total_possible_points += question.points
+        
+        answer = Answer(
+            submission_id=submission.id,
+            question_id=question.id
+        )
+
+        if question.question_type in [QuestionType.MULTIPLE_CHOICE, QuestionType.TRUE_FALSE, QuestionType.DROPDOWN]:
+            opt_id = ans_data.get('selected_option_id')
+            answer.selected_option_id = opt_id
+            
+            # Simple grading
+            selected_opt = db.session.get(Option, opt_id)
+            if selected_opt and selected_opt.is_correct:
+                earned_points += question.points
+        
+        elif question.question_type == QuestionType.LONG_TEXT:
+            answer.answer_text = ans_data.get('answer_text')
+            # Long text needs manual grading, so no automatic points here
+            
+        elif question.question_type == QuestionType.CHECKBOX:
+            # Current model doesn't support multiple selected_option_id
+            # For now, store as text or we might need to update model
+            opt_ids = ans_data.get('selected_option_ids', [])
+            answer.answer_text = ",".join(map(str, opt_ids))
+            
+            # Simple checkbox grading (must match all correct options)
+            correct_opts = [o.id for o in question.options if o.is_correct]
+            if set(opt_ids) == set(correct_opts):
+                earned_points += question.points
+        
+        db.session.add(answer)
+
+    # Calculate final score percentage
+    submission.total_points = total_possible_points
+    if total_possible_points > 0:
+        submission.score = (earned_points / total_possible_points) * 100
+    else:
+        submission.score = 0
+        
+    db.session.commit()
+    
+    return jsonify({
+        'success': True,
+        'score': submission.score,
+        'message': 'Kuis berhasil dikirim.'
+    })

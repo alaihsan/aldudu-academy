@@ -5,6 +5,7 @@
 {% block extra_head %}
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <!-- Preload popular fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Playfair+Display:wght@700&family=Montserrat:wght@400;700&family=Poppins:wght@400;700&family=Merriweather:wght@400;700&family=Open+Sans:wght@400;700&family=Lora:wght@400;700&family=Nunito:wght@400;700&family=Raleway:wght@400;700&family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
 
@@ -62,6 +63,36 @@
         position: fixed; right: -320px; top: 0; bottom: 0; width: 320px; background: white; box-shadow: -5px 0 30px rgba(0,0,0,0.15); z-index: 1000; transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); padding: 32px; overflow-y: auto;
     }
     #theme-panel.open { right: 0; }
+
+    #side-toolbar {
+        position: absolute;
+        right: -60px;
+        top: 0;
+        width: 48px;
+        background: white;
+        border: 1px solid #dadce0;
+        border-radius: 8px;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        padding: 4px 0;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        transition: top 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 40;
+    }
+    
+    .toolbar-btn {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #5f6368;
+        border-radius: 50%;
+        margin: 4px 0;
+        transition: background 0.2s;
+    }
+    .toolbar-btn:hover { background: #f8f9fa; color: var(--quiz-theme); }
 
     .save-toast {
         position: fixed; bottom: 32px; left: 32px; background: #202124; color: white; padding: 12px 20px; border-radius: 12px; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 12px; z-index: 1000; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3); opacity: 0; visibility: hidden; transform: translateY(20px) scale(0.95); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none;
@@ -151,7 +182,16 @@
 </div>
 
 <!-- All remaining sections same as previous -->
-<div id="questions-section" class="quiz-container pb-32">
+<div id="questions-section" class="quiz-container pb-32 relative">
+    <div id="side-toolbar">
+        <button type="button" class="toolbar-btn" hx-post="/api/quiz/{{ quiz.id }}/question/add" hx-vals='{"question_type": "MULTIPLE_CHOICE"}' hx-target="#questions-list" hx-swap="beforeend" title="Tambah Pertanyaan">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+        </button>
+        <button type="button" class="toolbar-btn" id="duplicate-btn" title="Duplikat Pertanyaan">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"/></svg>
+        </button>
+    </div>
+
     <div class="form-card overflow-hidden">
         <div class="form-header-strip"></div>
         <div class="p-8">
@@ -221,12 +261,6 @@
             </select>
         </div>
     </div>
-</div>
-
-<div class="floating-actions" id="editor-actions">
-    <button type="button" hx-post="/api/quiz/{{ quiz.id }}/question/add" hx-vals='{"question_type": "MULTIPLE_CHOICE"}' hx-target="#questions-list" hx-swap="beforeend" class="action-btn" title="Tambah Pertanyaan">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
-    </button>
 </div>
 
 <div id="save-indicator" class="save-toast">
@@ -329,6 +363,65 @@
             qTab.classList.add('active'); rTab.classList.remove('active');
         }
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const toolbar = document.getElementById('side-toolbar');
+        const duplicateBtn = document.getElementById('duplicate-btn');
+        let activeQuestionId = null;
+        let activeCard = null;
+        
+        function updateToolbar(card) {
+            if (card && toolbar) {
+                const isHeader = card.querySelector('.form-header-strip') !== null;
+                activeCard = card;
+                activeQuestionId = card.dataset.questionId;
+                
+                toolbar.style.display = 'flex';
+                toolbar.style.top = card.offsetTop + 'px';
+                
+                // Hide duplicate button if it's the header card
+                if (isHeader) {
+                    duplicateBtn.style.display = 'none';
+                } else {
+                    duplicateBtn.style.display = 'flex';
+                    duplicateBtn.setAttribute('hx-post', `/api/question/${activeQuestionId}/duplicate`);
+                    duplicateBtn.setAttribute('hx-target', `#question-${activeQuestionId}`);
+                    duplicateBtn.setAttribute('hx-swap', 'afterend');
+                    htmx.process(duplicateBtn);
+                }
+            }
+        }
+
+        // Listen for clicks on cards to move toolbar
+        document.body.addEventListener('click', (e) => {
+            const card = e.target.closest('.form-card');
+            if (card) updateToolbar(card);
+        });
+
+        const el = document.getElementById('questions-list');
+        if (el) {
+            Sortable.create(el, {
+                animation: 150,
+                handle: '.drag-handle',
+                ghostClass: 'opacity-50',
+                onEnd: async function() {
+                    const order = Array.from(el.querySelectorAll('.form-card')).map((card, index) => ({
+                        id: parseInt(card.dataset.questionId),
+                        order: index + 1
+                    }));
+                    
+                    try {
+                        const res = await fetch(`/api/quiz/{{ quiz.id }}/questions/reorder`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ order })
+                        });
+                        if (res.ok) showSaveIndicator();
+                    } catch (e) { console.error('Failed to reorder', e); }
+                }
+            });
+        }
+    });
 
     async function loadResults() {
         const res = await fetch(`/api/quiz/{{ quiz.id }}/stats`);

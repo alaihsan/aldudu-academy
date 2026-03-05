@@ -7,8 +7,8 @@
                 value="{{ option.id }}"
                 {% if option.is_correct %}checked{% endif %}
                 hx-post="/api/question/{{ question.id }}/set-correct"
-                hx-target="#question-{{ question.id }}"
-                hx-swap="outerHTML"
+                hx-include="[name='correct_option_q{{ question.id }}']"
+                hx-swap="none"
                 class="w-4 h-4 text-primary-600 rounded-sm border-2 border-gray-300 focus:ring-0 cursor-pointer"
             >
         {% elif question.question_type.name == 'MULTIPLE_CHOICE' %}
@@ -17,8 +17,7 @@
                 value="{{ option.id }}"
                 {% if option.is_correct %}checked{% endif %}
                 hx-post="/api/question/{{ question.id }}/set-correct"
-                hx-target="#question-{{ question.id }}"
-                hx-swap="outerHTML"
+                hx-swap="none"
                 class="w-4 h-4 text-primary-600 border-2 border-gray-300 focus:ring-0 cursor-pointer"
             >
         {% elif question.question_type.name == 'DROPDOWN' %}

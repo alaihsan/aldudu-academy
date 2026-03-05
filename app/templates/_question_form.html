@@ -1,4 +1,9 @@
 <div class="form-card p-6 md:p-8 animate-fade-in group/card relative" id="question-{{ question.id }}" data-question-id="{{ question.id }}">
+    <!-- Drag Handle Area -->
+    <div class="absolute top-0 left-0 right-0 h-8 cursor-grab active:cursor-grabbing flex items-center justify-center drag-handle opacity-0 group-hover/card:opacity-100 transition-opacity">
+        <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9h8M8 15h8"/></svg>
+    </div>
+
     <!-- Left Border Indicator -->
     <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-primary-500 opacity-0 group-focus-within:opacity-100 transition-opacity rounded-l-lg"></div>
 
@@ -141,7 +146,7 @@
     <div class="pt-6 border-t border-gray-50 flex items-center justify-end space-x-6">
         <div class="flex items-center space-x-3 mr-auto bg-gray-50/50 px-4 py-2 rounded-2xl border border-gray-100 group-hover/card:bg-white transition-all">
             <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Skor:</span>
-            <input type="number" class="w-12 bg-transparent text-center font-black text-primary-600 border-none focus:ring-0 text-lg" value="{{ question.points }}" hx-put="/api/question/{{ question.id }}/update-points" hx-trigger="blur" name="points">
+            <input type="number" class="w-12 bg-transparent text-center font-black text-primary-600 border-none focus:ring-0 text-lg" value="{{ question.points }}" hx-put="/api/question/{{ question.id }}/update-points" hx-trigger="blur" hx-swap="none" name="points">
         </div>
 
         <button type="button" class="p-3 text-gray-300 hover:text-red-600 hover:bg-red-50 rounded-2xl transition-all active:scale-90" onclick="confirmDeleteQuestion({{ question.id }})">
