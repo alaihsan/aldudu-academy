@@ -48,56 +48,65 @@ def bulk_import_users():
     except ValueError:
         return jsonify({'success': False, 'message': 'Role tidak valid'}), 400
 
-    # Parse raw_text (Nama \t Email)
     lines = raw_text.strip().split('\n')
-    imported_count = 0
-    results = []
+    
+    # Pre-parse lines to get all emails for a single batch query
+    parsed_entries = []
+    emails_to_check = set()
+    
+    for line in lines:
+        line = line.strip()
+        if not line: continue
+        
+        parts = re.split(r'\t+| {2,}|[|;,]', line)
+        parts = [p.strip() for p in parts if p.strip()]
+        
+        if len(parts) < 2:
+            if ' ' in line and is_valid_email(line.split(' ')[-1]):
+                temp_parts = line.split(' ')
+                email = temp_parts[-1].lower()
+                name = " ".join(temp_parts[:-1])
+            else: continue
+        else:
+            email = parts[-1].lower()
+            name = " ".join(parts[:-1])
+            
+        if is_valid_email(email):
+            parsed_entries.append({'name': sanitize_text(name, 100), 'email': email})
+            emails_to_check.add(email)
+
+    if not parsed_entries:
+        return jsonify({'success': False, 'message': 'Tidak ada data valid yang ditemukan'}), 400
 
     try:
-        for line in lines:
-            line = line.strip()
-            if not line: continue
+        # Optimization: Fetch all existing users in this list at once
+        existing_users = User.query.filter(User.email.in_(list(emails_to_check))).all()
+        existing_emails = {u.email for u in existing_users}
+        
+        imported_count = 0
+        results = []
+
+        for entry in parsed_entries:
+            if entry['email'] in existing_emails:
+                continue
             
-            # Split by: 1+ Tabs, 2+ Spaces, Comma, Semicolon, or Pipe
-            # This avoids splitting "Muhamad Ikhsan" if separated by a single space
-            parts = re.split(r'\t+| {2,}|[|;,]', line)
-            parts = [p.strip() for p in parts if p.strip()]
-            
-            if len(parts) < 2:
-                # Fallback: if only 1 space exists, try splitting by that single space
-                # but only if it looks like "Name email@domain.com"
-                if ' ' in line and is_valid_email(line.split(' ')[-1]):
-                    temp_parts = line.split(' ')
-                    email = temp_parts[-1].lower()
-                    name = " ".join(temp_parts[:-1])
-                else:
-                    continue
-            else:
-                email = parts[-1].lower()
-                name = " ".join(parts[:-1])
-            
-            name = sanitize_text(name, max_len=100)
-            
-            if not is_valid_email(email): continue
-            if User.query.filter_by(email=email).first(): continue
-            
-            # Auto generate 4 char password
             password = generate_random_password(4)
-            
-            user = User(name=name, email=email, role=role)
+            user = User(name=entry['name'], email=entry['email'], role=role)
             user.set_password(password)
             db.session.add(user)
             
-            results.append({'name': name, 'email': email, 'password': password})
+            # Avoid duplicate in same batch
+            existing_emails.add(entry['email'])
+            
+            results.append({'name': entry['name'], 'email': entry['email'], 'password': password})
             imported_count += 1
 
         db.session.commit()
-        log_activity(current_user.id, f"Impor massal {imported_count} {role.value}", details=f"Mendaftarkan {imported_count} user.")
+        log_activity(current_user.id, f"Impor massal {imported_count} {role.value}", details=f"Mendaftarkan {imported_count} user baru.")
         
         return jsonify({'success': True, 'count': imported_count, 'results': results})
     except Exception as e:
         db.session.rollback()
-        # Log error to console for debugging
         print(f"IMPORT ERROR: {str(e)}")
         return jsonify({'success': False, 'message': f'Gagal menyimpan ke database: {str(e)}'}), 500
 
