@@ -42,20 +42,8 @@
         </div>
     </nav>
 
-    <!-- User Profile Section with Popup Logout -->
+    <!-- User Profile Section with Logout -->
     <div class="p-4 border-t border-gray-100 relative">
-        <!-- User Menu Popup -->
-        <div id="user-menu-popup" class="hidden absolute bottom-full left-4 right-4 mb-2 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 animate-slide-up z-50">
-            <button onclick="handleGlobalLogout()" class="w-full flex items-center space-x-3 px-4 py-3 text-red-600 hover:bg-red-50 transition-all font-bold text-sm">
-                <div class="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                    </svg>
-                </div>
-                <span>Keluar Aplikasi</span>
-            </button>
-        </div>
-
         <button id="user-profile-btn" class="w-full flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-2xl transition-all group active:scale-95">
             <div class="w-10 h-10 rounded-xl bg-primary-600 text-white flex items-center justify-center font-bold text-lg shadow-lg shadow-primary-100">
                 {{ current_user.name[0] | upper if current_user.is_authenticated else 'A' }}
@@ -64,9 +52,32 @@
                 <p class="text-sm font-bold text-gray-900 truncate">{{ current_user.name if current_user.is_authenticated else 'User' }}</p>
                 <p class="text-[10px] text-gray-400 uppercase font-black tracking-widest leading-none">{{ current_user.role.value if current_user.is_authenticated else 'Role' }}</p>
             </div>
-            <svg class="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-transform duration-300" id="profile-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+            <svg class="w-4 h-4 text-gray-400 group-hover:text-red-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
             </svg>
         </button>
     </div>
 </aside>
+
+<!-- PREMIUM LOGOUT MODAL -->
+<div id="logout-modal" class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-sm overflow-hidden animate-slide-up border border-gray-100">
+        <div class="p-10 text-center">
+            <div class="w-20 h-20 bg-red-50 text-red-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-inner">
+                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                </svg>
+            </div>
+            <h3 class="text-2xl font-black text-gray-900 mb-2">Keluar Sesi?</h3>
+            <p class="text-gray-500 font-medium">Anda perlu login kembali untuk mengakses data Anda.</p>
+        </div>
+        <div class="px-8 pb-10 flex flex-col space-y-3">
+            <button onclick="handleGlobalLogout()" class="w-full py-4 bg-red-600 text-white rounded-2xl font-bold shadow-lg shadow-red-200 hover:bg-red-700 transition-all active:scale-95">
+                Ya, Keluar Sekarang
+            </button>
+            <button id="close-logout-modal" class="w-full py-4 text-gray-500 bg-gray-100 rounded-2xl font-bold hover:bg-gray-200 transition-all active:scale-95">
+                Tetap Di Sini
+            </button>
+        </div>
+    </div>
+</div>

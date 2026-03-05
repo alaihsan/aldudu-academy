@@ -34,9 +34,15 @@
 
                 <div id="login-error" class="hidden p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm"></div>
 
-                <button type="submit" 
-                    class="w-full bg-gradient-to-r from-primary-500 to-primary-700 text-white py-3 px-4 rounded-xl font-semibold shadow-lg hover:shadow-xl hover:from-primary-600 hover:to-primary-800 transform hover:-translate-y-0.5 transition-all duration-200">
-                    Login
+                <button type="submit" id="login-btn"
+                    class="w-full bg-gradient-to-r from-primary-500 to-primary-700 text-white py-4 px-6 rounded-2xl font-bold shadow-xl shadow-primary-200 hover:shadow-2xl hover:from-primary-600 hover:to-primary-800 transform hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group">
+                    <span class="btn-text inline-flex items-center transition-all duration-300 group-hover:tracking-widest">Login ke Akun</span>
+                    <div class="loader-container hidden absolute inset-0 flex items-center justify-center bg-inherit backdrop-blur-sm">
+                        <svg class="animate-spin h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </div>
                 </button>
             </form>
         </div>

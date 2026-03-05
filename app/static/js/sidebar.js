@@ -4,38 +4,43 @@
 
 function initSidebar() {
     const profileBtn = document.getElementById('user-profile-btn');
-    const menuPopup = document.getElementById('user-menu-popup');
-    const arrow = document.getElementById('profile-arrow');
-
-    if (profileBtn && menuPopup) {
-        // Remove existing listener to prevent clones
+    const logoutModal = document.getElementById('logout-modal');
+    const closeLogoutBtn = document.getElementById('close-logout-modal');
+    
+    if (profileBtn && logoutModal) {
+        // Clone to clean up old listeners
         const newProfileBtn = profileBtn.cloneNode(true);
         profileBtn.parentNode.replaceChild(newProfileBtn, profileBtn);
-
+        
         newProfileBtn.addEventListener('click', function(e) {
             e.stopPropagation();
-            const isHidden = menuPopup.classList.contains('hidden');
-            menuPopup.classList.toggle('hidden');
-            if (arrow) arrow.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+            logoutModal.classList.remove('hidden');
         });
     }
 
-    window.addEventListener('click', function() {
-        if (menuPopup) {
-            menuPopup.classList.add('hidden');
-            if (arrow) arrow.style.transform = 'rotate(0deg)';
+    if (closeLogoutBtn && logoutModal) {
+        closeLogoutBtn.addEventListener('click', function() {
+            logoutModal.classList.add('hidden');
+        });
+    }
+
+    // Close on click outside the card
+    window.addEventListener('click', function(e) {
+        if (e.target === logoutModal) {
+            logoutModal.classList.add('hidden');
         }
     });
 }
 
 async function handleGlobalLogout() {
-    if (confirm('Apakah Anda yakin ingin keluar?')) {
-        try {
-            const res = await fetch('/api/logout', { method: 'POST' });
-            if (res.ok) window.location.href = '/';
-        } catch (err) {
-            console.error('Logout failed', err);
+    try {
+        const res = await fetch('/api/logout', { method: 'POST' });
+        if (res.ok) {
+            // Success animation or direct redirect
+            window.location.href = '/';
         }
+    } catch (err) {
+        console.error('Logout failed', err);
     }
 }
 

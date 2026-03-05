@@ -68,6 +68,30 @@
     <style>
         [x-cloak] { display: none !important; }
         
+        /* Premium Entrance Animations */
+        @keyframes premium-entrance {
+            0% { opacity: 0; transform: translateY(20px) scale(0.98); filter: blur(10px); }
+            100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+        }
+        
+        @keyframes slide-right-premium {
+            0% { opacity: 0; transform: translateX(-40px); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+
+        .animate-premium-entrance {
+            animation: premium-entrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .animate-slide-right-premium {
+            animation: slide-right-premium 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .delay-100 { animation-delay: 100ms; }
+        .delay-200 { animation-delay: 200ms; }
+        .delay-300 { animation-delay: 300ms; }
+        .delay-500 { animation-delay: 500ms; }
+
         /* Page Transitions */
         .page-transition {
             animation: fadeIn 0.4s ease-out;
@@ -77,6 +101,22 @@
             from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        @keyframes success-pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes toast-float {
+            0% { opacity: 0; transform: translateY(15px); }
+            15% { opacity: 1; transform: translateY(0); }
+            85% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-15px); }
+        }
+
+        .animate-success-pop { animation: success-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .animate-toast-float { animation: toast-float 2s ease-in-out forwards; }
 
         /* Loading Bar (NProgress style) */
         .htmx-progress {

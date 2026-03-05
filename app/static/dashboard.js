@@ -126,6 +126,15 @@ const Dashboard = {
         this.elements.loginPage?.classList.add('hidden');
         this.elements.appPage.classList.remove('hidden');
         
+        // Trigger Entrance Animations
+        const sidebar = this.elements.appPage.querySelector('aside');
+        const mainContent = this.elements.appPage.querySelector('main');
+        const header = this.elements.appPage.querySelector('header');
+        
+        if (sidebar) sidebar.classList.add('animate-slide-right-premium');
+        if (mainContent) mainContent.classList.add('animate-premium-entrance', 'delay-200');
+        if (header) header.classList.add('animate-premium-entrance', 'delay-100');
+
         const user = this.state.currentUser;
         if (this.elements.userNameSidebar) this.elements.userNameSidebar.textContent = user.name;
         if (this.elements.welcomeTitle) this.elements.welcomeTitle.textContent = `Selamat Datang, ${user.name.split(' ')[0]}!`;
@@ -199,6 +208,16 @@ const Dashboard = {
 
     async handleLogin(e) {
         e.preventDefault();
+        const btn = document.getElementById('login-btn');
+        const btnText = btn?.querySelector('.btn-text');
+        const loader = btn?.querySelector('.loader-container');
+        const errorDiv = this.elements.loginError;
+        
+        if (btn) btn.disabled = true;
+        if (btnText) btnText.classList.add('opacity-0', 'translate-y-2');
+        if (loader) loader.classList.remove('hidden');
+        if (errorDiv) errorDiv.classList.add('hidden');
+
         try {
             const res = await fetch('/api/login', {
                 method: 'POST',
@@ -206,9 +225,37 @@ const Dashboard = {
                 body: JSON.stringify({ email: e.target.email.value, password: e.target.password.value })
             });
             const data = await res.json();
-            if (data.success) window.location.reload();
-            else { this.elements.loginError.textContent = data.message; this.elements.loginError.classList.remove('hidden'); }
-        } catch (err) { console.error('Login error', err); }
+            
+            if (data.success) {
+                if (btn) btn.classList.add('bg-green-600', 'scale-95');
+                setTimeout(() => window.location.reload(), 600);
+            } else {
+                throw new Error(data.message || 'Email atau password salah');
+            }
+        } catch (err) {
+            console.error('Login error', err);
+            
+            if (btn) {
+                btn.disabled = false;
+                btn.classList.add('animate-bounce', 'border-red-500');
+                setTimeout(() => btn.classList.remove('animate-bounce'), 500);
+            }
+            if (btnText) btnText.classList.remove('opacity-0', 'translate-y-2');
+            if (loader) loader.classList.add('hidden');
+
+            if (errorDiv) {
+                errorDiv.innerHTML = `
+                    <div class="flex items-center space-x-3 animate-slide-up p-1">
+                        <div class="flex-shrink-0 w-8 h-8 bg-red-100 text-red-600 rounded-xl flex items-center justify-center shadow-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </div>
+                        <div class="flex-1 font-bold text-red-800 text-xs">${err.message}</div>
+                    </div>
+                `;
+                errorDiv.classList.remove('hidden');
+                errorDiv.className = "p-4 bg-red-50/80 backdrop-blur-md border border-red-100 rounded-2xl mt-4 shadow-xl shadow-red-200/20 ring-1 ring-red-200";
+            }
+        }
     },
 
     async handleLogout() {
@@ -291,8 +338,48 @@ const Dashboard = {
     },
 
     copyCode(code) {
-        navigator.clipboard.writeText(code);
-        alert('Kode kelas disalin!');
+        navigator.clipboard.writeText(code).then(() => {
+            // Find the button that was clicked
+            const btns = document.querySelectorAll('button');
+            let targetBtn = null;
+            btns.forEach(b => {
+                if (b.getAttribute('onclick')?.includes(code)) targetBtn = b;
+            });
+
+            if (targetBtn) {
+                // Icon Success Animation
+                const originalHTML = targetBtn.innerHTML;
+                targetBtn.innerHTML = `
+                    <svg class="w-6 h-6 text-green-600 animate-success-pop" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                `;
+                targetBtn.classList.add('bg-green-50', 'ring-2', 'ring-green-500', 'ring-offset-2');
+                
+                // Floating Toast Notification
+                const toast = document.createElement('div');
+                toast.className = 'fixed z-[100] bg-gray-900 text-white px-6 py-3 rounded-2xl font-bold text-sm shadow-2xl animate-toast-float flex items-center space-x-3';
+                toast.innerHTML = `
+                    <div class="w-6 h-6 bg-green-500 rounded-lg flex items-center justify-center">
+                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    </div>
+                    <span>Kode Kelas Berhasil Disalin</span>
+                `;
+                
+                // Position toast near the button
+                const rect = targetBtn.getBoundingClientRect();
+                toast.style.top = `${rect.top - 60}px`;
+                toast.style.left = `${rect.left + (rect.width/2) - 100}px`;
+                
+                document.body.appendChild(toast);
+                
+                setTimeout(() => {
+                    targetBtn.innerHTML = originalHTML;
+                    targetBtn.classList.remove('bg-green-50', 'ring-2', 'ring-green-500', 'ring-offset-2');
+                    toast.remove();
+                }, 2000);
+            }
+        });
     }
 };
 
