@@ -82,6 +82,10 @@ const Dashboard = {
 
         this.elements.loginForm?.addEventListener('submit', (e) => this.handleLogin(e));
         
+        // Add register form listener
+        const registerForm = document.getElementById('register-form');
+        registerForm?.addEventListener('submit', (e) => this.handleRegister(e));
+        
         const openAddModal = (e) => { e?.preventDefault(); this.elements.addClassModal.classList.remove('hidden'); };
         this.elements.createClassBtn?.addEventListener('click', openAddModal);
         this.elements.emptyCreateBtn?.addEventListener('click', openAddModal);
@@ -263,6 +267,45 @@ const Dashboard = {
         window.location.reload();
     },
 
+    async handleRegister(e) {
+        e.preventDefault();
+        const errorDiv = document.getElementById('register-error');
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'Mendaftar...';
+        errorDiv.classList.add('hidden');
+
+        const payload = {
+            name: e.target.name.value,
+            email: e.target.email.value,
+            password: e.target.password.value,
+            role: e.target.role.value
+        };
+
+        try {
+            const res = await fetch('/admin/api/users', { // Use same endpoint as admin for now
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (data.success) {
+                alert('Pendaftaran berhasil! Silakan login.');
+                window.toggleAuthMode(null, 'login');
+            } else {
+                errorDiv.textContent = data.message;
+                errorDiv.classList.remove('hidden');
+            }
+        } catch (err) {
+            errorDiv.textContent = 'Gagal mendaftar. Coba lagi.';
+            errorDiv.classList.remove('hidden');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerText = 'Daftar Akun';
+        }
+    },
+
     async handleCreateClass(e) {
         e.preventDefault();
         try {
@@ -382,6 +425,20 @@ const Dashboard = {
         });
     }
 };
+
+window.toggleAuthMode = function(e, mode) {
+    if (e) e.preventDefault();
+    const loginCard = document.getElementById('login-card');
+    const registerCard = document.getElementById('register-card');
+    
+    if (mode === 'register') {
+        loginCard.classList.add('hidden');
+        registerCard.classList.remove('hidden');
+    } else {
+        registerCard.classList.add('hidden');
+        loginCard.classList.remove('hidden');
+    }
+}
 
 // Initial run
 document.addEventListener('DOMContentLoaded', () => Dashboard.init());

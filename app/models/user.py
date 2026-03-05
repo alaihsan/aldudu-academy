@@ -20,6 +20,7 @@ class User(UserMixin, db.Model):
     email: Mapped[str] = mapped_column(db.String(100), unique=True, nullable=False, index=True)
     password_hash: Mapped[str] = mapped_column(db.String(256), nullable=False)
     role: Mapped[UserRole] = mapped_column(db.Enum(UserRole), nullable=False, default=UserRole.MURID)
+    is_active: Mapped[bool] = mapped_column(db.Boolean, nullable=False, default=True)
 
     courses_taught: Mapped[List['Course']] = relationship('Course', back_populates='teacher', lazy='dynamic')
     courses_enrolled: Mapped[List['Course']] = relationship('Course', secondary='enrollments', lazy='subquery', back_populates='students')

@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_login import login_user, logout_user, current_user
 from app.models import User
-from app.helpers import is_valid_email
+from app.helpers import is_valid_email, log_activity
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/api')
 
@@ -9,6 +9,9 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/api')
 @auth_bp.route('/session', methods=['GET'])
 def api_session():
     if current_user.is_authenticated:
+        if not current_user.is_active:
+            logout_user()
+            return jsonify({'isAuthenticated': False})
         return jsonify({'isAuthenticated': True, 'user': {'name': current_user.name, 'role': current_user.role.value}})
     return jsonify({'isAuthenticated': False})
 
@@ -22,7 +25,11 @@ def api_login():
         return jsonify({'success': False, 'message': 'Email atau password tidak valid'}), 400
     user = User.query.filter_by(email=email.strip()).first()
     if user and user.check_password(password):
+        if not user.is_active:
+            return jsonify({'success': False, 'message': 'Akun Anda telah dinonaktifkan. Hubungi admin.'}), 403
+            
         login_user(user)
+        log_activity(user.id, "Login")
         return jsonify({'success': True, 'user': {'name': user.name, 'role': user.role.value}})
     return jsonify({'success': False, 'message': 'Email atau password salah'}), 401
 
@@ -30,6 +37,8 @@ def api_login():
 @auth_bp.route('/logout', methods=['POST'])
 def api_logout():
     if current_user.is_authenticated:
+        user_id = current_user.id
         logout_user()
+        log_activity(user_id, "Logout")
         return jsonify({'success': True})
     return jsonify({'success': False}), 401

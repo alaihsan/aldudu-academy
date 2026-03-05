@@ -2,8 +2,47 @@ import string
 import random
 import re
 import html
+from flask import request
 from sqlalchemy.orm import joinedload
-from app.models import Course, User, UserRole
+from app.models import db, Course, User, UserRole, ActivityLog
+
+
+def log_activity(user_id, action, target_type=None, target_id=None, details=None):
+    """Logs user activity in the database."""
+    try:
+        # Avoid circular import by importing here if necessary, 
+        # but we already have ActivityLog from app.models
+        log = ActivityLog(
+            user_id=user_id,
+            action=action,
+            target_type=target_type,
+            target_id=target_id,
+            details=details,
+            ip_address=request.remote_addr if request else '127.0.0.1'
+        )
+        db.session.add(log)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        print(f"Failed to log activity: {e}")
+
+
+def generate_random_password(length=4):
+    """Generates a random 4-character password with lowercase, number, and symbol."""
+    lower = string.ascii_lowercase
+    digits = string.digits
+    symbols = "!@#$%^&*"
+    all_chars = lower + digits + symbols
+    
+    # Ensure at least one of each for the 4 chars (if length is 4)
+    password = [
+        random.choice(lower),
+        random.choice(digits),
+        random.choice(symbols),
+        random.choice(all_chars)
+    ]
+    random.shuffle(password)
+    return ''.join(password[:length])
 
 
 def generate_class_code(length=6):

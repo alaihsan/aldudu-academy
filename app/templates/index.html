@@ -18,7 +18,7 @@
         </div>
 
         <!-- Login Card -->
-        <div class="bg-white rounded-2xl shadow-xl p-8 animate-slide-up">
+        <div id="login-card" class="bg-white rounded-2xl shadow-xl p-8 animate-slide-up">
             <form id="login-form" class="space-y-6">
                 <div>
                     <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
@@ -45,6 +45,39 @@
                     </div>
                 </button>
             </form>
+            <div class="mt-6 text-center">
+                <p class="text-sm text-gray-500">Belum punya akun? <a href="#" onclick="toggleAuthMode(event, 'register')" class="text-primary-600 font-bold hover:underline">Daftar sekarang</a></p>
+            </div>
+        </div>
+
+        <!-- Register Card -->
+        <div id="register-card" class="hidden bg-white rounded-2xl shadow-xl p-8 animate-slide-up">
+            <form id="register-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
+                    <input type="text" name="name" required class="w-full px-4 py-3 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-primary-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input type="email" name="email" required class="w-full px-4 py-3 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-primary-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <input type="password" name="password" required class="w-full px-4 py-3 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-primary-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Daftar Sebagai</label>
+                    <select name="role" class="w-full px-4 py-3 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-primary-500 bg-white font-bold">
+                        <option value="murid">Murid (Siswa)</option>
+                        <option value="guru">Guru (Pengajar)</option>
+                    </select>
+                </div>
+                <div id="register-error" class="hidden p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs"></div>
+                <button type="submit" class="w-full bg-primary-600 text-white py-4 rounded-xl font-bold hover:bg-primary-700 transition-all shadow-lg">Daftar Akun</button>
+            </form>
+            <div class="mt-6 text-center">
+                <p class="text-sm text-gray-500">Sudah punya akun? <a href="#" onclick="toggleAuthMode(event, 'login')" class="text-primary-600 font-bold hover:underline">Masuk di sini</a></p>
+            </div>
         </div>
 
         <!-- Footer -->
