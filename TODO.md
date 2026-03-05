@@ -1,5 +1,0 @@
-- [x] Add new route in app.py for discussion detail page (/kelas/<course_id>/diskusi/<discussion_id>).
-- [x] Modify templates/course_detail.html to display discussions as cards in a grid, similar to topics.
-- [x] Update static/js/discussion.js to render discussion cards with links to /kelas/{courseId}/diskusi/{discussionId}.
-- [x] Create templates/discussion_detail.html template for full discussion view.
-- [x] Update JS for detail page interactions.

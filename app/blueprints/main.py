@@ -152,3 +152,10 @@ def discussion_detail(course_id, discussion_id):
     if not is_teacher and current_user not in course.students:
         abort(403)
     return render_template('discussion_detail.html', course=course, discussion=discussion, is_teacher=is_teacher)
+
+@main_bp.route('/issues')
+@login_required
+def issues():
+    if current_user.role != UserRole.GURU:
+        abort(403)
+    return render_template('issues.html')
