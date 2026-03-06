@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, abort, send_from_directory
+from flask import Blueprint, render_template, redirect, url_for, abort, send_from_directory, request
 import os
 from datetime import datetime
 from flask_login import login_required, current_user
@@ -77,11 +77,12 @@ def quiz_detail(quiz_id):
 
     course = quiz.course
     is_teacher = (current_user.id == course.teacher_id)
+    is_preview = request.args.get('preview') == 'true'
 
     if not is_teacher and current_user not in course.students:
         abort(403)
 
-    if is_teacher:
+    if is_teacher and not is_preview:
         return render_template('quiz_editor.html', quiz=quiz, QuestionType=QuestionType, Question=Question, Option=Option)
     else:
         questions = quiz.questions.order_by(Question.order).all()
@@ -90,6 +91,7 @@ def quiz_detail(quiz_id):
             quiz=quiz,
             course=course,
             is_teacher=is_teacher,
+            is_preview=is_preview,
             questions=questions,
             QuestionType=QuestionType,
             Option=Option

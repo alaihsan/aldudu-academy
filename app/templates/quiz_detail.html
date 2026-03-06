@@ -5,7 +5,7 @@
 {% block extra_head %}
 <style>
     :root {
-        --quiz-theme: {{ quiz.course.color or '#673ab7' }};
+        --quiz-theme: {{ quiz.theme_color or '#673ab7' }};
         --quiz-bg: #f0ebf8;
     }
     body { background-color: var(--quiz-bg); }
@@ -18,6 +18,10 @@
         padding: 24px;
         margin-bottom: 12px;
     }
+
+    /* Font Settings */
+    .question-text { font-family: '{{ quiz.font_question or 'Inter' }}', sans-serif; }
+    .answer-text { font-family: '{{ quiz.font_answer or 'Inter' }}', sans-serif; }
     
     .option-item {
         display: flex;
@@ -36,14 +40,31 @@
         border-top-right-radius: 8px;
     }
 </style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Roboto:wght@400;500;700&family=Open+Sans:wght@400;600;700&family=Poppins:wght@400;500;600&family=Lexend:wght@400;500;600&display=swap" rel="stylesheet">
 {% endblock %}
 
 {% block body %}
+{% if is_preview %}
+<div class="bg-amber-50 border-b border-amber-200 py-2 px-6 flex items-center justify-between sticky top-0 z-[60]">
+    <div class="flex items-center space-x-2 text-amber-800">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+        <span class="text-sm font-medium">Ini adalah pratinjau. Jawaban Anda tidak akan disimpan.</span>
+    </div>
+    <a href="{{ url_for('main.quiz_detail', quiz_id=quiz.id) }}" class="text-xs font-bold text-amber-900 bg-amber-200 hover:bg-amber-300 px-3 py-1 rounded-full transition-colors">Kembali ke Editor</a>
+</div>
+{% endif %}
+
 <div class="bg-white border-b border-gray-200 sticky top-0 z-50 px-6 py-3 flex items-center justify-between">
     <div class="flex items-center space-x-4">
+        {% if is_preview %}
+        <a href="{{ url_for('main.quiz_detail', quiz_id=quiz.id) }}" class="text-gray-500 hover:bg-gray-100 p-2 rounded-full" title="Kembali ke Editor">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+        </a>
+        {% else %}
         <a href="{{ url_for('main.course_detail', course_id=quiz.course_id) }}" class="text-gray-500 hover:bg-gray-100 p-2 rounded-full">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
         </a>
+        {% endif %}
         <span class="font-medium text-gray-700">{{ quiz.name }}</span>
     </div>
 </div>
@@ -66,7 +87,7 @@
     <div id="quiz-form" class="space-y-4">
         {% for question in questions %}
         <div class="question-card-student animate-fade-in" data-question-id="{{ question.id }}" data-question-type="{{ question.question_type.name }}" data-required="{{ 'true' if question.is_required else 'false' }}">
-            <p class="text-lg font-medium text-gray-900 mb-2">{{ loop.index }}. {{ question.question_text }} {% if question.is_required %}<span class="text-red-500">*</span>{% endif %}</p>
+            <p class="text-lg font-medium text-gray-900 mb-2 question-text">{{ loop.index }}. {{ question.question_text }} {% if question.is_required %}<span class="text-red-500">*</span>{% endif %}</p>
             {% if question.description %}
                 <p class="text-sm text-gray-500 mb-6 italic">{{ question.description }}</p>
             {% endif %}
@@ -74,7 +95,7 @@
             {% if question.question_type.name in ['MULTIPLE_CHOICE', 'TRUE_FALSE'] %}
                 <div class="space-y-2">
                     {% for option in question.options.order_by(Option.order).all() %}
-                    <label class="option-item border border-gray-100 hover:border-primary-200">
+                    <label class="option-item border border-gray-100 hover:border-primary-200 answer-text">
                         <input type="radio" name="question_{{ question.id }}" value="{{ option.id }}" class="w-4 h-4 text-primary-600 focus:ring-primary-500">
                         <span class="ml-3 text-gray-700">{{ option.option_text }}</span>
                     </label>
@@ -83,21 +104,21 @@
             {% elif question.question_type.name == 'CHECKBOX' %}
                 <div class="space-y-2">
                     {% for option in question.options.order_by(Option.order).all() %}
-                    <label class="option-item border border-gray-100 hover:border-primary-200">
+                    <label class="option-item border border-gray-100 hover:border-primary-200 answer-text">
                         <input type="checkbox" name="question_{{ question.id }}" value="{{ option.id }}" class="w-4 h-4 text-primary-600 rounded focus:ring-primary-500">
                         <span class="ml-3 text-gray-700">{{ option.option_text }}</span>
                     </label>
                     {% endfor %}
                 </div>
             {% elif question.question_type.name == 'DROPDOWN' %}
-                <select name="question_{{ question.id }}" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none">
+                <select name="question_{{ question.id }}" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none answer-text">
                     <option value="">Pilih jawaban...</option>
                     {% for option in question.options.order_by(Option.order).all() %}
                     <option value="{{ option.id }}">{{ option.option_text }}</option>
                     {% endfor %}
                 </select>
             {% elif question.question_type.name == 'LONG_TEXT' %}
-                <textarea name="question_{{ question.id }}" rows="4" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none" placeholder="Tulis jawaban Anda di sini..."></textarea>
+                <textarea name="question_{{ question.id }}" rows="4" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none answer-text" placeholder="Tulis jawaban Anda di sini..."></textarea>
             {% endif %}
         </div>
         {% endfor %}
@@ -105,7 +126,11 @@
 
     <!-- Submit Button -->
     <div class="flex justify-between items-center mt-8">
+        {% if is_preview %}
+        <a href="{{ url_for('main.quiz_detail', quiz_id=quiz.id) }}" class="px-6 py-3 text-gray-600 font-bold hover:bg-gray-200 rounded-xl transition-all">Kembali ke Editor</a>
+        {% else %}
         <button onclick="window.history.back()" class="px-6 py-3 text-gray-600 font-bold hover:bg-gray-200 rounded-xl transition-all">Batal</button>
+        {% endif %}
         <button id="submit-quiz-btn" class="px-10 py-4 bg-primary-600 text-white font-black rounded-2xl shadow-xl shadow-primary-200 hover:bg-primary-700 transform hover:-translate-y-1 active:scale-95 transition-all">
             Kirim Jawaban
         </button>
@@ -192,6 +217,16 @@ function submitQuiz() {
 }
 
 async function sendAnswers(answers) {
+    if ("{{ is_preview }}" === "True") {
+        Swal.fire({
+            icon: 'success',
+            title: 'Terkirim (Mode Pratinjau)!',
+            text: 'Ini adalah mode pratinjau, jawaban Anda tidak disimpan. Skor simulasi: 100%',
+            confirmButtonText: 'Kembali ke Editor'
+        }).then(() => window.location.href = "{{ url_for('main.quiz_detail', quiz_id=quiz.id) }}");
+        return;
+    }
+
     Swal.fire({ title: 'Mengirim...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
     try {
         const res = await fetch(`/api/quiz/{{ quiz.id }}/submit`, {

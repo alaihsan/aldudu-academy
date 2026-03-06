@@ -138,10 +138,9 @@
             <button onclick="toggleThemePanel()" class="p-2.5 text-gray-500 hover:bg-gray-100 rounded-full" title="Sesuaikan Tema">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg>
             </button>
-            <a href="{{ url_for('main.quiz_detail', quiz_id=quiz.id) }}" target="_blank" class="p-2.5 text-gray-500 hover:bg-gray-100 rounded-full" title="Pratinjau">
+            <a href="{{ url_for('main.quiz_detail', quiz_id=quiz.id, preview='true') }}" target="_blank" class="p-2.5 text-gray-500 hover:bg-gray-100 rounded-full" title="Pratinjau">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-            </a>
-            
+            </a>            
             <div class="relative">
                 <button onclick="togglePublishDropdown()" class="flex items-center space-x-2 bg-primary-600 hover:bg-primary-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-primary-100 transition-all active:scale-95" id="publish-main-btn">
                     <span>Ubah Status</span>
