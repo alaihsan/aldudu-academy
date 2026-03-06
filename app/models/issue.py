@@ -1,6 +1,7 @@
 from datetime import datetime
 import enum
 from . import db
+from app.helpers import get_jakarta_now
 
 class IssueStatus(enum.Enum):
     OPEN = "Open"
@@ -24,11 +25,11 @@ class Issue(db.Model):
     priority = db.Column(db.Enum(IssuePriority), default=IssuePriority.MEDIUM)
     
     # Relationships
-    teacher_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    teacher = db.relationship('User', backref=db.backref('issues', lazy=True))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user = db.relationship('User', backref=db.backref('issues', lazy=True))
     
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=get_jakarta_now)
+    updated_at = db.Column(db.DateTime, default=get_jakarta_now, onupdate=get_jakarta_now)
 
     def to_dict(self):
         return {
@@ -37,8 +38,8 @@ class Issue(db.Model):
             'description': self.description,
             'status': self.status.value,
             'priority': self.priority.value,
-            'teacher_id': self.teacher_id,
-            'teacher_name': self.teacher.name,
+            'user_id': self.user_id,
+            'user_name': self.user.name,
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
             'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S')
         }

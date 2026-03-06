@@ -1,12 +1,12 @@
 from flask import Blueprint, render_template, redirect, url_for, abort, send_from_directory, request
 import os
-from datetime import datetime
 from flask_login import login_required, current_user
 from app.models import (
     db, Course, Quiz, Question, Option,
     QuestionType, GradeType, UserRole, Link, File,
     QuizSubmission, Answer, Discussion
 )
+from app.helpers import get_jakarta_now
 
 main_bp = Blueprint('main', __name__)
 
@@ -119,7 +119,7 @@ def serve_file(file_id):
     if not is_teacher and current_user not in course.students:
         abort(403)
         
-    now = datetime.utcnow()
+    now = get_jakarta_now()
     if file.start_date and now < file.start_date:
         abort(403, description="File is not yet available.")
     if file.end_date and now > file.end_date:
@@ -158,6 +158,4 @@ def discussion_detail(course_id, discussion_id):
 @main_bp.route('/issues')
 @login_required
 def issues():
-    if current_user.role != UserRole.GURU:
-        abort(403)
     return render_template('issues.html')

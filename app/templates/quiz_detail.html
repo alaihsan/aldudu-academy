@@ -180,13 +180,12 @@
                         {% if question.allowed_file_types %}
                             {% set types = question.allowed_file_types.split(',') %}
                             {% set mime_list = [] %}
-                            {% if 'pdf' in types %}{% do mime_list.append('.pdf') %}{% endif %}
-                            {% if 'image' in types %}{% do mime_list.append('image/*') %}{% endif %}
-                            {% if 'video' in types %}{% do mime_list.append('video/*') %}{% endif %}
-                            {% if 'audio' in types %}{% do mime_list.append('audio/*') %}{% endif %}
-                            {% if 'document' in types %}{% do mime_list.append('.doc,.docx,.odt,.txt') %}{% endif %}
-                            {% if 'spreadsheet' in types %}{% do mime_list.append('.xls,.xlsx,.ods,.csv') %}{% endif %}
-                            {% set accept_str = mime_list|join(',') %}
+                            {% if 'pdf' in types %}{% set _ = mime_list.append('.pdf') %}{% endif %}
+                            {% if 'image' in types %}{% set _ = mime_list.append('image/*') %}{% endif %}
+                            {% if 'video' in types %}{% set _ = mime_list.append('video/*') %}{% endif %}
+                            {% if 'audio' in types %}{% set _ = mime_list.append('audio/*') %}{% endif %}
+                            {% if 'document' in types %}{% set _ = mime_list.append('.doc,.docx,.odt,.txt') %}{% endif %}
+                            {% if 'spreadsheet' in types %}{% set _ = mime_list.append('.xls,.xlsx,.ods,.csv') %}{% endif %}                            {% set accept_str = mime_list|join(',') %}
                         {% endif %}
                         <input type="file" name="question_{{ question.id }}" 
                             class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none answer-text file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"

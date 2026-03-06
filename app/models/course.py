@@ -2,6 +2,7 @@ import datetime
 from typing import List, Optional
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from . import db
+from app.helpers import get_jakarta_now
 
 enrollments = db.Table('enrollments',
     db.Column('user_id', db.Integer, db.ForeignKey('users.id'), primary_key=True),
@@ -53,7 +54,7 @@ class Link(db.Model):
     name: Mapped[str] = mapped_column(db.String(200), nullable=False)
     url: Mapped[str] = mapped_column(db.String(500), nullable=False)
     course_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('courses.id'), nullable=False, index=True)
-    created_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=datetime.datetime.utcnow)
+    created_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=get_jakarta_now)
 
     course: Mapped[Course] = relationship('Course', back_populates='links')
 
@@ -73,7 +74,7 @@ class File(db.Model):
     course_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('courses.id'), nullable=False, index=True)
     start_date: Mapped[Optional[datetime.datetime]] = mapped_column(db.DateTime, nullable=True)
     end_date: Mapped[Optional[datetime.datetime]] = mapped_column(db.DateTime, nullable=True)
-    created_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=datetime.datetime.utcnow)
+    created_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=get_jakarta_now)
 
     course: Mapped['Course'] = relationship('Course', back_populates='files')
 

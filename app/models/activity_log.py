@@ -1,6 +1,7 @@
 from datetime import datetime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from . import db
+from app.helpers import get_jakarta_now
 
 class ActivityLog(db.Model):
     __tablename__ = 'activity_logs'
@@ -12,7 +13,7 @@ class ActivityLog(db.Model):
     target_id: Mapped[int] = mapped_column(db.Integer, nullable=True)
     details: Mapped[str] = mapped_column(db.Text, nullable=True) # JSON or descriptive string
     ip_address: Mapped[str] = mapped_column(db.String(45), nullable=True)
-    created_at: Mapped[datetime] = mapped_column(db.DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(db.DateTime, default=get_jakarta_now)
     
     # Relationship
     user = relationship('User', backref=db.backref('activity_logs', lazy=True))

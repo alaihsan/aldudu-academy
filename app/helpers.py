@@ -2,16 +2,18 @@ import string
 import random
 import re
 import html
+from datetime import datetime, timedelta, timezone
 from flask import request
 from sqlalchemy.orm import joinedload
-from app.models import db, Course, User, UserRole, ActivityLog
 
+def get_jakarta_now():
+    """Returns current time in Jakarta (WIB, UTC+7)."""
+    return datetime.now(timezone(timedelta(hours=7)))
 
 def log_activity(user_id, action, target_type=None, target_id=None, details=None):
     """Logs user activity in the database."""
+    from app.models import db, ActivityLog
     try:
-        # Avoid circular import by importing here if necessary, 
-        # but we already have ActivityLog from app.models
         log = ActivityLog(
             user_id=user_id,
             action=action,
@@ -26,7 +28,6 @@ def log_activity(user_id, action, target_type=None, target_id=None, details=None
         db.session.rollback()
         print(f"Failed to log activity: {e}")
 
-
 def generate_random_password(length=4):
     """Generates a random 4-character password with lowercase, number, and symbol."""
     lower = string.ascii_lowercase
@@ -34,7 +35,6 @@ def generate_random_password(length=4):
     symbols = "!@#$%^&*"
     all_chars = lower + digits + symbols
     
-    # Ensure at least one of each for the 4 chars (if length is 4)
     password = [
         random.choice(lower),
         random.choice(digits),
@@ -44,27 +44,25 @@ def generate_random_password(length=4):
     random.shuffle(password)
     return ''.join(password[:length])
 
-
 def generate_class_code(length=6):
+    from app.models import Course
     characters = string.ascii_uppercase + string.digits
     while True:
         code = ''.join(random.choices(characters, k=length))
         if not Course.query.filter_by(class_code=code).first():
             return code
 
-
 def get_courses_for_user(user, year_id):
+    from app.models import Course, User, UserRole
     if not year_id:
         return []
     
-    # Eager load 'teacher' and 'students' to avoid N+1 in format_course_data
     query = Course.query.options(joinedload(Course.teacher))
     
     if user.role == UserRole.GURU:
         return query.filter_by(teacher_id=user.id, academic_year_id=year_id).order_by(Course.name).all()
     else:
         return query.join(Course.students).filter(User.id == user.id, Course.academic_year_id == year_id).order_by(Course.name).all()
-
 
 def format_course_data(course, user):
     return {
@@ -79,26 +77,15 @@ def format_course_data(course, user):
         'is_teacher': course.teacher_id == user.id,
     }
 
-
-# ----------------------
-# Input validation helpers
-# ----------------------
-def _strip_tags(value: str) -> str:
-    if not isinstance(value, str):
-        return ''
-    return re.sub(r'<[^>]*?>', '', value)
-
-
 def sanitize_text(value: str, max_len: int = 150) -> str:
     if value is None:
         return ''
     s = value.strip()
-    s = _strip_tags(s)
+    s = re.sub(r'<[^>]*?>', '', s)
     s = html.escape(s)
     if len(s) > max_len:
         s = s[:max_len]
     return s
-
 
 def is_valid_email(email: str) -> bool:
     from email_validator import validate_email, EmailNotValidError
@@ -110,12 +97,10 @@ def is_valid_email(email: str) -> bool:
     except EmailNotValidError:
         return False
 
-
 def is_valid_color(color: str) -> bool:
     if not isinstance(color, str):
         return False
     return re.match(r'^#[0-9a-fA-F]{6}$', color.strip()) is not None
-
 
 def is_valid_class_code(code: str) -> bool:
     if not isinstance(code, str):

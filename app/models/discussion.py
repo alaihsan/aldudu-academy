@@ -2,6 +2,7 @@ import datetime
 from typing import List, Optional
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from . import db
+from app.helpers import get_jakarta_now
 
 class Discussion(db.Model):
     """Discussion model for course topics."""
@@ -11,7 +12,7 @@ class Discussion(db.Model):
     title: Mapped[str] = mapped_column(db.String(200), nullable=False)
     course_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('courses.id'), nullable=False, index=True)
     user_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
-    created_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=datetime.datetime.utcnow)
+    created_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=get_jakarta_now)
     closed: Mapped[bool] = mapped_column(db.Boolean, default=False, nullable=False)
 
     course: Mapped['Course'] = relationship('Course', backref='discussions')
@@ -41,7 +42,7 @@ class Post(db.Model):
     discussion_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('discussions.id'), nullable=False, index=True)
     user_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
     parent_id: Mapped[Optional[int]] = mapped_column(db.Integer, db.ForeignKey('posts.id'), nullable=True)
-    created_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=datetime.datetime.utcnow)
+    created_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=get_jakarta_now)
 
     discussion: Mapped['Discussion'] = relationship('Discussion', back_populates='posts')
     user: Mapped['User'] = relationship('User', backref='posts')

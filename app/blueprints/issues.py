@@ -8,11 +8,13 @@ issues_bp = Blueprint('issues', __name__, url_prefix='/api')
 @issues_bp.route('/issues', methods=['GET'])
 @login_required
 def get_issues():
-    # Teachers see their own issues, or we could let them see all if needed.
-    # For now, let's show all issues but highlight the ones they created.
     status_filter = request.args.get('status')
     
-    query = Issue.query
+    # Murid only see their own, Admin/Guru see all
+    if current_user.role == UserRole.MURID:
+        query = Issue.query.filter(Issue.user_id == current_user.id)
+    else:
+        query = Issue.query
     
     if status_filter == 'resolved':
         query = query.filter(Issue.status == IssueStatus.RESOLVED)
@@ -28,9 +30,7 @@ def get_issues():
 @issues_bp.route('/issues', methods=['POST'])
 @login_required
 def create_issue():
-    if current_user.role != UserRole.GURU:
-        return jsonify({'success': False, 'message': 'Hanya guru yang dapat membuat laporan masalah'}), 403
-        
+    # All roles can create issues now
     data = request.get_json() or {}
     title = sanitize_text(data.get('title', ''), max_len=200)
     description = sanitize_text(data.get('description', ''))
@@ -48,7 +48,7 @@ def create_issue():
         title=title,
         description=description,
         priority=priority,
-        teacher_id=current_user.id
+        user_id=current_user.id
     )
     
     db.session.add(new_issue)
@@ -67,25 +67,35 @@ def update_issue(issue_id):
     if not issue:
         abort(404)
         
-    if issue.teacher_id != current_user.id:
-        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin untuk mengubah laporan ini'}), 403
+    # Only owner or Admin/Guru can update status? 
+    # Usually owner can close, but Guru/Admin manages the resolution.
+    # For now, allow owner to edit content, but only Guru/Admin can change status to In Progress etc.
+    is_owner = issue.user_id == current_user.id
+    is_privileged = current_user.role in [UserRole.GURU, UserRole.ADMIN]
+    
+    if not is_owner and not is_privileged:
+        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
         
     data = request.get_json() or {}
     
-    if 'title' in data:
+    if 'title' in data and is_owner:
         issue.title = sanitize_text(data.get('title'), max_len=200)
-    if 'description' in data:
+    if 'description' in data and is_owner:
         issue.description = sanitize_text(data.get('description'))
-    if 'priority' in data:
+    if 'priority' in data and is_owner:
         try:
             issue.priority = IssuePriority[data.get('priority').upper()]
         except KeyError:
             pass
     if 'status' in data:
-        try:
-            issue.status = IssueStatus[data.get('status').upper()]
-        except KeyError:
-            pass
+        # Only Guru/Admin can resolve/progress issues
+        if is_privileged:
+            try:
+                issue.status = IssueStatus[data.get('status').upper()]
+            except KeyError:
+                pass
+        else:
+            return jsonify({'success': False, 'message': 'Hanya Guru/Admin yang dapat memproses laporan'}), 403
             
     db.session.commit()
     return jsonify({'success': True, 'issue': issue.to_dict()})
@@ -97,8 +107,9 @@ def delete_issue(issue_id):
     if not issue:
         abort(404)
         
-    if issue.teacher_id != current_user.id:
-        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin untuk menghapus laporan ini'}), 403
+    # Only owner or Admin can delete
+    if issue.user_id != current_user.id and current_user.role != UserRole.ADMIN:
+        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
         
     db.session.delete(issue)
     db.session.commit()

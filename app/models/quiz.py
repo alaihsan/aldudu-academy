@@ -3,6 +3,7 @@ import enum
 from typing import List, Optional
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from . import db
+from app.helpers import get_jakarta_now
 
 class QuestionType(enum.Enum):
     MULTIPLE_CHOICE = 'multiple_choice'
@@ -44,8 +45,8 @@ class Quiz(db.Model):
     duration: Mapped[int] = mapped_column(db.Integer, default=0) # Duration in minutes, 0 means unlimited
     is_published: Mapped[bool] = mapped_column(db.Boolean, default=False, nullable=False) # Legacy, keeping for migration safety
     
-    created_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=datetime.datetime.utcnow, nullable=False)
-    updated_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow, nullable=False)
+    created_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=get_jakarta_now, nullable=False)
+    updated_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=get_jakarta_now, onupdate=get_jakarta_now, nullable=False)
 
     course: Mapped['Course'] = relationship('Course', back_populates='quizzes')
     questions: Mapped[List['Question']] = relationship('Question', back_populates='quiz', lazy='dynamic', cascade="all, delete-orphan")
@@ -81,7 +82,7 @@ class QuizSubmission(db.Model):
     id: Mapped[int] = mapped_column(db.Integer, primary_key=True)
     quiz_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('quizzes.id'), nullable=False, index=True)
     user_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
-    submitted_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=datetime.datetime.utcnow, nullable=False)
+    submitted_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=get_jakarta_now, nullable=False)
     score: Mapped[Optional[float]] = mapped_column(db.Float, nullable=True)
     total_points: Mapped[int] = mapped_column(db.Integer, nullable=False)
     quiz: Mapped[Quiz] = relationship('Quiz', backref='submissions')

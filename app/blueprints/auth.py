@@ -12,7 +12,7 @@ def api_session():
         if not current_user.is_active:
             logout_user()
             return jsonify({'isAuthenticated': False})
-        return jsonify({'isAuthenticated': True, 'user': {'name': current_user.name, 'role': current_user.role.value}})
+        return jsonify({'isAuthenticated': True, 'user': {'id': current_user.id, 'name': current_user.name, 'role': current_user.role.value}})
     return jsonify({'isAuthenticated': False})
 
 
@@ -30,7 +30,7 @@ def api_login():
             
         login_user(user)
         log_activity(user.id, "Login")
-        return jsonify({'success': True, 'user': {'name': user.name, 'role': user.role.value}})
+        return jsonify({'success': True, 'user': {'id': user.id, 'name': user.name, 'role': user.role.value}})
     return jsonify({'success': False, 'message': 'Email atau password salah'}), 401
 
 
