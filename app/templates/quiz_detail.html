@@ -108,15 +108,9 @@
 
     <div class="bg-white border-b border-gray-200 sticky top-0 z-50 px-6 py-3 flex items-center justify-between">
         <div class="flex items-center space-x-4">
-            {% if is_preview %}
-            <a href="{{ url_for('main.quiz_detail', quiz_id=quiz.id) }}" class="text-gray-500 hover:bg-gray-100 p-2 rounded-full" title="Kembali ke Editor">
+            <button onclick="handleExit()" class="text-gray-500 hover:bg-gray-100 p-2 rounded-full" title="Kembali">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-            </a>
-            {% else %}
-            <a href="{{ url_for('main.course_detail', course_id=quiz.course_id) }}" class="text-gray-500 hover:bg-gray-100 p-2 rounded-full">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-            </a>
-            {% endif %}
+            </button>
             <span class="font-medium text-gray-700">{{ quiz.name }}</span>
         </div>
     </div>
@@ -196,13 +190,8 @@
         </div>
 
         <!-- Submit Button -->
-        <div class="flex justify-between items-center mt-8">
-            {% if is_preview %}
-            <a href="{{ url_for('main.quiz_detail', quiz_id=quiz.id) }}" class="px-6 py-3 text-gray-600 font-bold hover:bg-gray-200 rounded-xl transition-all">Kembali ke Editor</a>
-            {% else %}
-            <button onclick="window.history.back()" class="px-6 py-3 text-gray-600 font-bold hover:bg-gray-200 rounded-xl transition-all">Batal</button>
-            {% endif %}
-            <button id="submit-quiz-btn" class="px-10 py-4 bg-primary-600 text-white font-black rounded-2xl shadow-xl shadow-primary-200 hover:bg-primary-700 transform hover:-translate-y-1 active:scale-95 transition-all">
+        <div class="flex justify-end items-center mt-12">
+            <button id="submit-quiz-btn" class="px-12 py-5 bg-primary-600 text-white font-black rounded-2xl shadow-xl shadow-primary-200 hover:bg-primary-700 transform hover:-translate-y-1 active:scale-95 transition-all">
                 Kirim Jawaban
             </button>
         </div>
@@ -222,6 +211,55 @@
 <script>
 let timeRemaining = {{ quiz.duration * 60 if quiz.duration > 0 else 0 }};
 let timerInterval = null;
+let isQuizActive = false;
+
+// Browser Close Protection (Default UI)
+window.addEventListener('beforeunload', function (e) {
+    if (isQuizActive) {
+        const message = 'Soal yang kamu kerjakan akan hilang, harap submit dahulu.';
+        e.preventDefault();
+        e.returnValue = message;
+        return message;
+    }
+});
+
+// Internal Exit Protection (Beautiful UI)
+function handleExit() {
+    if (!isQuizActive) {
+        {% if is_preview %}
+        window.location.href = "{{ url_for('main.quiz_detail', quiz_id=quiz.id) }}";
+        {% else %}
+        window.location.href = "{{ url_for('main.course_detail', course_id=quiz.course_id) }}";
+        {% endif %}
+        return;
+    }
+
+    Swal.fire({
+        title: 'Tinggalkan Kuis?',
+        text: 'Progres pengerjaan Anda akan hilang. Apakah Anda yakin ingin keluar?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Keluar',
+        cancelButtonText: 'Tetap Mengerjakan',
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#6b7280',
+        reverseButtons: true,
+        background: '#ffffff',
+        customClass: {
+            title: 'font-black text-gray-800',
+            popup: 'rounded-3xl'
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            isQuizActive = false;
+            {% if is_preview %}
+            window.location.href = "{{ url_for('main.quiz_detail', quiz_id=quiz.id) }}";
+            {% else %}
+            window.location.href = "{{ url_for('main.course_detail', course_id=quiz.course_id) }}";
+            {% endif %}
+        }
+    });
+}
 
 function confirmStart() {
     Swal.fire({
@@ -231,7 +269,8 @@ function confirmStart() {
         showCancelButton: true,
         confirmButtonText: 'Ya, Mulai!',
         cancelButtonText: 'Batal',
-        confirmButtonColor: 'var(--quiz-theme)'
+        confirmButtonColor: 'var(--quiz-theme)',
+        customClass: { popup: 'rounded-3xl', title: 'font-black' }
     }).then((result) => {
         if (result.isConfirmed) {
             startQuiz();
@@ -240,6 +279,7 @@ function confirmStart() {
 }
 
 function startQuiz() {
+    isQuizActive = true;
     document.getElementById('start-screen').classList.add('hidden');
     document.getElementById('quiz-main-container').classList.remove('hidden');
     
@@ -256,14 +296,16 @@ function startTimer() {
         
         if (timeRemaining <= 0) {
             clearInterval(timerInterval);
+            isQuizActive = false; // Turn off protection before auto-submit
             Swal.fire({
                 title: 'Waktu Habis!',
                 text: 'Waktu pengerjaan telah selesai. Jawaban Anda akan dikirim otomatis.',
                 icon: 'warning',
                 allowOutsideClick: false,
-                confirmButtonText: 'Oke'
+                confirmButtonText: 'Oke',
+                customClass: { popup: 'rounded-3xl' }
             }).then(() => {
-                submitQuiz(true); // Auto-submit
+                submitQuiz(true); 
             });
         }
     }, 1000);
@@ -348,7 +390,8 @@ function submitQuiz(autoSubmit = false) {
         Swal.fire({
             title: 'Wajib Diisi',
             text: `Pertanyaan nomor ${missingRequired.join(', ')} wajib dijawab sebelum dikirim.`,
-            icon: 'error'
+            icon: 'error',
+            customClass: { popup: 'rounded-3xl' }
         });
         return;
     }
@@ -367,7 +410,8 @@ function submitQuiz(autoSubmit = false) {
         showCancelButton: true,
         confirmButtonText: 'Ya, Kirim',
         cancelButtonText: 'Periksa Kembali',
-        confirmButtonColor: 'var(--quiz-theme)'
+        confirmButtonColor: 'var(--quiz-theme)',
+        customClass: { popup: 'rounded-3xl', title: 'font-black' }
     }).then((result) => {
         if (result.isConfirmed) {
             sendAnswers(formData);
@@ -376,6 +420,7 @@ function submitQuiz(autoSubmit = false) {
 }
 
 async function sendAnswers(formData) {
+    isQuizActive = false;
     if (timerInterval) clearInterval(timerInterval);
 
     if ("{{ is_preview }}" === "True") {
@@ -383,7 +428,8 @@ async function sendAnswers(formData) {
             icon: 'success',
             title: 'Terkirim (Mode Pratinjau)!',
             text: 'Ini adalah mode pratinjau, jawaban Anda tidak disimpan. Skor simulasi: 100%',
-            confirmButtonText: 'Kembali ke Editor'
+            confirmButtonText: 'Kembali ke Editor',
+            customClass: { popup: 'rounded-3xl' }
         }).then(() => window.location.href = "{{ url_for('main.quiz_detail', quiz_id=quiz.id) }}");
         return;
     }
@@ -400,7 +446,8 @@ async function sendAnswers(formData) {
                 icon: 'success',
                 title: 'Terkirim!',
                 text: `Skor Anda: ${data.score.toFixed(1)}%`,
-                confirmButtonText: 'Kembali ke Kelas'
+                confirmButtonText: 'Kembali ke Kelas',
+                customClass: { popup: 'rounded-3xl' }
             }).then(() => window.location.href = "{{ url_for('main.course_detail', course_id=quiz.course_id) }}");
         } else { Swal.fire('Error', data.message, 'error'); }
     } catch (err) { Swal.fire('Error', 'Gagal terhubung ke server', 'error'); }
