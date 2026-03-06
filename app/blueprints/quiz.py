@@ -305,6 +305,50 @@ def api_update_upload_settings(question_id):
     except: pass
     return render_template('_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question)
 
+@quiz_bp.route('/question/<int:question_id>/upload-image', methods=['POST'])
+@login_required
+def api_upload_question_image(question_id):
+    question = get_question_or_abort(question_id)
+    if 'image' not in request.files:
+        return jsonify({'success': False, 'message': 'Tidak ada file'}), 400
+    
+    file = request.files['image']
+    if file.filename == '':
+        return jsonify({'success': False, 'message': 'Tidak ada file dipilih'}), 400
+    
+    if file:
+        filename = secure_filename(f"q_{question.id}_{file.filename}")
+        upload_folder = os.path.join(os.getcwd(), 'instance', 'uploads', str(question.quiz.course_id))
+        os.makedirs(upload_folder, exist_ok=True)
+        file.save(os.path.join(upload_folder, filename))
+        
+        # Delete old image if exists
+        if question.image:
+            old_path = os.path.join(upload_folder, question.image)
+            if os.path.exists(old_path):
+                try: os.remove(old_path)
+                except: pass
+        
+        question.image = filename
+        db.session.commit()
+        
+        return render_template('_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question)
+
+@quiz_bp.route('/question/<int:question_id>/remove-image', methods=['DELETE'])
+@login_required
+def api_remove_question_image(question_id):
+    question = get_question_or_abort(question_id)
+    if question.image:
+        upload_folder = os.path.join(os.getcwd(), 'instance', 'uploads', str(question.quiz.course_id))
+        path = os.path.join(upload_folder, question.image)
+        if os.path.exists(path):
+            try: os.remove(path)
+            except: pass
+        question.image = None
+        db.session.commit()
+    
+    return render_template('_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question)
+
 @quiz_bp.route('/quiz/<int:quiz_id>/submit', methods=['POST'])
 @login_required
 def api_submit_quiz(quiz_id):
@@ -312,73 +356,65 @@ def api_submit_quiz(quiz_id):
     if not quiz:
         abort(404, description="Kuis tidak ditemukan.")
     
-    data = request.get_json()
-    if not data or 'answers' not in data:
-        abort(400, description="Data jawaban tidak lengkap.")
+    # Handle both JSON and FormData
+    if request.is_json:
+        data = request.get_json()
+        answers_list = data.get('answers', [])
+    else:
+        import json
+        answers_list = json.loads(request.form.get('answers', '[]'))
 
     # Create submission
     submission = QuizSubmission(
         quiz_id=quiz.id,
         user_id=current_user.id,
-        total_points=0 # Will be calculated
+        total_points=0 
     )
     db.session.add(submission)
-    db.session.flush() # Get submission ID
+    db.session.flush()
 
     total_possible_points = 0
     earned_points = 0
     
-    # Process answers
-    for ans_data in data['answers']:
+    for ans_data in answers_list:
         question_id = ans_data.get('question_id')
         question = db.session.get(Question, question_id)
         if not question or question.quiz_id != quiz.id:
             continue
         
         total_possible_points += question.points
-        
-        answer = Answer(
-            submission_id=submission.id,
-            question_id=question.id
-        )
+        answer = Answer(submission_id=submission.id, question_id=question.id)
 
         if question.question_type in [QuestionType.MULTIPLE_CHOICE, QuestionType.TRUE_FALSE, QuestionType.DROPDOWN]:
             opt_id = ans_data.get('selected_option_id')
             answer.selected_option_id = opt_id
-            
-            # Simple grading
             selected_opt = db.session.get(Option, opt_id)
             if selected_opt and selected_opt.is_correct:
                 earned_points += question.points
         
         elif question.question_type == QuestionType.LONG_TEXT:
             answer.answer_text = ans_data.get('answer_text')
-            # Long text needs manual grading, so no automatic points here
             
         elif question.question_type == QuestionType.CHECKBOX:
-            # Current model doesn't support multiple selected_option_id
-            # For now, store as text or we might need to update model
             opt_ids = ans_data.get('selected_option_ids', [])
             answer.answer_text = ",".join(map(str, opt_ids))
-            
-            # Simple checkbox grading (must match all correct options)
             correct_opts = [o.id for o in question.options if o.is_correct]
             if set(opt_ids) == set(correct_opts):
                 earned_points += question.points
+
+        elif question.question_type == QuestionType.UPLOAD:
+            file = request.files.get(f'file_{question.id}')
+            if file and file.filename:
+                upload_folder = os.path.join(os.getcwd(), 'instance', 'uploads', str(quiz.course_id))
+                os.makedirs(upload_folder, exist_ok=True)
+                filename = secure_filename(f"sub_{submission.id}_q{question.id}_{file.filename}")
+                file.save(os.path.join(upload_folder, filename))
+                answer.answer_text = filename
         
         db.session.add(answer)
 
-    # Calculate final score percentage
     submission.total_points = total_possible_points
-    if total_possible_points > 0:
-        submission.score = (earned_points / total_possible_points) * 100
-    else:
-        submission.score = 0
-        
+    submission.score = (earned_points / total_possible_points * 100) if total_possible_points > 0 else 0
     db.session.commit()
     
-    return jsonify({
-        'success': True,
-        'score': submission.score,
-        'message': 'Kuis berhasil dikirim.'
-    })
+    return jsonify({'success': True, 'score': submission.score, 'message': 'Kuis berhasil dikirim.'})

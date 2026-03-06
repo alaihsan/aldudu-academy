@@ -57,6 +57,7 @@ class Question(db.Model):
     quiz_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('quizzes.id'), nullable=False, index=True)
     order: Mapped[int] = mapped_column(db.Integer, nullable=False, default=1)
     description: Mapped[Optional[str]] = mapped_column(db.Text, nullable=True)
+    image: Mapped[Optional[str]] = mapped_column(db.String(255), nullable=True)
     is_required: Mapped[bool] = mapped_column(db.Boolean, default=True, nullable=False)
     points: Mapped[int] = mapped_column(db.Integer, default=0, nullable=False)
     max_file_size: Mapped[int] = mapped_column(db.Integer, default=10, nullable=False)

@@ -88,6 +88,15 @@
         {% for question in questions %}
         <div class="question-card-student animate-fade-in" data-question-id="{{ question.id }}" data-question-type="{{ question.question_type.name }}" data-required="{{ 'true' if question.is_required else 'false' }}">
             <p class="text-lg font-medium text-gray-900 mb-2 question-text">{{ loop.index }}. {{ question.question_text }} {% if question.is_required %}<span class="text-red-500">*</span>{% endif %}</p>
+            
+            {% if question.image %}
+            <div class="mb-6 rounded-xl overflow-hidden border border-gray-100 shadow-sm max-w-2xl">
+                <img src="{{ url_for('main.serve_question_image', course_id=question.quiz.course_id, filename=question.image) }}" 
+                     class="w-full h-auto object-cover" 
+                     alt="Gambar Pertanyaan">
+            </div>
+            {% endif %}
+
             {% if question.description %}
                 <p class="text-sm text-gray-500 mb-6 italic">{{ question.description }}</p>
             {% endif %}
@@ -119,6 +128,16 @@
                 </select>
             {% elif question.question_type.name == 'LONG_TEXT' %}
                 <textarea name="question_{{ question.id }}" rows="4" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none answer-text" placeholder="Tulis jawaban Anda di sini..."></textarea>
+            {% elif question.question_type.name == 'UPLOAD' %}
+                <div class="mt-2">
+                    <input type="file" name="question_{{ question.id }}" 
+                        class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none answer-text file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
+                        data-max-size="{{ question.max_file_size }}"
+                        data-allowed="{{ question.allowed_file_types or '' }}">
+                    <p class="text-[10px] text-gray-400 mt-2 uppercase tracking-widest font-black">
+                        Maksimal {{ question.max_file_size }}MB • Format: {{ question.allowed_file_types or 'Semua' }}
+                    </p>
+                </div>
             {% endif %}
         </div>
         {% endfor %}
@@ -151,6 +170,7 @@ document.addEventListener('DOMContentLoaded', function () {
 function submitQuiz() {
     const answers = [];
     const questionCards = document.querySelectorAll('.question-card-student');
+    const formData = new FormData();
     let missingRequired = [];
 
     questionCards.forEach((card, index) => {
@@ -183,6 +203,19 @@ function submitQuiz() {
                 answers.push({ question_id: parseInt(questionId), answer_text: text });
                 hasAnswer = true;
             }
+        } else if (type === 'UPLOAD') {
+            const fileInput = card.querySelector(`input[name="question_${questionId}"]`);
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const maxSize = parseInt(fileInput.dataset.maxSize) * 1024 * 1024;
+                if (file.size > maxSize) {
+                    Swal.fire('File Terlalu Besar', `Maksimal ukuran file untuk pertanyaan ${index+1} adalah ${fileInput.dataset.maxSize}MB`, 'error');
+                    return;
+                }
+                formData.append(`file_${questionId}`, file);
+                answers.push({ question_id: parseInt(questionId), type: 'UPLOAD' });
+                hasAnswer = true;
+            }
         }
 
         if (isRequired && !hasAnswer) {
@@ -202,6 +235,8 @@ function submitQuiz() {
         return;
     }
 
+    formData.append('answers', JSON.stringify(answers));
+
     if (answers.length < questionCards.length) {
         Swal.fire({
             title: 'Belum Lengkap',
@@ -210,13 +245,13 @@ function submitQuiz() {
             showCancelButton: true,
             confirmButtonText: 'Ya, Kirim',
             cancelButtonText: 'Batal'
-        }).then((result) => { if (result.isConfirmed) sendAnswers(answers); });
+        }).then((result) => { if (result.isConfirmed) sendAnswers(formData); });
     } else {
-        sendAnswers(answers);
+        sendAnswers(formData);
     }
 }
 
-async function sendAnswers(answers) {
+async function sendAnswers(formData) {
     if ("{{ is_preview }}" === "True") {
         Swal.fire({
             icon: 'success',
@@ -231,8 +266,7 @@ async function sendAnswers(answers) {
     try {
         const res = await fetch(`/api/quiz/{{ quiz.id }}/submit`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ answers })
+            body: formData
         });
         const data = await res.json();
         if (data.success) {
