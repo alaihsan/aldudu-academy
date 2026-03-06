@@ -133,35 +133,68 @@
             </div>
         {% elif question.question_type.name == 'UPLOAD' %}
             <div class="p-8 bg-blue-50/30 rounded-[2.5rem] border-2 border-blue-100/50">
-                <div class="flex items-center space-x-4 mb-6">
-                    <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                <div class="flex items-center space-x-4 mb-8">
+                    <div class="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center shadow-xl shadow-blue-100">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
                     </div>
-                    <h4 class="font-black text-gray-700 uppercase tracking-tight text-sm">Konfigurasi Pengunggahan</h4>
+                    <div>
+                        <h4 class="font-black text-gray-800 uppercase tracking-tight text-base">Konfigurasi Pengunggahan</h4>
+                        <p class="text-xs text-gray-400">Atur batasan file yang dikirim oleh murid</p>
+                    </div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Batas Ukuran</label>
-                        <div class="flex items-center bg-white rounded-2xl border-2 border-gray-100 px-4 py-1 shadow-sm focus-within:border-blue-400 transition-all">
-                            <input type="number" name="max_file_size" value="{{ question.max_file_size }}" 
-                                class="w-full bg-transparent border-none focus:ring-0 font-black text-blue-600"
-                                hx-put="/api/question/{{ question.id }}/update-upload-settings" hx-trigger="blur" hx-target="#question-{{ question.id }}" hx-swap="outerHTML">
-                            <span class="text-xs font-black text-gray-300">MB</span>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                    <!-- File Type Restrictions -->
+                    <div class="space-y-4">
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center">
+                            <span class="mr-2">Izinkan Jenis File Tertentu</span>
+                            <div class="h-px bg-gray-100 flex-1"></div>
+                        </label>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                            {% set allowed = question.allowed_file_types.split(',') if question.allowed_file_types else [] %}
+                            {% for type in [('pdf','PDF'), ('image','Gambar'), ('document','Dokumen'), ('spreadsheet','Excel'), ('video','Video'), ('audio','Audio')] %}
+                            <label class="flex flex-col items-center justify-center p-4 rounded-3xl border-2 transition-all cursor-pointer group active:scale-95
+                                {% if type[0] in allowed %} border-blue-500 bg-blue-600 text-white shadow-lg shadow-blue-100 {% else %} border-white bg-white text-gray-400 hover:border-blue-200 {% endif %}">
+                                <input type="checkbox" name="allowed_types" value="{{ type[0] }}" 
+                                    {% if type[0] in allowed %}checked{% endif %} 
+                                    hx-put="/api/question/{{ question.id }}/update-upload-settings" 
+                                    hx-trigger="change" 
+                                    hx-target="#question-{{ question.id }}" 
+                                    hx-swap="outerHTML" 
+                                    hx-include="[name='max_file_size']" 
+                                    class="hidden">
+                                <span class="text-[10px] font-black uppercase">{{ type[1] }}</span>
+                            </label>
+                            {% endfor %}
                         </div>
                     </div>
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Jenis File</label>
-                        <div class="flex space-x-3">
-                            {% set allowed = question.allowed_file_types.split(',') if question.allowed_file_types else [] %}
-                            <label class="flex-1 flex items-center justify-center p-3 rounded-2xl border-2 cursor-pointer transition-all {% if 'document' in allowed %} border-blue-500 bg-blue-100 text-blue-700 {% else %} border-white bg-white text-gray-400 {% endif %}">
-                                <input type="checkbox" name="allowed_types" value="document" {% if 'document' in allowed %}checked{% endif %} hx-put="/api/question/{{ question.id }}/update-upload-settings" hx-trigger="change" hx-target="#question-{{ question.id }}" hx-swap="outerHTML" hx-include="[name='max_file_size']" class="hidden">
-                                <span class="text-xs font-bold uppercase">DOC</span>
-                            </label>
-                            <label class="flex-1 flex items-center justify-center p-3 rounded-2xl border-2 cursor-pointer transition-all {% if 'video' in allowed %} border-blue-500 bg-blue-100 text-blue-700 {% else %} border-white bg-white text-gray-400 {% endif %}">
-                                <input type="checkbox" name="allowed_types" value="video" {% if 'video' in allowed %}checked{% endif %} hx-put="/api/question/{{ question.id }}/update-upload-settings" hx-trigger="change" hx-target="#question-{{ question.id }}" hx-swap="outerHTML" hx-include="[name='max_file_size']" class="hidden">
-                                <span class="text-xs font-bold uppercase">VID</span>
-                            </label>
+
+                    <!-- File Size Restriction -->
+                    <div class="space-y-4">
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center">
+                            <span class="mr-2">Ukuran File Maksimal</span>
+                            <div class="h-px bg-gray-100 flex-1"></div>
+                        </label>
+                        <div class="bg-white rounded-3xl border-2 border-white p-6 shadow-sm">
+                            <div class="flex items-end space-x-4">
+                                <div class="flex-1">
+                                    <input type="range" name="max_file_size" min="1" max="100" step="1" value="{{ question.max_file_size }}" 
+                                        class="w-full h-2 bg-blue-100 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                                        hx-put="/api/question/{{ question.id }}/update-upload-settings" hx-trigger="change" hx-target="#question-{{ question.id }}" hx-swap="outerHTML">
+                                    <div class="flex justify-between mt-2">
+                                        <span class="text-[9px] font-bold text-gray-300">1MB</span>
+                                        <span class="text-[9px] font-bold text-gray-300">100MB</span>
+                                    </div>
+                                </div>
+                                <div class="w-24 text-center">
+                                    <p class="text-2xl font-black text-blue-600 leading-none">{{ question.max_file_size }}</p>
+                                    <p class="text-[10px] font-black text-gray-300 uppercase tracking-tighter mt-1">Megabyte</p>
+                                </div>
+                            </div>
                         </div>
+                        <p class="text-[10px] text-blue-400 italic bg-blue-50/50 p-3 rounded-2xl">
+                            Tip: Murid akan melihat peringatan jika mencoba mengunggah file yang melebihi kapasitas ini.
+                        </p>
                     </div>
                 </div>
             </div>

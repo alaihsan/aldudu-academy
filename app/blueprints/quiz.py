@@ -87,22 +87,27 @@ def api_change_question_type(question_id):
            (old_type not in option_types and new_type in option_types) or \
            (new_type == QuestionType.TRUE_FALSE):
             
+            # --- FIX: Handle existing answers before deleting options ---
+            # Set selected_option_id to NULL for all answers pointing to options of this question
+            options_ids = [o.id for o in question.options]
+            if options_ids:
+                Answer.query.filter(Answer.selected_option_id.in_(options_ids)).update({Answer.selected_option_id: None}, synchronize_session=False)
+            
+            # Now safe to delete options
             Option.query.filter_by(question_id=question.id).delete()
+            # ------------------------------------------------------------
             
             if new_type in option_types:
                 db.session.add(Option(question_id=question.id, option_text="Opsi 1", order=1))
             elif new_type == QuestionType.TRUE_FALSE:
                 db.session.add_all([Option(question_id=question.id, option_text="Benar", order=1), Option(question_id=question.id, option_text="Salah", order=2)])
-        
-        # If switching from CHECKBOX to a single-choice type, ensure only one correct answer remains
-        if old_type == QuestionType.CHECKBOX and new_type in [QuestionType.MULTIPLE_CHOICE, QuestionType.DROPDOWN]:
-            first_correct = False
-            for opt in question.options:
-                if opt.is_correct:
-                    if not first_correct:
-                        first_correct = True
-                    else:
-                        opt.is_correct = False
+
+    # Initialize default upload settings if UPLOAD
+    if question.question_type == QuestionType.UPLOAD:
+        if not question.max_file_size:
+            question.max_file_size = 10
+        if not question.allowed_file_types:
+            question.allowed_file_types = "pdf,image,document"
 
     db.session.commit()
     db.session.refresh(question)
@@ -356,10 +361,16 @@ def api_reorder_questions(quiz_id):
 def api_update_upload_settings(question_id):
     question = get_question_or_abort(question_id)
     try:
-        question.max_file_size = int(request.form.get('max_file_size', 10))
+        max_size = request.form.get('max_file_size')
+        if max_size:
+            question.max_file_size = int(max_size)
+            
         allowed_types = request.form.getlist('allowed_types')
         if allowed_types:
             question.allowed_file_types = ",".join(allowed_types)
+        else:
+            question.allowed_file_types = ""
+            
         db.session.commit()
     except: pass
     return render_template('_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question)

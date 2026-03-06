@@ -16,7 +16,7 @@ class Discussion(db.Model):
 
     course: Mapped['Course'] = relationship('Course', backref='discussions')
     user: Mapped['User'] = relationship('User', backref='discussions')
-    posts: Mapped[List['Post']] = relationship('Post', back_populates='discussion', lazy='dynamic', cascade='all, delete-orphan')
+    posts: Mapped[List['Post']] = relationship('Post', back_populates='discussion', cascade='all, delete-orphan')
 
     def to_dict(self) -> dict:
         return {
@@ -46,7 +46,7 @@ class Post(db.Model):
     discussion: Mapped['Discussion'] = relationship('Discussion', back_populates='posts')
     user: Mapped['User'] = relationship('User', backref='posts')
     parent: Mapped[Optional['Post']] = relationship('Post', remote_side=[id], backref='replies')
-    likes: Mapped[List['Like']] = relationship('Like', back_populates='post', lazy='dynamic', cascade='all, delete-orphan')
+    likes: Mapped[List['Like']] = relationship('Like', back_populates='post', cascade='all, delete-orphan')
 
     def to_dict(self) -> dict:
         return {
