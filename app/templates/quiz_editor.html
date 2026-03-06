@@ -289,13 +289,24 @@
             </div>
         </div>
 
-        <!-- Jawaban Settings -->
+        <!-- Umum Settings -->
         <div class="form-card overflow-hidden">
             <div class="p-6 border-b border-gray-100 bg-gray-50/30">
-                <h4 class="font-bold text-primary-600 uppercase tracking-widest text-[10px]">Jawaban</h4>
-                <p class="text-xs text-gray-400">Kelola cara jawaban dikumpulkan dan dilindungi</p>
+                <h4 class="font-bold text-primary-600 uppercase tracking-widest text-[10px]">Umum</h4>
+                <p class="text-xs text-gray-400">Kelola setelan umum kuis</p>
             </div>
             <div class="divide-y divide-gray-100">
+                <div class="p-6 flex items-center justify-between">
+                    <div>
+                        <p class="font-medium text-gray-700">Durasi Pengerjaan (Menit)</p>
+                        <p class="text-xs text-gray-400">Isi 0 untuk tanpa batas waktu</p>
+                    </div>
+                    <div class="flex items-center border-b border-primary-500 pb-1">
+                        <input type="number" id="quiz-duration" value="{{ quiz.duration }}" 
+                            class="w-16 bg-transparent text-center font-bold text-primary-600 border-none focus:ring-0"
+                            onblur="updateDuration(this.value)">
+                    </div>
+                </div>
                 <div class="p-6 flex items-center justify-between">
                     <div>
                         <p class="font-medium text-gray-700">Kumpulkan alamat email</p>
@@ -448,6 +459,15 @@
         }
     }
 
+    async function updateDuration(value) {
+        const res = await fetch(`/api/quiz/{{ quiz.id }}/update-duration`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ duration: parseInt(value || 0) })
+        });
+        if (res.ok) showSaveIndicator();
+    }
+
     function toggleThemePanel() {
         document.getElementById('theme-panel').classList.toggle('open');
     }
@@ -576,7 +596,25 @@
             });
             const studentRows = document.getElementById('student-rows');
             document.getElementById('student-results-list').classList.remove('hidden');
-            studentRows.innerHTML = data.submissions.map(s => `<div class="flex items-center justify-between p-4 px-6 hover:bg-gray-50"><span>${s.student_name}</span><span class="font-black text-primary-600">${s.score}%</span></div>`).join('');
+            studentRows.innerHTML = data.submissions.map(s => `
+                <div class="flex items-center justify-between p-4 px-6 hover:bg-gray-50 transition-colors">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-10 h-10 rounded-full bg-primary-50 text-primary-600 flex items-center justify-center font-black">
+                            ${s.student_name.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                            <p class="font-bold text-gray-800">${s.student_name}</p>
+                            <p class="text-[10px] text-gray-400 uppercase tracking-widest">${s.submitted_at}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-6">
+                        <span class="font-black text-primary-600 text-lg">${s.score}%</span>
+                        <a href="/api/submission/${s.id}" target="_blank" class="p-2 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-xl transition-all" title="Lihat Detail Jawaban">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                        </a>
+                    </div>
+                </div>
+            `).join('');
         }
     }
 </script>

@@ -232,6 +232,38 @@ def api_set_quiz_status(quiz_id):
         return jsonify({'success': True, 'status': quiz.status.value})
     except: return jsonify({'success': False}), 400
 
+@quiz_bp.route('/submission/<int:submission_id>')
+@login_required
+def api_get_submission(submission_id):
+    submission = db.session.get(QuizSubmission, submission_id)
+    if not submission:
+        abort(404)
+    
+    is_teacher = submission.quiz.course.teacher_id == current_user.id
+    if not is_teacher and submission.user_id != current_user.id:
+        abort(403)
+        
+    return render_template('quiz_submission_detail.html', submission=submission, is_teacher=is_teacher)
+
+@quiz_bp.route('/submission/<int:submission_id>/update-score', methods=['POST'])
+@login_required
+def api_update_submission_score(submission_id):
+    submission = db.session.get(QuizSubmission, submission_id)
+    if not submission or submission.quiz.course.teacher_id != current_user.id:
+        abort(403)
+    
+    data = request.get_json()
+    new_score = data.get('score')
+    if new_score is not None:
+        try:
+            submission.score = float(new_score)
+            db.session.commit()
+            return jsonify({'success': True})
+        except ValueError:
+            return jsonify({'success': False, 'message': 'Invalid score format'}), 400
+    
+    return jsonify({'success': False, 'message': 'Score is required'}), 400
+
 @quiz_bp.route('/quiz/<int:quiz_id>/stats', methods=['GET'])
 @login_required
 def api_get_quiz_stats(quiz_id):
@@ -255,7 +287,22 @@ def api_get_quiz_stats(quiz_id):
 
     scores = [s.score for s in submissions if s.score is not None]
     avg_score = sum(scores) / total_submissions if total_submissions > 0 else 0
-    return jsonify({'success': True, 'total_submissions': total_submissions, 'average_score': round(avg_score, 1), 'max_score': round(max(scores) if scores else 0, 1), 'min_score': round(min(scores) if scores else 0, 1), 'questions_stats': questions_stats, 'submissions': [{'student_name': s.user.name, 'score': s.score, 'submitted_at': s.submitted_at.strftime('%Y-%m-%d %H:%M')} for s in submissions]})
+    return jsonify({
+        'success': True, 
+        'total_submissions': total_submissions, 
+        'average_score': round(avg_score, 1), 
+        'max_score': round(max(scores) if scores else 0, 1), 
+        'min_score': round(min(scores) if scores else 0, 1), 
+        'questions_stats': questions_stats, 
+        'submissions': [
+            {
+                'id': s.id,
+                'student_name': s.user.name, 
+                'score': round(s.score, 1) if s.score is not None else 0, 
+                'submitted_at': s.submitted_at.strftime('%Y-%m-%d %H:%M')
+            } for s in submissions
+        ]
+    })
 
 @quiz_bp.route('/quiz/<int:quiz_id>/update-meta', methods=['PUT'])
 @login_required
@@ -275,6 +322,18 @@ def api_update_quiz_theme(quiz_id):
     quiz.font_question = data.get('font_question', quiz.font_question)
     db.session.commit()
     return jsonify({'success': True})
+
+@quiz_bp.route('/quiz/<int:quiz_id>/update-duration', methods=['PUT'])
+@login_required
+def api_update_quiz_duration(quiz_id):
+    quiz = get_quiz_or_abort(quiz_id)
+    data = request.get_json() or {}
+    try:
+        quiz.duration = int(data.get('duration', 0))
+        db.session.commit()
+        return jsonify({'success': True})
+    except:
+        return jsonify({'success': False}), 400
 
 @quiz_bp.route('/quiz/<int:quiz_id>/questions/reorder', methods=['POST'])
 @login_required

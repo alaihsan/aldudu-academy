@@ -41,6 +41,7 @@ class Quiz(db.Model):
     status: Mapped[QuizStatus] = mapped_column(db.Enum(QuizStatus), default=QuizStatus.DRAFT, nullable=False)
     
     points: Mapped[int] = mapped_column(db.Integer, default=100)
+    duration: Mapped[int] = mapped_column(db.Integer, default=0) # Duration in minutes, 0 means unlimited
     is_published: Mapped[bool] = mapped_column(db.Boolean, default=False, nullable=False) # Legacy, keeping for migration safety
     
     created_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=datetime.datetime.utcnow, nullable=False)
@@ -94,6 +95,8 @@ class Answer(db.Model):
     question_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('questions.id'), nullable=False, index=True)
     answer_text: Mapped[Optional[str]] = mapped_column(db.Text, nullable=True)
     selected_option_id: Mapped[Optional[int]] = mapped_column(db.Integer, db.ForeignKey('options.id'), nullable=True)
+    manual_score: Mapped[Optional[int]] = mapped_column(db.Integer, nullable=True)
+    
     submission: Mapped[QuizSubmission] = relationship('QuizSubmission', back_populates='answers')
     question: Mapped[Question] = relationship('Question', backref='answers')
     selected_option: Mapped[Optional[Option]] = relationship('Option', backref='answers')
