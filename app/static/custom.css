@@ -107,6 +107,57 @@ body {
     -webkit-backdrop-filter: blur(12px);
 }
 
+/* --- iOS Sort Mode: Jiggle Animation --- */
+@keyframes jiggle {
+    0% { transform: rotate(-1deg); }
+    50% { transform: rotate(1deg); }
+    100% { transform: rotate(-1deg); }
+}
+
+.is-manual-sorting .group {
+    animation: jiggle 0.3s infinite ease-in-out;
+    cursor: grab;
+}
+
+.is-manual-sorting .group:nth-child(even) {
+    animation-duration: 0.28s;
+}
+
+.is-manual-sorting .group:nth-child(3n) {
+    animation-duration: 0.32s;
+}
+
+/* SortableJS Enhanced Drag & Drop */
+.sortable-ghost {
+    opacity: 0.2 !important;
+    transform: scale(0.9) !important;
+    filter: blur(4px) !important;
+}
+
+/* --- View Transition API (iPhone Style) --- */
+::view-transition-old(*),
+::view-transition-new(*) {
+    animation-duration: 0.5s;
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Memastikan kartu tidak kedip saat transisi */
+.group {
+    contain: layout;
+}
+
+.sortable-chosen {
+    animation: none !important; /* Stop jiggle when being dragged */
+    scale: 1.05 !important;
+    cursor: grabbing !important;
+    z-index: 100 !important;
+    box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.25) !important;
+}
+
+.sortable-drag {
+    opacity: 1 !important;
+}
+
 /* --- Native Color Picker Customization --- */
 input[type="color"]::-webkit-color-swatch-wrapper {
     padding: 0;

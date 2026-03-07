@@ -47,6 +47,17 @@ class Course(db.Model):
         """String representation of Course."""
         return f'<Course {self.name}>'
 
+class UserCourseOrder(db.Model):
+    """Stores manual order of courses for each user."""
+    __tablename__ = 'user_course_orders'
+
+    user_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    course_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('courses.id'), primary_key=True)
+    manual_order: Mapped[int] = mapped_column(db.Integer, default=0, nullable=False)
+
+    def __repr__(self) -> str:
+        return f'<UserCourseOrder User:{self.user_id} Course:{self.course_id} Order:{self.manual_order}>'
+
 class Link(db.Model):
     """Link model for course resources."""
     __tablename__ = 'links'

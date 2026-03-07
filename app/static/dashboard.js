@@ -11,7 +11,9 @@ const Dashboard = {
         selectedYearId: null,
         editingCourseId: null,
         isInitialized: false,
-        pendingDeletes: {} // map of courseId -> {timeout, courseData}
+        pendingDeletes: {}, // map of courseId -> {timeout, courseData}
+        sortMode: localStorage.getItem('courseSortMode') || 'asc', // manual, asc, desc
+        isEditingOrder: false
     },
 
     async init() {
@@ -38,6 +40,8 @@ const Dashboard = {
                 });
             });
         });
+
+        this.updateSortButtons();
     },
 
     cacheElements() {
@@ -114,6 +118,18 @@ const Dashboard = {
         this.elements.editClassForm?.addEventListener('submit', (e) => this.handleUpdateClass(e));
         this.elements.enrollForm?.addEventListener('submit', (e) => this.handleEnroll(e));
         
+        // Click-away listener to finish sorting session
+        document.addEventListener('mousedown', (e) => {
+            if (this.state.isEditingOrder) {
+                const grid = this.elements.classGrid;
+                const manualBtn = document.getElementById('sort-manual');
+                // If click is outside grid AND outside manual sort button, finish session
+                if (grid && !grid.contains(e.target) && manualBtn && !manualBtn.contains(e.target)) {
+                    this.finishSorting();
+                }
+            }
+        });
+        
         this.elements.deleteConfirmInput?.addEventListener('input', (e) => {
             const isValid = e.target.value.toLowerCase().trim() === 'setuju';
             this.elements.deleteFinalBtn.disabled = !isValid;
@@ -185,43 +201,117 @@ const Dashboard = {
     renderCourses() {
         // Filter out courses that are pending deletion
         const pendingIds = Object.keys(this.state.pendingDeletes).map(id => parseInt(id));
-        const courses = this.state.courses.filter(c => !pendingIds.includes(c.id));
+        let courses = [...this.state.courses.filter(c => !pendingIds.includes(c.id))];
         
-        if (courses.length === 0) {
-            this.elements.emptyState?.classList.remove('hidden');
-            this.elements.classGrid.innerHTML = '';
-            return;
+        // Apply Sorting
+        if (this.state.sortMode === 'asc') {
+            courses.sort((a, b) => a.name.localeCompare(b.name));
+        } else if (this.state.sortMode === 'desc') {
+            courses.sort((a, b) => b.name.localeCompare(a.name));
         }
-        this.elements.emptyState?.classList.add('hidden');
         
-        this.elements.classGrid.innerHTML = courses.map(c => `
-            <div class="group bg-white rounded-[2.5rem] border border-gray-100 shadow-premium hover:shadow-2xl transition-all duration-500 overflow-hidden flex flex-col h-full transform hover:-translate-y-3">
-                <div class="h-40 relative overflow-hidden flex items-center justify-center p-8" style="background-color: ${c.color || '#0284c7'}">
-                    <div class="absolute inset-0 opacity-20 group-hover:scale-150 transition-transform duration-1000 ease-in-out">
-                        <svg class="w-full h-full" fill="currentColor" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0 100 C 20 0 50 0 100 100 Z" /></svg>
-                    </div>
-                    <h3 class="relative z-10 text-2xl font-black text-white text-center leading-tight drop-shadow-md group-hover:scale-105 transition-transform duration-500">${c.name}</h3>
-                    ${this.state.isTeacher ? `<button type="button" onclick="event.preventDefault(); Dashboard.openEditClass(${c.id})" class="absolute top-5 right-5 p-2.5 bg-white/20 hover:bg-white text-white hover:text-gray-900 rounded-2xl backdrop-blur-md shadow-lg transition-all duration-300 z-20"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>` : ''}
-                </div>
-                <div class="p-10 flex-1 flex flex-col space-y-8">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-12 h-12 rounded-2xl bg-primary-50 flex items-center justify-center text-primary-600 group-hover:bg-primary-600 group-hover:text-white transition-all duration-500"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg></div>
-                            <div class="min-w-0"><p class="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1.5">Pengajar</p><p class="text-sm font-bold text-gray-700 truncate">${c.teacher.name}</p></div>
+        const updateDOM = () => {
+            // Update grid class for wiggle animation
+            if (this.state.sortMode === 'manual' && this.state.isEditingOrder) {
+                this.elements.classGrid?.classList.add('is-manual-sorting');
+            } else {
+                this.elements.classGrid?.classList.remove('is-manual-sorting');
+            }
+
+            if (courses.length === 0) {
+                this.elements.emptyState?.classList.remove('hidden');
+                this.elements.classGrid.innerHTML = '';
+                return;
+            }
+            this.elements.emptyState?.classList.add('hidden');
+            
+            this.elements.classGrid.innerHTML = courses.map(c => `
+                <div data-id="${c.id}" style="view-transition-name: course-${c.id}" class="group bg-white rounded-[2.5rem] border border-gray-100 shadow-premium hover:shadow-2xl transition-all duration-500 overflow-hidden flex flex-col h-full transform hover:-translate-y-3">
+                    <div class="h-40 relative overflow-hidden flex items-center justify-center p-8" style="background-color: ${c.color || '#0284c7'}">
+                        <div class="absolute inset-0 opacity-20 group-hover:scale-150 transition-transform duration-1000 ease-in-out">
+                            <svg class="w-full h-full" fill="currentColor" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0 100 C 20 0 50 0 100 100 Z" /></svg>
                         </div>
-                        <div class="px-5 py-2.5 bg-green-50 text-green-600 rounded-2xl text-[11px] font-black uppercase tracking-widest border border-green-100/50 shadow-sm">${c.studentCount} Murid</div>
+                        <h3 class="relative z-10 text-2xl font-black text-white text-center leading-tight drop-shadow-md group-hover:scale-105 transition-transform duration-500">${c.name}</h3>
+                        ${this.state.isTeacher ? `<button type="button" onclick="event.preventDefault(); Dashboard.openEditClass(${c.id})" class="absolute top-5 right-5 p-2.5 bg-white/20 hover:bg-white text-white hover:text-gray-900 rounded-2xl backdrop-blur-md shadow-lg transition-all duration-300 z-20"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>` : ''}
                     </div>
-                    <div class="flex items-center p-5 bg-gray-50/50 rounded-2xl border border-gray-100 group-hover:border-primary-100 transition-all duration-500">
-                        <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm mr-4"><svg class="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg></div>
-                        <div><p class="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1.5">Kode Akses</p><p class="text-base font-mono font-black text-primary-600">${c.classCode}</p></div>
-                    </div>
-                    <div class="mt-auto flex items-center space-x-4 pt-6 border-t border-gray-50">
-                        <a href="/kelas/${c.id}" class="flex-1 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white py-5 rounded-[1.75rem] text-center font-bold text-sm transition-all shadow-xl shadow-primary-200 active:scale-95 btn-shine">Buka Kelas</a>
-                        <button type="button" onclick="event.preventDefault(); Dashboard.copyCode('${c.classCode}')" class="p-5 bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-primary-600 rounded-[1.75rem] transition-all active:scale-90 group/btn"><svg class="w-6 h-6 transition-transform group-hover/btn:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m-7 10h7m-7-4h7"/></svg></button>
+                    <div class="p-10 flex-1 flex flex-col space-y-8">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 rounded-2xl bg-primary-50 flex items-center justify-center text-primary-600 group-hover:bg-primary-600 group-hover:text-white transition-all duration-500"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg></div>
+                                <div class="min-w-0"><p class="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1.5">Pengajar</p><p class="text-sm font-bold text-gray-700 truncate">${c.teacher.name}</p></div>
+                            </div>
+                            <div class="px-5 py-2.5 bg-green-50 text-green-600 rounded-2xl text-[11px] font-black uppercase tracking-widest border border-green-100/50 shadow-sm">${c.studentCount} Murid</div>
+                        </div>
+                        <div class="flex items-center p-5 bg-gray-50/50 rounded-2xl border border-gray-100 group-hover:border-primary-100 transition-all duration-500">
+                            <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm mr-4"><svg class="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg></div>
+                            <div><p class="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1.5">Kode Akses</p><p class="text-base font-mono font-black text-primary-600">${c.classCode}</p></div>
+                        </div>
+                        <div class="mt-auto flex items-center space-x-4 pt-6 border-t border-gray-50">
+                            <a href="/kelas/${c.id}" class="flex-1 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white py-5 rounded-[1.75rem] text-center font-bold text-sm transition-all shadow-xl shadow-primary-200 active:scale-95 btn-shine">Buka Kelas</a>
+                            <button type="button" onclick="event.preventDefault(); Dashboard.copyCode('${c.classCode}')" class="p-5 bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-primary-600 rounded-[1.75rem] transition-all active:scale-90 group/btn"><svg class="w-6 h-6 transition-transform group-hover/btn:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m-7 10h7m-7-4h7"/></svg></button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        `).join('');
+            `).join('');
+
+            this.initSortable();
+        };
+
+        // iPhone-style dynamic transition
+        if (document.startViewTransition) {
+            document.startViewTransition(() => updateDOM());
+        } else {
+            updateDOM();
+        }
+    },
+
+    initSortable() {
+        if (!this.elements.classGrid || typeof Sortable === 'undefined') return;
+        
+        if (this.sortableInstance) {
+            this.sortableInstance.destroy();
+            this.sortableInstance = null;
+        }
+
+        // Only enable Sortable if sortMode is 'manual' AND isEditingOrder is true
+        if (this.state.sortMode !== 'manual' || !this.state.isEditingOrder) return;
+
+        this.sortableInstance = new Sortable(this.elements.classGrid, {
+            animation: 350, // Smoother animation like iOS
+            easing: "cubic-bezier(0.16, 1, 0.3, 1)", // Premium snappy feel
+            ghostClass: 'sortable-ghost',
+            chosenClass: 'sortable-chosen',
+            dragClass: 'sortable-drag',
+            forceFallback: false,
+            onStart: () => {
+                this.elements.classGrid.classList.add('is-dragging');
+            },
+            onEnd: () => {
+                this.elements.classGrid.classList.remove('is-dragging');
+                this.handleReorder();
+            }
+        });
+    },
+
+    async handleReorder() {
+        const itemIds = Array.from(this.elements.classGrid.querySelectorAll('[data-id]'))
+            .map(el => parseInt(el.getAttribute('data-id')));
+        
+        try {
+            const res = await fetch('/api/courses/reorder', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ course_ids: itemIds })
+            });
+            const data = await res.json();
+            if (!data.success) {
+                console.error('Reorder failed:', data.message);
+                await this.loadInitialData(); // Revert to server state
+            }
+        } catch (err) {
+            console.error('Reorder error:', err);
+            await this.loadInitialData(); // Revert to server state
+        }
     },
 
     updateStats() {
@@ -544,6 +634,87 @@ const Dashboard = {
             if (data.success) { e.target.reset(); await this.loadInitialData(); alert('Berhasil bergabung!'); }
             else { alert(data.message); }
         } catch (err) { console.error('Enroll error', err); }
+    },
+
+    setSortMode(mode) {
+        if (mode === 'manual') {
+            // Toggle editing state if already in manual mode, or enter manual mode
+            if (this.state.sortMode === 'manual') {
+                this.state.isEditingOrder = !this.state.isEditingOrder;
+            } else {
+                this.state.sortMode = 'manual';
+                this.state.isEditingOrder = true;
+            }
+            localStorage.setItem('courseSortMode', 'manual');
+        } else {
+            this.state.sortMode = mode;
+            this.state.isEditingOrder = false;
+            localStorage.setItem('courseSortMode', mode);
+        }
+        this.updateSortButtons();
+        this.renderCourses();
+    },
+
+    finishSorting() {
+        if (this.state.isEditingOrder) {
+            this.state.isEditingOrder = false;
+            this.updateSortButtons();
+            this.renderCourses();
+            
+            // Subtle status hint
+            this.showStatusHint('Urutan manual disimpan');
+        }
+    },
+
+    showStatusHint(message) {
+        const hint = document.createElement('div');
+        hint.className = 'fixed bottom-12 left-1/2 -translate-x-1/2 bg-gray-900/90 backdrop-blur-xl text-white px-6 py-3.5 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] shadow-2xl animate-premium-entrance z-[100] border border-white/10 flex items-center space-x-3 pointer-events-none';
+        hint.innerHTML = `
+            <div class="w-5 h-5 bg-green-500 rounded-lg flex items-center justify-center">
+                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"/></svg>
+            </div>
+            <span>${message}</span>
+        `;
+        document.body.appendChild(hint);
+        setTimeout(() => {
+            hint.classList.add('opacity-0', 'translate-y-4');
+            hint.style.transition = 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
+            setTimeout(() => hint.remove(), 600);
+        }, 2500);
+    },
+
+    updateSortButtons() {
+        const buttons = document.querySelectorAll('.sort-btn');
+        buttons.forEach(btn => {
+            const mode = btn.id.replace('sort-', '');
+            const manualIcon = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/></svg>`;
+            const checkIcon = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>`;
+
+            if (mode === this.state.sortMode) {
+                btn.classList.add('bg-primary-600', 'text-white', 'shadow-lg', 'shadow-primary-100');
+                btn.classList.remove('text-gray-400', 'hover:text-gray-600');
+                
+                if (mode === 'manual') {
+                    if (this.state.isEditingOrder) {
+                        btn.innerHTML = `${checkIcon}<span class="hidden md:inline">Selesai</span>`;
+                        btn.classList.add('animate-pulse');
+                        btn.title = "Selesai Mengurutkan";
+                    } else {
+                        btn.innerHTML = `${manualIcon}<span class="hidden md:inline">Manual</span>`;
+                        btn.classList.remove('animate-pulse');
+                        btn.title = "Urutan Manual (Drag & Drop)";
+                    }
+                }
+            } else {
+                btn.classList.remove('bg-primary-600', 'text-white', 'shadow-lg', 'shadow-primary-100', 'animate-pulse');
+                btn.classList.add('text-gray-400', 'hover:text-gray-600');
+                
+                if (mode === 'manual') {
+                    btn.innerHTML = `${manualIcon}<span class="hidden md:inline">Manual</span>`;
+                    btn.title = "Urutan Manual (Drag & Drop)";
+                }
+            }
+        });
     },
 
     copyCode(code) {

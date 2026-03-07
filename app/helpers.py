@@ -4,6 +4,7 @@ import re
 import html
 from datetime import datetime, timedelta, timezone
 from flask import request
+from sqlalchemy import func
 from sqlalchemy.orm import joinedload
 
 def get_jakarta_now():
@@ -53,16 +54,25 @@ def generate_class_code(length=6):
             return code
 
 def get_courses_for_user(user, year_id):
-    from app.models import Course, User, UserRole
+    from app.models import Course, User, UserRole, UserCourseOrder
     if not year_id:
         return []
     
     query = Course.query.options(joinedload(Course.teacher))
     
+    # Outer join with UserCourseOrder for the current user
+    query = query.outerjoin(
+        UserCourseOrder, 
+        (UserCourseOrder.course_id == Course.id) & (UserCourseOrder.user_id == user.id)
+    )
+    
     if user.role == UserRole.GURU:
-        return query.filter_by(teacher_id=user.id, academic_year_id=year_id).order_by(Course.name).all()
+        query = query.filter(Course.teacher_id == user.id, Course.academic_year_id == year_id)
     else:
-        return query.join(Course.students).filter(User.id == user.id, Course.academic_year_id == year_id).order_by(Course.name).all()
+        query = query.join(Course.students).filter(User.id == user.id, Course.academic_year_id == year_id)
+        
+    # Order by manual_order first (coalesce NULL to 0), then by name
+    return query.order_by(func.coalesce(UserCourseOrder.manual_order, 0), Course.name).all()
 
 def format_course_data(course, user):
     return {

@@ -4,7 +4,7 @@ from flask import Blueprint, request, jsonify, abort
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 from sqlalchemy.orm import joinedload, selectinload
-from app.models import db, Course, AcademicYear, UserRole, Link, File, Discussion, Post, Like
+from app.models import db, Course, AcademicYear, UserRole, Link, File, Discussion, Post, Like, UserCourseOrder
 from app.helpers import sanitize_text, is_valid_color, is_valid_class_code, generate_class_code, get_courses_for_user, format_course_data, log_activity
 
 courses_bp = Blueprint('courses', __name__, url_prefix='/api')
@@ -430,3 +430,32 @@ def close_discussion(discussion_id):
     db.session.commit()
 
     return jsonify({'success': True, 'message': 'Diskusi telah ditutup'})
+
+
+@courses_bp.route('/courses/reorder', methods=['POST'])
+@login_required
+def api_reorder_courses():
+    data = request.get_json() or {}
+    course_ids = data.get('course_ids', [])
+    
+    if not isinstance(course_ids, list):
+        return jsonify({'success': False, 'message': 'Format data tidak valid'}), 400
+    
+    try:
+        # Delete existing orders for this user
+        UserCourseOrder.query.filter_by(user_id=current_user.id).delete()
+        
+        # Add new orders
+        for index, course_id in enumerate(course_ids):
+            new_order = UserCourseOrder(
+                user_id=current_user.id,
+                course_id=course_id,
+                manual_order=index + 1  # Start from 1
+            )
+            db.session.add(new_order)
+            
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Urutan kelas berhasil diperbarui'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': f'Gagal memperbarui urutan: {str(e)}'}), 500
