@@ -5,7 +5,7 @@ from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 from sqlalchemy.orm import joinedload, selectinload
 from app.models import db, Course, AcademicYear, UserRole, Link, File, Discussion, Post, Like
-from app.helpers import sanitize_text, is_valid_color, is_valid_class_code, generate_class_code, get_courses_for_user, format_course_data
+from app.helpers import sanitize_text, is_valid_color, is_valid_class_code, generate_class_code, get_courses_for_user, format_course_data, log_activity
 
 courses_bp = Blueprint('courses', __name__, url_prefix='/api')
 
@@ -99,9 +99,22 @@ def api_delete_course(course_id):
     if course.teacher_id != current_user.id:
         return jsonify({'success': False, 'message': 'Anda tidak memiliki izin untuk menghapus kelas ini'}), 403
     
+    course_name = course.name
+    teacher_name = current_user.name
+    
     try:
         db.session.delete(course)
         db.session.commit()
+        
+        # Log the activity
+        log_activity(
+            user_id=current_user.id,
+            action='DELETE_COURSE',
+            target_type='Course',
+            target_id=course_id,
+            details=f'Guru "{teacher_name}" menghapus kelas "{course_name}"'
+        )
+        
         return jsonify({'success': True, 'message': 'Kelas berhasil dihapus'})
     except Exception as e:
         db.session.rollback()

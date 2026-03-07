@@ -4,7 +4,7 @@
 
 {% block body %}
 <!-- LOGIN PAGE -->
-<div id="login-page" class="min-h-screen bg-gradient-to-br from-primary-50 via-white to-primary-100 flex items-center justify-center p-4">
+<div id="login-page" class="{% if current_user.is_authenticated %}hidden{% endif %} min-h-screen bg-gradient-to-br from-primary-50 via-white to-primary-100 flex items-center justify-center p-4">
     <div class="w-full max-w-md">
         <!-- Logo & Header -->
         <div class="text-center mb-8 animate-fade-in">
@@ -86,7 +86,7 @@
 </div>
 
 <!-- APP PAGE -->
-<div id="app-page" class="hidden min-h-screen bg-gray-50 flex">
+<div id="app-page" class="{% if not current_user.is_authenticated %}hidden{% endif %} min-h-screen bg-gray-50 flex">
     <!-- Sidebar -->
     {% include '_sidebar.html' %}
 
@@ -350,45 +350,60 @@
 <!-- DELETE CLASS MODAL -->
 <div id="delete-class-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden animate-slide-up border border-red-50">
-        <div class="bg-gradient-to-br from-red-500 to-red-700 px-8 py-10 text-center relative overflow-hidden">
+        <div class="bg-gradient-to-br from-red-600 to-red-800 px-8 py-10 text-center relative overflow-hidden">
             <div class="absolute inset-0 opacity-10">
                 <svg class="w-full h-full" fill="currentColor" viewBox="0 0 100 100" preserveAspectRatio="none">
                     <path d="M0 0 L100 100 L100 0 Z" />
                 </svg>
             </div>
             <div class="relative z-10">
-                <div class="w-20 h-20 bg-white/20 rounded-3xl flex items-center justify-center mx-auto mb-6 backdrop-blur-md shadow-inner">
-                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                <div class="w-24 h-24 bg-white/20 rounded-[2rem] flex items-center justify-center mx-auto mb-6 backdrop-blur-md shadow-inner border border-white/30">
+                    <svg class="w-12 h-12 text-white animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                     </svg>
                 </div>
-                <h3 class="text-2xl font-black text-white mb-2">Hapus Kelas?</h3>
-                <p class="text-red-100 font-medium">Tindakan ini permanen dan tidak bisa dibatalkan.</p>
+                <h3 class="text-3xl font-black text-white mb-2 tracking-tight">Hapus Kelas?</h3>
+                <div class="inline-block px-4 py-1.5 bg-red-900/30 rounded-full border border-red-400/30">
+                    <p class="text-red-100 text-xs font-black uppercase tracking-widest">Aksi Tidak Dapat Diurungkan</p>
+                </div>
             </div>
         </div>
         <div class="p-8">
-            <p class="text-gray-600 text-center mb-6 leading-relaxed">Seluruh data materi, kuis, dan diskusi di dalam kelas ini akan terhapus selamanya.</p>
-            
-            <div class="space-y-4">
-                <p class="text-xs font-black text-gray-400 uppercase tracking-widest text-center">Ketik <span class="text-red-600">"setuju"</span> untuk konfirmasi</p>
-                <input type="text" id="delete-confirm-input" placeholder="..." 
-                    class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-red-500 focus:ring-0 text-center font-bold text-lg transition-all outline-none">
+            <div class="bg-red-50 border-l-4 border-red-500 p-6 rounded-2xl mb-8">
+                <p class="text-red-800 text-sm font-bold leading-relaxed">
+                    PERHATIAN: Menghapus kelas ini akan mengakibatkan seluruh data murid berupa <span class="underline">nilai</span>, <span class="underline">tugas</span>, dan <span class="underline">ulangan</span> hilang secara permanen dari sistem.
+                </p>
             </div>
             
-            <div id="delete-modal-error" class="hidden mt-4 text-red-600 text-sm font-bold text-center bg-red-50 p-3 rounded-xl"></div>
+            <div class="space-y-4">
+                <p class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] text-center">Konfirmasi penghapusan</p>
+                <div class="relative group">
+                    <input type="text" id="delete-confirm-input" placeholder="Ketik 'setuju' di sini..." 
+                        class="w-full px-6 py-5 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-red-500 focus:bg-white focus:ring-4 focus:ring-red-500/10 text-center font-black text-xl transition-all outline-none placeholder:text-gray-300 placeholder:font-bold">
+                    <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none opacity-0 group-focus-within:opacity-100 transition-opacity">
+                        <svg class="w-6 h-6 text-red-200" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="delete-modal-error" class="hidden mt-4 text-red-600 text-sm font-bold text-center bg-red-50 p-3 rounded-xl animate-shake"></div>
         </div>
-        <div class="px-8 pb-8 flex space-x-3">
+        <div class="px-8 pb-8 grid grid-cols-2 gap-4">
             <button type="button" id="delete-cancel-btn" 
-                class="flex-1 px-6 py-4 text-gray-500 bg-gray-100 rounded-2xl hover:bg-gray-200 font-bold transition-all active:scale-95">
+                class="px-6 py-4 text-gray-500 bg-gray-100 rounded-2xl hover:bg-gray-200 font-black text-sm uppercase tracking-widest transition-all active:scale-95">
                 Batal
             </button>
             <button type="button" id="delete-final-btn" disabled
-                class="flex-[2] px-6 py-4 bg-red-600 text-white rounded-2xl font-bold shadow-lg shadow-red-200 transition-all opacity-50 cursor-not-allowed hover:bg-red-700 active:scale-95">
-                Ya, Hapus Kelas
+                class="px-6 py-4 bg-red-600 text-white rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl shadow-red-200 transition-all opacity-50 cursor-not-allowed hover:bg-red-700 hover:shadow-red-300 active:scale-95 disabled:hover:translate-y-0">
+                Hapus Sekarang
             </button>
         </div>
     </div>
 </div>
+
+<!-- UNDO NOTIFICATION TOAST -->
+<div id="delete-toast-container" class="fixed bottom-8 right-8 z-[100] flex flex-col space-y-4 pointer-events-none"></div>
+
 {% endblock %}
 
 {% block extra_scripts %}

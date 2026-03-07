@@ -15,7 +15,7 @@ class Discussion(db.Model):
     created_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=get_jakarta_now)
     closed: Mapped[bool] = mapped_column(db.Boolean, default=False, nullable=False)
 
-    course: Mapped['Course'] = relationship('Course', backref='discussions')
+    course: Mapped['Course'] = relationship('Course', back_populates='discussions')
     user: Mapped['User'] = relationship('User', backref='discussions')
     posts: Mapped[List['Post']] = relationship('Post', back_populates='discussion', cascade='all, delete-orphan')
 

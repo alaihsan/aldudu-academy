@@ -50,6 +50,7 @@ class Quiz(db.Model):
 
     course: Mapped['Course'] = relationship('Course', back_populates='quizzes')
     questions: Mapped[List['Question']] = relationship('Question', back_populates='quiz', lazy='dynamic', cascade="all, delete-orphan")
+    submissions: Mapped[List['QuizSubmission']] = relationship('QuizSubmission', back_populates='quiz', cascade='all, delete-orphan')
 
 class Question(db.Model):
     __tablename__ = 'questions'
@@ -85,7 +86,7 @@ class QuizSubmission(db.Model):
     submitted_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=get_jakarta_now, nullable=False)
     score: Mapped[Optional[float]] = mapped_column(db.Float, nullable=True)
     total_points: Mapped[int] = mapped_column(db.Integer, nullable=False)
-    quiz: Mapped[Quiz] = relationship('Quiz', backref='submissions')
+    quiz: Mapped[Quiz] = relationship('Quiz', back_populates='submissions')
     user: Mapped['User'] = relationship('User', backref='quiz_submissions')
     answers: Mapped[List['Answer']] = relationship('Answer', back_populates='submission', lazy='dynamic', cascade='all, delete-orphan')
 

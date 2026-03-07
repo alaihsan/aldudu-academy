@@ -10,7 +10,8 @@ const Dashboard = {
         courses: [],
         selectedYearId: null,
         editingCourseId: null,
-        isInitialized: false
+        isInitialized: false,
+        pendingDeletes: {} // map of courseId -> {timeout, courseData}
     },
 
     async init() {
@@ -26,6 +27,17 @@ const Dashboard = {
         
         // Attach to window for global access
         window.Dashboard = this;
+
+        // Finalize all pending deletions on page exit/refresh
+        window.addEventListener('beforeunload', () => {
+            Object.keys(this.state.pendingDeletes).forEach(courseId => {
+                // Use keepalive to ensure the request completes after the page is closed
+                fetch(`/api/courses/${courseId}`, { 
+                    method: 'DELETE',
+                    keepalive: true
+                });
+            });
+        });
     },
 
     cacheElements() {
@@ -70,9 +82,12 @@ const Dashboard = {
             deleteConfirmInput: document.getElementById('delete-confirm-input'),
             deleteFinalBtn: document.getElementById('delete-final-btn'),
             deleteCancelBtn: document.getElementById('delete-cancel-btn'),
+            deleteModalError: document.getElementById('delete-modal-error'),
             
             generatedCode: document.querySelector('#generated-class-code span'),
-            closeCodeBtn: document.getElementById('close-code-modal-button')
+            closeCodeBtn: document.getElementById('close-code-modal-button'),
+
+            deleteToastContainer: document.getElementById('delete-toast-container')
         };
     },
 
@@ -168,9 +183,13 @@ const Dashboard = {
     },
 
     renderCourses() {
-        const courses = this.state.courses;
+        // Filter out courses that are pending deletion
+        const pendingIds = Object.keys(this.state.pendingDeletes).map(id => parseInt(id));
+        const courses = this.state.courses.filter(c => !pendingIds.includes(c.id));
+        
         if (courses.length === 0) {
             this.elements.emptyState?.classList.remove('hidden');
+            this.elements.classGrid.innerHTML = '';
             return;
         }
         this.elements.emptyState?.classList.add('hidden');
@@ -360,10 +379,157 @@ const Dashboard = {
 
     async handleDeleteClass() {
         if (this.elements.deleteConfirmInput.value.toLowerCase().trim() !== 'setuju') return;
+        
+        const courseId = this.state.editingCourseId;
+        const course = this.state.courses.find(c => c.id === courseId);
+        if (!course) return;
+
+        // Visual feedback on button
+        this.elements.deleteFinalBtn.disabled = true;
+        this.elements.deleteFinalBtn.innerHTML = `
+            <svg class="animate-spin h-5 w-5 mr-3 inline text-white" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Memproses...
+        `;
+
+        // 1. Close Modal
+        this.elements.deleteClassModal.classList.add('hidden');
+        
+        // 2. Hide from UI immediately
+        this.state.pendingDeletes[courseId] = {
+            courseData: course,
+            timeout: setTimeout(() => this.finalizeDeletion(courseId), 30000)
+        };
+        this.renderCourses();
+        this.updateStats();
+
+        // 3. Show Undo Toast
+        this.showUndoToast(courseId, course.name);
+        
+        // Reset button state for next time
+        this.elements.deleteFinalBtn.innerHTML = 'Hapus Sekarang';
+        this.elements.deleteFinalBtn.disabled = true;
+    },
+
+    showUndoToast(courseId, courseName) {
+        const toastId = `toast-${courseId}`;
+        const toast = document.createElement('div');
+        toast.id = toastId;
+        toast.className = 'pointer-events-auto bg-gray-900/95 backdrop-blur-xl text-white p-8 rounded-[2.5rem] shadow-2xl border border-white/10 flex flex-col space-y-6 min-w-[480px] animate-slide-up-premium';
+        
+        toast.innerHTML = `
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-5 min-w-0">
+                    <div class="relative flex-shrink-0">
+                        <div class="w-14 h-14 bg-red-500/20 text-red-400 rounded-2xl flex items-center justify-center border border-red-500/20">
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        </div>
+                        <div class="absolute -top-2 -right-2 w-8 h-8 bg-primary-600 rounded-full border-4 border-gray-900 flex items-center justify-center shadow-lg">
+                            <span id="countdown-${courseId}" class="text-[10px] font-black text-white">30</span>
+                        </div>
+                    </div>
+                    <div class="min-w-0">
+                        <p class="text-base font-black tracking-tight leading-none mb-1 truncate">Kelas Berhasil Dihapus</p>
+                        <p class="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] truncate">${courseName}</p>
+                    </div>
+                </div>
+                <button onclick="Dashboard.undoDelete(${courseId})" class="flex-shrink-0 ml-6 text-primary-500 hover:text-white font-black text-[11px] uppercase tracking-[0.25em] transition-all active:scale-90 underline underline-offset-8 decoration-2 decoration-primary-500/30 hover:decoration-white">
+                    Batal
+                </button>
+            </div>
+            <div class="space-y-3">
+                <div class="flex justify-between items-center text-[9px] font-black uppercase tracking-[0.2em] text-gray-500 px-1">
+                    <span class="flex items-center"><span class="w-1 h-1 bg-red-500 rounded-full mr-2 animate-pulse"></span>Proses Penghapusan Permanen</span>
+                    <span id="time-text-${courseId}" class="text-primary-500">30 Detik Tersisa</span>
+                </div>
+                <div class="h-1.5 bg-white/5 rounded-full overflow-hidden border border-white/5">
+                    <div id="progress-${courseId}" class="h-full bg-gradient-to-r from-primary-600 to-primary-400 rounded-full transition-all duration-100 ease-linear shadow-[0_0_15px_rgba(59,130,246,0.3)]" style="width: 100%"></div>
+                </div>
+            </div>
+        `;
+
+        this.elements.deleteToastContainer.appendChild(toast);
+
+        // Progress bar and countdown animation
+        let timeLeft = 30000;
+        const interval = 100;
+        const progressBar = document.getElementById(`progress-${courseId}`);
+        const countdownEl = document.getElementById(`countdown-${courseId}`);
+        const timeTextEl = document.getElementById(`time-text-${courseId}`);
+        
+        const timer = setInterval(() => {
+            timeLeft -= interval;
+            const secondsLeft = Math.ceil(timeLeft / 1000);
+            
+            if (countdownEl) countdownEl.textContent = secondsLeft > 0 ? secondsLeft : 0;
+            if (timeTextEl) timeTextEl.textContent = `${secondsLeft > 0 ? secondsLeft : 0} Detik Tersisa`;
+
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                if (progressBar) progressBar.style.width = '0%';
+            } else {
+                if (progressBar) progressBar.style.width = `${(timeLeft / 30000) * 100}%`;
+            }
+        }, interval);
+    },
+
+    undoDelete(courseId) {
+        const pending = this.state.pendingDeletes[courseId];
+        if (!pending) return;
+
+        // Clear timeout
+        clearTimeout(pending.timeout);
+        
+        // Remove from pending
+        delete this.state.pendingDeletes[courseId];
+        
+        // Remove Toast
+        const toast = document.getElementById(`toast-${courseId}`);
+        if (toast) {
+            toast.classList.add('animate-slide-down-premium', 'opacity-0');
+            setTimeout(() => toast.remove(), 500);
+        }
+
+        // Restore UI
+        this.renderCourses();
+        this.updateStats();
+        
+        // Success feedback
+        const undoNotice = document.createElement('div');
+        undoNotice.className = 'fixed top-8 left-1/2 -translate-x-1/2 z-[200] bg-green-600 text-white px-8 py-4 rounded-2xl font-black text-sm shadow-2xl animate-toast-float';
+        undoNotice.textContent = 'Penghapusan Kelas Dibatalkan';
+        document.body.appendChild(undoNotice);
+        setTimeout(() => undoNotice.remove(), 3000);
+    },
+
+    async finalizeDeletion(courseId) {
         try {
-            const res = await fetch(`/api/courses/${this.state.editingCourseId}`, { method: 'DELETE' });
-            if (res.ok) { this.elements.deleteClassModal.classList.add('hidden'); await this.loadInitialData(); }
-        } catch (err) { console.error('Delete error', err); }
+            const res = await fetch(`/api/courses/${courseId}`, { method: 'DELETE' });
+            if (res.ok) {
+                // Remove from pending and permanent state
+                delete this.state.pendingDeletes[courseId];
+                this.state.courses = this.state.courses.filter(c => c.id !== courseId);
+                
+                // Final Toast Removal
+                const toast = document.getElementById(`toast-${courseId}`);
+                if (toast) {
+                    toast.classList.add('opacity-0', 'scale-95');
+                    setTimeout(() => toast.remove(), 500);
+                }
+                
+                this.updateStats();
+            } else {
+                const data = await res.json();
+                throw new Error(data.message || 'Gagal menghapus kelas');
+            }
+        } catch (err) {
+            console.error('Finalize deletion failed', err);
+            // Restore on failure
+            this.undoDelete(courseId);
+            alert(`Gagal menghapus kelas: ${err.message}. Data telah dipulihkan.`);
+        }
     },
 
     async handleEnroll(e) {
