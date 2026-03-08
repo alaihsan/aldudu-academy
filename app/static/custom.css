@@ -158,7 +158,110 @@ body {
     opacity: 1 !important;
 }
 
-/* --- Native Color Picker Customization --- */
+/* --- Safe Area for iPhone/Modern Android --- */
+.safe-area-bottom {
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+}
+
+/* --- Mobile Bottom Sheet Modals --- */
+@media (max-width: 640px) {
+    .modal {
+        align-items: flex-end !important;
+    }
+
+    .modal > div {
+        max-width: 100% !important;
+        width: 100% !important;
+        border-radius: 2.5rem 2.5rem 0 0 !important;
+        margin-bottom: 0 !important;
+        animation: slideUpMobile 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+
+    @keyframes slideUpMobile {
+        from { transform: translateY(100%); }
+        to { transform: translateY(0); }
+    }
+
+    /* Hide horizontal scrollbar for sort buttons */
+    .overflow-x-auto::-webkit-scrollbar {
+        display: none;
+    }
+    .overflow-x-auto {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    /* Adjust page padding for Bottom Menu */
+    .page-transition {
+        padding-bottom: 5rem !important;
+    }
+}
+
+/* --- iPad & Tablet Optimizations --- */
+@media (min-width: 641px) and (max-width: 1023px) {
+    #class-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+}
+
+/* --- Sidebar Transitions --- */
+.sidebar-transition {
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (min-width: 1024px) {
+    .sidebar-collapsed {
+        margin-left: -18rem; /* Width of the sidebar (w-72) */
+    }
+    
+    .main-content-expanded {
+        margin-left: 0 !important;
+    }
+}
+
+/* iPad/Tablet Overlay Style */
+@media (min-width: 641px) and (max-width: 1023px) {
+    .sidebar-overlay {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        z-index: 100;
+        box-shadow: 20px 0 50px rgba(0,0,0,0.1);
+    }
+    
+    .sidebar-hidden-tablet {
+        transform: translateX(-100%);
+    }
+}
+
+/* Toggle Button Styling */
+.sidebar-toggle-btn {
+    width: 32px;
+    height: 32px;
+    background: white;
+    border: 1px border-gray-200;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    display: flex;
+    items-center: center;
+    justify-content: center;
+    color: #4b5563;
+    transition: all 0.2s ease;
+}
+
+.sidebar-toggle-btn:hover {
+    background: #f9fafb;
+    color: #2563eb;
+    transform: scale(1.1);
+}
+
+/* --- Touch Optimizations --- */
+button, a {
+    min-height: 44px; /* iOS Human Interface Guideline */
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
 input[type="color"]::-webkit-color-swatch-wrapper {
     padding: 0;
 }
