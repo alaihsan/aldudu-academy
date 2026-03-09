@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}{{ ticket.ticket_number }} - Super Admin{% endblock %}
+{% block body %}
+<div class="min-h-screen bg-gray-50">
+    <header class="bg-white border-b border-gray-100 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <a href="/superadmin/tickets" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                </a>
+                <div>
+                    <h1 class="text-lg font-black text-gray-900">{{ ticket.ticket_number }}</h1>
+                    <p class="text-[10px] text-gray-400 uppercase tracking-widest font-bold">{{ ticket.school.name }}</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-3">
+                <select id="status-select" onchange="updateStatus()" class="px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold outline-none">
+                    <option value="open" {{ 'selected' if ticket.status.value == 'open' }}>Open</option>
+                    <option value="in_queue" {{ 'selected' if ticket.status.value == 'in_queue' }}>In Queue</option>
+                    <option value="in_progress" {{ 'selected' if ticket.status.value == 'in_progress' }}>In Progress</option>
+                    <option value="waiting_user" {{ 'selected' if ticket.status.value == 'waiting_user' }}>Waiting User</option>
+                    <option value="resolved" {{ 'selected' if ticket.status.value == 'resolved' }}>Resolved</option>
+                    <option value="closed" {{ 'selected' if ticket.status.value == 'closed' }}>Closed</option>
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-4xl mx-auto px-6 py-8">
+        <!-- Ticket Info -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm mb-6">
+            <h2 class="text-xl font-black text-gray-900 mb-2">{{ ticket.title }}</h2>
+            <div class="flex items-center space-x-3 mb-4">
+                <span class="text-xs font-bold text-gray-400">{{ ticket.user.name }}</span>
+                <span class="text-xs text-gray-300">|</span>
+                <span class="text-xs font-bold text-gray-400">{{ ticket.category.value }}</span>
+                <span class="text-xs text-gray-300">|</span>
+                <span class="text-xs font-bold text-gray-400">{{ ticket.created_at.strftime('%d/%m/%Y %H:%M') }}</span>
+            </div>
+            <div class="bg-gray-50 rounded-xl p-4">
+                <p class="text-sm text-gray-600 whitespace-pre-line">{{ ticket.description }}</p>
+            </div>
+        </div>
+
+        <!-- Messages Thread -->
+        <div class="space-y-4 mb-6" id="messages-container">
+            {% for msg in ticket.messages.all() %}
+            <div class="bg-white rounded-2xl p-5 shadow-sm {{ 'border-l-4 border-yellow-400' if msg.is_internal else '' }}">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-black text-gray-900">{{ msg.user.name }}
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ml-1 {{ 'bg-indigo-100 text-indigo-600' if msg.user.role.value == 'super_admin' else 'bg-gray-100 text-gray-500' }}">{{ msg.user.role.value }}</span>
+                        {% if msg.is_internal %}<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-600 ml-1">Internal</span>{% endif %}
+                    </span>
+                    <span class="text-xs text-gray-400">{{ msg.created_at.strftime('%d/%m %H:%M') }}</span>
+                </div>
+                <p class="text-sm text-gray-600 whitespace-pre-line">{{ msg.content }}</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Reply Form -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm">
+            <h4 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-3">Balas Ticket</h4>
+            <form id="reply-form" class="space-y-4">
+                <textarea id="reply-content" rows="3" class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:border-indigo-500 outline-none text-sm font-bold transition-all" required placeholder="Tulis balasan..."></textarea>
+                <div class="flex items-center justify-between">
+                    <label class="flex items-center space-x-2 cursor-pointer">
+                        <input type="checkbox" id="reply-internal" class="rounded">
+                        <span class="text-xs font-bold text-gray-400">Catatan Internal (tidak terlihat user)</span>
+                    </label>
+                    <button type="submit" class="px-6 py-2.5 bg-indigo-600 text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-indigo-700 transition-all active:scale-95">Kirim</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('reply-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const content = document.getElementById('reply-content').value;
+    const isInternal = document.getElementById('reply-internal').checked;
+
+    const res = await fetch(`/superadmin/api/tickets/{{ ticket.id }}/reply`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content, is_internal: isInternal })
+    });
+    const data = await res.json();
+    if (data.success) {
+        location.reload();
+    }
+});
+
+async function updateStatus() {
+    const status = document.getElementById('status-select').value;
+    const res = await fetch(`/superadmin/api/tickets/{{ ticket.id }}/status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+    });
+    const data = await res.json();
+    if (!data.success) {
+        Swal.fire('Error', data.message, 'error');
+        location.reload();
+    }
+}
+</script>
+{% endblock %}

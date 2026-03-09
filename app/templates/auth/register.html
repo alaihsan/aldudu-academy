@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block title %}Daftar Sekolah - Aldudu Academy{% endblock %}
+{% block body %}
+<div class="min-h-screen flex items-center justify-center px-4 py-12">
+    <div class="w-full max-w-lg">
+        <div class="text-center mb-8 animate-premium-entrance">
+            <h1 class="text-3xl font-black text-gray-900">Aldudu Academy</h1>
+            <p class="text-sm text-gray-400 uppercase tracking-widest mt-1">Daftarkan Sekolah Anda</p>
+        </div>
+
+        <div class="bg-white rounded-3xl shadow-xl p-8 animate-premium-entrance delay-100">
+            <form id="register-form" class="space-y-5">
+                <div class="border-b border-gray-100 pb-4 mb-4">
+                    <h3 class="text-xs font-black text-gray-400 uppercase tracking-widest">Info Sekolah</h3>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Nama Sekolah</label>
+                    <input type="text" id="school-name" class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:border-indigo-500 outline-none text-sm font-bold transition-all" required placeholder="SMKN 1 Jakarta">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Slug URL</label>
+                    <div class="flex items-center bg-gray-50 border border-gray-100 rounded-xl overflow-hidden">
+                        <span class="px-3 text-xs text-gray-400 font-mono">/s/</span>
+                        <input type="text" id="school-slug" class="flex-1 px-2 py-3 bg-transparent outline-none text-sm font-bold" required placeholder="smkn1-jakarta" pattern="[a-z0-9-]+">
+                    </div>
+                    <p class="text-[10px] text-gray-400 mt-1">Huruf kecil, angka, dan strip saja</p>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Email Sekolah</label>
+                    <input type="email" id="school-email" class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:border-indigo-500 outline-none text-sm font-bold transition-all" required placeholder="info@smkn1.sch.id">
+                </div>
+
+                <div class="border-b border-gray-100 pb-4 mb-4 mt-6">
+                    <h3 class="text-xs font-black text-gray-400 uppercase tracking-widest">Akun Admin</h3>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Nama Admin</label>
+                    <input type="text" id="admin-name" class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:border-indigo-500 outline-none text-sm font-bold transition-all" required placeholder="Nama lengkap">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Email Admin</label>
+                    <input type="email" id="admin-email" class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:border-indigo-500 outline-none text-sm font-bold transition-all" required placeholder="admin@email.com">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Password</label>
+                    <input type="password" id="admin-password" class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:border-indigo-500 outline-none text-sm font-bold transition-all" required minlength="6" placeholder="Minimal 6 karakter">
+                </div>
+
+                <div id="register-error" class="hidden bg-red-50 text-red-600 text-sm font-bold p-3 rounded-xl"></div>
+
+                <button type="submit" id="register-btn" class="w-full py-3.5 bg-indigo-600 text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-indigo-700 transition-all active:scale-95 shadow-lg shadow-indigo-100">
+                    Daftarkan Sekolah
+                </button>
+            </form>
+
+            <div class="mt-6 text-center">
+                <a href="/login" class="text-sm text-indigo-600 font-bold hover:underline">Sudah punya akun? Login</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('register-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('register-btn');
+    const errorEl = document.getElementById('register-error');
+    const original = btn.innerText;
+
+    btn.disabled = true;
+    btn.innerText = 'MENDAFTARKAN...';
+    errorEl.classList.add('hidden');
+
+    try {
+        const res = await fetch('/api/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                school_name: document.getElementById('school-name').value,
+                slug: document.getElementById('school-slug').value,
+                school_email: document.getElementById('school-email').value,
+                admin_name: document.getElementById('admin-name').value,
+                admin_email: document.getElementById('admin-email').value,
+                password: document.getElementById('admin-password').value,
+            })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            document.querySelector('.bg-white').innerHTML = `
+                <div class="text-center py-8">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-black text-gray-900 mb-2">Registrasi Berhasil!</h3>
+                    <p class="text-sm text-gray-500 mb-6">Silakan cek email Anda untuk verifikasi akun.</p>
+                    <a href="/login" class="text-indigo-600 font-bold text-sm hover:underline">Ke halaman login</a>
+                </div>
+            `;
+        } else {
+            errorEl.textContent = data.message;
+            errorEl.classList.remove('hidden');
+        }
+    } catch (err) {
+        errorEl.textContent = 'Terjadi kesalahan koneksi.';
+        errorEl.classList.remove('hidden');
+    } finally {
+        btn.disabled = false;
+        btn.innerText = original;
+    }
+});
+
+// Auto-generate slug from school name
+document.getElementById('school-name').addEventListener('input', (e) => {
+    const slug = e.target.value.toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .substring(0, 100);
+    document.getElementById('school-slug').value = slug;
+});
+</script>
+{% endblock %}

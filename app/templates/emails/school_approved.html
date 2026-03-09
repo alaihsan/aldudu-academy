@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"></head>
+<body style="font-family: 'Inter', Arial, sans-serif; background-color: #f8fafc; padding: 40px 20px;">
+    <div style="max-width: 480px; margin: 0 auto; background: white; border-radius: 16px; padding: 40px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+        <div style="text-align: center; margin-bottom: 32px;">
+            <h1 style="color: #1e1b4b; font-size: 24px; font-weight: 800; margin: 0;">Aldudu Academy</h1>
+            <p style="color: #10b981; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; margin-top: 4px; font-weight: 700;">Sekolah Disetujui</p>
+        </div>
+
+        <p style="color: #334155; font-size: 15px; line-height: 1.6;">
+            Halo <strong>{{ admin_name }}</strong>,
+        </p>
+        <p style="color: #334155; font-size: 15px; line-height: 1.6;">
+            Selamat! Sekolah <strong>{{ school_name }}</strong> telah disetujui dan sekarang aktif di Aldudu Academy.
+        </p>
+        <p style="color: #334155; font-size: 15px; line-height: 1.6;">
+            Anda sekarang bisa login dan mulai mengelola sekolah Anda.
+        </p>
+
+        <div style="text-align: center; margin: 32px 0;">
+            <a href="{{ login_url }}" style="display: inline-block; background: #10b981; color: white; text-decoration: none; padding: 14px 32px; border-radius: 12px; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">
+                Login Sekarang
+            </a>
+        </div>
+
+        <div style="background: #f0fdf4; border-radius: 12px; padding: 16px; margin: 24px 0;">
+            <p style="color: #166534; font-size: 13px; margin: 0;"><strong>URL Sekolah:</strong> /s/{{ school_slug }}/dashboard</p>
+        </div>
+
+        <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;">
+        <p style="color: #cbd5e1; font-size: 11px; text-align: center;">Aldudu Academy</p>
+    </div>
+</body>
+</html>
