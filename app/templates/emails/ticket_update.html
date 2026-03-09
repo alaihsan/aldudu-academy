@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"></head>
+<body style="font-family: 'Inter', Arial, sans-serif; background-color: #f8fafc; padding: 40px 20px;">
+    <div style="max-width: 480px; margin: 0 auto; background: white; border-radius: 16px; padding: 40px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+        <div style="text-align: center; margin-bottom: 32px;">
+            <h1 style="color: #1e1b4b; font-size: 24px; font-weight: 800; margin: 0;">Aldudu Academy</h1>
+            <p style="color: #6366f1; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; margin-top: 4px; font-weight: 700;">Update Ticket</p>
+        </div>
+
+        <div style="background: #eef2ff; border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+            <p style="color: #4338ca; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 4px;">{{ ticket_number }}</p>
+            <p style="color: #1e1b4b; font-size: 16px; font-weight: 700; margin: 0;">{{ ticket_title }}</p>
+        </div>
+
+        {% if is_resolved %}
+        <div style="background: #f0fdf4; border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+            <p style="color: #166534; font-size: 14px; font-weight: 600; margin: 0;">Ticket telah diselesaikan.</p>
+        </div>
+        {% endif %}
+
+        <div style="background: #f8fafc; border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+            <p style="color: #475569; font-size: 14px; line-height: 1.6; margin: 0; white-space: pre-line;">{{ message_content }}</p>
+        </div>
+
+        <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;">
+        <p style="color: #cbd5e1; font-size: 11px; text-align: center;">Aldudu Academy</p>
+    </div>
+</body>
+</html>

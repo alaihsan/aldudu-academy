@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Kelola Sekolah - Super Admin{% endblock %}
+{% block body %}
+<div class="min-h-screen bg-gray-50">
+    <header class="bg-white border-b border-gray-100 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div>
+                <h1 class="text-xl font-black text-gray-900">Kelola Sekolah</h1>
+                <p class="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Super Admin</p>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="/superadmin/dashboard" class="text-sm font-bold text-gray-500 hover:text-indigo-600">Dashboard</a>
+                <a href="/superadmin/tickets" class="text-sm font-bold text-gray-500 hover:text-indigo-600">Tickets</a>
+                <button onclick="handleLogout()" class="text-sm font-bold text-red-500 hover:text-red-600">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-6 py-8">
+        <!-- Filter Tabs -->
+        <div class="flex space-x-2 mb-6">
+            <button onclick="loadSchools()" class="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest bg-indigo-600 text-white" id="tab-all">Semua</button>
+            <button onclick="loadSchools('verified')" class="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest bg-gray-100 text-gray-500 hover:bg-gray-200" id="tab-verified">Pending Approval</button>
+            <button onclick="loadSchools('active')" class="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest bg-gray-100 text-gray-500 hover:bg-gray-200" id="tab-active">Aktif</button>
+            <button onclick="loadSchools('suspended')" class="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest bg-gray-100 text-gray-500 hover:bg-gray-200" id="tab-suspended">Suspended</button>
+        </div>
+
+        <div id="schools-list" class="space-y-4"></div>
+    </div>
+</div>
+
+<script>
+let currentFilter = null;
+
+async function loadSchools(status) {
+    currentFilter = status;
+    const url = status ? `/superadmin/api/schools?status=${status}` : '/superadmin/api/schools';
+    const res = await fetch(url);
+    const data = await res.json();
+
+    // Update tab styles
+    document.querySelectorAll('[id^="tab-"]').forEach(t => {
+        t.className = 'px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest bg-gray-100 text-gray-500 hover:bg-gray-200';
+    });
+    const activeTab = document.getElementById(`tab-${status || 'all'}`);
+    if (activeTab) activeTab.className = 'px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest bg-indigo-600 text-white';
+
+    const list = document.getElementById('schools-list');
+    if (!data.schools.length) {
+        list.innerHTML = '<p class="text-sm text-gray-400 text-center py-8">Tidak ada sekolah ditemukan</p>';
+        return;
+    }
+
+    list.innerHTML = data.schools.map(s => `
+        <div class="bg-white rounded-2xl p-6 shadow-sm flex items-center justify-between">
+            <div>
+                <h4 class="font-black text-gray-900">${s.name}</h4>
+                <p class="text-xs text-gray-400 mt-1">Slug: /s/${s.slug} | Email: ${s.admin_email}</p>
+                <span class="inline-block mt-2 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${statusBadge(s.status)}">
+                    ${s.status}
+                </span>
+            </div>
+            <div class="flex space-x-2">
+                ${s.status === 'verified' ? `<button onclick="approveSchool(${s.id})" class="px-4 py-2 bg-green-500 text-white rounded-xl text-xs font-black uppercase hover:bg-green-600 transition-all">Approve</button>` : ''}
+                ${s.status === 'active' ? `<button onclick="suspendSchool(${s.id})" class="px-4 py-2 bg-red-100 text-red-600 rounded-xl text-xs font-black uppercase hover:bg-red-200 transition-all">Suspend</button>` : ''}
+                ${s.status === 'suspended' ? `<button onclick="reactivateSchool(${s.id})" class="px-4 py-2 bg-green-100 text-green-600 rounded-xl text-xs font-black uppercase hover:bg-green-200 transition-all">Reactivate</button>` : ''}
+            </div>
+        </div>
+    `).join('');
+}
+
+function statusBadge(status) {
+    switch(status) {
+        case 'active': return 'bg-green-50 text-green-600';
+        case 'verified': return 'bg-yellow-50 text-yellow-600';
+        case 'pending': return 'bg-gray-100 text-gray-500';
+        case 'suspended': return 'bg-red-50 text-red-600';
+        default: return 'bg-gray-100 text-gray-500';
+    }
+}
+
+async function approveSchool(id) {
+    if (!await window.ask('Approve Sekolah?', 'Sekolah akan diaktifkan dan admin akan menerima email notifikasi.')) return;
+    const res = await fetch(`/superadmin/api/schools/${id}/approve`, { method: 'POST' });
+    const data = await res.json();
+    if (data.success) loadSchools(currentFilter);
+}
+
+async function suspendSchool(id) {
+    if (!await window.ask('Suspend Sekolah?', 'Semua user di sekolah ini tidak akan bisa login.', 'warning')) return;
+    const res = await fetch(`/superadmin/api/schools/${id}/suspend`, { method: 'POST' });
+    const data = await res.json();
+    if (data.success) loadSchools(currentFilter);
+}
+
+async function reactivateSchool(id) {
+    const res = await fetch(`/superadmin/api/schools/${id}/reactivate`, { method: 'POST' });
+    const data = await res.json();
+    if (data.success) loadSchools(currentFilter);
+}
+
+async function handleLogout() {
+    await fetch('/api/logout', { method: 'POST' });
+    window.location.href = '/login';
+}
+
+document.addEventListener('DOMContentLoaded', () => loadSchools());
+</script>
+{% endblock %}

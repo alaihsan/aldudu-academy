@@ -2,39 +2,31 @@ import os
 from typing import Optional, Dict
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
-from flask_login import LoginManager
-from flask_migrate import Migrate
 from flask_talisman import Talisman
 
-from .models import db, User
-from .blueprints import create_blueprints
+from .extensions import db, login_manager, mail, migrate, cache
+from .config import config_by_name
 
-migrate = Migrate()
 
 def create_app(test_config: Optional[Dict] = None) -> Flask:
-    """
-    Create and configure the Flask application.
-    """
     load_dotenv()
     app = Flask(__name__, instance_relative_config=True)
 
-    # Load secret key
+    # Load config
+    env = os.environ.get('FLASK_ENV', 'development')
+    app.config.from_object(config_by_name.get(env, config_by_name['development']))
+
+    # Override with instance config if present
+    app.config.from_pyfile('config.py', silent=True)
+
+    # Override with env vars
     secret = os.environ.get('FLASK_SECRET_KEY')
     if secret:
         app.config['SECRET_KEY'] = secret
-    else:
-        app.config.from_pyfile('config.py', silent=True)
-        if not app.config.get('SECRET_KEY'):
-            app.config['SECRET_KEY'] = 'dev-secret-change-me'
 
-    # Database configuration
     database_url = os.environ.get('DATABASE_URL')
-    if not database_url:
-        # Fallback to sqlite if not set for dev
-        database_url = 'sqlite:///dev.db'
-    
-    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    if database_url:
+        app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 
     if test_config:
         app.config.update(test_config)
@@ -42,6 +34,19 @@ def create_app(test_config: Optional[Dict] = None) -> Flask:
     # Initialize extensions
     db.init_app(app)
     migrate.init_app(app, db)
+    login_manager.init_app(app)
+    mail.init_app(app)
+    cache.init_app(app)
+
+    login_manager.login_view = 'main.index'
+
+    @login_manager.user_loader
+    def load_user(user_id: str):
+        from .models import User
+        try:
+            return db.session.get(User, int(user_id))
+        except (ValueError, TypeError):
+            return None
 
     # Configure Talisman
     csp = {
@@ -68,18 +73,12 @@ def create_app(test_config: Optional[Dict] = None) -> Flask:
     is_prod = os.environ.get('FLASK_ENV') == 'production'
     Talisman(app, content_security_policy=csp, force_https=is_prod)
 
-    login_manager = LoginManager()
-    login_manager.init_app(app)
-    login_manager.login_view = 'main.index'
-
-    @login_manager.user_loader
-    def load_user(user_id: str) -> Optional[User]:
-        try:
-            return db.session.get(User, int(user_id))
-        except (ValueError, TypeError):
-            return None
+    # Register tenant middleware
+    from .middleware import register_middleware
+    register_middleware(app)
 
     # Register blueprints
+    from .blueprints import create_blueprints
     for bp in create_blueprints():
         app.register_blueprint(bp)
 
@@ -94,6 +93,8 @@ def create_app(test_config: Optional[Dict] = None) -> Flask:
 
     @app.errorhandler(404)
     def not_found(e):
+        if request.path.startswith('/api/') or request.path.startswith('/superadmin/api/'):
+            return jsonify({'success': False, 'message': str(e.description) or 'Sumber daya tidak ditemukan'}), 404
         return jsonify({'success': False, 'message': str(e.description) or 'Sumber daya tidak ditemukan'}), 404
 
     @app.errorhandler(500)
@@ -105,14 +106,37 @@ def create_app(test_config: Optional[Dict] = None) -> Flask:
     def healthz():
         return jsonify({'status': 'ok'}), 200
 
-    # CLI: initialize DB
+    # CLI commands
     @app.cli.command('init-db')
     def init_db_command():
-        from .models import User, AcademicYear, Course, UserRole
-        from .helpers import generate_class_code
-        
         db.create_all()
-        # Logika sample users bisa ditambahkan di sini jika perlu
         print('Initialized the database.')
+
+    @app.cli.command('create-superadmin')
+    def create_superadmin_command():
+        from .models import User, UserRole
+        import click
+
+        email = click.prompt('Email')
+        name = click.prompt('Name')
+        password = click.prompt('Password', hide_input=True, confirmation_prompt=True)
+
+        existing = User.query.filter_by(email=email).first()
+        if existing:
+            print(f'User with email {email} already exists.')
+            return
+
+        user = User(
+            name=name,
+            email=email,
+            role=UserRole.SUPER_ADMIN,
+            is_active=True,
+            email_verified=True,
+            school_id=None,
+        )
+        user.set_password(password)
+        db.session.add(user)
+        db.session.commit()
+        print(f'Super Admin "{name}" created successfully.')
 
     return app

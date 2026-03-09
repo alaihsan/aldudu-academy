@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}{{ ticket.ticket_number }} - Aldudu Academy{% endblock %}
+{% block body %}
+{% include '_sidebar.html' %}
+<div class="lg:ml-72 p-6">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="flex items-center space-x-4 mb-6">
+            <a href="javascript:history.back()" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+            </a>
+            <div>
+                <h2 class="text-xl font-black text-gray-900">{{ ticket.ticket_number }}</h2>
+                <span class="text-xs font-bold text-gray-400 uppercase">{{ ticket.status.value | replace('_', ' ') }}</span>
+            </div>
+        </div>
+
+        <!-- Ticket Info -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm mb-6">
+            <h3 class="text-lg font-black text-gray-900 mb-2">{{ ticket.title }}</h3>
+            <div class="flex items-center space-x-3 text-xs text-gray-400 mb-4">
+                <span>{{ ticket.category.value }}</span>
+                <span>|</span>
+                <span>{{ ticket.priority.value }}</span>
+                <span>|</span>
+                <span>{{ ticket.created_at.strftime('%d/%m/%Y %H:%M') }}</span>
+            </div>
+            <div class="bg-gray-50 rounded-xl p-4">
+                <p class="text-sm text-gray-600 whitespace-pre-line">{{ ticket.description }}</p>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        <div class="space-y-4 mb-6" id="messages">
+            {% for msg in ticket.messages.all() %}
+            {% if not msg.is_internal %}
+            <div class="bg-white rounded-2xl p-5 shadow-sm">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-black text-gray-900">{{ msg.user.name }}
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ml-1 {{ 'bg-indigo-100 text-indigo-600' if msg.user.role.value == 'super_admin' else 'bg-gray-100 text-gray-500' }}">
+                            {{ 'Support' if msg.user.role.value == 'super_admin' else msg.user.role.value }}
+                        </span>
+                    </span>
+                    <span class="text-xs text-gray-400">{{ msg.created_at.strftime('%d/%m %H:%M') }}</span>
+                </div>
+                <p class="text-sm text-gray-600 whitespace-pre-line">{{ msg.content }}</p>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+
+        <!-- Reply Form (only if ticket is not closed/resolved) -->
+        {% if ticket.status.value not in ['closed', 'resolved'] %}
+        <div class="bg-white rounded-2xl p-6 shadow-sm">
+            <form id="reply-form" class="space-y-4">
+                <textarea id="reply-content" rows="3" class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:border-indigo-500 outline-none text-sm font-bold" required placeholder="Tulis balasan..."></textarea>
+                <div class="flex justify-end">
+                    <button type="submit" class="px-6 py-2.5 bg-indigo-600 text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-indigo-700 transition-all active:scale-95">Kirim</button>
+                </div>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+const SLUG = window.location.pathname.split('/')[2];
+
+{% if ticket.status.value not in ['closed', 'resolved'] %}
+document.getElementById('reply-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const content = document.getElementById('reply-content').value;
+    const res = await fetch(`/s/${SLUG}/api/tickets/{{ ticket.id }}/message`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content })
+    });
+    const data = await res.json();
+    if (data.success) location.reload();
+});
+{% endif %}
+</script>
+{% endblock %}
