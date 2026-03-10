@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify, abort
 from flask_login import login_required, current_user
 from app.models import db, Post, Discussion
 from app.helpers import sanitize_text
+from app.tenant import get_school_id_or_abort, verify_course_in_school
 
 discussion_bp = Blueprint('discussion', __name__, url_prefix='/api')
 
@@ -14,6 +15,9 @@ def api_delete_post(post_id):
 
     discussion = post.discussion
     course = discussion.course
+
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(course, school_id)
 
     is_teacher = current_user.id == course.teacher_id
     is_discussion_creator = current_user.id == discussion.user_id
@@ -32,6 +36,9 @@ def api_edit_post(post_id):
     post = db.session.get(Post, post_id)
     if not post:
         abort(404, description="Postingan tidak ditemukan.")
+
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(post.discussion.course, school_id)
 
     if current_user.id != post.user_id:
         abort(403, description="Anda tidak memiliki izin untuk mengedit postingan ini.")

@@ -1,9 +1,10 @@
 from flask import Blueprint, render_template, request, jsonify, abort
 import re
 from flask_login import login_required, current_user
-from app.models import db, User, UserRole, ActivityLog, Course, QuizSubmission
+from app.models import db, User, UserRole, ActivityLog, Course, AcademicYear, QuizSubmission, Quiz
 from app.helpers import log_activity, sanitize_text, is_valid_email, generate_random_password
 from sqlalchemy import func
+from app.tenant import get_school_id_or_abort
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 
@@ -12,26 +13,30 @@ admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 def admin_required():
     if current_user.role != UserRole.ADMIN:
         abort(403)
+    if not current_user.school_id:
+        abort(403, description='Akun admin tidak terhubung ke sekolah')
 
 @admin_bp.route('/dashboard')
 def dashboard():
-    # Statistics
+    school_id = current_user.school_id
+    # Statistics - filtered by school
     stats = {
-        'total_guru': User.query.filter_by(role=UserRole.GURU).count(),
-        'total_murid': User.query.filter_by(role=UserRole.MURID).count(),
-        'total_courses': Course.query.count(),
-        'total_submissions': QuizSubmission.query.count()
+        'total_guru': User.query.filter_by(role=UserRole.GURU, school_id=school_id).count(),
+        'total_murid': User.query.filter_by(role=UserRole.MURID, school_id=school_id).count(),
+        'total_courses': Course.query.join(AcademicYear).filter(AcademicYear.school_id == school_id).count(),
+        'total_submissions': QuizSubmission.query.join(Quiz).join(Course).join(AcademicYear).filter(AcademicYear.school_id == school_id).count()
     }
-    
-    # Recent Activities
-    recent_logs = ActivityLog.query.order_by(ActivityLog.created_at.desc()).limit(20).all()
-    
+
+    # Recent Activities - filtered by school
+    recent_logs = ActivityLog.query.filter_by(school_id=school_id).order_by(ActivityLog.created_at.desc()).limit(20).all()
+
     return render_template('admin_dashboard.html', stats=stats, recent_logs=recent_logs)
 
 @admin_bp.route('/users')
 def user_management():
-    gurus = User.query.filter_by(role=UserRole.GURU).order_by(User.name).all()
-    murids = User.query.filter_by(role=UserRole.MURID).order_by(User.name).all()
+    school_id = current_user.school_id
+    gurus = User.query.filter_by(role=UserRole.GURU, school_id=school_id).order_by(User.name).all()
+    murids = User.query.filter_by(role=UserRole.MURID, school_id=school_id).order_by(User.name).all()
     return render_template('admin_users.html', gurus=gurus, murids=murids)
 
 @admin_bp.route('/api/users/bulk-import', methods=['POST'])
@@ -91,7 +96,7 @@ def bulk_import_users():
                 continue
             
             password = generate_random_password(4)
-            user = User(name=entry['name'], email=entry['email'], role=role)
+            user = User(name=entry['name'], email=entry['email'], role=role, school_id=current_user.school_id)
             user.set_password(password)
             db.session.add(user)
             
@@ -115,7 +120,10 @@ def reset_password(user_id):
     user = db.session.get(User, user_id)
     if not user:
         return jsonify({'success': False, 'message': 'User tidak ditemukan'}), 404
-        
+
+    if user.school_id != current_user.school_id:
+        return jsonify({'success': False, 'message': 'Tidak memiliki izin'}), 403
+
     data = request.get_json() or {}
     new_password = data.get('password', '').strip()
     
@@ -133,7 +141,10 @@ def toggle_user_status(user_id):
     user = db.session.get(User, user_id)
     if not user:
         return jsonify({'success': False, 'message': 'User tidak ditemukan'}), 404
-        
+
+    if user.school_id != current_user.school_id:
+        return jsonify({'success': False, 'message': 'Tidak memiliki izin'}), 403
+
     if user.id == current_user.id:
         return jsonify({'success': False, 'message': 'Anda tidak dapat menonaktifkan akun sendiri'}), 400
         

@@ -11,17 +11,25 @@ def get_jakarta_now():
     """Returns current time in Jakarta (WIB, UTC+7)."""
     return datetime.now(timezone(timedelta(hours=7)))
 
-def log_activity(user_id, action, target_type=None, target_id=None, details=None):
+def log_activity(user_id, action, target_type=None, target_id=None, details=None, school_id=None):
     """Logs user activity in the database."""
     from app.models import db, ActivityLog
     try:
+        # Auto-detect school_id from user if not provided
+        if school_id is None:
+            from app.models import User
+            user = db.session.get(User, user_id)
+            if user:
+                school_id = user.school_id
+
         log = ActivityLog(
             user_id=user_id,
             action=action,
             target_type=target_type,
             target_id=target_id,
             details=details,
-            ip_address=request.remote_addr if request else '127.0.0.1'
+            ip_address=request.remote_addr if request else '127.0.0.1',
+            school_id=school_id
         )
         db.session.add(log)
         db.session.commit()

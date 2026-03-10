@@ -4,13 +4,14 @@ from app.models import Ticket, TicketStatus, TicketMessage, UserRole
 from app.helpers import get_jakarta_now
 
 
-def generate_ticket_number():
+def generate_ticket_number(school_id=None):
     now = get_jakarta_now()
     year = now.strftime('%Y')
 
-    last_ticket = Ticket.query.filter(
-        Ticket.ticket_number.like(f'TKT-{year}-%')
-    ).order_by(Ticket.id.desc()).first()
+    query = Ticket.query.filter(Ticket.ticket_number.like(f'TKT-{year}-%'))
+    if school_id:
+        query = query.filter(Ticket.school_id == school_id)
+    last_ticket = query.order_by(Ticket.id.desc()).first()
 
     if last_ticket:
         try:
@@ -69,6 +70,7 @@ def get_queue_position(ticket):
 
     count = Ticket.query.filter(
         Ticket.status.in_([TicketStatus.OPEN, TicketStatus.IN_QUEUE]),
+        Ticket.school_id == ticket.school_id,
         Ticket.created_at < ticket.created_at,
     ).count()
 
