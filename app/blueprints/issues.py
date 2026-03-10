@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify, abort
 from flask_login import login_required, current_user
 from app.models import db, Issue, IssueStatus, IssuePriority, UserRole
 from app.helpers import sanitize_text
+from app.tenant import get_school_id_or_abort
 
 issues_bp = Blueprint('issues', __name__, url_prefix='/api')
 
@@ -9,12 +10,13 @@ issues_bp = Blueprint('issues', __name__, url_prefix='/api')
 @login_required
 def get_issues():
     status_filter = request.args.get('status')
-    
-    # Murid only see their own, Admin/Guru see all
+    school_id = get_school_id_or_abort()
+
+    # Murid only see their own, Admin/Guru see their school's
     if current_user.role == UserRole.MURID:
-        query = Issue.query.filter(Issue.user_id == current_user.id)
+        query = Issue.query.filter(Issue.user_id == current_user.id, Issue.school_id == school_id)
     else:
-        query = Issue.query
+        query = Issue.query.filter(Issue.school_id == school_id)
     
     if status_filter == 'resolved':
         query = query.filter(Issue.status == IssueStatus.RESOLVED)
@@ -44,11 +46,13 @@ def create_issue():
     except KeyError:
         priority = IssuePriority.MEDIUM
         
+    school_id = get_school_id_or_abort()
     new_issue = Issue(
         title=title,
         description=description,
         priority=priority,
-        user_id=current_user.id
+        user_id=current_user.id,
+        school_id=school_id
     )
     
     db.session.add(new_issue)
@@ -66,10 +70,11 @@ def update_issue(issue_id):
     issue = db.session.get(Issue, issue_id)
     if not issue:
         abort(404)
-        
-    # Only owner or Admin/Guru can update status? 
-    # Usually owner can close, but Guru/Admin manages the resolution.
-    # For now, allow owner to edit content, but only Guru/Admin can change status to In Progress etc.
+
+    school_id = get_school_id_or_abort()
+    if issue.school_id != school_id:
+        abort(403)
+
     is_owner = issue.user_id == current_user.id
     is_privileged = current_user.role in [UserRole.GURU, UserRole.ADMIN]
     
@@ -106,7 +111,11 @@ def delete_issue(issue_id):
     issue = db.session.get(Issue, issue_id)
     if not issue:
         abort(404)
-        
+
+    school_id = get_school_id_or_abort()
+    if issue.school_id != school_id:
+        abort(403)
+
     # Only owner or Admin can delete
     if issue.user_id != current_user.id and current_user.role != UserRole.ADMIN:
         return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403

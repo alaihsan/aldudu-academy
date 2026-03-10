@@ -18,15 +18,21 @@ quiz_bp = Blueprint('quiz', __name__, url_prefix='/api')
 # --- Helper Functions ---
 
 def get_quiz_or_abort(quiz_id, check_teacher=True):
+    from app.tenant import get_school_id_or_abort, verify_course_in_school
     quiz = db.session.get(Quiz, quiz_id)
     if not quiz: abort(404, description="Kuis tidak ditemukan.")
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(quiz.course, school_id)
     if check_teacher and quiz.course.teacher_id != current_user.id:
         abort(403, description="Anda tidak memiliki akses ke kuis ini.")
     return quiz
 
 def get_question_or_abort(question_id, check_teacher=True):
+    from app.tenant import get_school_id_or_abort, verify_course_in_school
     question = db.session.get(Question, question_id)
     if not question: abort(404, description="Pertanyaan tidak ditemukan.")
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(question.quiz.course, school_id)
     if check_teacher and question.quiz.course.teacher_id != current_user.id:
         abort(403, description="Anda tidak memiliki akses ke pertanyaan ini.")
     return question
@@ -203,8 +209,13 @@ def api_add_option(question_id):
 @quiz_bp.route('/option/<int:option_id>/update', methods=['PUT'])
 @login_required
 def api_update_option(option_id):
+    from app.tenant import get_school_id_or_abort, verify_course_in_school
     option = db.session.get(Option, option_id)
     if not option: abort(404)
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(option.question.quiz.course, school_id)
+    if option.question.quiz.course.teacher_id != current_user.id:
+        abort(403)
     option.option_text = sanitize_text(request.form.get('option_text', ''))
     db.session.commit()
     return f'<input type="text" class="option-input" value="{option.option_text}" name="option_text" hx-put="/api/option/{option.id}/update" hx-trigger="blur" hx-swap="outerHTML" placeholder="Opsi {option.order}" />'
@@ -212,7 +223,13 @@ def api_update_option(option_id):
 @quiz_bp.route('/option/<int:option_id>/delete', methods=['DELETE'])
 @login_required
 def api_delete_option(option_id):
+    from app.tenant import get_school_id_or_abort, verify_course_in_school
     option = db.session.get(Option, option_id)
+    if not option: return "", 200
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(option.question.quiz.course, school_id)
+    if option.question.quiz.course.teacher_id != current_user.id:
+        abort(403)
     if option and option.question.options.count() > 1:
         db.session.delete(option)
         db.session.commit()
@@ -240,10 +257,14 @@ def api_set_quiz_status(quiz_id):
 @quiz_bp.route('/submission/<int:submission_id>')
 @login_required
 def api_get_submission(submission_id):
+    from app.tenant import get_school_id_or_abort, verify_course_in_school
     submission = db.session.get(QuizSubmission, submission_id)
     if not submission:
         abort(404)
-    
+
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(submission.quiz.course, school_id)
+
     is_teacher = submission.quiz.course.teacher_id == current_user.id
     if not is_teacher and submission.user_id != current_user.id:
         abort(403)
@@ -253,8 +274,13 @@ def api_get_submission(submission_id):
 @quiz_bp.route('/submission/<int:submission_id>/update-score', methods=['POST'])
 @login_required
 def api_update_submission_score(submission_id):
+    from app.tenant import get_school_id_or_abort, verify_course_in_school
     submission = db.session.get(QuizSubmission, submission_id)
-    if not submission or submission.quiz.course.teacher_id != current_user.id:
+    if not submission:
+        abort(404)
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(submission.quiz.course, school_id)
+    if submission.quiz.course.teacher_id != current_user.id:
         abort(403)
     
     data = request.get_json()
@@ -422,10 +448,14 @@ def api_remove_question_image(question_id):
 @quiz_bp.route('/quiz/<int:quiz_id>/submit', methods=['POST'])
 @login_required
 def api_submit_quiz(quiz_id):
+    from app.tenant import get_school_id_or_abort, verify_course_in_school
     quiz = db.session.get(Quiz, quiz_id)
     if not quiz:
         abort(404, description="Kuis tidak ditemukan.")
-    
+
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(quiz.course, school_id)
+
     # Handle both JSON and FormData
     if request.is_json:
         data = request.get_json()

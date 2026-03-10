@@ -26,7 +26,10 @@ class Issue(db.Model):
     
     # Relationships
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    school_id = db.Column(db.Integer, db.ForeignKey('schools.id'), nullable=True, index=True)
+
     user = db.relationship('User', backref=db.backref('issues', lazy=True))
+    school = db.relationship('School', backref=db.backref('issues', lazy=True))
     
     created_at = db.Column(db.DateTime, default=get_jakarta_now)
     updated_at = db.Column(db.DateTime, default=get_jakarta_now, onupdate=get_jakarta_now)
@@ -39,6 +42,7 @@ class Issue(db.Model):
             'status': self.status.value,
             'priority': self.priority.value,
             'user_id': self.user_id,
+            'school_id': self.school_id,
             'user_name': self.user.name,
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
             'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S')

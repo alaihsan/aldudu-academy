@@ -6,6 +6,7 @@ from werkzeug.utils import secure_filename
 from sqlalchemy.orm import joinedload, selectinload
 from app.models import db, Course, AcademicYear, UserRole, Link, File, Discussion, Post, Like, UserCourseOrder
 from app.helpers import sanitize_text, is_valid_color, is_valid_class_code, generate_class_code, get_courses_for_user, format_course_data, log_activity
+from app.tenant import get_school_id_or_abort, verify_course_in_school, verify_academic_year_in_school
 
 courses_bp = Blueprint('courses', __name__, url_prefix='/api')
 
@@ -13,11 +14,11 @@ courses_bp = Blueprint('courses', __name__, url_prefix='/api')
 @courses_bp.route('/initial-data', methods=['GET'])
 @login_required
 def api_initial_data():
-    # Only use the current academic year 2025/2026
-    current_year = AcademicYear.query.filter_by(year='2025/2026').first()
+    school_id = get_school_id_or_abort()
+    # Only use the current academic year 2025/2026, scoped to school
+    current_year = AcademicYear.query.filter_by(year='2025/2026', school_id=school_id).first()
     if not current_year:
-        # Create it if it doesn't exist to prevent errors
-        current_year = AcademicYear(year='2025/2026', is_active=True)
+        current_year = AcademicYear(year='2025/2026', is_active=True, school_id=school_id)
         db.session.add(current_year)
         db.session.commit()
     
@@ -34,6 +35,8 @@ def api_initial_data():
 @courses_bp.route('/courses/year/<int:year_id>', methods=['GET'])
 @login_required
 def api_get_courses_by_year(year_id):
+    school_id = get_school_id_or_abort()
+    verify_academic_year_in_school(year_id, school_id)
     courses_query = get_courses_for_user(current_user, year_id)
     courses = [format_course_data(c, current_user) for c in courses_query]
     return jsonify({'courses': courses})
@@ -54,6 +57,9 @@ def api_create_course():
     except Exception:
         return jsonify({'success': False, 'message': 'Tahun ajaran tidak valid'}), 400
 
+    school_id = get_school_id_or_abort()
+    verify_academic_year_in_school(academic_year_id, school_id)
+
     new_course = Course(
         name=name,
         academic_year_id=academic_year_id,
@@ -72,6 +78,8 @@ def update_course(course_id):
     course = db.session.get(Course, course_id)
     if course is None:
         abort(404)
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(course, school_id)
     if course.teacher_id != current_user.id:
         abort(403, description="Anda tidak memiliki izin untuk mengedit kelas ini.")
     data = request.get_json() or {}
@@ -95,7 +103,10 @@ def api_delete_course(course_id):
     course = db.session.get(Course, course_id)
     if not course:
         return jsonify({'success': False, 'message': 'Kelas tidak ditemukan'}), 404
-    
+
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(course, school_id)
+
     if course.teacher_id != current_user.id:
         return jsonify({'success': False, 'message': 'Anda tidak memiliki izin untuk menghapus kelas ini'}), 403
     
@@ -134,6 +145,11 @@ def api_enroll_in_course():
     course_to_join = Course.query.filter_by(class_code=code).first()
     if not course_to_join:
         return jsonify({'success': False, 'message': f'Kelas dengan kode "{code}" tidak ditemukan'}), 404
+
+    # Verify course belongs to student's school
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(course_to_join, school_id)
+
     if course_to_join in current_user.courses_enrolled:
         return jsonify({'success': False, 'message': 'Anda sudah terdaftar di kelas ini'}), 409
     current_user.courses_enrolled.append(course_to_join)
@@ -157,6 +173,9 @@ def api_create_link(course_id):
     course = db.session.get(Course, course_id)
     if not course:
         return jsonify({'success': False, 'message': 'Mata pelajaran tidak ditemukan'}), 404
+
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(course, school_id)
 
     # 3. Validasi Keamanan: Pastikan guru ini adalah pemilik mata pelajaran
     if course.teacher_id != current_user.id:
@@ -212,6 +231,9 @@ def api_create_file(course_id):
     course = db.session.get(Course, course_id)
     if not course:
         return jsonify({'success': False, 'message': 'Mata pelajaran tidak ditemukan'}), 404
+
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(course, school_id)
 
     if course.teacher_id != current_user.id:
         return jsonify({'success': False, 'message': 'Anda tidak memiliki izin untuk mengunggah file di mata pelajaran ini'}), 403
@@ -286,6 +308,9 @@ def create_discussion(course_id):
     if not course:
         return jsonify({'success': False, 'message': 'Mata pelajaran tidak ditemukan'}), 404
 
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(course, school_id)
+
     if current_user.role != UserRole.GURU and current_user not in course.students:
         return jsonify({'success': False, 'message': 'Anda tidak memiliki izin untuk membuat diskusi di kelas ini'}), 403
 
@@ -325,6 +350,9 @@ def get_discussions(course_id):
     course = db.session.get(Course, course_id)
     if not course:
         return jsonify({'success': False, 'message': 'Mata pelajaran tidak ditemukan'}), 404
+
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(course, school_id)
 
     if current_user.role != UserRole.GURU and current_user not in course.students:
         return jsonify({'success': False, 'message': 'Anda tidak memiliki izin untuk melihat diskusi di kelas ini'}), 403
