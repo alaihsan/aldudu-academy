@@ -153,5 +153,29 @@ def toggle_user_status(user_id):
     
     action = "Mengaktifkan" if user.is_active else "Menonaktifkan"
     log_activity(current_user.id, f"{action} akun: {user.email}", target_type="User", target_id=user.id)
-    
+
     return jsonify({'success': True, 'is_active': user.is_active})
+
+@admin_bp.route('/api/users/<int:user_id>/rename', methods=['PATCH'])
+def rename_user(user_id):
+    user = db.session.get(User, user_id)
+    if not user:
+        return jsonify({'success': False, 'message': 'User tidak ditemukan'}), 404
+
+    if user.school_id != current_user.school_id:
+        return jsonify({'success': False, 'message': 'Tidak memiliki izin'}), 403
+
+    if user.role not in (UserRole.GURU, UserRole.MURID):
+        return jsonify({'success': False, 'message': 'Hanya guru dan murid yang bisa direname'}), 403
+
+    data = request.get_json() or {}
+    new_name = sanitize_text(data.get('name', '').strip(), 100)
+    if len(new_name) < 2:
+        return jsonify({'success': False, 'message': 'Nama minimal 2 karakter'}), 400
+
+    old_name = user.name
+    user.name = new_name
+    db.session.commit()
+
+    log_activity(current_user.id, f"Rename user: {old_name} -> {new_name}", target_type="User", target_id=user.id)
+    return jsonify({'success': True, 'name': user.name})

@@ -145,6 +145,10 @@ const Dashboard = {
             const res = await fetch('/api/session');
             const data = await res.json();
             if (data.isAuthenticated) {
+                if (data.user.role === 'super_admin') {
+                    window.location.href = '/superadmin/dashboard';
+                    return;
+                }
                 this.state.currentUser = data.user;
                 this.state.isTeacher = data.user.role === 'guru';
                 this.setupUI();
@@ -341,7 +345,13 @@ const Dashboard = {
             
             if (data.success) {
                 if (btn) btn.classList.add('bg-green-600', 'scale-95');
-                setTimeout(() => window.location.reload(), 600);
+                setTimeout(() => {
+                    if (data.redirect) {
+                        window.location.href = data.redirect;
+                    } else {
+                        window.location.reload();
+                    }
+                }, 600);
             } else {
                 throw new Error(data.message || 'Email atau password salah');
             }

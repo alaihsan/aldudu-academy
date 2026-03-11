@@ -11,6 +11,11 @@ venv/
 /instance/config.py
 
 
+# Env files (credentials — never commit)
+.env
+.env.local
+.env.production
+
 # Deploy artifacts and logs
 /deploy/*.env
 /deploy/*.log

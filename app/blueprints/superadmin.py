@@ -8,7 +8,7 @@ from app.models import (
     ActivityLog
 )
 from app.helpers import get_jakarta_now, sanitize_text
-from app.services.email_service import send_school_approved_email, send_ticket_update_email
+from app.services.email_service import send_school_approved_email, send_ticket_update_email, send_email
 from app.services.ticket_service import transition_status, TicketStatus as TStat
 from app.middleware import invalidate_school_cache
 
@@ -225,3 +225,23 @@ def api_update_ticket_status(ticket_id):
     send_ticket_update_email(ticket, f'Status diperbarui menjadi: {new_status.value}', is_resolved)
 
     return jsonify({'success': True, 'ticket': ticket.to_dict()})
+
+
+@superadmin_bp.route('/api/test-email', methods=['POST'])
+def api_test_email():
+    data = request.get_json() or {}
+    recipient = data.get('email', current_user.email)
+    ok = send_email(
+        subject='Test Email - Aldudu Academy',
+        recipients=[recipient],
+        html_body=(
+            '<div style="font-family:sans-serif;padding:20px">'
+            '<h2 style="color:#0282c6">Email Berhasil! ✅</h2>'
+            '<p>Konfigurasi Mailtrap berfungsi dengan baik.</p>'
+            f'<p>Dikirim ke: <strong>{recipient}</strong></p>'
+            '</div>'
+        ),
+    )
+    if ok:
+        return jsonify({'success': True, 'message': f'Email test berhasil dikirim ke {recipient}'})
+    return jsonify({'success': False, 'message': 'Gagal mengirim email. Cek kredensial Mailtrap di .env.'}), 500
