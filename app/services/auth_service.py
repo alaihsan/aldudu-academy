@@ -65,7 +65,7 @@ def verify_email_token(token_str):
         return False, 'Token tidak valid atau sudah kadaluarsa'
 
     from app.helpers import get_jakarta_now
-    token.used_at = get_jakarta_now()
+    token.used_at = get_jakarta_now().replace(tzinfo=None)
 
     if token.user_id:
         user = db.session.get(User, token.user_id)
@@ -106,7 +106,7 @@ def reset_password(token_str, new_password):
         return False, 'Password minimal 6 karakter'
 
     from app.helpers import get_jakarta_now
-    token.used_at = get_jakarta_now()
+    token.used_at = get_jakarta_now().replace(tzinfo=None)
 
     user = db.session.get(User, token.user_id)
     if user:
