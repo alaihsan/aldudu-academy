@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from flask_talisman import Talisman
 
-from .extensions import db, login_manager, mail, migrate, cache
+from .extensions import db, login_manager, mail, migrate, cache, limiter
 from .config import config_by_name
 
 
@@ -37,6 +37,7 @@ def create_app(test_config: Optional[Dict] = None) -> Flask:
     login_manager.init_app(app)
     mail.init_app(app)
     cache.init_app(app)
+    limiter.init_app(app)
 
     login_manager.login_view = 'main.index'
 
@@ -96,6 +97,10 @@ def create_app(test_config: Optional[Dict] = None) -> Flask:
         if request.path.startswith('/api/') or request.path.startswith('/superadmin/api/'):
             return jsonify({'success': False, 'message': str(e.description) or 'Sumber daya tidak ditemukan'}), 404
         return jsonify({'success': False, 'message': str(e.description) or 'Sumber daya tidak ditemukan'}), 404
+
+    @app.errorhandler(429)
+    def ratelimit_handler(e):
+        return jsonify({'success': False, 'message': 'Terlalu banyak percobaan. Coba lagi nanti.'}), 429
 
     @app.errorhandler(500)
     def server_error(e):

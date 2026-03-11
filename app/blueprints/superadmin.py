@@ -82,21 +82,26 @@ def api_approve_school(school_id):
     if not school:
         return jsonify({'success': False, 'message': 'Sekolah tidak ditemukan'}), 404
 
-    if school.status != SchoolStatus.VERIFIED:
-        return jsonify({'success': False, 'message': 'Hanya sekolah dengan status VERIFIED yang bisa diapprove'}), 400
+    if school.status not in (SchoolStatus.PENDING, SchoolStatus.VERIFIED):
+        return jsonify({'success': False, 'message': 'Sekolah sudah aktif atau sedang disuspend'}), 400
 
+    is_bypass = school.status == SchoolStatus.PENDING
     school.status = SchoolStatus.ACTIVE
     school.approved_at = get_jakarta_now()
-    db.session.commit()
 
+    # Jika bypass dari PENDING, tandai email admin sebagai verified
+    admin_user = User.query.filter_by(school_id=school.id, role=UserRole.ADMIN).first()
+    if is_bypass and admin_user:
+        admin_user.email_verified = True
+
+    db.session.commit()
     invalidate_school_cache(school.slug)
 
-    # Send approval email to school admin
-    admin_user = User.query.filter_by(school_id=school.id, role=UserRole.ADMIN).first()
     if admin_user:
         send_school_approved_email(admin_user, school)
 
-    return jsonify({'success': True, 'school': school.to_dict()})
+    msg = 'Sekolah disetujui (bypass verifikasi email)' if is_bypass else 'Sekolah berhasil disetujui'
+    return jsonify({'success': True, 'school': school.to_dict(), 'message': msg})
 
 
 @superadmin_bp.route('/api/schools/<int:school_id>/suspend', methods=['POST'])
