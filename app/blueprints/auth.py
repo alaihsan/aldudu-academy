@@ -110,7 +110,7 @@ def api_login():
     if user.role == UserRole.SUPER_ADMIN:
         response_data['redirect'] = '/superadmin/dashboard'
     elif user.school:
-        response_data['redirect'] = f'/s/{user.school.slug}/dashboard'
+        response_data['redirect'] = '/admin/dashboard'
 
     return jsonify(response_data)
 
@@ -190,5 +190,5 @@ def _redirect_after_login(user):
     if user.role == UserRole.SUPER_ADMIN:
         return redirect('/superadmin/dashboard')
     if user.school:
-        return redirect(f'/s/{user.school.slug}/dashboard')
+        return redirect('/admin/dashboard')
     return redirect('/')
