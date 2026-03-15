@@ -5,10 +5,10 @@ from app.extensions import db
 from app.models import (
     User, UserRole, School, SchoolStatus,
     Ticket, TicketMessage, TicketStatus,
-    ActivityLog
+    ActivityLog, Issue, IssueStatus
 )
 from app.helpers import get_jakarta_now, sanitize_text
-from app.services.email_service import send_school_approved_email, send_ticket_update_email
+from app.services.email_service import send_school_approved_email, send_ticket_update_email, send_email
 from app.services.ticket_service import transition_status, TicketStatus as TStat
 from app.middleware import invalidate_school_cache
 
@@ -29,12 +29,16 @@ def dashboard():
     stats = {
         'total_schools': School.query.count(),
         'active_schools': School.query.filter_by(status=SchoolStatus.ACTIVE).count(),
-        'pending_schools': School.query.filter_by(status=SchoolStatus.VERIFIED).count(),
+        'pending_schools': School.query.filter_by(status=SchoolStatus.PENDING).count(),
         'total_users': User.query.filter(User.role != UserRole.SUPER_ADMIN).count(),
         'open_tickets': Ticket.query.filter(
             Ticket.status.in_([TicketStatus.OPEN, TicketStatus.IN_QUEUE, TicketStatus.IN_PROGRESS])
         ).count(),
         'total_tickets': Ticket.query.count(),
+        'open_issues': Issue.query.filter(
+            Issue.status.in_([IssueStatus.OPEN, IssueStatus.IN_PROGRESS])
+        ).count(),
+        'total_issues': Issue.query.count(),
     }
     recent_logs = ActivityLog.query.order_by(ActivityLog.created_at.desc()).limit(20).all()
     return render_template('superadmin/dashboard.html', stats=stats, recent_logs=recent_logs)
@@ -82,21 +86,26 @@ def api_approve_school(school_id):
     if not school:
         return jsonify({'success': False, 'message': 'Sekolah tidak ditemukan'}), 404
 
-    if school.status != SchoolStatus.VERIFIED:
-        return jsonify({'success': False, 'message': 'Hanya sekolah dengan status VERIFIED yang bisa diapprove'}), 400
+    if school.status not in (SchoolStatus.PENDING, SchoolStatus.VERIFIED):
+        return jsonify({'success': False, 'message': 'Sekolah sudah aktif atau sedang disuspend'}), 400
 
+    is_bypass = school.status == SchoolStatus.PENDING
     school.status = SchoolStatus.ACTIVE
     school.approved_at = get_jakarta_now()
-    db.session.commit()
 
+    # Jika bypass dari PENDING, tandai email admin sebagai verified
+    admin_user = User.query.filter_by(school_id=school.id, role=UserRole.ADMIN).first()
+    if is_bypass and admin_user:
+        admin_user.email_verified = True
+
+    db.session.commit()
     invalidate_school_cache(school.slug)
 
-    # Send approval email to school admin
-    admin_user = User.query.filter_by(school_id=school.id, role=UserRole.ADMIN).first()
     if admin_user:
         send_school_approved_email(admin_user, school)
 
-    return jsonify({'success': True, 'school': school.to_dict()})
+    msg = 'Sekolah disetujui (bypass verifikasi email)' if is_bypass else 'Sekolah berhasil disetujui'
+    return jsonify({'success': True, 'school': school.to_dict(), 'message': msg})
 
 
 @superadmin_bp.route('/api/schools/<int:school_id>/suspend', methods=['POST'])
@@ -225,3 +234,68 @@ def api_update_ticket_status(ticket_id):
     send_ticket_update_email(ticket, f'Status diperbarui menjadi: {new_status.value}', is_resolved)
 
     return jsonify({'success': True, 'ticket': ticket.to_dict()})
+
+
+# ─── Issues Routes ─────────────────────────────────
+
+@superadmin_bp.route('/issues')
+def issues():
+    return render_template('superadmin/issues.html')
+
+
+@superadmin_bp.route('/api/issues', methods=['GET'])
+def api_get_issues():
+    status_filter = request.args.get('status')
+    query = Issue.query
+
+    if status_filter == 'active':
+        query = query.filter(Issue.status.in_([IssueStatus.OPEN, IssueStatus.IN_PROGRESS]))
+    elif status_filter == 'resolved':
+        query = query.filter(Issue.status.in_([IssueStatus.RESOLVED, IssueStatus.CLOSED]))
+
+    issues = query.order_by(Issue.created_at.desc()).all()
+    result = []
+    for issue in issues:
+        d = issue.to_dict()
+        d['school_name'] = issue.school.name if issue.school else '-'
+        result.append(d)
+
+    return jsonify({'success': True, 'issues': result})
+
+
+@superadmin_bp.route('/api/issues/<int:issue_id>/status', methods=['POST'])
+def api_update_issue_status(issue_id):
+    issue = db.session.get(Issue, issue_id)
+    if not issue:
+        return jsonify({'success': False, 'message': 'Laporan tidak ditemukan'}), 404
+
+    data = request.get_json() or {}
+    new_status_str = data.get('status', '').upper()
+
+    try:
+        issue.status = IssueStatus[new_status_str]
+    except KeyError:
+        return jsonify({'success': False, 'message': 'Status tidak valid'}), 400
+
+    db.session.commit()
+    return jsonify({'success': True, 'issue': issue.to_dict()})
+
+
+@superadmin_bp.route('/api/test-email', methods=['POST'])
+def api_test_email():
+    data = request.get_json() or {}
+    recipient = data.get('email', current_user.email)
+    ok = send_email(
+        subject='Test Email - Aldudu Academy',
+        recipients=[recipient],
+        html_body=(
+            '<div style="font-family:sans-serif;padding:20px">'
+            '<h2 style="color:#0282c6">Email Berhasil! ✅</h2>'
+            '<p>Konfigurasi Mailtrap berfungsi dengan baik.</p>'
+            f'<p>Dikirim ke: <strong>{recipient}</strong></p>'
+            '</div>'
+        ),
+    )
+    if ok:
+        return jsonify({'success': True, 'message': f'Email test berhasil dikirim ke {recipient}'})
+    return jsonify({'success': False, 'message': 'Gagal mengirim email. Cek kredensial Mailtrap di .env.'}), 500

@@ -4,7 +4,7 @@
     {
       "name": "flask-dev",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "flask", "run", "--debug", "--port", "5000"],
+      "runtimeArgs": ["-B", "-m", "flask", "run", "--debug", "--port", "5000"],
       "port": 5000
     }
   ]

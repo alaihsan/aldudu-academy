@@ -1,2 +1,12 @@
-DATABASE_URL=mysql+pymysql://root:password@localhost:3306/aldudu_academy  
-SECRET_KEY=your-secret-key-here 
+DATABASE_URL=mysql+pymysql://root:password@localhost:3306/aldudu_academy
+SECRET_KEY=your-secret-key-here
+
+# Email (Mailtrap for development — get credentials from mailtrap.io)
+MAIL_SERVER=sandbox.smtp.mailtrap.io
+MAIL_PORT=587
+MAIL_USE_TLS=true
+MAIL_USERNAME=your-mailtrap-username
+MAIL_PASSWORD=your-mailtrap-password
+MAIL_SENDER_NAME=Aldudu Academy
+MAIL_SENDER_EMAIL=noreply@aldudu.academy
+APP_URL=http://localhost:5000

@@ -6,7 +6,6 @@ from app.models import (
 )
 from app.services.email_service import (
     send_verification_email, send_password_reset_email,
-    send_superadmin_new_school_notification
 )
 
 
@@ -65,7 +64,7 @@ def verify_email_token(token_str):
         return False, 'Token tidak valid atau sudah kadaluarsa'
 
     from app.helpers import get_jakarta_now
-    token.used_at = get_jakarta_now()
+    token.used_at = get_jakarta_now().replace(tzinfo=None)
 
     if token.user_id:
         user = db.session.get(User, token.user_id)
@@ -75,12 +74,10 @@ def verify_email_token(token_str):
     if token.school_id:
         school = db.session.get(School, token.school_id)
         if school and school.status == SchoolStatus.PENDING:
-            school.status = SchoolStatus.VERIFIED
-            # Notify super admin
-            send_superadmin_new_school_notification(school)
+            school.status = SchoolStatus.ACTIVE
 
     db.session.commit()
-    return True, 'Email berhasil diverifikasi'
+    return True, 'Email berhasil diverifikasi! Akun Anda sudah aktif.'
 
 
 def request_password_reset(email):
@@ -106,7 +103,7 @@ def reset_password(token_str, new_password):
         return False, 'Password minimal 6 karakter'
 
     from app.helpers import get_jakarta_now
-    token.used_at = get_jakarta_now()
+    token.used_at = get_jakarta_now().replace(tzinfo=None)
 
     user = db.session.get(User, token.user_id)
     if user:

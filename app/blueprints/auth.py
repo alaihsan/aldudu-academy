@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify, render_template, redirect
 from flask_login import login_user, logout_user, current_user
 from app.models import User, UserRole, SchoolStatus, PasswordResetToken
 from app.helpers import is_valid_email, log_activity
+from app.extensions import limiter
 from app.services.auth_service import (
     register_school, verify_email_token,
     request_password_reset, reset_password,
@@ -27,6 +28,7 @@ def register_page():
 
 
 @auth_bp.route('/verify-email/<token>')
+@limiter.limit("20 per minute")
 def verify_email_page(token):
     success, message = verify_email_token(token)
     return render_template('auth/verify_email.html', success=success, message=message)
@@ -68,6 +70,7 @@ def api_session():
 
 
 @auth_bp.route('/api/login', methods=['POST'])
+@limiter.limit("10 per minute; 50 per hour")
 def api_login():
     data = request.get_json() or {}
     email = data.get('email')
@@ -107,7 +110,7 @@ def api_login():
     if user.role == UserRole.SUPER_ADMIN:
         response_data['redirect'] = '/superadmin/dashboard'
     elif user.school:
-        response_data['redirect'] = f'/s/{user.school.slug}/dashboard'
+        response_data['redirect'] = '/admin/dashboard'
 
     return jsonify(response_data)
 
@@ -123,6 +126,7 @@ def api_logout():
 
 
 @auth_bp.route('/api/register', methods=['POST'])
+@limiter.limit("5 per hour")
 def api_register():
     data = request.get_json() or {}
 
@@ -158,6 +162,7 @@ def api_register():
 
 
 @auth_bp.route('/api/forgot-password', methods=['POST'])
+@limiter.limit("5 per hour")
 def api_forgot_password():
     data = request.get_json() or {}
     email = data.get('email', '').strip()
@@ -185,5 +190,5 @@ def _redirect_after_login(user):
     if user.role == UserRole.SUPER_ADMIN:
         return redirect('/superadmin/dashboard')
     if user.school:
-        return redirect(f'/s/{user.school.slug}/dashboard')
+        return redirect('/admin/dashboard')
     return redirect('/')

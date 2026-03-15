@@ -7,6 +7,7 @@ from app.models import (
     QuizSubmission, Answer, Discussion
 )
 from app.helpers import get_jakarta_now
+from app.tenant import get_school_id_or_abort, verify_course_in_school
 
 main_bp = Blueprint('main', __name__)
 
@@ -27,6 +28,8 @@ def course_detail(course_id):
     course = db.session.get(Course, course_id)
     if course is None:
         abort(404)
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(course, school_id)
     is_teacher = (current_user.id == course.teacher_id)
     
     quizzes = Quiz.query.filter_by(course_id=course.id).all()
@@ -76,6 +79,8 @@ def quiz_detail(quiz_id):
         abort(404)
 
     course = quiz.course
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(course, school_id)
     is_teacher = (current_user.id == course.teacher_id)
     is_preview = request.args.get('preview') == 'true'
 
@@ -114,6 +119,8 @@ def serve_file(file_id):
         abort(404)
 
     course = file.course
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(course, school_id)
     is_teacher = (current_user.id == course.teacher_id)
 
     if not is_teacher and current_user not in course.students:
@@ -134,6 +141,8 @@ def serve_question_image(course_id, filename):
     course = db.session.get(Course, course_id)
     if course is None:
         abort(404)
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(course, school_id)
     is_teacher = (current_user.id == course.teacher_id)
     is_student = current_user in course.students
     if not is_teacher and not is_student:
@@ -147,6 +156,8 @@ def discussion_detail(course_id, discussion_id):
     course = db.session.get(Course, course_id)
     if course is None:
         abort(404)
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(course, school_id)
     discussion = db.session.get(Discussion, discussion_id)
     if discussion is None or discussion.course_id != course_id:
         abort(404)

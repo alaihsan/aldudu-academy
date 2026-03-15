@@ -11,6 +11,11 @@ venv/
 /instance/config.py
 
 
+# Env files (credentials — never commit)
+.env
+.env.local
+.env.production
+
 # Deploy artifacts and logs
 /deploy/*.env
 /deploy/*.log
@@ -21,3 +26,6 @@ flask.log
 # Editor backups
 *.swp
 .DS_Store
+
+# Claude Code worktrees (workspace-specific, not project code)
+.claude/worktrees/

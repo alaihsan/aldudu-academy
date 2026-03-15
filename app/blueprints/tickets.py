@@ -82,7 +82,7 @@ def api_create_ticket(slug):
         priority = TicketPriority.MEDIUM
 
     ticket = Ticket(
-        ticket_number=generate_ticket_number(),
+        ticket_number=generate_ticket_number(school_id=current_user.school_id),
         title=title,
         description=description,
         category=category,
@@ -164,6 +164,9 @@ def api_close_ticket(slug, ticket_id):
     ticket = db.session.get(Ticket, ticket_id)
     if not ticket:
         return jsonify({'success': False, 'message': 'Ticket tidak ditemukan'}), 404
+
+    if ticket.school_id != current_user.school_id:
+        return jsonify({'success': False, 'message': 'Tidak memiliki izin'}), 403
 
     if ticket.user_id != current_user.id and current_user.role not in (UserRole.ADMIN, UserRole.SUPER_ADMIN):
         return jsonify({'success': False, 'message': 'Tidak memiliki izin'}), 403
