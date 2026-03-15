@@ -1,9 +1,14 @@
 import secrets
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.extensions import db
 from app.helpers import get_jakarta_now
+
+
+def _now_naive():
+    """Returns current UTC+7 time as timezone-naive datetime (compatible with MySQL DATETIME)."""
+    return get_jakarta_now().replace(tzinfo=None)
 
 
 class EmailVerificationToken(db.Model):
@@ -15,7 +20,7 @@ class EmailVerificationToken(db.Model):
     school_id: Mapped[Optional[int]] = mapped_column(db.Integer, db.ForeignKey('schools.id'), nullable=True)
     expires_at: Mapped[datetime] = mapped_column(db.DateTime, nullable=False)
     used_at: Mapped[Optional[datetime]] = mapped_column(db.DateTime, nullable=True)
-    created_at: Mapped[datetime] = mapped_column(db.DateTime, default=get_jakarta_now)
+    created_at: Mapped[datetime] = mapped_column(db.DateTime, default=_now_naive)
 
     user = relationship('User', backref=db.backref('verification_tokens', lazy=True))
     school = relationship('School', backref=db.backref('verification_tokens', lazy=True))
@@ -26,13 +31,13 @@ class EmailVerificationToken(db.Model):
             token=secrets.token_urlsafe(48),
             user_id=user_id,
             school_id=school_id,
-            expires_at=get_jakarta_now() + timedelta(hours=expires_hours),
+            expires_at=_now_naive() + timedelta(hours=expires_hours),
         )
         return token
 
     @property
     def is_expired(self):
-        return get_jakarta_now() > self.expires_at
+        return _now_naive() > self.expires_at
 
     @property
     def is_used(self):
@@ -54,7 +59,7 @@ class PasswordResetToken(db.Model):
     user_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     expires_at: Mapped[datetime] = mapped_column(db.DateTime, nullable=False)
     used_at: Mapped[Optional[datetime]] = mapped_column(db.DateTime, nullable=True)
-    created_at: Mapped[datetime] = mapped_column(db.DateTime, default=get_jakarta_now)
+    created_at: Mapped[datetime] = mapped_column(db.DateTime, default=_now_naive)
 
     user = relationship('User', backref=db.backref('password_reset_tokens', lazy=True))
 
@@ -63,13 +68,13 @@ class PasswordResetToken(db.Model):
         token = PasswordResetToken(
             token=secrets.token_urlsafe(48),
             user_id=user_id,
-            expires_at=get_jakarta_now() + timedelta(hours=expires_hours),
+            expires_at=_now_naive() + timedelta(hours=expires_hours),
         )
         return token
 
     @property
     def is_expired(self):
-        return get_jakarta_now() > self.expires_at
+        return _now_naive() > self.expires_at
 
     @property
     def is_used(self):

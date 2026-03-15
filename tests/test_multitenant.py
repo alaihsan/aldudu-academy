@@ -39,6 +39,7 @@ TEST_CFG = {
     'SECRET_KEY': 'test-secret-key',
     'WTF_CSRF_ENABLED': False,
     'CACHE_TYPE': 'SimpleCache',
+    'RATELIMIT_ENABLED': False,
     'SQLALCHEMY_ENGINE_OPTIONS': {
         'connect_args': {'check_same_thread': False},
         'poolclass': StaticPool,

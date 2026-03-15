@@ -85,14 +85,15 @@ def send_superadmin_new_school_notification(school):
         return False
 
     app_url = current_app.config.get('APP_URL', 'http://localhost:5000')
-    html = render_template('emails/ticket_update.html',
-        ticket_number='NEW-SCHOOL',
-        ticket_title=f'Sekolah baru menunggu approval: {school.name}',
-        message_content=f'Admin: {school.admin_email}\nSlug: {school.slug}\nApprove di: {app_url}/superadmin/schools',
-        is_resolved=False,
+    html = render_template('emails/new_school_notification.html',
+        school_name=school.name,
+        school_slug=school.slug,
+        school_admin_email=school.admin_email,
+        registered_at=school.created_at.strftime('%d %B %Y, %H:%M WIB') if school.created_at else '-',
+        dashboard_url=f"{app_url}/superadmin/schools",
     )
     return send_email(
-        subject=f'Sekolah Baru Menunggu Approval - {school.name}',
+        subject=f'[Pendaftaran Baru] {school.name} Menunggu Approval',
         recipients=[superadmin.email],
         html_body=html,
     )
