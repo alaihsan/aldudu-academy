@@ -6,7 +6,7 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # Database
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'sqlite:///dev.db')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'mysql+pymysql://root:@localhost:3306/aldudu_academy')
 
     # Mail (Mailtrap for development)
     MAIL_SERVER = os.environ.get('MAIL_SERVER', 'sandbox.smtp.mailtrap.io')
