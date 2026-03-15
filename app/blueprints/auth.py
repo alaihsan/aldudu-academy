@@ -1,11 +1,11 @@
 from flask import Blueprint, request, jsonify, render_template, redirect
 from flask_login import login_user, logout_user, current_user
-from app.models import User, UserRole, SchoolStatus, PasswordResetToken
+from app.models import User, UserRole, SchoolStatus, PasswordResetToken, School
 from app.helpers import is_valid_email, log_activity
-from app.extensions import limiter
+from app.extensions import limiter, db
 from app.services.auth_service import (
     register_school, verify_email_token,
-    request_password_reset, reset_password,
+    request_password_reset, reset_password, register_user,
 )
 
 auth_bp = Blueprint('auth', __name__)
@@ -184,6 +184,73 @@ def api_reset_password(token):
         return jsonify({'success': False, 'message': message}), 400
 
     return jsonify({'success': True, 'message': message})
+
+
+@auth_bp.route('/api/schools', methods=['GET'])
+def api_get_schools():
+    """Get list of active schools for registration dropdown"""
+    schools = School.query.filter_by(status=SchoolStatus.ACTIVE).order_by(School.name).all()
+    result = [
+        {
+            'id': school.id,
+            'name': school.name,
+            'slug': school.slug,
+        }
+        for school in schools
+    ]
+    return jsonify({'success': True, 'schools': result})
+
+
+@auth_bp.route('/api/register-user', methods=['POST'])
+@limiter.limit("5 per hour")
+def api_register_user():
+    """Register a new user (murid/guru) and enroll to selected school"""
+    data = request.get_json() or {}
+
+    name = data.get('name', '').strip()
+    email = data.get('email', '').strip()
+    password = data.get('password', '')
+    role = data.get('role', '').lower()
+    school_id = data.get('school_id')
+
+    # Validate required fields
+    if not all([name, email, password, role, school_id]):
+        return jsonify({'success': False, 'message': 'Semua field wajib diisi'}), 400
+
+    # Validate role
+    if role not in ['murid', 'guru']:
+        return jsonify({'success': False, 'message': 'Role harus murid atau guru'}), 400
+
+    # Validate email format
+    if not is_valid_email(email):
+        return jsonify({'success': False, 'message': 'Format email tidak valid'}), 400
+
+    # Validate password length
+    if len(password) < 6:
+        return jsonify({'success': False, 'message': 'Password minimal 6 karakter'}), 400
+
+    # Check if email already exists
+    if User.query.filter_by(email=email).first():
+        return jsonify({'success': False, 'message': 'Email sudah terdaftar'}), 400
+
+    # Check if school exists and is active
+    school = School.query.filter_by(id=school_id, status=SchoolStatus.ACTIVE).first()
+    if not school:
+        return jsonify({'success': False, 'message': 'Sekolah tidak ditemukan atau belum aktif'}), 404
+
+    # Register user
+    user, error = register_user(
+        name=name,
+        email=email,
+        password=password,
+        role=role,
+        school_id=school_id,
+    )
+
+    if error:
+        return jsonify({'success': False, 'message': error}), 400
+
+    return jsonify({'success': True, 'message': 'Registrasi berhasil. Cek email untuk verifikasi.'}), 201
 
 
 def _redirect_after_login(user):

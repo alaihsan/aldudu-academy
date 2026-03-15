@@ -58,6 +58,38 @@ def register_school(name, slug, email, admin_name, admin_email, admin_password):
     return school, None
 
 
+def register_user(name, email, password, role, school_id):
+    """Register a new user (murid/guru) and enroll to selected school"""
+    # Check if school exists and is active
+    school = School.query.filter_by(id=school_id, status=SchoolStatus.ACTIVE).first()
+    if not school:
+        return None, 'Sekolah tidak ditemukan atau belum aktif'
+
+    # Create user
+    user_role = UserRole.MURID if role == 'murid' else UserRole.GURU
+    user = User(
+        name=name,
+        email=email,
+        role=user_role,
+        is_active=True,
+        email_verified=False,
+        school_id=school_id,
+    )
+    user.set_password(password)
+    db.session.add(user)
+    db.session.flush()
+
+    # Generate verification token
+    token = EmailVerificationToken.generate(user_id=user.id, school_id=school_id)
+    db.session.add(token)
+    db.session.commit()
+
+    # Send verification email
+    send_verification_email(user, school, token)
+
+    return user, None
+
+
 def verify_email_token(token_str):
     token = EmailVerificationToken.query.filter_by(token=token_str).first()
     if not token or not token.is_valid:

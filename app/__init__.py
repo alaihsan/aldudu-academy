@@ -9,7 +9,7 @@ from .config import config_by_name
 
 
 def create_app(test_config: Optional[Dict] = None) -> Flask:
-    load_dotenv()
+    load_dotenv(override=True)
     app = Flask(__name__, instance_relative_config=True)
 
     # Load config

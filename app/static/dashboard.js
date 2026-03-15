@@ -19,14 +19,15 @@ const Dashboard = {
     async init() {
         console.log('Dashboard: Initializing...');
         this.cacheElements();
-        
+
         // If elements don't exist (not on dashboard page), stop
-        if (!this.elements.classGrid) return;
+        if (!this.elements.classGrid && !document.getElementById('register-form')) return;
 
         this.bindEvents();
         await this.checkAuth();
+        await this.loadSchoolsDropdown();
         this.state.isInitialized = true;
-        
+
         // Attach to window for global access
         window.Dashboard = this;
 
@@ -34,7 +35,7 @@ const Dashboard = {
         window.addEventListener('beforeunload', () => {
             Object.keys(this.state.pendingDeletes).forEach(courseId => {
                 // Use keepalive to ensure the request completes after the page is closed
-                fetch(`/api/courses/${courseId}`, { 
+                fetch(`/api/courses/${courseId}`, {
                     method: 'DELETE',
                     keepalive: true
                 });
@@ -158,6 +159,27 @@ const Dashboard = {
                 this.elements.appPage?.classList.add('hidden');
             }
         } catch (err) { console.error('Auth check failed', err); }
+    },
+
+    async loadSchoolsDropdown() {
+        const select = document.getElementById('register-school');
+        if (!select) return;
+
+        try {
+            const res = await fetch('/api/schools');
+            const data = await res.json();
+            if (data.success) {
+                select.innerHTML = '<option value="">Pilih sekolah Anda...</option>';
+                data.schools.forEach(school => {
+                    const option = document.createElement('option');
+                    option.value = school.id;
+                    option.textContent = school.name;
+                    select.appendChild(option);
+                });
+            }
+        } catch (err) {
+            console.error('Failed to load schools:', err);
+        }
     },
 
     setupUI() {
@@ -390,28 +412,39 @@ const Dashboard = {
         e.preventDefault();
         const errorDiv = document.getElementById('register-error');
         const submitBtn = e.target.querySelector('button[type="submit"]');
-        
+
         submitBtn.disabled = true;
         submitBtn.innerText = 'Mendaftar...';
         errorDiv.classList.add('hidden');
+
+        const schoolId = e.target.school_id.value;
+        if (!schoolId) {
+            errorDiv.textContent = 'Pilih sekolah terlebih dahulu';
+            errorDiv.classList.remove('hidden');
+            submitBtn.disabled = false;
+            submitBtn.innerText = 'Daftar Akun';
+            return;
+        }
 
         const payload = {
             name: e.target.name.value,
             email: e.target.email.value,
             password: e.target.password.value,
-            role: e.target.role.value
+            role: e.target.role.value,
+            school_id: parseInt(schoolId)
         };
 
         try {
-            const res = await fetch('/admin/api/users', { // Use same endpoint as admin for now
+            const res = await fetch('/api/register-user', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
             const data = await res.json();
             if (data.success) {
-                alert('Pendaftaran berhasil! Silakan login.');
+                alert('Pendaftaran berhasil! Silakan cek email untuk verifikasi.');
                 window.toggleAuthMode(null, 'login');
+                e.target.reset();
             } else {
                 errorDiv.textContent = data.message;
                 errorDiv.classList.remove('hidden');
