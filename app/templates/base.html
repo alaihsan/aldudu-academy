@@ -74,6 +74,49 @@
     <style>
         [x-cloak] { display: none !important; }
         
+        /* Global Course Theming - CSS Variables */
+        :root {
+            --course-theme: #2563eb;
+            --course-theme-light: #2563eb15;
+            --course-theme-dark: #2563ebcc;
+            --course-theme-gradient: linear-gradient(135deg, #2563eb, #2563ebcc);
+        }
+        
+        /* Theme Utility Classes - Available Globally */
+        .bg-theme { background-color: var(--course-theme) !important; }
+        .bg-theme-light { background-color: var(--course-theme-light) !important; }
+        .bg-theme-dark { background-color: var(--course-theme-dark) !important; }
+        .text-theme { color: var(--course-theme) !important; }
+        .text-theme-dark { color: var(--course-theme-dark) !important; }
+        .border-theme { border-color: var(--course-theme) !important; }
+        .border-theme-light { border-color: var(--course-theme-light) !important; }
+        .shadow-theme { box-shadow: 0 4px 6px -1px var(--course-theme-light) !important; }
+        .shadow-theme-lg { box-shadow: 0 10px 15px -3px var(--course-theme-light) !important; }
+        .focus-theme:focus {
+            border-color: var(--course-theme) !important;
+            box-shadow: 0 0 0 3px var(--course-theme-light) !important;
+        }
+        .bg-gradient-theme { background: var(--course-theme-gradient) !important; }
+        
+        /* Sidebar Navigation Links - Theme Aware */
+        .nav-link-course:hover,
+        .nav-link-kbm:hover,
+        .nav-link-gradebook:hover,
+        .nav-link-grades:hover,
+        .nav-link-discussions:hover {
+            background-color: var(--course-theme-light) !important;
+            color: var(--course-theme) !important;
+        }
+        
+        .nav-link-course.active,
+        .nav-link-kbm.active,
+        .nav-link-gradebook.active,
+        .nav-link-grades.active,
+        .nav-link-discussions.active {
+            background-color: var(--course-theme-light) !important;
+            color: var(--course-theme) !important;
+        }
+
         /* SweetAlert Custom Styling to match Aldudu UI */
         .swal2-popup {
             border-radius: 2rem !important;

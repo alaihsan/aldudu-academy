@@ -4,60 +4,12 @@
 
 {% block extra_head %}
 <style>
+    /* Override CSS variables with course color */
     :root {
         --course-theme: {{ course.color or '#2563eb' }};
         --course-theme-light: {{ course.color }}15;
-    }
-    .bg-theme { background-color: var(--course-theme) !important; }
-    .text-theme { color: var(--course-theme) !important; }
-    .border-theme { border-color: var(--course-theme) !important; }
-    .bg-theme-light { background-color: var(--course-theme-light) !important; }
-
-    .tab-btn.active {
-        background-color: var(--course-theme) !important;
-        box-shadow: 0 10px 15px -3px var(--course-theme-light);
-    }
-
-    .btn-shine-theme:hover {
-        background-color: var(--course-theme);
-        filter: brightness(90%);
-    }
-
-    .modal-header-theme {
-        background: linear-gradient(to bottom right, var(--course-theme), var(--course-theme));
-        filter: brightness(90%);
-    }
-    .btn-primary-theme {
-        background-color: var(--course-theme) !important;
-        box-shadow: 0 10px 15px -3px var(--course-theme-light);
-    }
-    .btn-primary-theme:hover {
-        filter: brightness(110%);
-    }
-    .focus-theme:focus {
-        border-color: var(--course-theme) !important;
-        box-shadow: 0 0 0 2px var(--course-theme-light) !important;
-    }
-    
-    /* Class Switcher Smooth Transitions */
-    #class-switcher-menu {
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    #class-switcher-menu:not(.hidden) {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    #switcher-arrow {
-        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .class-switcher-btn {
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .class-switcher-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 6px -1px var(--course-theme-light);
+        --course-theme-dark: {{ course.color }}cc;
+        --course-theme-gradient: linear-gradient(135deg, {{ course.color }}, {{ course.color }}cc);
     }
 </style>
 {% endblock %}
@@ -159,7 +111,7 @@
                 <!-- Tabs & Controls -->
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div class="flex space-x-1 bg-white p-1.5 rounded-2xl border border-gray-200 shadow-sm self-start overflow-x-auto no-scrollbar">
-                        <button data-tab="all" class="tab-btn active px-6 py-2.5 bg-primary-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-primary-100 transition-all whitespace-nowrap">Semua Konten</button>
+                        <button data-tab="all" class="tab-btn active px-6 py-2.5 bg-theme text-white rounded-xl font-bold text-sm shadow-lg shadow-theme transition-all whitespace-nowrap">Semua Konten</button>
                         <button data-tab="Kuis" class="tab-btn px-6 py-2.5 text-gray-500 hover:bg-gray-50 rounded-xl font-bold text-sm transition-all whitespace-nowrap">Kuis</button>
                         <button data-tab="Berkas" class="tab-btn px-6 py-2.5 text-gray-500 hover:bg-gray-50 rounded-xl font-bold text-sm transition-all whitespace-nowrap">Berkas</button>
                         <button data-tab="Link" class="tab-btn px-6 py-2.5 text-gray-500 hover:bg-gray-50 rounded-xl font-bold text-sm transition-all whitespace-nowrap">Link</button>
@@ -271,7 +223,7 @@
                             <h2 class="text-2xl font-black text-gray-900">Forum Diskusi</h2>
                             <p class="text-sm text-gray-500 mt-1">Ruang interaksi tanya jawab antara guru dan murid.</p>
                         </div>
-                        <button id="show-create-discussion-modal" class="px-6 py-3 bg-primary-50 text-primary-700 rounded-2xl font-black text-sm flex items-center space-x-2 hover:bg-primary-100 transition-all active:scale-95">
+                        <button id="show-create-discussion-modal" class="px-6 py-3 bg-theme text-white rounded-2xl font-black text-sm flex items-center space-x-2 hover:opacity-90 transition-all shadow-theme">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
                             </svg>
@@ -475,7 +427,7 @@
             </div>
             <div class="px-8 pb-8 flex space-x-3">
                 <button type="button" class="discussion-cancel-btn flex-1 px-6 py-4 text-gray-500 bg-gray-100 rounded-2xl font-bold hover:bg-gray-200 transition-all">Batal</button>
-                <button type="submit" class="flex-[2] px-6 py-4 bg-primary-600 text-white rounded-2xl font-bold shadow-lg shadow-primary-200 hover:bg-primary-700 active:scale-95">Mulai Forum</button>
+                <button type="submit" class="flex-[2] px-6 py-4 bg-theme text-white rounded-2xl font-bold shadow-lg shadow-theme hover:opacity-90 active:scale-95">Mulai Forum</button>
             </div>
         </form>
     </div>
@@ -532,7 +484,7 @@
             </div>
             <div class="px-8 pb-8 flex space-x-3">
                 <button type="button" onclick="closeKbmEditModal()" class="flex-1 px-6 py-4 text-gray-500 bg-gray-100 rounded-2xl font-bold hover:bg-gray-200 transition-all">Batal</button>
-                <button type="button" onclick="updateKbmNote()" class="flex-[2] px-6 py-4 bg-primary-600 text-white rounded-2xl font-bold shadow-lg shadow-primary-200 hover:bg-primary-700 active:scale-95">Update</button>
+                <button type="button" onclick="updateKbmNote()" class="flex-[2] px-6 py-4 bg-theme text-white rounded-2xl font-bold shadow-lg shadow-theme hover:opacity-90 active:scale-95">Update</button>
             </div>
         </form>
     </div>
@@ -574,13 +526,13 @@ function activateKbmTab() {
 
 function updateTabState(tabName) {
     document.querySelectorAll('[data-tab]').forEach(btn => {
-        btn.classList.remove('active', 'bg-primary-600', 'text-white');
+        btn.classList.remove('active', 'bg-theme', 'text-white');
         btn.classList.add('text-gray-500');
     });
     
     const activeBtn = document.querySelector(`[data-tab="${tabName}"]`);
     if (activeBtn) {
-        activeBtn.classList.add('active', 'bg-primary-600', 'text-white');
+        activeBtn.classList.add('active', 'bg-theme', 'text-white');
         activeBtn.classList.remove('text-gray-500');
     }
 }
@@ -814,10 +766,10 @@ function renderClassSwitcher() {
                 ${course.name.charAt(0).toUpperCase()}
             </div>
             <div class="flex-1 min-w-0">
-                <p class="font-bold text-gray-900 text-sm truncate group-hover:text-primary-700 transition-colors">${course.name}</p>
+                <p class="font-bold text-gray-900 text-sm truncate group-hover:text-theme transition-colors">${course.name}</p>
                 <p class="text-xs text-gray-500">${course.students_count || 0} siswa • ${course.class_code}</p>
             </div>
-            ${isActive ? '<span class="text-primary-600 text-xs font-bold">✓ Aktif</span>' : ''}
+            ${isActive ? '<span class="text-theme text-xs font-bold">✓ Aktif</span>' : ''}
         `;
         list.appendChild(a);
     });
