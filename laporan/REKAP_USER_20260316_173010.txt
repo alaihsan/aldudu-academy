@@ -1,0 +1,1949 @@
+====================================================================================================
+REKAP LENGKAP DAFTAR USER - ALDUDU ACADEMY
+====================================================================================================
+Generated: 2026-03-16 17:30:10
+
+====================================================================================================
+DAFTAR HAK AKSES (ROLE PERMISSIONS)
+====================================================================================================
+
+1. SUPER_ADMIN
+   - Akses penuh ke seluruh sistem
+   - Manage semua sekolah
+   - Manage semua user
+   - View semua data
+
+2. ADMIN (Admin Sekolah)
+   - Manage sekolah sendiri
+   - Manage guru di sekolahnya
+   - Manage murid di sekolahnya
+   - Manage kelas di sekolahnya
+   - View laporan sekolah
+
+3. GURU (Pengajar)
+   - Create & manage kelas
+   - Create quiz, tugas, materi
+   - Input nilai siswa
+   - Kelola diskusi kelas
+   - Catat KBM (Kegiatan Belajar Mengajar)
+   - View buku nilai
+
+4. MURID (Siswa)
+   - Join kelas via class code
+   - Kerjakan quiz & tugas
+   - View materi pembelajaran
+   - Participate dalam diskusi
+   - View nilai sendiri
+
+====================================================================================================
+DAFTAR USER PER SEKOLAH
+====================================================================================================
+
+----------------------------------------------------------------------------------------------------
+SEKOLAH: SDIA 1
+Slug: sdia-1
+Status: ACTIVE
+----------------------------------------------------------------------------------------------------
+
+📌 ADMIN SEKOLAH:
+   Total: 1 user
+
+   1. Nama     : SDIA1
+      Email    : sdia1@mail.com
+      Password : 123456
+      Role     : ADMIN
+      Status   : ACTIVE | Verified: YES
+      Hak Akses: Admin sekolah, manage guru & murid, manage kelas
+
+📌 GURU (PENGAJAR):
+   Total: 10 user
+   Format Email: guru[no].[1-10]@sdia-1.sch.id
+   Password Default: 123456
+
+   No   Nama                           Email                                         Password    
+   ---- ------------------------------ --------------------------------------------- ------------
+   1    Arie Untung                    guru6.2@sdia-1.sch.id                         123456      
+   2    Bayu Skak                      guru6.3@sdia-1.sch.id                         123456      
+   3    Chelsea Olivia                 guru6.4@sdia-1.sch.id                         123456      
+   4    Dimas Anggara                  guru6.5@sdia-1.sch.id                         123456      
+   5    Elly Sugigi                    guru6.6@sdia-1.sch.id                         123456      
+   6    Fajar Alfian                   guru6.7@sdia-1.sch.id                         123456      
+   7    Gita Gutawa                    guru6.8@sdia-1.sch.id                         123456      
+   8    Harris Vriza                   guru6.9@sdia-1.sch.id                         123456      
+   9    Isyana Sarasvati               guru6.10@sdia-1.sch.id                        123456      
+   10   Zaskia Gotik                   guru6.1@sdia-1.sch.id                         123456      
+
+   Hak Akses Guru:
+   - Create & manage kelas
+   - Create quiz, tugas, materi, link
+   - Input nilai siswa
+   - Kelola forum diskusi
+   - Catat KBM (Kegiatan Belajar Mengajar)
+   - View buku nilai kelas
+
+📌 MURID (SISWA):
+   Total: 144 user
+   Format Email: murid[no].[1-144]@sdia-1.sch.id
+   Password Default: 123456
+
+   No   Nama                           Email                                         Password    
+   ---- ------------------------------ --------------------------------------------- ------------
+   1    Ahmad Aulia                    murid6.32@sdia-1.sch.id                       123456      
+   2    Ahmad Ramadhan                 murid6.82@sdia-1.sch.id                       123456      
+   3    Ahmad Siregar                  murid6.132@sdia-1.sch.id                      123456      
+   4    Andi Aulia                     murid6.58@sdia-1.sch.id                       123456      
+   5    Andi Ramadhan                  murid6.108@sdia-1.sch.id                      123456      
+   6    Andi Saputra                   murid6.8@sdia-1.sch.id                        123456      
+   7    aqil aqilah                    aqil@mail.com                                 123456      
+   8    Bella Aulia                    murid6.59@sdia-1.sch.id                       123456      
+   9    Bella Ramadhan                 murid6.109@sdia-1.sch.id                      123456      
+   10   Bella Saputra                  murid6.9@sdia-1.sch.id                        123456      
+   11   Budi Aulia                     murid6.33@sdia-1.sch.id                       123456      
+   12   Budi Ramadhan                  murid6.83@sdia-1.sch.id                       123456      
+   13   Budi Siregar                   murid6.133@sdia-1.sch.id                      123456      
+   14   Candra Aulia                   murid6.60@sdia-1.sch.id                       123456      
+   15   Candra Ramadhan                murid6.110@sdia-1.sch.id                      123456      
+   16   Candra Saputra                 murid6.10@sdia-1.sch.id                       123456      
+   17   Citra Aulia                    murid6.34@sdia-1.sch.id                       123456      
+   18   Citra Ramadhan                 murid6.84@sdia-1.sch.id                       123456      
+   19   Citra Siregar                  murid6.134@sdia-1.sch.id                      123456      
+   20   Dewi Aulia                     murid6.35@sdia-1.sch.id                       123456      
+   21   Dewi Ramadhan                  murid6.85@sdia-1.sch.id                       123456      
+   22   Dewi Siregar                   murid6.135@sdia-1.sch.id                      123456      
+   23   Diana Aulia                    murid6.61@sdia-1.sch.id                       123456      
+   24   Diana Ramadhan                 murid6.111@sdia-1.sch.id                      123456      
+   25   Diana Saputra                  murid6.11@sdia-1.sch.id                       123456      
+   26   Eko Aulia                      murid6.36@sdia-1.sch.id                       123456      
+   27   Eko Ramadhan                   murid6.86@sdia-1.sch.id                       123456      
+   28   Eko Siregar                    murid6.136@sdia-1.sch.id                      123456      
+   29   Erwin Aulia                    murid6.62@sdia-1.sch.id                       123456      
+   30   Erwin Ramadhan                 murid6.112@sdia-1.sch.id                      123456      
+   31   Erwin Saputra                  murid6.12@sdia-1.sch.id                       123456      
+   32   Farah Aulia                    murid6.63@sdia-1.sch.id                       123456      
+   33   Farah Ramadhan                 murid6.113@sdia-1.sch.id                      123456      
+   34   Farah Saputra                  murid6.13@sdia-1.sch.id                       123456      
+   35   Fitri Aulia                    murid6.37@sdia-1.sch.id                       123456      
+   36   Fitri Ramadhan                 murid6.87@sdia-1.sch.id                       123456      
+   37   Fitri Siregar                  murid6.137@sdia-1.sch.id                      123456      
+   38   Galih Aulia                    murid6.64@sdia-1.sch.id                       123456      
+   39   Galih Ramadhan                 murid6.114@sdia-1.sch.id                      123456      
+   40   Galih Saputra                  murid6.14@sdia-1.sch.id                       123456      
+   41   Gunawan Aulia                  murid6.38@sdia-1.sch.id                       123456      
+   42   Gunawan Ramadhan               murid6.88@sdia-1.sch.id                       123456      
+   43   Gunawan Siregar                murid6.138@sdia-1.sch.id                      123456      
+   44   Hana Aulia                     murid6.39@sdia-1.sch.id                       123456      
+   45   Hana Ramadhan                  murid6.89@sdia-1.sch.id                       123456      
+   46   Hana Siregar                   murid6.139@sdia-1.sch.id                      123456      
+   47   Hesti Aulia                    murid6.65@sdia-1.sch.id                       123456      
+   48   Hesti Ramadhan                 murid6.115@sdia-1.sch.id                      123456      
+   49   Hesti Saputra                  murid6.15@sdia-1.sch.id                       123456      
+   50   Indra Aulia                    murid6.40@sdia-1.sch.id                       123456      
+   51   Indra Ramadhan                 murid6.90@sdia-1.sch.id                       123456      
+   52   Indra Siregar                  murid6.140@sdia-1.sch.id                      123456      
+   53   Irfan Aulia                    murid6.66@sdia-1.sch.id                       123456      
+   54   Irfan Ramadhan                 murid6.116@sdia-1.sch.id                      123456      
+   55   Irfan Saputra                  murid6.16@sdia-1.sch.id                       123456      
+   56   Jihan Aulia                    murid6.67@sdia-1.sch.id                       123456      
+   57   Jihan Ramadhan                 murid6.117@sdia-1.sch.id                      123456      
+   58   Jihan Saputra                  murid6.17@sdia-1.sch.id                       123456      
+   59   Joko Aulia                     murid6.41@sdia-1.sch.id                       123456      
+   60   Joko Ramadhan                  murid6.91@sdia-1.sch.id                       123456      
+   61   Joko Siregar                   murid6.141@sdia-1.sch.id                      123456      
+   62   Kartini Aulia                  murid6.42@sdia-1.sch.id                       123456      
+   63   Kartini Ramadhan               murid6.92@sdia-1.sch.id                       123456      
+   64   Kartini Siregar                murid6.142@sdia-1.sch.id                      123456      
+   65   Kevin Aulia                    murid6.68@sdia-1.sch.id                       123456      
+   66   Kevin Ramadhan                 murid6.118@sdia-1.sch.id                      123456      
+   67   Kevin Saputra                  murid6.18@sdia-1.sch.id                       123456      
+   68   Lina Aulia                     murid6.69@sdia-1.sch.id                       123456      
+   69   Lina Ramadhan                  murid6.119@sdia-1.sch.id                      123456      
+   70   Lina Saputra                   murid6.19@sdia-1.sch.id                       123456      
+   71   Lukman Aulia                   murid6.43@sdia-1.sch.id                       123456      
+   72   Lukman Ramadhan                murid6.93@sdia-1.sch.id                       123456      
+   73   Lukman Siregar                 murid6.143@sdia-1.sch.id                      123456      
+   74   Maya Aulia                     murid6.44@sdia-1.sch.id                       123456      
+   75   Maya Ramadhan                  murid6.94@sdia-1.sch.id                       123456      
+   76   Maya Siregar                   murid6.144@sdia-1.sch.id                      123456      
+   77   Muhammad Aulia                 murid6.70@sdia-1.sch.id                       123456      
+   78   Muhammad Ramadhan              murid6.120@sdia-1.sch.id                      123456      
+   79   Muhammad Saputra               murid6.20@sdia-1.sch.id                       123456      
+   80   Nadia Aulia                    murid6.71@sdia-1.sch.id                       123456      
+   81   Nadia Ramadhan                 murid6.121@sdia-1.sch.id                      123456      
+   82   Nadia Saputra                  murid6.21@sdia-1.sch.id                       123456      
+   83   Nurul Aulia                    murid6.45@sdia-1.sch.id                       123456      
+   84   Nurul Ramadhan                 murid6.95@sdia-1.sch.id                       123456      
+   85   Omar Aulia                     murid6.46@sdia-1.sch.id                       123456      
+   86   Omar Ramadhan                  murid6.96@sdia-1.sch.id                       123456      
+   87   Opick Aulia                    murid6.72@sdia-1.sch.id                       123456      
+   88   Opick Ramadhan                 murid6.122@sdia-1.sch.id                      123456      
+   89   Opick Saputra                  murid6.22@sdia-1.sch.id                       123456      
+   90   Putra Aulia                    murid6.73@sdia-1.sch.id                       123456      
+   91   Putra Ramadhan                 murid6.123@sdia-1.sch.id                      123456      
+   92   Putra Saputra                  murid6.23@sdia-1.sch.id                       123456      
+   93   Putri Aulia                    murid6.47@sdia-1.sch.id                       123456      
+   94   Putri Ramadhan                 murid6.97@sdia-1.sch.id                       123456      
+   95   Qomar Aulia                    murid6.74@sdia-1.sch.id                       123456      
+   96   Qomar Ramadhan                 murid6.124@sdia-1.sch.id                      123456      
+   97   Qomar Saputra                  murid6.24@sdia-1.sch.id                       123456      
+   98   Qori Aulia                     murid6.48@sdia-1.sch.id                       123456      
+   99   Qori Ramadhan                  murid6.98@sdia-1.sch.id                       123456      
+   100  Rina Aulia                     murid6.75@sdia-1.sch.id                       123456      
+   101  Rina Ramadhan                  murid6.125@sdia-1.sch.id                      123456      
+   102  Rina Saputra                   murid6.25@sdia-1.sch.id                       123456      
+   103  Rudi Aulia                     murid6.49@sdia-1.sch.id                       123456      
+   104  Rudi Ramadhan                  murid6.99@sdia-1.sch.id                       123456      
+   105  Siti Aulia                     murid6.50@sdia-1.sch.id                       123456      
+   106  Siti Ramadhan                  murid6.100@sdia-1.sch.id                      123456      
+   107  Syahrin Aulia                  murid6.76@sdia-1.sch.id                       123456      
+   108  Syahrin Ramadhan               murid6.126@sdia-1.sch.id                      123456      
+   109  Syahrin Saputra                murid6.26@sdia-1.sch.id                       123456      
+   110  Taufik Aulia                   murid6.51@sdia-1.sch.id                       123456      
+   111  Taufik Ramadhan                murid6.101@sdia-1.sch.id                      123456      
+   112  Tomi Aulia                     murid6.77@sdia-1.sch.id                       123456      
+   113  Tomi Ramadhan                  murid6.127@sdia-1.sch.id                      123456      
+   114  Tomi Saputra                   murid6.27@sdia-1.sch.id                       123456      
+   115  Umar Aulia                     murid6.52@sdia-1.sch.id                       123456      
+   116  Umar Ramadhan                  murid6.102@sdia-1.sch.id                      123456      
+   117  Umar Saputra                   murid6.2@sdia-1.sch.id                        123456      
+   118  Ussy Aulia                     murid6.78@sdia-1.sch.id                       123456      
+   119  Ussy Ramadhan                  murid6.128@sdia-1.sch.id                      123456      
+   120  Ussy Saputra                   murid6.28@sdia-1.sch.id                       123456      
+   121  Vicky Aulia                    murid6.79@sdia-1.sch.id                       123456      
+   122  Vicky Ramadhan                 murid6.129@sdia-1.sch.id                      123456      
+   123  Vicky Saputra                  murid6.29@sdia-1.sch.id                       123456      
+   124  Vina Aulia                     murid6.53@sdia-1.sch.id                       123456      
+   125  Vina Ramadhan                  murid6.103@sdia-1.sch.id                      123456      
+   126  Vina Saputra                   murid6.3@sdia-1.sch.id                        123456      
+   127  Wawan Aulia                    murid6.54@sdia-1.sch.id                       123456      
+   128  Wawan Ramadhan                 murid6.104@sdia-1.sch.id                      123456      
+   129  Wawan Saputra                  murid6.4@sdia-1.sch.id                        123456      
+   130  Wendi Aulia                    murid6.80@sdia-1.sch.id                       123456      
+   131  Wendi Ramadhan                 murid6.130@sdia-1.sch.id                      123456      
+   132  Wendi Saputra                  murid6.30@sdia-1.sch.id                       123456      
+   133  Xena Aulia                     murid6.55@sdia-1.sch.id                       123456      
+   134  Xena Ramadhan                  murid6.105@sdia-1.sch.id                      123456      
+   135  Xena Saputra                   murid6.5@sdia-1.sch.id                        123456      
+   136  Yuni Aulia                     murid6.81@sdia-1.sch.id                       123456      
+   137  Yuni Ramadhan                  murid6.131@sdia-1.sch.id                      123456      
+   138  Yuni Saputra                   murid6.31@sdia-1.sch.id                       123456      
+   139  Yusuf Aulia                    murid6.56@sdia-1.sch.id                       123456      
+   140  Yusuf Ramadhan                 murid6.106@sdia-1.sch.id                      123456      
+   141  Yusuf Saputra                  murid6.6@sdia-1.sch.id                        123456      
+   142  Zainab Aulia                   murid6.57@sdia-1.sch.id                       123456      
+   143  Zainab Ramadhan                murid6.107@sdia-1.sch.id                      123456      
+   144  Zainab Saputra                 murid6.7@sdia-1.sch.id                        123456      
+
+   Hak Akses Murid:
+   - Join kelas via class code
+   - Kerjakan quiz & tugas
+   - View materi pembelajaran
+   - Participate dalam diskusi
+   - View nilai sendiri
+
+----------------------------------------------------------------------------------------------------
+TOTAL USER SEKOLAH INI: 155 user
+   - Admin: 1
+   - Guru: 10
+   - Murid: 144
+
+
+----------------------------------------------------------------------------------------------------
+SEKOLAH: sdia2
+Slug: sdia2
+Status: ACTIVE
+----------------------------------------------------------------------------------------------------
+
+📌 ADMIN SEKOLAH:
+   Total: 1 user
+
+   1. Nama     : sasa
+      Email    : sdia2@mail.com
+      Password : 123456
+      Role     : ADMIN
+      Status   : ACTIVE | Verified: YES
+      Hak Akses: Admin sekolah, manage guru & murid, manage kelas
+
+📌 GURU (PENGAJAR):
+   Total: 10 user
+   Format Email: guru[no].[1-10]@sdia2.sch.id
+   Password Default: 123456
+
+   No   Nama                           Email                                         Password    
+   ---- ------------------------------ --------------------------------------------- ------------
+   1    Jefri Nichol                   guru7.1@sdia2.sch.id                          123456      
+   2    Krisdayanti                    guru7.2@sdia2.sch.id                          123456      
+   3    Lyodra Ginting                 guru7.3@sdia2.sch.id                          123456      
+   4    Marion Jola                    guru7.4@sdia2.sch.id                          123456      
+   5    Niki Zefanya                   guru7.5@sdia2.sch.id                          123456      
+   6    Oka Antara                     guru7.6@sdia2.sch.id                          123456      
+   7    Prilly Latuconsina             guru7.7@sdia2.sch.id                          123456      
+   8    Qiandra Razak                  guru7.8@sdia2.sch.id                          123456      
+   9    Raffi Ahmad                    guru7.9@sdia2.sch.id                          123456      
+   10   Sherina Munaf                  guru7.10@sdia2.sch.id                         123456      
+
+   Hak Akses Guru:
+   - Create & manage kelas
+   - Create quiz, tugas, materi, link
+   - Input nilai siswa
+   - Kelola forum diskusi
+   - Catat KBM (Kegiatan Belajar Mengajar)
+   - View buku nilai kelas
+
+📌 MURID (SISWA):
+   Total: 144 user
+   Format Email: murid[no].[1-144]@sdia2.sch.id
+   Password Default: 123456
+
+   No   Nama                           Email                                         Password    
+   ---- ------------------------------ --------------------------------------------- ------------
+   1    Ahmad Harahap                  murid7.87@sdia2.sch.id                        123456      
+   2    Ahmad Nasution                 murid7.37@sdia2.sch.id                        123456      
+   3    Ahmad Pratama                  murid7.137@sdia2.sch.id                       123456      
+   4    Andi Harahap                   murid7.113@sdia2.sch.id                       123456      
+   5    Andi Nasution                  murid7.63@sdia2.sch.id                        123456      
+   6    Andi Siregar                   murid7.13@sdia2.sch.id                        123456      
+   7    Bella Harahap                  murid7.114@sdia2.sch.id                       123456      
+   8    Bella Nasution                 murid7.64@sdia2.sch.id                        123456      
+   9    Bella Siregar                  murid7.14@sdia2.sch.id                        123456      
+   10   Budi Harahap                   murid7.88@sdia2.sch.id                        123456      
+   11   Budi Nasution                  murid7.38@sdia2.sch.id                        123456      
+   12   Budi Pratama                   murid7.138@sdia2.sch.id                       123456      
+   13   Candra Harahap                 murid7.115@sdia2.sch.id                       123456      
+   14   Candra Nasution                murid7.65@sdia2.sch.id                        123456      
+   15   Candra Siregar                 murid7.15@sdia2.sch.id                        123456      
+   16   Citra Harahap                  murid7.89@sdia2.sch.id                        123456      
+   17   Citra Nasution                 murid7.39@sdia2.sch.id                        123456      
+   18   Citra Pratama                  murid7.139@sdia2.sch.id                       123456      
+   19   Dewi Harahap                   murid7.90@sdia2.sch.id                        123456      
+   20   Dewi Nasution                  murid7.40@sdia2.sch.id                        123456      
+   21   Dewi Pratama                   murid7.140@sdia2.sch.id                       123456      
+   22   Diana Harahap                  murid7.116@sdia2.sch.id                       123456      
+   23   Diana Nasution                 murid7.66@sdia2.sch.id                        123456      
+   24   Diana Siregar                  murid7.16@sdia2.sch.id                        123456      
+   25   Eko Harahap                    murid7.91@sdia2.sch.id                        123456      
+   26   Eko Nasution                   murid7.41@sdia2.sch.id                        123456      
+   27   Eko Pratama                    murid7.141@sdia2.sch.id                       123456      
+   28   Erwin Harahap                  murid7.117@sdia2.sch.id                       123456      
+   29   Erwin Nasution                 murid7.67@sdia2.sch.id                        123456      
+   30   Erwin Siregar                  murid7.17@sdia2.sch.id                        123456      
+   31   Farah Harahap                  murid7.118@sdia2.sch.id                       123456      
+   32   Farah Nasution                 murid7.68@sdia2.sch.id                        123456      
+   33   Farah Siregar                  murid7.18@sdia2.sch.id                        123456      
+   34   Fitri Harahap                  murid7.92@sdia2.sch.id                        123456      
+   35   Fitri Nasution                 murid7.42@sdia2.sch.id                        123456      
+   36   Fitri Pratama                  murid7.142@sdia2.sch.id                       123456      
+   37   Galih Harahap                  murid7.119@sdia2.sch.id                       123456      
+   38   Galih Nasution                 murid7.69@sdia2.sch.id                        123456      
+   39   Galih Siregar                  murid7.19@sdia2.sch.id                        123456      
+   40   Gunawan Harahap                murid7.93@sdia2.sch.id                        123456      
+   41   Gunawan Nasution               murid7.43@sdia2.sch.id                        123456      
+   42   Gunawan Pratama                murid7.143@sdia2.sch.id                       123456      
+   43   Hana Harahap                   murid7.94@sdia2.sch.id                        123456      
+   44   Hana Nasution                  murid7.44@sdia2.sch.id                        123456      
+   45   Hana Pratama                   murid7.144@sdia2.sch.id                       123456      
+   46   Hesti Harahap                  murid7.120@sdia2.sch.id                       123456      
+   47   Hesti Nasution                 murid7.70@sdia2.sch.id                        123456      
+   48   Hesti Siregar                  murid7.20@sdia2.sch.id                        123456      
+   49   Indra Harahap                  murid7.95@sdia2.sch.id                        123456      
+   50   Indra Nasution                 murid7.45@sdia2.sch.id                        123456      
+   51   Irfan Harahap                  murid7.121@sdia2.sch.id                       123456      
+   52   Irfan Nasution                 murid7.71@sdia2.sch.id                        123456      
+   53   Irfan Siregar                  murid7.21@sdia2.sch.id                        123456      
+   54   Jihan Harahap                  murid7.122@sdia2.sch.id                       123456      
+   55   Jihan Nasution                 murid7.72@sdia2.sch.id                        123456      
+   56   Jihan Siregar                  murid7.22@sdia2.sch.id                        123456      
+   57   Joko Harahap                   murid7.96@sdia2.sch.id                        123456      
+   58   Joko Nasution                  murid7.46@sdia2.sch.id                        123456      
+   59   Kartini Harahap                murid7.97@sdia2.sch.id                        123456      
+   60   Kartini Nasution               murid7.47@sdia2.sch.id                        123456      
+   61   Kevin Harahap                  murid7.123@sdia2.sch.id                       123456      
+   62   Kevin Nasution                 murid7.73@sdia2.sch.id                        123456      
+   63   Kevin Siregar                  murid7.23@sdia2.sch.id                        123456      
+   64   Lina Harahap                   murid7.124@sdia2.sch.id                       123456      
+   65   Lina Nasution                  murid7.74@sdia2.sch.id                        123456      
+   66   Lina Siregar                   murid7.24@sdia2.sch.id                        123456      
+   67   Lukman Harahap                 murid7.98@sdia2.sch.id                        123456      
+   68   Lukman Nasution                murid7.48@sdia2.sch.id                        123456      
+   69   Maya Harahap                   murid7.99@sdia2.sch.id                        123456      
+   70   Maya Nasution                  murid7.49@sdia2.sch.id                        123456      
+   71   Muhammad Harahap               murid7.125@sdia2.sch.id                       123456      
+   72   Muhammad Nasution              murid7.75@sdia2.sch.id                        123456      
+   73   Muhammad Siregar               murid7.25@sdia2.sch.id                        123456      
+   74   Nadia Harahap                  murid7.126@sdia2.sch.id                       123456      
+   75   Nadia Nasution                 murid7.76@sdia2.sch.id                        123456      
+   76   Nadia Siregar                  murid7.26@sdia2.sch.id                        123456      
+   77   Nurul Harahap                  murid7.100@sdia2.sch.id                       123456      
+   78   Nurul Nasution                 murid7.50@sdia2.sch.id                        123456      
+   79   Omar Harahap                   murid7.101@sdia2.sch.id                       123456      
+   80   Omar Nasution                  murid7.51@sdia2.sch.id                        123456      
+   81   Omar Siregar                   murid7.1@sdia2.sch.id                         123456      
+   82   Opick Harahap                  murid7.127@sdia2.sch.id                       123456      
+   83   Opick Nasution                 murid7.77@sdia2.sch.id                        123456      
+   84   Opick Siregar                  murid7.27@sdia2.sch.id                        123456      
+   85   Putra Harahap                  murid7.128@sdia2.sch.id                       123456      
+   86   Putra Nasution                 murid7.78@sdia2.sch.id                        123456      
+   87   Putra Siregar                  murid7.28@sdia2.sch.id                        123456      
+   88   Putri Harahap                  murid7.102@sdia2.sch.id                       123456      
+   89   Putri Nasution                 murid7.52@sdia2.sch.id                        123456      
+   90   Putri Siregar                  murid7.2@sdia2.sch.id                         123456      
+   91   Qomar Harahap                  murid7.129@sdia2.sch.id                       123456      
+   92   Qomar Nasution                 murid7.79@sdia2.sch.id                        123456      
+   93   Qomar Siregar                  murid7.29@sdia2.sch.id                        123456      
+   94   Qori Harahap                   murid7.103@sdia2.sch.id                       123456      
+   95   Qori Nasution                  murid7.53@sdia2.sch.id                        123456      
+   96   Qori Siregar                   murid7.3@sdia2.sch.id                         123456      
+   97   Rina Harahap                   murid7.130@sdia2.sch.id                       123456      
+   98   Rina Nasution                  murid7.80@sdia2.sch.id                        123456      
+   99   Rina Siregar                   murid7.30@sdia2.sch.id                        123456      
+   100  Rudi Harahap                   murid7.104@sdia2.sch.id                       123456      
+   101  Rudi Nasution                  murid7.54@sdia2.sch.id                        123456      
+   102  Rudi Siregar                   murid7.4@sdia2.sch.id                         123456      
+   103  Siti Harahap                   murid7.105@sdia2.sch.id                       123456      
+   104  Siti Nasution                  murid7.55@sdia2.sch.id                        123456      
+   105  Siti Siregar                   murid7.5@sdia2.sch.id                         123456      
+   106  Syahrin Harahap                murid7.131@sdia2.sch.id                       123456      
+   107  Syahrin Nasution               murid7.81@sdia2.sch.id                        123456      
+   108  Syahrin Siregar                murid7.31@sdia2.sch.id                        123456      
+   109  Taufik Harahap                 murid7.106@sdia2.sch.id                       123456      
+   110  Taufik Nasution                murid7.56@sdia2.sch.id                        123456      
+   111  Taufik Siregar                 murid7.6@sdia2.sch.id                         123456      
+   112  Tomi Harahap                   murid7.132@sdia2.sch.id                       123456      
+   113  Tomi Nasution                  murid7.82@sdia2.sch.id                        123456      
+   114  Tomi Siregar                   murid7.32@sdia2.sch.id                        123456      
+   115  Umar Harahap                   murid7.107@sdia2.sch.id                       123456      
+   116  Umar Nasution                  murid7.57@sdia2.sch.id                        123456      
+   117  Umar Siregar                   murid7.7@sdia2.sch.id                         123456      
+   118  Ussy Harahap                   murid7.133@sdia2.sch.id                       123456      
+   119  Ussy Nasution                  murid7.83@sdia2.sch.id                        123456      
+   120  Ussy Siregar                   murid7.33@sdia2.sch.id                        123456      
+   121  Vicky Harahap                  murid7.134@sdia2.sch.id                       123456      
+   122  Vicky Nasution                 murid7.84@sdia2.sch.id                        123456      
+   123  Vicky Siregar                  murid7.34@sdia2.sch.id                        123456      
+   124  Vina Harahap                   murid7.108@sdia2.sch.id                       123456      
+   125  Vina Nasution                  murid7.58@sdia2.sch.id                        123456      
+   126  Vina Siregar                   murid7.8@sdia2.sch.id                         123456      
+   127  Wawan Harahap                  murid7.109@sdia2.sch.id                       123456      
+   128  Wawan Nasution                 murid7.59@sdia2.sch.id                        123456      
+   129  Wawan Siregar                  murid7.9@sdia2.sch.id                         123456      
+   130  Wendi Harahap                  murid7.135@sdia2.sch.id                       123456      
+   131  Wendi Nasution                 murid7.85@sdia2.sch.id                        123456      
+   132  Wendi Siregar                  murid7.35@sdia2.sch.id                        123456      
+   133  Xena Harahap                   murid7.110@sdia2.sch.id                       123456      
+   134  Xena Nasution                  murid7.60@sdia2.sch.id                        123456      
+   135  Xena Siregar                   murid7.10@sdia2.sch.id                        123456      
+   136  Yuni Harahap                   murid7.136@sdia2.sch.id                       123456      
+   137  Yuni Nasution                  murid7.86@sdia2.sch.id                        123456      
+   138  Yuni Siregar                   murid7.36@sdia2.sch.id                        123456      
+   139  Yusuf Harahap                  murid7.111@sdia2.sch.id                       123456      
+   140  Yusuf Nasution                 murid7.61@sdia2.sch.id                        123456      
+   141  Yusuf Siregar                  murid7.11@sdia2.sch.id                        123456      
+   142  Zainab Harahap                 murid7.112@sdia2.sch.id                       123456      
+   143  Zainab Nasution                murid7.62@sdia2.sch.id                        123456      
+   144  Zainab Siregar                 murid7.12@sdia2.sch.id                        123456      
+
+   Hak Akses Murid:
+   - Join kelas via class code
+   - Kerjakan quiz & tugas
+   - View materi pembelajaran
+   - Participate dalam diskusi
+   - View nilai sendiri
+
+----------------------------------------------------------------------------------------------------
+TOTAL USER SEKOLAH INI: 155 user
+   - Admin: 1
+   - Guru: 10
+   - Murid: 144
+
+
+----------------------------------------------------------------------------------------------------
+SEKOLAH: SMA Negeri 5 Bandung
+Slug: sman5-bandung
+Status: ACTIVE
+----------------------------------------------------------------------------------------------------
+
+📌 ADMIN SEKOLAH:
+   Total: 1 user
+
+   1. Nama     : Budi Santoso
+      Email    : budi@sman5bandung.sch.id
+      Password : 123456
+      Role     : ADMIN
+      Status   : ACTIVE | Verified: YES
+      Hak Akses: Admin sekolah, manage guru & murid, manage kelas
+
+📌 GURU (PENGAJAR):
+   Total: 10 user
+   Format Email: guru[no].[1-10]@sman5-bandung.sch.id
+   Password Default: 123456
+
+   No   Nama                           Email                                         Password    
+   ---- ------------------------------ --------------------------------------------- ------------
+   1    Ahmad Fauzi                    guru1.1@sman5-bandung.sch.id                  123456      
+   2    Budi Santoso                   guru1.2@sman5-bandung.sch.id                  123456      
+   3    Citra Dewi                     guru1.3@sman5-bandung.sch.id                  123456      
+   4    Dewi Lestari                   guru1.4@sman5-bandung.sch.id                  123456      
+   5    Eko Prasetyo                   guru1.5@sman5-bandung.sch.id                  123456      
+   6    Fitri Handayani                guru1.6@sman5-bandung.sch.id                  123456      
+   7    Gunawan Wijaya                 guru1.7@sman5-bandung.sch.id                  123456      
+   8    Hana Pertiwi                   guru1.8@sman5-bandung.sch.id                  123456      
+   9    Indra Kusuma                   guru1.9@sman5-bandung.sch.id                  123456      
+   10   Joko Widodo                    guru1.10@sman5-bandung.sch.id                 123456      
+
+   Hak Akses Guru:
+   - Create & manage kelas
+   - Create quiz, tugas, materi, link
+   - Input nilai siswa
+   - Kelola forum diskusi
+   - Catat KBM (Kegiatan Belajar Mengajar)
+   - View buku nilai kelas
+
+📌 MURID (SISWA):
+   Total: 144 user
+   Format Email: murid[no].[1-144]@sman5-bandung.sch.id
+   Password Default: 123456
+
+   No   Nama                           Email                                         Password    
+   ---- ------------------------------ --------------------------------------------- ------------
+   1    Adi Pratama                    murid1.101@sman5-bandung.sch.id               123456      
+   2    Afgan Pratama                  murid1.78@sman5-bandung.sch.id                123456      
+   3    Ahmad Pratama                  murid1.1@sman5-bandung.sch.id                 123456      
+   4    Ahmad Santoso                  murid1.121@sman5-bandung.sch.id               123456      
+   5    Andi Pratama                   murid1.27@sman5-bandung.sch.id                123456      
+   6    Arie Pratama                   murid1.52@sman5-bandung.sch.id                123456      
+   7    Bayu Pratama                   murid1.53@sman5-bandung.sch.id                123456      
+   8    Bella Pratama                  murid1.102@sman5-bandung.sch.id               123456      
+   9    Bella Pratama                  murid1.28@sman5-bandung.sch.id                123456      
+   10   Budi Pratama                   murid1.2@sman5-bandung.sch.id                 123456      
+   11   Budi Santoso                   murid1.122@sman5-bandung.sch.id               123456      
+   12   Bunga Pratama                  murid1.79@sman5-bandung.sch.id                123456      
+   13   Candra Pratama                 murid1.29@sman5-bandung.sch.id                123456      
+   14   Chelsea Pratama                murid1.54@sman5-bandung.sch.id                123456      
+   15   Citra Pratama                  murid1.3@sman5-bandung.sch.id                 123456      
+   16   Citra Santoso                  murid1.123@sman5-bandung.sch.id               123456      
+   17   Coki Pratama                   murid1.103@sman5-bandung.sch.id               123456      
+   18   Dewa Pratama                   murid1.80@sman5-bandung.sch.id                123456      
+   19   Dewi Pratama                   murid1.4@sman5-bandung.sch.id                 123456      
+   20   Dewi Santoso                   murid1.124@sman5-bandung.sch.id               123456      
+   21   Diana Pratama                  murid1.30@sman5-bandung.sch.id                123456      
+   22   Dimas Pratama                  murid1.55@sman5-bandung.sch.id                123456      
+   23   Dinda Pratama                  murid1.104@sman5-bandung.sch.id               123456      
+   24   Ebiet Pratama                  murid1.81@sman5-bandung.sch.id                123456      
+   25   Edo Pratama                    murid1.105@sman5-bandung.sch.id               123456      
+   26   Eko Pratama                    murid1.5@sman5-bandung.sch.id                 123456      
+   27   Eko Santoso                    murid1.125@sman5-bandung.sch.id               123456      
+   28   Elly Pratama                   murid1.56@sman5-bandung.sch.id                123456      
+   29   Erwin Pratama                  murid1.31@sman5-bandung.sch.id                123456      
+   30   Fajar Pratama                  murid1.57@sman5-bandung.sch.id                123456      
+   31   Fani Pratama                   murid1.106@sman5-bandung.sch.id               123456      
+   32   Farah Pratama                  murid1.32@sman5-bandung.sch.id                123456      
+   33   Fiersa Pratama                 murid1.82@sman5-bandung.sch.id                123456      
+   34   Fitri Pratama                  murid1.6@sman5-bandung.sch.id                 123456      
+   35   Fitri Santoso                  murid1.126@sman5-bandung.sch.id               123456      
+   36   Gading Pratama                 murid1.107@sman5-bandung.sch.id               123456      
+   37   Galih Pratama                  murid1.33@sman5-bandung.sch.id                123456      
+   38   Gita Pratama                   murid1.58@sman5-bandung.sch.id                123456      
+   39   Glenn Pratama                  murid1.83@sman5-bandung.sch.id                123456      
+   40   Gunawan Pratama                murid1.7@sman5-bandung.sch.id                 123456      
+   41   Gunawan Santoso                murid1.127@sman5-bandung.sch.id               123456      
+   42   Hana Pratama                   murid1.8@sman5-bandung.sch.id                 123456      
+   43   Hana Santoso                   murid1.128@sman5-bandung.sch.id               123456      
+   44   Hanna Pratama                  murid1.108@sman5-bandung.sch.id               123456      
+   45   Harris Pratama                 murid1.59@sman5-bandung.sch.id                123456      
+   46   Hesti Pratama                  murid1.34@sman5-bandung.sch.id                123456      
+   47   Indra Pratama                  murid1.9@sman5-bandung.sch.id                 123456      
+   48   Indra Santoso                  murid1.129@sman5-bandung.sch.id               123456      
+   49   Iqbal Pratama                  murid1.109@sman5-bandung.sch.id               123456      
+   50   Irfan Pratama                  murid1.35@sman5-bandung.sch.id                123456      
+   51   Isyana Pratama                 murid1.60@sman5-bandung.sch.id                123456      
+   52   Iwan Pratama                   murid1.84@sman5-bandung.sch.id                123456      
+   53   Jefri Pratama                  murid1.61@sman5-bandung.sch.id                123456      
+   54   Jessica Pratama                murid1.110@sman5-bandung.sch.id               123456      
+   55   Jihan Pratama                  murid1.36@sman5-bandung.sch.id                123456      
+   56   Joko Pratama                   murid1.10@sman5-bandung.sch.id                123456      
+   57   Joko Santoso                   murid1.130@sman5-bandung.sch.id               123456      
+   58   Judika Pratama                 murid1.85@sman5-bandung.sch.id                123456      
+   59   Kahitna Pratama                murid1.86@sman5-bandung.sch.id                123456      
+   60   Kartini Pratama                murid1.11@sman5-bandung.sch.id                123456      
+   61   Kartini Santoso                murid1.131@sman5-bandung.sch.id               123456      
+   62   Kenzo Pratama                  murid1.111@sman5-bandung.sch.id               123456      
+   63   Kevin Pratama                  murid1.37@sman5-bandung.sch.id                123456      
+   64   Kris Pratama                   murid1.62@sman5-bandung.sch.id                123456      
+   65   Letto Pratama                  murid1.87@sman5-bandung.sch.id                123456      
+   66   Lina Pratama                   murid1.38@sman5-bandung.sch.id                123456      
+   67   Lukman Pratama                 murid1.12@sman5-bandung.sch.id                123456      
+   68   Lukman Santoso                 murid1.132@sman5-bandung.sch.id               123456      
+   69   Luna Pratama                   murid1.112@sman5-bandung.sch.id               123456      
+   70   Lyodra Pratama                 murid1.63@sman5-bandung.sch.id                123456      
+   71   Mahalini Pratama               murid1.88@sman5-bandung.sch.id                123456      
+   72   Marion Pratama                 murid1.64@sman5-bandung.sch.id                123456      
+   73   Maya Pratama                   murid1.13@sman5-bandung.sch.id                123456      
+   74   Maya Santoso                   murid1.133@sman5-bandung.sch.id               123456      
+   75   Miko Pratama                   murid1.113@sman5-bandung.sch.id               123456      
+   76   Muhammad Pratama               murid1.39@sman5-bandung.sch.id                123456      
+   77   Nadia Pratama                  murid1.40@sman5-bandung.sch.id                123456      
+   78   Nayla Pratama                  murid1.114@sman5-bandung.sch.id               123456      
+   79   Niki Pratama                   murid1.65@sman5-bandung.sch.id                123456      
+   80   Noah Pratama                   murid1.89@sman5-bandung.sch.id                123456      
+   81   Nurul Pratama                  murid1.14@sman5-bandung.sch.id                123456      
+   82   Nurul Santoso                  murid1.134@sman5-bandung.sch.id               123456      
+   83   Oddie Pratama                  murid1.90@sman5-bandung.sch.id                123456      
+   84   Oka Pratama                    murid1.66@sman5-bandung.sch.id                123456      
+   85   Omar Pratama                   murid1.15@sman5-bandung.sch.id                123456      
+   86   Omar Santoso                   murid1.135@sman5-bandung.sch.id               123456      
+   87   Opick Pratama                  murid1.41@sman5-bandung.sch.id                123456      
+   88   Oscar Pratama                  murid1.115@sman5-bandung.sch.id               123456      
+   89   Peter Pratama                  murid1.91@sman5-bandung.sch.id                123456      
+   90   Prilly Pratama                 murid1.67@sman5-bandung.sch.id                123456      
+   91   Putra Pratama                  murid1.42@sman5-bandung.sch.id                123456      
+   92   Putra Pratama                  murid1.116@sman5-bandung.sch.id               123456      
+   93   Putri Pratama                  murid1.16@sman5-bandung.sch.id                123456      
+   94   Putri Santoso                  murid1.136@sman5-bandung.sch.id               123456      
+   95   Qalbi Pratama                  murid1.117@sman5-bandung.sch.id               123456      
+   96   Qiandra Pratama                murid1.68@sman5-bandung.sch.id                123456      
+   97   Qomar Pratama                  murid1.43@sman5-bandung.sch.id                123456      
+   98   Qori Pratama                   murid1.17@sman5-bandung.sch.id                123456      
+   99   Qori Santoso                   murid1.137@sman5-bandung.sch.id               123456      
+   100  Queen Pratama                  murid1.92@sman5-bandung.sch.id                123456      
+   101  Radja Pratama                  murid1.93@sman5-bandung.sch.id                123456      
+   102  Raffi Pratama                  murid1.69@sman5-bandung.sch.id                123456      
+   103  Rina Pratama                   murid1.44@sman5-bandung.sch.id                123456      
+   104  Rizky Pratama                  murid1.118@sman5-bandung.sch.id               123456      
+   105  Rudi Pratama                   murid1.18@sman5-bandung.sch.id                123456      
+   106  Rudi Santoso                   murid1.138@sman5-bandung.sch.id               123456      
+   107  Salsa Pratama                  murid1.119@sman5-bandung.sch.id               123456      
+   108  Sheila Pratama                 murid1.94@sman5-bandung.sch.id                123456      
+   109  Sherina Pratama                murid1.70@sman5-bandung.sch.id                123456      
+   110  Siti Pratama                   murid1.19@sman5-bandung.sch.id                123456      
+   111  Siti Santoso                   murid1.139@sman5-bandung.sch.id               123456      
+   112  Syahrin Pratama                murid1.45@sman5-bandung.sch.id                123456      
+   113  Taufik Pratama                 murid1.20@sman5-bandung.sch.id                123456      
+   114  Taufik Santoso                 murid1.140@sman5-bandung.sch.id               123456      
+   115  Test Mailtrap 2                testmailtrap2@example.com                     123456      
+   116  Test Murid Email               testmuridemail@example.com                    123456      
+   117  Test User                      testmailtrap@example.com                      123456      
+   118  Test User                      testuser123@example.com                       123456      
+   119  Teuku Pratama                  murid1.120@sman5-bandung.sch.id               123456      
+   120  Tiara Pratama                  murid1.71@sman5-bandung.sch.id                123456      
+   121  Tomi Pratama                   murid1.46@sman5-bandung.sch.id                123456      
+   122  Tulus Pratama                  murid1.95@sman5-bandung.sch.id                123456      
+   123  Ulta Pratama                   murid1.72@sman5-bandung.sch.id                123456      
+   124  Umar Pratama                   murid1.21@sman5-bandung.sch.id                123456      
+   125  Ungu Pratama                   murid1.96@sman5-bandung.sch.id                123456      
+   126  Ussy Pratama                   murid1.47@sman5-bandung.sch.id                123456      
+   127  Via Pratama                    murid1.73@sman5-bandung.sch.id                123456      
+   128  Vicky Pratama                  murid1.48@sman5-bandung.sch.id                123456      
+   129  Vina Pratama                   murid1.22@sman5-bandung.sch.id                123456      
+   130  Virgoun Pratama                murid1.97@sman5-bandung.sch.id                123456      
+   131  Wali Pratama                   murid1.98@sman5-bandung.sch.id                123456      
+   132  Wawan Pratama                  murid1.23@sman5-bandung.sch.id                123456      
+   133  Wendi Pratama                  murid1.49@sman5-bandung.sch.id                123456      
+   134  Wika Pratama                   murid1.74@sman5-bandung.sch.id                123456      
+   135  Xabiru Pratama                 murid1.75@sman5-bandung.sch.id                123456      
+   136  Xena Pratama                   murid1.24@sman5-bandung.sch.id                123456      
+   137  Yovie Pratama                  murid1.99@sman5-bandung.sch.id                123456      
+   138  Yuni Pratama                   murid1.50@sman5-bandung.sch.id                123456      
+   139  Yura Pratama                   murid1.76@sman5-bandung.sch.id                123456      
+   140  Yusuf Pratama                  murid1.25@sman5-bandung.sch.id                123456      
+   141  Zainab Pratama                 murid1.26@sman5-bandung.sch.id                123456      
+   142  Zaskia Pratama                 murid1.51@sman5-bandung.sch.id                123456      
+   143  Ziva Pratama                   murid1.77@sman5-bandung.sch.id                123456      
+   144  Zivilia Pratama                murid1.100@sman5-bandung.sch.id               123456      
+
+   Hak Akses Murid:
+   - Join kelas via class code
+   - Kerjakan quiz & tugas
+   - View materi pembelajaran
+   - Participate dalam diskusi
+   - View nilai sendiri
+
+----------------------------------------------------------------------------------------------------
+TOTAL USER SEKOLAH INI: 155 user
+   - Admin: 1
+   - Guru: 10
+   - Murid: 144
+
+
+----------------------------------------------------------------------------------------------------
+SEKOLAH: SMAIA 4 Kemang Pratama
+Slug: smaia-4-kemang-pratama
+Status: ACTIVE
+----------------------------------------------------------------------------------------------------
+
+📌 ADMIN SEKOLAH:
+   Total: 1 user
+
+   1. Nama     : syalala
+      Email    : smaia4@mail.com
+      Password : 123456
+      Role     : ADMIN
+      Status   : ACTIVE | Verified: YES
+      Hak Akses: Admin sekolah, manage guru & murid, manage kelas
+
+📌 GURU (PENGAJAR):
+   Total: 10 user
+   Format Email: guru[no].[1-10]@smaia-4-kemang-pratama.sch.id
+   Password Default: 123456
+
+   No   Nama                           Email                                         Password    
+   ---- ------------------------------ --------------------------------------------- ------------
+   1    Kartini Sari                   guru2.1@smaia-4-kemang-pratama.sch.id         123456      
+   2    Lukman Hakim                   guru2.2@smaia-4-kemang-pratama.sch.id         123456      
+   3    Maya Putri                     guru2.3@smaia-4-kemang-pratama.sch.id         123456      
+   4    Nurul Hidayah                  guru2.4@smaia-4-kemang-pratama.sch.id         123456      
+   5    Omar Abdullah                  guru2.5@smaia-4-kemang-pratama.sch.id         123456      
+   6    Putri Anggraini                guru2.6@smaia-4-kemang-pratama.sch.id         123456      
+   7    Qori Azzahra                   guru2.7@smaia-4-kemang-pratama.sch.id         123456      
+   8    Rudi Hartono                   guru2.8@smaia-4-kemang-pratama.sch.id         123456      
+   9    Siti Nurhaliza                 guru2.9@smaia-4-kemang-pratama.sch.id         123456      
+   10   Taufik Hidayat                 guru2.10@smaia-4-kemang-pratama.sch.id        123456      
+
+   Hak Akses Guru:
+   - Create & manage kelas
+   - Create quiz, tugas, materi, link
+   - Input nilai siswa
+   - Kelola forum diskusi
+   - Catat KBM (Kegiatan Belajar Mengajar)
+   - View buku nilai kelas
+
+📌 MURID (SISWA):
+   Total: 144 user
+   Format Email: murid[no].[1-144]@smaia-4-kemang-pratama.sch.id
+   Password Default: 123456
+
+   No   Nama                           Email                                         Password    
+   ---- ------------------------------ --------------------------------------------- ------------
+   1    Ahmad Kusuma                   murid2.7@smaia-4-kemang-pratama.sch.id        123456      
+   2    Ahmad Putra                    murid2.57@smaia-4-kemang-pratama.sch.id       123456      
+   3    Ahmad Sari                     murid2.107@smaia-4-kemang-pratama.sch.id      123456      
+   4    Andi Kusuma                    murid2.33@smaia-4-kemang-pratama.sch.id       123456      
+   5    Andi Putra                     murid2.83@smaia-4-kemang-pratama.sch.id       123456      
+   6    Andi Sari                      murid2.133@smaia-4-kemang-pratama.sch.id      123456      
+   7    Bella Kusuma                   murid2.34@smaia-4-kemang-pratama.sch.id       123456      
+   8    Bella Putra                    murid2.84@smaia-4-kemang-pratama.sch.id       123456      
+   9    Bella Sari                     murid2.134@smaia-4-kemang-pratama.sch.id      123456      
+   10   Budi Kusuma                    murid2.8@smaia-4-kemang-pratama.sch.id        123456      
+   11   Budi Putra                     murid2.58@smaia-4-kemang-pratama.sch.id       123456      
+   12   Budi Sari                      murid2.108@smaia-4-kemang-pratama.sch.id      123456      
+   13   Candra Kusuma                  murid2.35@smaia-4-kemang-pratama.sch.id       123456      
+   14   Candra Putra                   murid2.85@smaia-4-kemang-pratama.sch.id       123456      
+   15   Candra Sari                    murid2.135@smaia-4-kemang-pratama.sch.id      123456      
+   16   Citra Kusuma                   murid2.9@smaia-4-kemang-pratama.sch.id        123456      
+   17   Citra Putra                    murid2.59@smaia-4-kemang-pratama.sch.id       123456      
+   18   Citra Sari                     murid2.109@smaia-4-kemang-pratama.sch.id      123456      
+   19   Dewi Kusuma                    murid2.10@smaia-4-kemang-pratama.sch.id       123456      
+   20   Dewi Putra                     murid2.60@smaia-4-kemang-pratama.sch.id       123456      
+   21   Dewi Sari                      murid2.110@smaia-4-kemang-pratama.sch.id      123456      
+   22   Diana Kusuma                   murid2.36@smaia-4-kemang-pratama.sch.id       123456      
+   23   Diana Putra                    murid2.86@smaia-4-kemang-pratama.sch.id       123456      
+   24   Diana Sari                     murid2.136@smaia-4-kemang-pratama.sch.id      123456      
+   25   Eko Kusuma                     murid2.11@smaia-4-kemang-pratama.sch.id       123456      
+   26   Eko Putra                      murid2.61@smaia-4-kemang-pratama.sch.id       123456      
+   27   Eko Sari                       murid2.111@smaia-4-kemang-pratama.sch.id      123456      
+   28   Erwin Kusuma                   murid2.37@smaia-4-kemang-pratama.sch.id       123456      
+   29   Erwin Putra                    murid2.87@smaia-4-kemang-pratama.sch.id       123456      
+   30   Erwin Sari                     murid2.137@smaia-4-kemang-pratama.sch.id      123456      
+   31   Farah Kusuma                   murid2.38@smaia-4-kemang-pratama.sch.id       123456      
+   32   Farah Putra                    murid2.88@smaia-4-kemang-pratama.sch.id       123456      
+   33   Farah Sari                     murid2.138@smaia-4-kemang-pratama.sch.id      123456      
+   34   Fitri Kusuma                   murid2.12@smaia-4-kemang-pratama.sch.id       123456      
+   35   Fitri Putra                    murid2.62@smaia-4-kemang-pratama.sch.id       123456      
+   36   Fitri Sari                     murid2.112@smaia-4-kemang-pratama.sch.id      123456      
+   37   Galih Kusuma                   murid2.39@smaia-4-kemang-pratama.sch.id       123456      
+   38   Galih Putra                    murid2.89@smaia-4-kemang-pratama.sch.id       123456      
+   39   Galih Sari                     murid2.139@smaia-4-kemang-pratama.sch.id      123456      
+   40   Gunawan Kusuma                 murid2.13@smaia-4-kemang-pratama.sch.id       123456      
+   41   Gunawan Putra                  murid2.63@smaia-4-kemang-pratama.sch.id       123456      
+   42   Gunawan Sari                   murid2.113@smaia-4-kemang-pratama.sch.id      123456      
+   43   Hana Kusuma                    murid2.14@smaia-4-kemang-pratama.sch.id       123456      
+   44   Hana Putra                     murid2.64@smaia-4-kemang-pratama.sch.id       123456      
+   45   Hana Sari                      murid2.114@smaia-4-kemang-pratama.sch.id      123456      
+   46   Hesti Kusuma                   murid2.40@smaia-4-kemang-pratama.sch.id       123456      
+   47   Hesti Putra                    murid2.90@smaia-4-kemang-pratama.sch.id       123456      
+   48   Hesti Sari                     murid2.140@smaia-4-kemang-pratama.sch.id      123456      
+   49   Indra Kusuma                   murid2.15@smaia-4-kemang-pratama.sch.id       123456      
+   50   Indra Putra                    murid2.65@smaia-4-kemang-pratama.sch.id       123456      
+   51   Indra Sari                     murid2.115@smaia-4-kemang-pratama.sch.id      123456      
+   52   Irfan Kusuma                   murid2.41@smaia-4-kemang-pratama.sch.id       123456      
+   53   Irfan Putra                    murid2.91@smaia-4-kemang-pratama.sch.id       123456      
+   54   Irfan Sari                     murid2.141@smaia-4-kemang-pratama.sch.id      123456      
+   55   Jihan Kusuma                   murid2.42@smaia-4-kemang-pratama.sch.id       123456      
+   56   Jihan Putra                    murid2.92@smaia-4-kemang-pratama.sch.id       123456      
+   57   Jihan Sari                     murid2.142@smaia-4-kemang-pratama.sch.id      123456      
+   58   Joko Kusuma                    murid2.16@smaia-4-kemang-pratama.sch.id       123456      
+   59   Joko Putra                     murid2.66@smaia-4-kemang-pratama.sch.id       123456      
+   60   Joko Sari                      murid2.116@smaia-4-kemang-pratama.sch.id      123456      
+   61   Kartini Kusuma                 murid2.17@smaia-4-kemang-pratama.sch.id       123456      
+   62   Kartini Putra                  murid2.67@smaia-4-kemang-pratama.sch.id       123456      
+   63   Kartini Sari                   murid2.117@smaia-4-kemang-pratama.sch.id      123456      
+   64   Kevin Kusuma                   murid2.43@smaia-4-kemang-pratama.sch.id       123456      
+   65   Kevin Putra                    murid2.93@smaia-4-kemang-pratama.sch.id       123456      
+   66   Kevin Sari                     murid2.143@smaia-4-kemang-pratama.sch.id      123456      
+   67   Lina Kusuma                    murid2.44@smaia-4-kemang-pratama.sch.id       123456      
+   68   Lina Putra                     murid2.94@smaia-4-kemang-pratama.sch.id       123456      
+   69   Lina Sari                      murid2.144@smaia-4-kemang-pratama.sch.id      123456      
+   70   Lukman Kusuma                  murid2.18@smaia-4-kemang-pratama.sch.id       123456      
+   71   Lukman Putra                   murid2.68@smaia-4-kemang-pratama.sch.id       123456      
+   72   Lukman Sari                    murid2.118@smaia-4-kemang-pratama.sch.id      123456      
+   73   Maya Kusuma                    murid2.19@smaia-4-kemang-pratama.sch.id       123456      
+   74   Maya Putra                     murid2.69@smaia-4-kemang-pratama.sch.id       123456      
+   75   Maya Sari                      murid2.119@smaia-4-kemang-pratama.sch.id      123456      
+   76   Muhammad Kusuma                murid2.45@smaia-4-kemang-pratama.sch.id       123456      
+   77   Muhammad Putra                 murid2.95@smaia-4-kemang-pratama.sch.id       123456      
+   78   Nadia Kusuma                   murid2.46@smaia-4-kemang-pratama.sch.id       123456      
+   79   Nadia Putra                    murid2.96@smaia-4-kemang-pratama.sch.id       123456      
+   80   Nurul Kusuma                   murid2.20@smaia-4-kemang-pratama.sch.id       123456      
+   81   Nurul Putra                    murid2.70@smaia-4-kemang-pratama.sch.id       123456      
+   82   Nurul Sari                     murid2.120@smaia-4-kemang-pratama.sch.id      123456      
+   83   Omar Kusuma                    murid2.21@smaia-4-kemang-pratama.sch.id       123456      
+   84   Omar Putra                     murid2.71@smaia-4-kemang-pratama.sch.id       123456      
+   85   Omar Sari                      murid2.121@smaia-4-kemang-pratama.sch.id      123456      
+   86   Opick Kusuma                   murid2.47@smaia-4-kemang-pratama.sch.id       123456      
+   87   Opick Putra                    murid2.97@smaia-4-kemang-pratama.sch.id       123456      
+   88   Putra Kusuma                   murid2.48@smaia-4-kemang-pratama.sch.id       123456      
+   89   Putra Putra                    murid2.98@smaia-4-kemang-pratama.sch.id       123456      
+   90   Putri Kusuma                   murid2.22@smaia-4-kemang-pratama.sch.id       123456      
+   91   Putri Putra                    murid2.72@smaia-4-kemang-pratama.sch.id       123456      
+   92   Putri Sari                     murid2.122@smaia-4-kemang-pratama.sch.id      123456      
+   93   Qomar Kusuma                   murid2.49@smaia-4-kemang-pratama.sch.id       123456      
+   94   Qomar Putra                    murid2.99@smaia-4-kemang-pratama.sch.id       123456      
+   95   Qori Kusuma                    murid2.23@smaia-4-kemang-pratama.sch.id       123456      
+   96   Qori Putra                     murid2.73@smaia-4-kemang-pratama.sch.id       123456      
+   97   Qori Sari                      murid2.123@smaia-4-kemang-pratama.sch.id      123456      
+   98   Rina Kusuma                    murid2.50@smaia-4-kemang-pratama.sch.id       123456      
+   99   Rina Putra                     murid2.100@smaia-4-kemang-pratama.sch.id      123456      
+   100  Rudi Kusuma                    murid2.24@smaia-4-kemang-pratama.sch.id       123456      
+   101  Rudi Putra                     murid2.74@smaia-4-kemang-pratama.sch.id       123456      
+   102  Rudi Sari                      murid2.124@smaia-4-kemang-pratama.sch.id      123456      
+   103  Siti Kusuma                    murid2.25@smaia-4-kemang-pratama.sch.id       123456      
+   104  Siti Putra                     murid2.75@smaia-4-kemang-pratama.sch.id       123456      
+   105  Siti Sari                      murid2.125@smaia-4-kemang-pratama.sch.id      123456      
+   106  Syahrin Kusuma                 murid2.51@smaia-4-kemang-pratama.sch.id       123456      
+   107  Syahrin Putra                  murid2.101@smaia-4-kemang-pratama.sch.id      123456      
+   108  Syahrin Wijaya                 murid2.1@smaia-4-kemang-pratama.sch.id        123456      
+   109  Taufik Kusuma                  murid2.26@smaia-4-kemang-pratama.sch.id       123456      
+   110  Taufik Putra                   murid2.76@smaia-4-kemang-pratama.sch.id       123456      
+   111  Taufik Sari                    murid2.126@smaia-4-kemang-pratama.sch.id      123456      
+   112  Tomi Kusuma                    murid2.52@smaia-4-kemang-pratama.sch.id       123456      
+   113  Tomi Putra                     murid2.102@smaia-4-kemang-pratama.sch.id      123456      
+   114  Tomi Wijaya                    murid2.2@smaia-4-kemang-pratama.sch.id        123456      
+   115  Umar Kusuma                    murid2.27@smaia-4-kemang-pratama.sch.id       123456      
+   116  Umar Putra                     murid2.77@smaia-4-kemang-pratama.sch.id       123456      
+   117  Umar Sari                      murid2.127@smaia-4-kemang-pratama.sch.id      123456      
+   118  Ussy Kusuma                    murid2.53@smaia-4-kemang-pratama.sch.id       123456      
+   119  Ussy Putra                     murid2.103@smaia-4-kemang-pratama.sch.id      123456      
+   120  Ussy Wijaya                    murid2.3@smaia-4-kemang-pratama.sch.id        123456      
+   121  Vicky Kusuma                   murid2.54@smaia-4-kemang-pratama.sch.id       123456      
+   122  Vicky Putra                    murid2.104@smaia-4-kemang-pratama.sch.id      123456      
+   123  Vicky Wijaya                   murid2.4@smaia-4-kemang-pratama.sch.id        123456      
+   124  Vina Kusuma                    murid2.28@smaia-4-kemang-pratama.sch.id       123456      
+   125  Vina Putra                     murid2.78@smaia-4-kemang-pratama.sch.id       123456      
+   126  Vina Sari                      murid2.128@smaia-4-kemang-pratama.sch.id      123456      
+   127  Wawan Kusuma                   murid2.29@smaia-4-kemang-pratama.sch.id       123456      
+   128  Wawan Putra                    murid2.79@smaia-4-kemang-pratama.sch.id       123456      
+   129  Wawan Sari                     murid2.129@smaia-4-kemang-pratama.sch.id      123456      
+   130  Wendi Kusuma                   murid2.55@smaia-4-kemang-pratama.sch.id       123456      
+   131  Wendi Putra                    murid2.105@smaia-4-kemang-pratama.sch.id      123456      
+   132  Wendi Wijaya                   murid2.5@smaia-4-kemang-pratama.sch.id        123456      
+   133  Xena Kusuma                    murid2.30@smaia-4-kemang-pratama.sch.id       123456      
+   134  Xena Putra                     murid2.80@smaia-4-kemang-pratama.sch.id       123456      
+   135  Xena Sari                      murid2.130@smaia-4-kemang-pratama.sch.id      123456      
+   136  Yuni Kusuma                    murid2.56@smaia-4-kemang-pratama.sch.id       123456      
+   137  Yuni Putra                     murid2.106@smaia-4-kemang-pratama.sch.id      123456      
+   138  Yuni Wijaya                    murid2.6@smaia-4-kemang-pratama.sch.id        123456      
+   139  Yusuf Kusuma                   murid2.31@smaia-4-kemang-pratama.sch.id       123456      
+   140  Yusuf Putra                    murid2.81@smaia-4-kemang-pratama.sch.id       123456      
+   141  Yusuf Sari                     murid2.131@smaia-4-kemang-pratama.sch.id      123456      
+   142  Zainab Kusuma                  murid2.32@smaia-4-kemang-pratama.sch.id       123456      
+   143  Zainab Putra                   murid2.82@smaia-4-kemang-pratama.sch.id       123456      
+   144  Zainab Sari                    murid2.132@smaia-4-kemang-pratama.sch.id      123456      
+
+   Hak Akses Murid:
+   - Join kelas via class code
+   - Kerjakan quiz & tugas
+   - View materi pembelajaran
+   - Participate dalam diskusi
+   - View nilai sendiri
+
+----------------------------------------------------------------------------------------------------
+TOTAL USER SEKOLAH INI: 155 user
+   - Admin: 1
+   - Guru: 10
+   - Murid: 144
+
+
+----------------------------------------------------------------------------------------------------
+SEKOLAH: SMKN 1 Jakarta
+Slug: smkn-1-jakarta
+Status: ACTIVE
+----------------------------------------------------------------------------------------------------
+
+📌 ADMIN SEKOLAH:
+   Total: 1 user
+
+   1. Nama     : admin smkn 1
+      Email    : smkn1@mail.com
+      Password : 123456
+      Role     : ADMIN
+      Status   : ACTIVE | Verified: YES
+      Hak Akses: Admin sekolah, manage guru & murid, manage kelas
+
+📌 GURU (PENGAJAR):
+   Total: 10 user
+   Format Email: guru[no].[1-10]@smkn-1-jakarta.sch.id
+   Password Default: 123456
+
+   No   Nama                           Email                                         Password    
+   ---- ------------------------------ --------------------------------------------- ------------
+   1    Afgan Syahreza                 guru8.8@smkn-1-jakarta.sch.id                 123456      
+   2    Bunga Citra Lestari            guru8.9@smkn-1-jakarta.sch.id                 123456      
+   3    Dewa 19                        guru8.10@smkn-1-jakarta.sch.id                123456      
+   4    Tiara Andini                   guru8.1@smkn-1-jakarta.sch.id                 123456      
+   5    Ulta Berlian                   guru8.2@smkn-1-jakarta.sch.id                 123456      
+   6    Via Vallen                     guru8.3@smkn-1-jakarta.sch.id                 123456      
+   7    Wika Salim                     guru8.4@smkn-1-jakarta.sch.id                 123456      
+   8    Xabiru                         guru8.5@smkn-1-jakarta.sch.id                 123456      
+   9    Yura Yunita                    guru8.6@smkn-1-jakarta.sch.id                 123456      
+   10   Ziva Magnolya                  guru8.7@smkn-1-jakarta.sch.id                 123456      
+
+   Hak Akses Guru:
+   - Create & manage kelas
+   - Create quiz, tugas, materi, link
+   - Input nilai siswa
+   - Kelola forum diskusi
+   - Catat KBM (Kegiatan Belajar Mengajar)
+   - View buku nilai kelas
+
+📌 MURID (SISWA):
+   Total: 144 user
+   Format Email: murid[no].[1-144]@smkn-1-jakarta.sch.id
+   Password Default: 123456
+
+   No   Nama                           Email                                         Password    
+   ---- ------------------------------ --------------------------------------------- ------------
+   1    Ahmad Kusuma                   murid8.143@smkn-1-jakarta.sch.id              123456      
+   2    Ahmad Santoso                  murid8.43@smkn-1-jakarta.sch.id               123456      
+   3    Ahmad Wijaya                   murid8.93@smkn-1-jakarta.sch.id               123456      
+   4    Andi Pratama                   murid8.19@smkn-1-jakarta.sch.id               123456      
+   5    Andi Santoso                   murid8.69@smkn-1-jakarta.sch.id               123456      
+   6    Andi Wijaya                    murid8.119@smkn-1-jakarta.sch.id              123456      
+   7    Bella Pratama                  murid8.20@smkn-1-jakarta.sch.id               123456      
+   8    Bella Santoso                  murid8.70@smkn-1-jakarta.sch.id               123456      
+   9    Bella Wijaya                   murid8.120@smkn-1-jakarta.sch.id              123456      
+   10   Budi Kusuma                    murid8.144@smkn-1-jakarta.sch.id              123456      
+   11   Budi Santoso                   murid8.44@smkn-1-jakarta.sch.id               123456      
+   12   Budi Wijaya                    murid8.94@smkn-1-jakarta.sch.id               123456      
+   13   Candra Pratama                 murid8.21@smkn-1-jakarta.sch.id               123456      
+   14   Candra Santoso                 murid8.71@smkn-1-jakarta.sch.id               123456      
+   15   Candra Wijaya                  murid8.121@smkn-1-jakarta.sch.id              123456      
+   16   Citra Santoso                  murid8.45@smkn-1-jakarta.sch.id               123456      
+   17   Citra Wijaya                   murid8.95@smkn-1-jakarta.sch.id               123456      
+   18   Dewi Santoso                   murid8.46@smkn-1-jakarta.sch.id               123456      
+   19   Dewi Wijaya                    murid8.96@smkn-1-jakarta.sch.id               123456      
+   20   Diana Pratama                  murid8.22@smkn-1-jakarta.sch.id               123456      
+   21   Diana Santoso                  murid8.72@smkn-1-jakarta.sch.id               123456      
+   22   Diana Wijaya                   murid8.122@smkn-1-jakarta.sch.id              123456      
+   23   Eko Santoso                    murid8.47@smkn-1-jakarta.sch.id               123456      
+   24   Eko Wijaya                     murid8.97@smkn-1-jakarta.sch.id               123456      
+   25   Erwin Pratama                  murid8.23@smkn-1-jakarta.sch.id               123456      
+   26   Erwin Santoso                  murid8.73@smkn-1-jakarta.sch.id               123456      
+   27   Erwin Wijaya                   murid8.123@smkn-1-jakarta.sch.id              123456      
+   28   Farah Pratama                  murid8.24@smkn-1-jakarta.sch.id               123456      
+   29   Farah Santoso                  murid8.74@smkn-1-jakarta.sch.id               123456      
+   30   Farah Wijaya                   murid8.124@smkn-1-jakarta.sch.id              123456      
+   31   Fitri Santoso                  murid8.48@smkn-1-jakarta.sch.id               123456      
+   32   Fitri Wijaya                   murid8.98@smkn-1-jakarta.sch.id               123456      
+   33   Galih Pratama                  murid8.25@smkn-1-jakarta.sch.id               123456      
+   34   Galih Santoso                  murid8.75@smkn-1-jakarta.sch.id               123456      
+   35   Galih Wijaya                   murid8.125@smkn-1-jakarta.sch.id              123456      
+   36   Gunawan Santoso                murid8.49@smkn-1-jakarta.sch.id               123456      
+   37   Gunawan Wijaya                 murid8.99@smkn-1-jakarta.sch.id               123456      
+   38   Hana Santoso                   murid8.50@smkn-1-jakarta.sch.id               123456      
+   39   Hana Wijaya                    murid8.100@smkn-1-jakarta.sch.id              123456      
+   40   Hesti Pratama                  murid8.26@smkn-1-jakarta.sch.id               123456      
+   41   Hesti Santoso                  murid8.76@smkn-1-jakarta.sch.id               123456      
+   42   Hesti Wijaya                   murid8.126@smkn-1-jakarta.sch.id              123456      
+   43   Indra Pratama                  murid8.1@smkn-1-jakarta.sch.id                123456      
+   44   Indra Santoso                  murid8.51@smkn-1-jakarta.sch.id               123456      
+   45   Indra Wijaya                   murid8.101@smkn-1-jakarta.sch.id              123456      
+   46   Irfan Pratama                  murid8.27@smkn-1-jakarta.sch.id               123456      
+   47   Irfan Santoso                  murid8.77@smkn-1-jakarta.sch.id               123456      
+   48   Irfan Wijaya                   murid8.127@smkn-1-jakarta.sch.id              123456      
+   49   Jihan Pratama                  murid8.28@smkn-1-jakarta.sch.id               123456      
+   50   Jihan Santoso                  murid8.78@smkn-1-jakarta.sch.id               123456      
+   51   Jihan Wijaya                   murid8.128@smkn-1-jakarta.sch.id              123456      
+   52   Joko Pratama                   murid8.2@smkn-1-jakarta.sch.id                123456      
+   53   Joko Santoso                   murid8.52@smkn-1-jakarta.sch.id               123456      
+   54   Joko Wijaya                    murid8.102@smkn-1-jakarta.sch.id              123456      
+   55   Kartini Pratama                murid8.3@smkn-1-jakarta.sch.id                123456      
+   56   Kartini Santoso                murid8.53@smkn-1-jakarta.sch.id               123456      
+   57   Kartini Wijaya                 murid8.103@smkn-1-jakarta.sch.id              123456      
+   58   Kevin Pratama                  murid8.29@smkn-1-jakarta.sch.id               123456      
+   59   Kevin Santoso                  murid8.79@smkn-1-jakarta.sch.id               123456      
+   60   Kevin Wijaya                   murid8.129@smkn-1-jakarta.sch.id              123456      
+   61   Lina Pratama                   murid8.30@smkn-1-jakarta.sch.id               123456      
+   62   Lina Santoso                   murid8.80@smkn-1-jakarta.sch.id               123456      
+   63   Lina Wijaya                    murid8.130@smkn-1-jakarta.sch.id              123456      
+   64   Lukman Pratama                 murid8.4@smkn-1-jakarta.sch.id                123456      
+   65   Lukman Santoso                 murid8.54@smkn-1-jakarta.sch.id               123456      
+   66   Lukman Wijaya                  murid8.104@smkn-1-jakarta.sch.id              123456      
+   67   Maya Pratama                   murid8.5@smkn-1-jakarta.sch.id                123456      
+   68   Maya Santoso                   murid8.55@smkn-1-jakarta.sch.id               123456      
+   69   Maya Wijaya                    murid8.105@smkn-1-jakarta.sch.id              123456      
+   70   Muhammad Pratama               murid8.31@smkn-1-jakarta.sch.id               123456      
+   71   Muhammad Santoso               murid8.81@smkn-1-jakarta.sch.id               123456      
+   72   Muhammad Wijaya                murid8.131@smkn-1-jakarta.sch.id              123456      
+   73   Nadia Pratama                  murid8.32@smkn-1-jakarta.sch.id               123456      
+   74   Nadia Santoso                  murid8.82@smkn-1-jakarta.sch.id               123456      
+   75   Nadia Wijaya                   murid8.132@smkn-1-jakarta.sch.id              123456      
+   76   Nurul Pratama                  murid8.6@smkn-1-jakarta.sch.id                123456      
+   77   Nurul Santoso                  murid8.56@smkn-1-jakarta.sch.id               123456      
+   78   Nurul Wijaya                   murid8.106@smkn-1-jakarta.sch.id              123456      
+   79   Omar Pratama                   murid8.7@smkn-1-jakarta.sch.id                123456      
+   80   Omar Santoso                   murid8.57@smkn-1-jakarta.sch.id               123456      
+   81   Omar Wijaya                    murid8.107@smkn-1-jakarta.sch.id              123456      
+   82   Opick Pratama                  murid8.33@smkn-1-jakarta.sch.id               123456      
+   83   Opick Santoso                  murid8.83@smkn-1-jakarta.sch.id               123456      
+   84   Opick Wijaya                   murid8.133@smkn-1-jakarta.sch.id              123456      
+   85   Putra Pratama                  murid8.34@smkn-1-jakarta.sch.id               123456      
+   86   Putra Santoso                  murid8.84@smkn-1-jakarta.sch.id               123456      
+   87   Putra Wijaya                   murid8.134@smkn-1-jakarta.sch.id              123456      
+   88   Putri Pratama                  murid8.8@smkn-1-jakarta.sch.id                123456      
+   89   Putri Santoso                  murid8.58@smkn-1-jakarta.sch.id               123456      
+   90   Putri Wijaya                   murid8.108@smkn-1-jakarta.sch.id              123456      
+   91   Qomar Pratama                  murid8.35@smkn-1-jakarta.sch.id               123456      
+   92   Qomar Santoso                  murid8.85@smkn-1-jakarta.sch.id               123456      
+   93   Qomar Wijaya                   murid8.135@smkn-1-jakarta.sch.id              123456      
+   94   Qori Pratama                   murid8.9@smkn-1-jakarta.sch.id                123456      
+   95   Qori Santoso                   murid8.59@smkn-1-jakarta.sch.id               123456      
+   96   Qori Wijaya                    murid8.109@smkn-1-jakarta.sch.id              123456      
+   97   Rina Pratama                   murid8.36@smkn-1-jakarta.sch.id               123456      
+   98   Rina Santoso                   murid8.86@smkn-1-jakarta.sch.id               123456      
+   99   Rina Wijaya                    murid8.136@smkn-1-jakarta.sch.id              123456      
+   100  Rudi Pratama                   murid8.10@smkn-1-jakarta.sch.id               123456      
+   101  Rudi Santoso                   murid8.60@smkn-1-jakarta.sch.id               123456      
+   102  Rudi Wijaya                    murid8.110@smkn-1-jakarta.sch.id              123456      
+   103  Siti Pratama                   murid8.11@smkn-1-jakarta.sch.id               123456      
+   104  Siti Santoso                   murid8.61@smkn-1-jakarta.sch.id               123456      
+   105  Siti Wijaya                    murid8.111@smkn-1-jakarta.sch.id              123456      
+   106  Syahrin Pratama                murid8.37@smkn-1-jakarta.sch.id               123456      
+   107  Syahrin Santoso                murid8.87@smkn-1-jakarta.sch.id               123456      
+   108  Syahrin Wijaya                 murid8.137@smkn-1-jakarta.sch.id              123456      
+   109  Taufik Pratama                 murid8.12@smkn-1-jakarta.sch.id               123456      
+   110  Taufik Santoso                 murid8.62@smkn-1-jakarta.sch.id               123456      
+   111  Taufik Wijaya                  murid8.112@smkn-1-jakarta.sch.id              123456      
+   112  Tomi Pratama                   murid8.38@smkn-1-jakarta.sch.id               123456      
+   113  Tomi Santoso                   murid8.88@smkn-1-jakarta.sch.id               123456      
+   114  Tomi Wijaya                    murid8.138@smkn-1-jakarta.sch.id              123456      
+   115  Umar Pratama                   murid8.13@smkn-1-jakarta.sch.id               123456      
+   116  Umar Santoso                   murid8.63@smkn-1-jakarta.sch.id               123456      
+   117  Umar Wijaya                    murid8.113@smkn-1-jakarta.sch.id              123456      
+   118  Ussy Pratama                   murid8.39@smkn-1-jakarta.sch.id               123456      
+   119  Ussy Santoso                   murid8.89@smkn-1-jakarta.sch.id               123456      
+   120  Ussy Wijaya                    murid8.139@smkn-1-jakarta.sch.id              123456      
+   121  Vicky Pratama                  murid8.40@smkn-1-jakarta.sch.id               123456      
+   122  Vicky Santoso                  murid8.90@smkn-1-jakarta.sch.id               123456      
+   123  Vicky Wijaya                   murid8.140@smkn-1-jakarta.sch.id              123456      
+   124  Vina Pratama                   murid8.14@smkn-1-jakarta.sch.id               123456      
+   125  Vina Santoso                   murid8.64@smkn-1-jakarta.sch.id               123456      
+   126  Vina Wijaya                    murid8.114@smkn-1-jakarta.sch.id              123456      
+   127  Wawan Pratama                  murid8.15@smkn-1-jakarta.sch.id               123456      
+   128  Wawan Santoso                  murid8.65@smkn-1-jakarta.sch.id               123456      
+   129  Wawan Wijaya                   murid8.115@smkn-1-jakarta.sch.id              123456      
+   130  Wendi Pratama                  murid8.41@smkn-1-jakarta.sch.id               123456      
+   131  Wendi Santoso                  murid8.91@smkn-1-jakarta.sch.id               123456      
+   132  Wendi Wijaya                   murid8.141@smkn-1-jakarta.sch.id              123456      
+   133  Xena Pratama                   murid8.16@smkn-1-jakarta.sch.id               123456      
+   134  Xena Santoso                   murid8.66@smkn-1-jakarta.sch.id               123456      
+   135  Xena Wijaya                    murid8.116@smkn-1-jakarta.sch.id              123456      
+   136  Yuni Pratama                   murid8.42@smkn-1-jakarta.sch.id               123456      
+   137  Yuni Santoso                   murid8.92@smkn-1-jakarta.sch.id               123456      
+   138  Yuni Wijaya                    murid8.142@smkn-1-jakarta.sch.id              123456      
+   139  Yusuf Pratama                  murid8.17@smkn-1-jakarta.sch.id               123456      
+   140  Yusuf Santoso                  murid8.67@smkn-1-jakarta.sch.id               123456      
+   141  Yusuf Wijaya                   murid8.117@smkn-1-jakarta.sch.id              123456      
+   142  Zainab Pratama                 murid8.18@smkn-1-jakarta.sch.id               123456      
+   143  Zainab Santoso                 murid8.68@smkn-1-jakarta.sch.id               123456      
+   144  Zainab Wijaya                  murid8.118@smkn-1-jakarta.sch.id              123456      
+
+   Hak Akses Murid:
+   - Join kelas via class code
+   - Kerjakan quiz & tugas
+   - View materi pembelajaran
+   - Participate dalam diskusi
+   - View nilai sendiri
+
+----------------------------------------------------------------------------------------------------
+TOTAL USER SEKOLAH INI: 155 user
+   - Admin: 1
+   - Guru: 10
+   - Murid: 144
+
+
+----------------------------------------------------------------------------------------------------
+SEKOLAH: SMKN 2
+Slug: smkn-2
+Status: ACTIVE
+----------------------------------------------------------------------------------------------------
+
+📌 ADMIN SEKOLAH:
+   Total: 1 user
+
+   1. Nama     : uya kuya
+      Email    : admin@smkn2.com
+      Password : 123456
+      Role     : ADMIN
+      Status   : ACTIVE | Verified: YES
+      Hak Akses: Admin sekolah, manage guru & murid, manage kelas
+
+📌 GURU (PENGAJAR):
+   Total: 10 user
+   Format Email: guru[no].[1-10]@smkn-2.sch.id
+   Password Default: 123456
+
+   No   Nama                           Email                                         Password    
+   ---- ------------------------------ --------------------------------------------- ------------
+   1    Ebiet G Ade                    guru9.1@smkn-2.sch.id                         123456      
+   2    Fiersa Besari                  guru9.2@smkn-2.sch.id                         123456      
+   3    Glenn Fredly                   guru9.3@smkn-2.sch.id                         123456      
+   4    guru smkn 2                    guru1@smkn2.com                               123456      
+   5    Iwan Fals                      guru9.4@smkn-2.sch.id                         123456      
+   6    Judika                         guru9.5@smkn-2.sch.id                         123456      
+   7    Kahitna                        guru9.6@smkn-2.sch.id                         123456      
+   8    Letto                          guru9.7@smkn-2.sch.id                         123456      
+   9    Mahalini                       guru9.8@smkn-2.sch.id                         123456      
+   10   Noah Band                      guru9.9@smkn-2.sch.id                         123456      
+
+   Hak Akses Guru:
+   - Create & manage kelas
+   - Create quiz, tugas, materi, link
+   - Input nilai siswa
+   - Kelola forum diskusi
+   - Catat KBM (Kegiatan Belajar Mengajar)
+   - View buku nilai kelas
+
+📌 MURID (SISWA):
+   Total: 144 user
+   Format Email: murid[no].[1-144]@smkn-2.sch.id
+   Password Default: 123456
+
+   No   Nama                           Email                                         Password    
+   ---- ------------------------------ --------------------------------------------- ------------
+   1    Ahmad Putra                    murid9.51@smkn-2.sch.id                       123456      
+   2    Ahmad Sari                     murid9.101@smkn-2.sch.id                      123456      
+   3    Andi Kusuma                    murid9.27@smkn-2.sch.id                       123456      
+   4    Andi Putra                     murid9.77@smkn-2.sch.id                       123456      
+   5    Andi Sari                      murid9.127@smkn-2.sch.id                      123456      
+   6    Bella Kusuma                   murid9.28@smkn-2.sch.id                       123456      
+   7    Bella Putra                    murid9.78@smkn-2.sch.id                       123456      
+   8    Bella Sari                     murid9.128@smkn-2.sch.id                      123456      
+   9    Budi Putra                     murid9.52@smkn-2.sch.id                       123456      
+   10   Budi Sari                      murid9.102@smkn-2.sch.id                      123456      
+   11   Candra Kusuma                  murid9.29@smkn-2.sch.id                       123456      
+   12   Candra Putra                   murid9.79@smkn-2.sch.id                       123456      
+   13   Candra Sari                    murid9.129@smkn-2.sch.id                      123456      
+   14   Citra Kusuma                   murid9.3@smkn-2.sch.id                        123456      
+   15   Citra Putra                    murid9.53@smkn-2.sch.id                       123456      
+   16   Citra Sari                     murid9.103@smkn-2.sch.id                      123456      
+   17   Dewi Kusuma                    murid9.4@smkn-2.sch.id                        123456      
+   18   Dewi Putra                     murid9.54@smkn-2.sch.id                       123456      
+   19   Dewi Sari                      murid9.104@smkn-2.sch.id                      123456      
+   20   Diana Kusuma                   murid9.30@smkn-2.sch.id                       123456      
+   21   Diana Putra                    murid9.80@smkn-2.sch.id                       123456      
+   22   Diana Sari                     murid9.130@smkn-2.sch.id                      123456      
+   23   Eko Kusuma                     murid9.5@smkn-2.sch.id                        123456      
+   24   Eko Putra                      murid9.55@smkn-2.sch.id                       123456      
+   25   Eko Sari                       murid9.105@smkn-2.sch.id                      123456      
+   26   Erwin Kusuma                   murid9.31@smkn-2.sch.id                       123456      
+   27   Erwin Putra                    murid9.81@smkn-2.sch.id                       123456      
+   28   Erwin Sari                     murid9.131@smkn-2.sch.id                      123456      
+   29   Farah Kusuma                   murid9.32@smkn-2.sch.id                       123456      
+   30   Farah Putra                    murid9.82@smkn-2.sch.id                       123456      
+   31   Farah Sari                     murid9.132@smkn-2.sch.id                      123456      
+   32   Fitri Kusuma                   murid9.6@smkn-2.sch.id                        123456      
+   33   Fitri Putra                    murid9.56@smkn-2.sch.id                       123456      
+   34   Fitri Sari                     murid9.106@smkn-2.sch.id                      123456      
+   35   Galih Kusuma                   murid9.33@smkn-2.sch.id                       123456      
+   36   Galih Putra                    murid9.83@smkn-2.sch.id                       123456      
+   37   Galih Sari                     murid9.133@smkn-2.sch.id                      123456      
+   38   Gunawan Kusuma                 murid9.7@smkn-2.sch.id                        123456      
+   39   Gunawan Putra                  murid9.57@smkn-2.sch.id                       123456      
+   40   Gunawan Sari                   murid9.107@smkn-2.sch.id                      123456      
+   41   Hana Kusuma                    murid9.8@smkn-2.sch.id                        123456      
+   42   Hana Putra                     murid9.58@smkn-2.sch.id                       123456      
+   43   Hana Sari                      murid9.108@smkn-2.sch.id                      123456      
+   44   Hesti Kusuma                   murid9.34@smkn-2.sch.id                       123456      
+   45   Hesti Putra                    murid9.84@smkn-2.sch.id                       123456      
+   46   Hesti Sari                     murid9.134@smkn-2.sch.id                      123456      
+   47   Indra Kusuma                   murid9.9@smkn-2.sch.id                        123456      
+   48   Indra Putra                    murid9.59@smkn-2.sch.id                       123456      
+   49   Indra Sari                     murid9.109@smkn-2.sch.id                      123456      
+   50   Irfan Kusuma                   murid9.35@smkn-2.sch.id                       123456      
+   51   Irfan Putra                    murid9.85@smkn-2.sch.id                       123456      
+   52   Irfan Sari                     murid9.135@smkn-2.sch.id                      123456      
+   53   Jihan Kusuma                   murid9.36@smkn-2.sch.id                       123456      
+   54   Jihan Putra                    murid9.86@smkn-2.sch.id                       123456      
+   55   Jihan Sari                     murid9.136@smkn-2.sch.id                      123456      
+   56   Joko Kusuma                    murid9.10@smkn-2.sch.id                       123456      
+   57   Joko Putra                     murid9.60@smkn-2.sch.id                       123456      
+   58   Joko Sari                      murid9.110@smkn-2.sch.id                      123456      
+   59   Kartini Kusuma                 murid9.11@smkn-2.sch.id                       123456      
+   60   Kartini Putra                  murid9.61@smkn-2.sch.id                       123456      
+   61   Kartini Sari                   murid9.111@smkn-2.sch.id                      123456      
+   62   Kevin Kusuma                   murid9.37@smkn-2.sch.id                       123456      
+   63   Kevin Putra                    murid9.87@smkn-2.sch.id                       123456      
+   64   Kevin Sari                     murid9.137@smkn-2.sch.id                      123456      
+   65   Lina Kusuma                    murid9.38@smkn-2.sch.id                       123456      
+   66   Lina Putra                     murid9.88@smkn-2.sch.id                       123456      
+   67   Lina Sari                      murid9.138@smkn-2.sch.id                      123456      
+   68   Lukman Kusuma                  murid9.12@smkn-2.sch.id                       123456      
+   69   Lukman Putra                   murid9.62@smkn-2.sch.id                       123456      
+   70   Lukman Sari                    murid9.112@smkn-2.sch.id                      123456      
+   71   Maya Kusuma                    murid9.13@smkn-2.sch.id                       123456      
+   72   Maya Putra                     murid9.63@smkn-2.sch.id                       123456      
+   73   Maya Sari                      murid9.113@smkn-2.sch.id                      123456      
+   74   Muhammad Kusuma                murid9.39@smkn-2.sch.id                       123456      
+   75   Muhammad Putra                 murid9.89@smkn-2.sch.id                       123456      
+   76   Muhammad Sari                  murid9.139@smkn-2.sch.id                      123456      
+   77   murid smkn 2                   murid@smkn2.com                               123456      
+   78   Nadia Kusuma                   murid9.40@smkn-2.sch.id                       123456      
+   79   Nadia Putra                    murid9.90@smkn-2.sch.id                       123456      
+   80   Nadia Sari                     murid9.140@smkn-2.sch.id                      123456      
+   81   Nurul Kusuma                   murid9.14@smkn-2.sch.id                       123456      
+   82   Nurul Putra                    murid9.64@smkn-2.sch.id                       123456      
+   83   Nurul Sari                     murid9.114@smkn-2.sch.id                      123456      
+   84   Omar Kusuma                    murid9.15@smkn-2.sch.id                       123456      
+   85   Omar Putra                     murid9.65@smkn-2.sch.id                       123456      
+   86   Omar Sari                      murid9.115@smkn-2.sch.id                      123456      
+   87   Opick Kusuma                   murid9.41@smkn-2.sch.id                       123456      
+   88   Opick Putra                    murid9.91@smkn-2.sch.id                       123456      
+   89   Opick Sari                     murid9.141@smkn-2.sch.id                      123456      
+   90   Putra Kusuma                   murid9.42@smkn-2.sch.id                       123456      
+   91   Putra Putra                    murid9.92@smkn-2.sch.id                       123456      
+   92   Putra Sari                     murid9.142@smkn-2.sch.id                      123456      
+   93   Putri Kusuma                   murid9.16@smkn-2.sch.id                       123456      
+   94   Putri Putra                    murid9.66@smkn-2.sch.id                       123456      
+   95   Putri Sari                     murid9.116@smkn-2.sch.id                      123456      
+   96   Qomar Kusuma                   murid9.43@smkn-2.sch.id                       123456      
+   97   Qomar Putra                    murid9.93@smkn-2.sch.id                       123456      
+   98   Qomar Sari                     murid9.143@smkn-2.sch.id                      123456      
+   99   Qori Kusuma                    murid9.17@smkn-2.sch.id                       123456      
+   100  Qori Putra                     murid9.67@smkn-2.sch.id                       123456      
+   101  Qori Sari                      murid9.117@smkn-2.sch.id                      123456      
+   102  Rina Kusuma                    murid9.44@smkn-2.sch.id                       123456      
+   103  Rina Putra                     murid9.94@smkn-2.sch.id                       123456      
+   104  Rina Sari                      murid9.144@smkn-2.sch.id                      123456      
+   105  Rudi Kusuma                    murid9.18@smkn-2.sch.id                       123456      
+   106  Rudi Putra                     murid9.68@smkn-2.sch.id                       123456      
+   107  Rudi Sari                      murid9.118@smkn-2.sch.id                      123456      
+   108  Siti Kusuma                    murid9.19@smkn-2.sch.id                       123456      
+   109  Siti Putra                     murid9.69@smkn-2.sch.id                       123456      
+   110  Siti Sari                      murid9.119@smkn-2.sch.id                      123456      
+   111  sukiyem                        murid1@smkn2.com                              123456      
+   112  Syahrin Kusuma                 murid9.45@smkn-2.sch.id                       123456      
+   113  Syahrin Putra                  murid9.95@smkn-2.sch.id                       123456      
+   114  Taufik Kusuma                  murid9.20@smkn-2.sch.id                       123456      
+   115  Taufik Putra                   murid9.70@smkn-2.sch.id                       123456      
+   116  Taufik Sari                    murid9.120@smkn-2.sch.id                      123456      
+   117  Tomi Kusuma                    murid9.46@smkn-2.sch.id                       123456      
+   118  Tomi Putra                     murid9.96@smkn-2.sch.id                       123456      
+   119  Umar Kusuma                    murid9.21@smkn-2.sch.id                       123456      
+   120  Umar Putra                     murid9.71@smkn-2.sch.id                       123456      
+   121  Umar Sari                      murid9.121@smkn-2.sch.id                      123456      
+   122  Ussy Kusuma                    murid9.47@smkn-2.sch.id                       123456      
+   123  Ussy Putra                     murid9.97@smkn-2.sch.id                       123456      
+   124  Vicky Kusuma                   murid9.48@smkn-2.sch.id                       123456      
+   125  Vicky Putra                    murid9.98@smkn-2.sch.id                       123456      
+   126  Vina Kusuma                    murid9.22@smkn-2.sch.id                       123456      
+   127  Vina Putra                     murid9.72@smkn-2.sch.id                       123456      
+   128  Vina Sari                      murid9.122@smkn-2.sch.id                      123456      
+   129  Wawan Kusuma                   murid9.23@smkn-2.sch.id                       123456      
+   130  Wawan Putra                    murid9.73@smkn-2.sch.id                       123456      
+   131  Wawan Sari                     murid9.123@smkn-2.sch.id                      123456      
+   132  Wendi Kusuma                   murid9.49@smkn-2.sch.id                       123456      
+   133  Wendi Putra                    murid9.99@smkn-2.sch.id                       123456      
+   134  Xena Kusuma                    murid9.24@smkn-2.sch.id                       123456      
+   135  Xena Putra                     murid9.74@smkn-2.sch.id                       123456      
+   136  Xena Sari                      murid9.124@smkn-2.sch.id                      123456      
+   137  Yuni Kusuma                    murid9.50@smkn-2.sch.id                       123456      
+   138  Yuni Putra                     murid9.100@smkn-2.sch.id                      123456      
+   139  Yusuf Kusuma                   murid9.25@smkn-2.sch.id                       123456      
+   140  Yusuf Putra                    murid9.75@smkn-2.sch.id                       123456      
+   141  Yusuf Sari                     murid9.125@smkn-2.sch.id                      123456      
+   142  Zainab Kusuma                  murid9.26@smkn-2.sch.id                       123456      
+   143  Zainab Putra                   murid9.76@smkn-2.sch.id                       123456      
+   144  Zainab Sari                    murid9.126@smkn-2.sch.id                      123456      
+
+   Hak Akses Murid:
+   - Join kelas via class code
+   - Kerjakan quiz & tugas
+   - View materi pembelajaran
+   - Participate dalam diskusi
+   - View nilai sendiri
+
+----------------------------------------------------------------------------------------------------
+TOTAL USER SEKOLAH INI: 155 user
+   - Admin: 1
+   - Guru: 10
+   - Murid: 144
+
+
+----------------------------------------------------------------------------------------------------
+SEKOLAH: SMPIA 1
+Slug: smpia-1
+Status: ACTIVE
+----------------------------------------------------------------------------------------------------
+
+📌 ADMIN SEKOLAH:
+   Total: 1 user
+
+   1. Nama     : mimin
+      Email    : admin.smpia1@mail.com
+      Password : 123456
+      Role     : ADMIN
+      Status   : ACTIVE | Verified: YES
+      Hak Akses: Admin sekolah, manage guru & murid, manage kelas
+
+📌 GURU (PENGAJAR):
+   Total: 10 user
+   Format Email: guru[no].[1-10]@smpia-1.sch.id
+   Password Default: 123456
+
+   No   Nama                           Email                                         Password    
+   ---- ------------------------------ --------------------------------------------- ------------
+   1    Andi Saputra                   guru3.7@smpia-1.sch.id                        123456      
+   2    Bella Saphira                  guru3.8@smpia-1.sch.id                        123456      
+   3    Candra Wijaya                  guru3.9@smpia-1.sch.id                        123456      
+   4    Diana Kusuma                   guru3.10@smpia-1.sch.id                       123456      
+   5    Umar Faruq                     guru3.1@smpia-1.sch.id                        123456      
+   6    Vina Amelia                    guru3.2@smpia-1.sch.id                        123456      
+   7    Wawan Setiawan                 guru3.3@smpia-1.sch.id                        123456      
+   8    Xena Patricia                  guru3.4@smpia-1.sch.id                        123456      
+   9    Yusuf Ibrahim                  guru3.5@smpia-1.sch.id                        123456      
+   10   Zainab Alatas                  guru3.6@smpia-1.sch.id                        123456      
+
+   Hak Akses Guru:
+   - Create & manage kelas
+   - Create quiz, tugas, materi, link
+   - Input nilai siswa
+   - Kelola forum diskusi
+   - Catat KBM (Kegiatan Belajar Mengajar)
+   - View buku nilai kelas
+
+📌 MURID (SISWA):
+   Total: 144 user
+   Format Email: murid[no].[1-144]@smpia-1.sch.id
+   Password Default: 123456
+
+   No   Nama                           Email                                         Password    
+   ---- ------------------------------ --------------------------------------------- ------------
+   1    Ahmad Dewi                     murid3.13@smpia-1.sch.id                      123456      
+   2    Ahmad Handayani                murid3.113@smpia-1.sch.id                     123456      
+   3    Ahmad Lestari                  murid3.63@smpia-1.sch.id                      123456      
+   4    Andi Dewi                      murid3.39@smpia-1.sch.id                      123456      
+   5    Andi Handayani                 murid3.139@smpia-1.sch.id                     123456      
+   6    Andi Lestari                   murid3.89@smpia-1.sch.id                      123456      
+   7    Bella Dewi                     murid3.40@smpia-1.sch.id                      123456      
+   8    Bella Handayani                murid3.140@smpia-1.sch.id                     123456      
+   9    Bella Lestari                  murid3.90@smpia-1.sch.id                      123456      
+   10   Budi Dewi                      murid3.14@smpia-1.sch.id                      123456      
+   11   Budi Handayani                 murid3.114@smpia-1.sch.id                     123456      
+   12   Budi Lestari                   murid3.64@smpia-1.sch.id                      123456      
+   13   Candra Dewi                    murid3.41@smpia-1.sch.id                      123456      
+   14   Candra Handayani               murid3.141@smpia-1.sch.id                     123456      
+   15   Candra Lestari                 murid3.91@smpia-1.sch.id                      123456      
+   16   Citra Dewi                     murid3.15@smpia-1.sch.id                      123456      
+   17   Citra Handayani                murid3.115@smpia-1.sch.id                     123456      
+   18   Citra Lestari                  murid3.65@smpia-1.sch.id                      123456      
+   19   Dewi Dewi                      murid3.16@smpia-1.sch.id                      123456      
+   20   Dewi Handayani                 murid3.116@smpia-1.sch.id                     123456      
+   21   Dewi Lestari                   murid3.66@smpia-1.sch.id                      123456      
+   22   Diana Dewi                     murid3.42@smpia-1.sch.id                      123456      
+   23   Diana Handayani                murid3.142@smpia-1.sch.id                     123456      
+   24   Diana Lestari                  murid3.92@smpia-1.sch.id                      123456      
+   25   Eko Dewi                       murid3.17@smpia-1.sch.id                      123456      
+   26   Eko Handayani                  murid3.117@smpia-1.sch.id                     123456      
+   27   Eko Lestari                    murid3.67@smpia-1.sch.id                      123456      
+   28   Erwin Dewi                     murid3.43@smpia-1.sch.id                      123456      
+   29   Erwin Handayani                murid3.143@smpia-1.sch.id                     123456      
+   30   Erwin Lestari                  murid3.93@smpia-1.sch.id                      123456      
+   31   Farah Dewi                     murid3.44@smpia-1.sch.id                      123456      
+   32   Farah Handayani                murid3.144@smpia-1.sch.id                     123456      
+   33   Farah Lestari                  murid3.94@smpia-1.sch.id                      123456      
+   34   Fitri Dewi                     murid3.18@smpia-1.sch.id                      123456      
+   35   Fitri Handayani                murid3.118@smpia-1.sch.id                     123456      
+   36   Fitri Lestari                  murid3.68@smpia-1.sch.id                      123456      
+   37   Galih Dewi                     murid3.45@smpia-1.sch.id                      123456      
+   38   Galih Lestari                  murid3.95@smpia-1.sch.id                      123456      
+   39   Gunawan Dewi                   murid3.19@smpia-1.sch.id                      123456      
+   40   Gunawan Handayani              murid3.119@smpia-1.sch.id                     123456      
+   41   Gunawan Lestari                murid3.69@smpia-1.sch.id                      123456      
+   42   Hana Dewi                      murid3.20@smpia-1.sch.id                      123456      
+   43   Hana Handayani                 murid3.120@smpia-1.sch.id                     123456      
+   44   Hana Lestari                   murid3.70@smpia-1.sch.id                      123456      
+   45   Hesti Dewi                     murid3.46@smpia-1.sch.id                      123456      
+   46   Hesti Lestari                  murid3.96@smpia-1.sch.id                      123456      
+   47   Indra Dewi                     murid3.21@smpia-1.sch.id                      123456      
+   48   Indra Handayani                murid3.121@smpia-1.sch.id                     123456      
+   49   Indra Lestari                  murid3.71@smpia-1.sch.id                      123456      
+   50   Irfan Dewi                     murid3.47@smpia-1.sch.id                      123456      
+   51   Irfan Lestari                  murid3.97@smpia-1.sch.id                      123456      
+   52   Jihan Dewi                     murid3.48@smpia-1.sch.id                      123456      
+   53   Jihan Lestari                  murid3.98@smpia-1.sch.id                      123456      
+   54   Joko Dewi                      murid3.22@smpia-1.sch.id                      123456      
+   55   Joko Handayani                 murid3.122@smpia-1.sch.id                     123456      
+   56   Joko Lestari                   murid3.72@smpia-1.sch.id                      123456      
+   57   Kartini Dewi                   murid3.23@smpia-1.sch.id                      123456      
+   58   Kartini Handayani              murid3.123@smpia-1.sch.id                     123456      
+   59   Kartini Lestari                murid3.73@smpia-1.sch.id                      123456      
+   60   Kevin Dewi                     murid3.49@smpia-1.sch.id                      123456      
+   61   Kevin Lestari                  murid3.99@smpia-1.sch.id                      123456      
+   62   Lina Dewi                      murid3.50@smpia-1.sch.id                      123456      
+   63   Lina Lestari                   murid3.100@smpia-1.sch.id                     123456      
+   64   Lukman Dewi                    murid3.24@smpia-1.sch.id                      123456      
+   65   Lukman Handayani               murid3.124@smpia-1.sch.id                     123456      
+   66   Lukman Lestari                 murid3.74@smpia-1.sch.id                      123456      
+   67   Maya Dewi                      murid3.25@smpia-1.sch.id                      123456      
+   68   Maya Handayani                 murid3.125@smpia-1.sch.id                     123456      
+   69   Maya Lestari                   murid3.75@smpia-1.sch.id                      123456      
+   70   Muhammad Dewi                  murid3.51@smpia-1.sch.id                      123456      
+   71   Muhammad Lestari               murid3.101@smpia-1.sch.id                     123456      
+   72   Muhammad Sari                  murid3.1@smpia-1.sch.id                       123456      
+   73   Nadia Dewi                     murid3.52@smpia-1.sch.id                      123456      
+   74   Nadia Lestari                  murid3.102@smpia-1.sch.id                     123456      
+   75   Nadia Sari                     murid3.2@smpia-1.sch.id                       123456      
+   76   Nurul Dewi                     murid3.26@smpia-1.sch.id                      123456      
+   77   Nurul Handayani                murid3.126@smpia-1.sch.id                     123456      
+   78   Nurul Lestari                  murid3.76@smpia-1.sch.id                      123456      
+   79   Omar Dewi                      murid3.27@smpia-1.sch.id                      123456      
+   80   Omar Handayani                 murid3.127@smpia-1.sch.id                     123456      
+   81   Omar Lestari                   murid3.77@smpia-1.sch.id                      123456      
+   82   Opick Dewi                     murid3.53@smpia-1.sch.id                      123456      
+   83   Opick Lestari                  murid3.103@smpia-1.sch.id                     123456      
+   84   Opick Sari                     murid3.3@smpia-1.sch.id                       123456      
+   85   Putra Dewi                     murid3.54@smpia-1.sch.id                      123456      
+   86   Putra Lestari                  murid3.104@smpia-1.sch.id                     123456      
+   87   Putra Sari                     murid3.4@smpia-1.sch.id                       123456      
+   88   Putri Dewi                     murid3.28@smpia-1.sch.id                      123456      
+   89   Putri Handayani                murid3.128@smpia-1.sch.id                     123456      
+   90   Putri Lestari                  murid3.78@smpia-1.sch.id                      123456      
+   91   Qomar Dewi                     murid3.55@smpia-1.sch.id                      123456      
+   92   Qomar Lestari                  murid3.105@smpia-1.sch.id                     123456      
+   93   Qomar Sari                     murid3.5@smpia-1.sch.id                       123456      
+   94   Qori Dewi                      murid3.29@smpia-1.sch.id                      123456      
+   95   Qori Handayani                 murid3.129@smpia-1.sch.id                     123456      
+   96   Qori Lestari                   murid3.79@smpia-1.sch.id                      123456      
+   97   Rina Dewi                      murid3.56@smpia-1.sch.id                      123456      
+   98   Rina Lestari                   murid3.106@smpia-1.sch.id                     123456      
+   99   Rina Sari                      murid3.6@smpia-1.sch.id                       123456      
+   100  Rudi Dewi                      murid3.30@smpia-1.sch.id                      123456      
+   101  Rudi Handayani                 murid3.130@smpia-1.sch.id                     123456      
+   102  Rudi Lestari                   murid3.80@smpia-1.sch.id                      123456      
+   103  Siti Dewi                      murid3.31@smpia-1.sch.id                      123456      
+   104  Siti Handayani                 murid3.131@smpia-1.sch.id                     123456      
+   105  Siti Lestari                   murid3.81@smpia-1.sch.id                      123456      
+   106  Syahrin Dewi                   murid3.57@smpia-1.sch.id                      123456      
+   107  Syahrin Lestari                murid3.107@smpia-1.sch.id                     123456      
+   108  Syahrin Sari                   murid3.7@smpia-1.sch.id                       123456      
+   109  Taufik Dewi                    murid3.32@smpia-1.sch.id                      123456      
+   110  Taufik Handayani               murid3.132@smpia-1.sch.id                     123456      
+   111  Taufik Lestari                 murid3.82@smpia-1.sch.id                      123456      
+   112  Tomi Dewi                      murid3.58@smpia-1.sch.id                      123456      
+   113  Tomi Lestari                   murid3.108@smpia-1.sch.id                     123456      
+   114  Tomi Sari                      murid3.8@smpia-1.sch.id                       123456      
+   115  Umar Dewi                      murid3.33@smpia-1.sch.id                      123456      
+   116  Umar Handayani                 murid3.133@smpia-1.sch.id                     123456      
+   117  Umar Lestari                   murid3.83@smpia-1.sch.id                      123456      
+   118  Ussy Dewi                      murid3.59@smpia-1.sch.id                      123456      
+   119  Ussy Lestari                   murid3.109@smpia-1.sch.id                     123456      
+   120  Ussy Sari                      murid3.9@smpia-1.sch.id                       123456      
+   121  Vicky Dewi                     murid3.60@smpia-1.sch.id                      123456      
+   122  Vicky Lestari                  murid3.110@smpia-1.sch.id                     123456      
+   123  Vicky Sari                     murid3.10@smpia-1.sch.id                      123456      
+   124  Vina Dewi                      murid3.34@smpia-1.sch.id                      123456      
+   125  Vina Handayani                 murid3.134@smpia-1.sch.id                     123456      
+   126  Vina Lestari                   murid3.84@smpia-1.sch.id                      123456      
+   127  Wawan Dewi                     murid3.35@smpia-1.sch.id                      123456      
+   128  Wawan Handayani                murid3.135@smpia-1.sch.id                     123456      
+   129  Wawan Lestari                  murid3.85@smpia-1.sch.id                      123456      
+   130  Wendi Dewi                     murid3.61@smpia-1.sch.id                      123456      
+   131  Wendi Lestari                  murid3.111@smpia-1.sch.id                     123456      
+   132  Wendi Sari                     murid3.11@smpia-1.sch.id                      123456      
+   133  Xena Dewi                      murid3.36@smpia-1.sch.id                      123456      
+   134  Xena Handayani                 murid3.136@smpia-1.sch.id                     123456      
+   135  Xena Lestari                   murid3.86@smpia-1.sch.id                      123456      
+   136  Yuni Dewi                      murid3.62@smpia-1.sch.id                      123456      
+   137  Yuni Lestari                   murid3.112@smpia-1.sch.id                     123456      
+   138  Yuni Sari                      murid3.12@smpia-1.sch.id                      123456      
+   139  Yusuf Dewi                     murid3.37@smpia-1.sch.id                      123456      
+   140  Yusuf Handayani                murid3.137@smpia-1.sch.id                     123456      
+   141  Yusuf Lestari                  murid3.87@smpia-1.sch.id                      123456      
+   142  Zainab Dewi                    murid3.38@smpia-1.sch.id                      123456      
+   143  Zainab Handayani               murid3.138@smpia-1.sch.id                     123456      
+   144  Zainab Lestari                 murid3.88@smpia-1.sch.id                      123456      
+
+   Hak Akses Murid:
+   - Join kelas via class code
+   - Kerjakan quiz & tugas
+   - View materi pembelajaran
+   - Participate dalam diskusi
+   - View nilai sendiri
+
+----------------------------------------------------------------------------------------------------
+TOTAL USER SEKOLAH INI: 155 user
+   - Admin: 1
+   - Guru: 10
+   - Murid: 144
+
+
+----------------------------------------------------------------------------------------------------
+SEKOLAH: SMPIA 3
+Slug: smpia-3
+Status: ACTIVE
+----------------------------------------------------------------------------------------------------
+
+📌 ADMIN SEKOLAH:
+   Total: 1 user
+
+   1. Nama     : udin
+      Email    : admin@smpia3.com
+      Password : 123456
+      Role     : ADMIN
+      Status   : ACTIVE | Verified: YES
+      Hak Akses: Admin sekolah, manage guru & murid, manage kelas
+
+📌 GURU (PENGAJAR):
+   Total: 10 user
+   Format Email: guru[no].[1-10]@smpia-3.sch.id
+   Password Default: 123456
+
+   No   Nama                           Email                                         Password    
+   ---- ------------------------------ --------------------------------------------- ------------
+   1    Opick Ramadhan                 guru5.1@smpia-3.sch.id                        123456      
+   2    Putri Tanjung                  guru5.2@smpia-3.sch.id                        123456      
+   3    Qomaruddin                     guru5.3@smpia-3.sch.id                        123456      
+   4    Rina Nose                      guru5.4@smpia-3.sch.id                        123456      
+   5    Syahrini                       guru5.5@smpia-3.sch.id                        123456      
+   6    Tomi Samekto                   guru5.6@smpia-3.sch.id                        123456      
+   7    Ussy Sulistiawaty              guru5.7@smpia-3.sch.id                        123456      
+   8    Vicky Prasetyo                 guru5.8@smpia-3.sch.id                        123456      
+   9    Wendy Walters                  guru5.9@smpia-3.sch.id                        123456      
+   10   Yuni Shara                     guru5.10@smpia-3.sch.id                       123456      
+
+   Hak Akses Guru:
+   - Create & manage kelas
+   - Create quiz, tugas, materi, link
+   - Input nilai siswa
+   - Kelola forum diskusi
+   - Catat KBM (Kegiatan Belajar Mengajar)
+   - View buku nilai kelas
+
+📌 MURID (SISWA):
+   Total: 144 user
+   Format Email: murid[no].[1-144]@smpia-3.sch.id
+   Password Default: 123456
+
+   No   Nama                           Email                                         Password    
+   ---- ------------------------------ --------------------------------------------- ------------
+   1    Ahmad Fauzi                    murid5.75@smpia-3.sch.id                      123456      
+   2    Ahmad Rahman                   murid5.25@smpia-3.sch.id                      123456      
+   3    Ahmad Saputra                  murid5.125@smpia-3.sch.id                     123456      
+   4    Andi Fauzi                     murid5.101@smpia-3.sch.id                     123456      
+   5    Andi Hidayat                   murid5.1@smpia-3.sch.id                       123456      
+   6    Andi Rahman                    murid5.51@smpia-3.sch.id                      123456      
+   7    Bella Fauzi                    murid5.102@smpia-3.sch.id                     123456      
+   8    Bella Hidayat                  murid5.2@smpia-3.sch.id                       123456      
+   9    Bella Rahman                   murid5.52@smpia-3.sch.id                      123456      
+   10   Budi Fauzi                     murid5.76@smpia-3.sch.id                      123456      
+   11   Budi Rahman                    murid5.26@smpia-3.sch.id                      123456      
+   12   Budi Saputra                   murid5.126@smpia-3.sch.id                     123456      
+   13   Candra Fauzi                   murid5.103@smpia-3.sch.id                     123456      
+   14   Candra Hidayat                 murid5.3@smpia-3.sch.id                       123456      
+   15   Candra Rahman                  murid5.53@smpia-3.sch.id                      123456      
+   16   Citra Fauzi                    murid5.77@smpia-3.sch.id                      123456      
+   17   Citra Rahman                   murid5.27@smpia-3.sch.id                      123456      
+   18   Citra Saputra                  murid5.127@smpia-3.sch.id                     123456      
+   19   Dewi Fauzi                     murid5.78@smpia-3.sch.id                      123456      
+   20   Dewi Rahman                    murid5.28@smpia-3.sch.id                      123456      
+   21   Dewi Saputra                   murid5.128@smpia-3.sch.id                     123456      
+   22   Diana Fauzi                    murid5.104@smpia-3.sch.id                     123456      
+   23   Diana Hidayat                  murid5.4@smpia-3.sch.id                       123456      
+   24   Diana Rahman                   murid5.54@smpia-3.sch.id                      123456      
+   25   Eko Fauzi                      murid5.79@smpia-3.sch.id                      123456      
+   26   Eko Rahman                     murid5.29@smpia-3.sch.id                      123456      
+   27   Eko Saputra                    murid5.129@smpia-3.sch.id                     123456      
+   28   Erwin Fauzi                    murid5.105@smpia-3.sch.id                     123456      
+   29   Erwin Hidayat                  murid5.5@smpia-3.sch.id                       123456      
+   30   Erwin Rahman                   murid5.55@smpia-3.sch.id                      123456      
+   31   Farah Fauzi                    murid5.106@smpia-3.sch.id                     123456      
+   32   Farah Hidayat                  murid5.6@smpia-3.sch.id                       123456      
+   33   Farah Rahman                   murid5.56@smpia-3.sch.id                      123456      
+   34   Fitri Fauzi                    murid5.80@smpia-3.sch.id                      123456      
+   35   Fitri Rahman                   murid5.30@smpia-3.sch.id                      123456      
+   36   Fitri Saputra                  murid5.130@smpia-3.sch.id                     123456      
+   37   Galih Fauzi                    murid5.107@smpia-3.sch.id                     123456      
+   38   Galih Hidayat                  murid5.7@smpia-3.sch.id                       123456      
+   39   Galih Rahman                   murid5.57@smpia-3.sch.id                      123456      
+   40   Gunawan Fauzi                  murid5.81@smpia-3.sch.id                      123456      
+   41   Gunawan Rahman                 murid5.31@smpia-3.sch.id                      123456      
+   42   Gunawan Saputra                murid5.131@smpia-3.sch.id                     123456      
+   43   Hana Fauzi                     murid5.82@smpia-3.sch.id                      123456      
+   44   Hana Rahman                    murid5.32@smpia-3.sch.id                      123456      
+   45   Hana Saputra                   murid5.132@smpia-3.sch.id                     123456      
+   46   Hesti Fauzi                    murid5.108@smpia-3.sch.id                     123456      
+   47   Hesti Hidayat                  murid5.8@smpia-3.sch.id                       123456      
+   48   Hesti Rahman                   murid5.58@smpia-3.sch.id                      123456      
+   49   Indra Fauzi                    murid5.83@smpia-3.sch.id                      123456      
+   50   Indra Rahman                   murid5.33@smpia-3.sch.id                      123456      
+   51   Indra Saputra                  murid5.133@smpia-3.sch.id                     123456      
+   52   Irfan Fauzi                    murid5.109@smpia-3.sch.id                     123456      
+   53   Irfan Hidayat                  murid5.9@smpia-3.sch.id                       123456      
+   54   Irfan Rahman                   murid5.59@smpia-3.sch.id                      123456      
+   55   Jihan Fauzi                    murid5.110@smpia-3.sch.id                     123456      
+   56   Jihan Hidayat                  murid5.10@smpia-3.sch.id                      123456      
+   57   Jihan Rahman                   murid5.60@smpia-3.sch.id                      123456      
+   58   Joko Fauzi                     murid5.84@smpia-3.sch.id                      123456      
+   59   Joko Rahman                    murid5.34@smpia-3.sch.id                      123456      
+   60   Joko Saputra                   murid5.134@smpia-3.sch.id                     123456      
+   61   Kartini Fauzi                  murid5.85@smpia-3.sch.id                      123456      
+   62   Kartini Rahman                 murid5.35@smpia-3.sch.id                      123456      
+   63   Kartini Saputra                murid5.135@smpia-3.sch.id                     123456      
+   64   Kevin Fauzi                    murid5.111@smpia-3.sch.id                     123456      
+   65   Kevin Hidayat                  murid5.11@smpia-3.sch.id                      123456      
+   66   Kevin Rahman                   murid5.61@smpia-3.sch.id                      123456      
+   67   Lina Fauzi                     murid5.112@smpia-3.sch.id                     123456      
+   68   Lina Hidayat                   murid5.12@smpia-3.sch.id                      123456      
+   69   Lina Rahman                    murid5.62@smpia-3.sch.id                      123456      
+   70   Lukman Fauzi                   murid5.86@smpia-3.sch.id                      123456      
+   71   Lukman Rahman                  murid5.36@smpia-3.sch.id                      123456      
+   72   Lukman Saputra                 murid5.136@smpia-3.sch.id                     123456      
+   73   Maya Fauzi                     murid5.87@smpia-3.sch.id                      123456      
+   74   Maya Rahman                    murid5.37@smpia-3.sch.id                      123456      
+   75   Maya Saputra                   murid5.137@smpia-3.sch.id                     123456      
+   76   Muhammad Fauzi                 murid5.113@smpia-3.sch.id                     123456      
+   77   Muhammad Hidayat               murid5.13@smpia-3.sch.id                      123456      
+   78   Muhammad Rahman                murid5.63@smpia-3.sch.id                      123456      
+   79   Nadia Fauzi                    murid5.114@smpia-3.sch.id                     123456      
+   80   Nadia Hidayat                  murid5.14@smpia-3.sch.id                      123456      
+   81   Nadia Rahman                   murid5.64@smpia-3.sch.id                      123456      
+   82   Nurul Fauzi                    murid5.88@smpia-3.sch.id                      123456      
+   83   Nurul Rahman                   murid5.38@smpia-3.sch.id                      123456      
+   84   Nurul Saputra                  murid5.138@smpia-3.sch.id                     123456      
+   85   Omar Fauzi                     murid5.89@smpia-3.sch.id                      123456      
+   86   Omar Rahman                    murid5.39@smpia-3.sch.id                      123456      
+   87   Omar Saputra                   murid5.139@smpia-3.sch.id                     123456      
+   88   Opick Fauzi                    murid5.115@smpia-3.sch.id                     123456      
+   89   Opick Hidayat                  murid5.15@smpia-3.sch.id                      123456      
+   90   Opick Rahman                   murid5.65@smpia-3.sch.id                      123456      
+   91   Putra Fauzi                    murid5.116@smpia-3.sch.id                     123456      
+   92   Putra Hidayat                  murid5.16@smpia-3.sch.id                      123456      
+   93   Putra Rahman                   murid5.66@smpia-3.sch.id                      123456      
+   94   Putri Fauzi                    murid5.90@smpia-3.sch.id                      123456      
+   95   Putri Rahman                   murid5.40@smpia-3.sch.id                      123456      
+   96   Putri Saputra                  murid5.140@smpia-3.sch.id                     123456      
+   97   Qomar Fauzi                    murid5.117@smpia-3.sch.id                     123456      
+   98   Qomar Hidayat                  murid5.17@smpia-3.sch.id                      123456      
+   99   Qomar Rahman                   murid5.67@smpia-3.sch.id                      123456      
+   100  Qori Fauzi                     murid5.91@smpia-3.sch.id                      123456      
+   101  Qori Rahman                    murid5.41@smpia-3.sch.id                      123456      
+   102  Qori Saputra                   murid5.141@smpia-3.sch.id                     123456      
+   103  Rina Fauzi                     murid5.118@smpia-3.sch.id                     123456      
+   104  Rina Hidayat                   murid5.18@smpia-3.sch.id                      123456      
+   105  Rina Rahman                    murid5.68@smpia-3.sch.id                      123456      
+   106  Rudi Fauzi                     murid5.92@smpia-3.sch.id                      123456      
+   107  Rudi Rahman                    murid5.42@smpia-3.sch.id                      123456      
+   108  Rudi Saputra                   murid5.142@smpia-3.sch.id                     123456      
+   109  Siti Fauzi                     murid5.93@smpia-3.sch.id                      123456      
+   110  Siti Rahman                    murid5.43@smpia-3.sch.id                      123456      
+   111  Siti Saputra                   murid5.143@smpia-3.sch.id                     123456      
+   112  Syahrin Fauzi                  murid5.119@smpia-3.sch.id                     123456      
+   113  Syahrin Hidayat                murid5.19@smpia-3.sch.id                      123456      
+   114  Syahrin Rahman                 murid5.69@smpia-3.sch.id                      123456      
+   115  Taufik Fauzi                   murid5.94@smpia-3.sch.id                      123456      
+   116  Taufik Rahman                  murid5.44@smpia-3.sch.id                      123456      
+   117  Taufik Saputra                 murid5.144@smpia-3.sch.id                     123456      
+   118  Tomi Fauzi                     murid5.120@smpia-3.sch.id                     123456      
+   119  Tomi Hidayat                   murid5.20@smpia-3.sch.id                      123456      
+   120  Tomi Rahman                    murid5.70@smpia-3.sch.id                      123456      
+   121  Umar Fauzi                     murid5.95@smpia-3.sch.id                      123456      
+   122  Umar Rahman                    murid5.45@smpia-3.sch.id                      123456      
+   123  Ussy Fauzi                     murid5.121@smpia-3.sch.id                     123456      
+   124  Ussy Hidayat                   murid5.21@smpia-3.sch.id                      123456      
+   125  Ussy Rahman                    murid5.71@smpia-3.sch.id                      123456      
+   126  Vicky Fauzi                    murid5.122@smpia-3.sch.id                     123456      
+   127  Vicky Hidayat                  murid5.22@smpia-3.sch.id                      123456      
+   128  Vicky Rahman                   murid5.72@smpia-3.sch.id                      123456      
+   129  Vina Fauzi                     murid5.96@smpia-3.sch.id                      123456      
+   130  Vina Rahman                    murid5.46@smpia-3.sch.id                      123456      
+   131  Wawan Fauzi                    murid5.97@smpia-3.sch.id                      123456      
+   132  Wawan Rahman                   murid5.47@smpia-3.sch.id                      123456      
+   133  Wendi Fauzi                    murid5.123@smpia-3.sch.id                     123456      
+   134  Wendi Hidayat                  murid5.23@smpia-3.sch.id                      123456      
+   135  Wendi Rahman                   murid5.73@smpia-3.sch.id                      123456      
+   136  Xena Fauzi                     murid5.98@smpia-3.sch.id                      123456      
+   137  Xena Rahman                    murid5.48@smpia-3.sch.id                      123456      
+   138  Yuni Fauzi                     murid5.124@smpia-3.sch.id                     123456      
+   139  Yuni Hidayat                   murid5.24@smpia-3.sch.id                      123456      
+   140  Yuni Rahman                    murid5.74@smpia-3.sch.id                      123456      
+   141  Yusuf Fauzi                    murid5.99@smpia-3.sch.id                      123456      
+   142  Yusuf Rahman                   murid5.49@smpia-3.sch.id                      123456      
+   143  Zainab Fauzi                   murid5.100@smpia-3.sch.id                     123456      
+   144  Zainab Rahman                  murid5.50@smpia-3.sch.id                      123456      
+
+   Hak Akses Murid:
+   - Join kelas via class code
+   - Kerjakan quiz & tugas
+   - View materi pembelajaran
+   - Participate dalam diskusi
+   - View nilai sendiri
+
+----------------------------------------------------------------------------------------------------
+TOTAL USER SEKOLAH INI: 155 user
+   - Admin: 1
+   - Guru: 10
+   - Murid: 144
+
+
+----------------------------------------------------------------------------------------------------
+SEKOLAH: SMPIA2
+Slug: smpia2
+Status: ACTIVE
+----------------------------------------------------------------------------------------------------
+
+📌 ADMIN SEKOLAH:
+   Total: 1 user
+
+   1. Nama     : mimin
+      Email    : admin@smpia2.com
+      Password : 123456
+      Role     : ADMIN
+      Status   : ACTIVE | Verified: YES
+      Hak Akses: Admin sekolah, manage guru & murid, manage kelas
+
+📌 GURU (PENGAJAR):
+   Total: 10 user
+   Format Email: guru[no].[1-10]@smpia2.sch.id
+   Password Default: 123456
+
+   No   Nama                           Email                                         Password    
+   ---- ------------------------------ --------------------------------------------- ------------
+   1    Erwin Kurniawan                guru4.1@smpia2.sch.id                         123456      
+   2    Farah Quinn                    guru4.2@smpia2.sch.id                         123456      
+   3    Galih Pamungkas                guru4.3@smpia2.sch.id                         123456      
+   4    Hesti Purwadinata              guru4.4@smpia2.sch.id                         123456      
+   5    Irfan Hakim                    guru4.5@smpia2.sch.id                         123456      
+   6    Jihan Mulyani                  guru4.6@smpia2.sch.id                         123456      
+   7    Kevin Sanjaya                  guru4.7@smpia2.sch.id                         123456      
+   8    Lina Marlina                   guru4.8@smpia2.sch.id                         123456      
+   9    Muhammad Rizky                 guru4.9@smpia2.sch.id                         123456      
+   10   Nadia Safitri                  guru4.10@smpia2.sch.id                        123456      
+
+   Hak Akses Guru:
+   - Create & manage kelas
+   - Create quiz, tugas, materi, link
+   - Input nilai siswa
+   - Kelola forum diskusi
+   - Catat KBM (Kegiatan Belajar Mengajar)
+   - View buku nilai kelas
+
+📌 MURID (SISWA):
+   Total: 144 user
+   Format Email: murid[no].[1-144]@smpia2.sch.id
+   Password Default: 123456
+
+   No   Nama                           Email                                         Password    
+   ---- ------------------------------ --------------------------------------------- ------------
+   1    Ahmad Hidayat                  murid4.119@smpia2.sch.id                      123456      
+   2    Ahmad Nugroho                  murid4.19@smpia2.sch.id                       123456      
+   3    Ahmad Setiawan                 murid4.69@smpia2.sch.id                       123456      
+   4    Andi Nugroho                   murid4.45@smpia2.sch.id                       123456      
+   5    Andi Setiawan                  murid4.95@smpia2.sch.id                       123456      
+   6    Bella Nugroho                  murid4.46@smpia2.sch.id                       123456      
+   7    Bella Setiawan                 murid4.96@smpia2.sch.id                       123456      
+   8    Budi Hidayat                   murid4.120@smpia2.sch.id                      123456      
+   9    Budi Nugroho                   murid4.20@smpia2.sch.id                       123456      
+   10   Budi Setiawan                  murid4.70@smpia2.sch.id                       123456      
+   11   Candra Nugroho                 murid4.47@smpia2.sch.id                       123456      
+   12   Candra Setiawan                murid4.97@smpia2.sch.id                       123456      
+   13   Citra Hidayat                  murid4.121@smpia2.sch.id                      123456      
+   14   Citra Nugroho                  murid4.21@smpia2.sch.id                       123456      
+   15   Citra Setiawan                 murid4.71@smpia2.sch.id                       123456      
+   16   Dewi Hidayat                   murid4.122@smpia2.sch.id                      123456      
+   17   Dewi Nugroho                   murid4.22@smpia2.sch.id                       123456      
+   18   Dewi Setiawan                  murid4.72@smpia2.sch.id                       123456      
+   19   Diana Nugroho                  murid4.48@smpia2.sch.id                       123456      
+   20   Diana Setiawan                 murid4.98@smpia2.sch.id                       123456      
+   21   Eko Hidayat                    murid4.123@smpia2.sch.id                      123456      
+   22   Eko Nugroho                    murid4.23@smpia2.sch.id                       123456      
+   23   Eko Setiawan                   murid4.73@smpia2.sch.id                       123456      
+   24   Erwin Nugroho                  murid4.49@smpia2.sch.id                       123456      
+   25   Erwin Setiawan                 murid4.99@smpia2.sch.id                       123456      
+   26   Farah Nugroho                  murid4.50@smpia2.sch.id                       123456      
+   27   Farah Setiawan                 murid4.100@smpia2.sch.id                      123456      
+   28   Fitri Hidayat                  murid4.124@smpia2.sch.id                      123456      
+   29   Fitri Nugroho                  murid4.24@smpia2.sch.id                       123456      
+   30   Fitri Setiawan                 murid4.74@smpia2.sch.id                       123456      
+   31   Galih Handayani                murid4.1@smpia2.sch.id                        123456      
+   32   Galih Nugroho                  murid4.51@smpia2.sch.id                       123456      
+   33   Galih Setiawan                 murid4.101@smpia2.sch.id                      123456      
+   34   Gunawan Hidayat                murid4.125@smpia2.sch.id                      123456      
+   35   Gunawan Nugroho                murid4.25@smpia2.sch.id                       123456      
+   36   Gunawan Setiawan               murid4.75@smpia2.sch.id                       123456      
+   37   Hana Hidayat                   murid4.126@smpia2.sch.id                      123456      
+   38   Hana Nugroho                   murid4.26@smpia2.sch.id                       123456      
+   39   Hana Setiawan                  murid4.76@smpia2.sch.id                       123456      
+   40   Hesti Handayani                murid4.2@smpia2.sch.id                        123456      
+   41   Hesti Nugroho                  murid4.52@smpia2.sch.id                       123456      
+   42   Hesti Setiawan                 murid4.102@smpia2.sch.id                      123456      
+   43   Indra Hidayat                  murid4.127@smpia2.sch.id                      123456      
+   44   Indra Nugroho                  murid4.27@smpia2.sch.id                       123456      
+   45   Indra Setiawan                 murid4.77@smpia2.sch.id                       123456      
+   46   Irfan Handayani                murid4.3@smpia2.sch.id                        123456      
+   47   Irfan Nugroho                  murid4.53@smpia2.sch.id                       123456      
+   48   Irfan Setiawan                 murid4.103@smpia2.sch.id                      123456      
+   49   Jihan Handayani                murid4.4@smpia2.sch.id                        123456      
+   50   Jihan Nugroho                  murid4.54@smpia2.sch.id                       123456      
+   51   Jihan Setiawan                 murid4.104@smpia2.sch.id                      123456      
+   52   Joko Hidayat                   murid4.128@smpia2.sch.id                      123456      
+   53   Joko Nugroho                   murid4.28@smpia2.sch.id                       123456      
+   54   Joko Setiawan                  murid4.78@smpia2.sch.id                       123456      
+   55   Kartini Hidayat                murid4.129@smpia2.sch.id                      123456      
+   56   Kartini Nugroho                murid4.29@smpia2.sch.id                       123456      
+   57   Kartini Setiawan               murid4.79@smpia2.sch.id                       123456      
+   58   Kevin Handayani                murid4.5@smpia2.sch.id                        123456      
+   59   Kevin Nugroho                  murid4.55@smpia2.sch.id                       123456      
+   60   Kevin Setiawan                 murid4.105@smpia2.sch.id                      123456      
+   61   Lina Handayani                 murid4.6@smpia2.sch.id                        123456      
+   62   Lina Nugroho                   murid4.56@smpia2.sch.id                       123456      
+   63   Lina Setiawan                  murid4.106@smpia2.sch.id                      123456      
+   64   Lukman Hidayat                 murid4.130@smpia2.sch.id                      123456      
+   65   Lukman Nugroho                 murid4.30@smpia2.sch.id                       123456      
+   66   Lukman Setiawan                murid4.80@smpia2.sch.id                       123456      
+   67   Maya Hidayat                   murid4.131@smpia2.sch.id                      123456      
+   68   Maya Nugroho                   murid4.31@smpia2.sch.id                       123456      
+   69   Maya Setiawan                  murid4.81@smpia2.sch.id                       123456      
+   70   Muhammad Handayani             murid4.7@smpia2.sch.id                        123456      
+   71   Muhammad Nugroho               murid4.57@smpia2.sch.id                       123456      
+   72   Muhammad Setiawan              murid4.107@smpia2.sch.id                      123456      
+   73   Nadia Handayani                murid4.8@smpia2.sch.id                        123456      
+   74   Nadia Nugroho                  murid4.58@smpia2.sch.id                       123456      
+   75   Nadia Setiawan                 murid4.108@smpia2.sch.id                      123456      
+   76   Nurul Hidayat                  murid4.132@smpia2.sch.id                      123456      
+   77   Nurul Nugroho                  murid4.32@smpia2.sch.id                       123456      
+   78   Nurul Setiawan                 murid4.82@smpia2.sch.id                       123456      
+   79   Omar Hidayat                   murid4.133@smpia2.sch.id                      123456      
+   80   Omar Nugroho                   murid4.33@smpia2.sch.id                       123456      
+   81   Omar Setiawan                  murid4.83@smpia2.sch.id                       123456      
+   82   Opick Handayani                murid4.9@smpia2.sch.id                        123456      
+   83   Opick Nugroho                  murid4.59@smpia2.sch.id                       123456      
+   84   Opick Setiawan                 murid4.109@smpia2.sch.id                      123456      
+   85   Putra Handayani                murid4.10@smpia2.sch.id                       123456      
+   86   Putra Nugroho                  murid4.60@smpia2.sch.id                       123456      
+   87   Putra Setiawan                 murid4.110@smpia2.sch.id                      123456      
+   88   Putri Hidayat                  murid4.134@smpia2.sch.id                      123456      
+   89   Putri Nugroho                  murid4.34@smpia2.sch.id                       123456      
+   90   Putri Setiawan                 murid4.84@smpia2.sch.id                       123456      
+   91   Qomar Handayani                murid4.11@smpia2.sch.id                       123456      
+   92   Qomar Nugroho                  murid4.61@smpia2.sch.id                       123456      
+   93   Qomar Setiawan                 murid4.111@smpia2.sch.id                      123456      
+   94   Qori Hidayat                   murid4.135@smpia2.sch.id                      123456      
+   95   Qori Nugroho                   murid4.35@smpia2.sch.id                       123456      
+   96   Qori Setiawan                  murid4.85@smpia2.sch.id                       123456      
+   97   Rina Handayani                 murid4.12@smpia2.sch.id                       123456      
+   98   Rina Nugroho                   murid4.62@smpia2.sch.id                       123456      
+   99   Rina Setiawan                  murid4.112@smpia2.sch.id                      123456      
+   100  Rudi Hidayat                   murid4.136@smpia2.sch.id                      123456      
+   101  Rudi Nugroho                   murid4.36@smpia2.sch.id                       123456      
+   102  Rudi Setiawan                  murid4.86@smpia2.sch.id                       123456      
+   103  Siti Hidayat                   murid4.137@smpia2.sch.id                      123456      
+   104  Siti Nugroho                   murid4.37@smpia2.sch.id                       123456      
+   105  Siti Setiawan                  murid4.87@smpia2.sch.id                       123456      
+   106  Syahrin Handayani              murid4.13@smpia2.sch.id                       123456      
+   107  Syahrin Nugroho                murid4.63@smpia2.sch.id                       123456      
+   108  Syahrin Setiawan               murid4.113@smpia2.sch.id                      123456      
+   109  Taufik Hidayat                 murid4.138@smpia2.sch.id                      123456      
+   110  Taufik Nugroho                 murid4.38@smpia2.sch.id                       123456      
+   111  Taufik Setiawan                murid4.88@smpia2.sch.id                       123456      
+   112  Tomi Handayani                 murid4.14@smpia2.sch.id                       123456      
+   113  Tomi Nugroho                   murid4.64@smpia2.sch.id                       123456      
+   114  Tomi Setiawan                  murid4.114@smpia2.sch.id                      123456      
+   115  Umar Hidayat                   murid4.139@smpia2.sch.id                      123456      
+   116  Umar Nugroho                   murid4.39@smpia2.sch.id                       123456      
+   117  Umar Setiawan                  murid4.89@smpia2.sch.id                       123456      
+   118  Ussy Handayani                 murid4.15@smpia2.sch.id                       123456      
+   119  Ussy Nugroho                   murid4.65@smpia2.sch.id                       123456      
+   120  Ussy Setiawan                  murid4.115@smpia2.sch.id                      123456      
+   121  Vicky Handayani                murid4.16@smpia2.sch.id                       123456      
+   122  Vicky Nugroho                  murid4.66@smpia2.sch.id                       123456      
+   123  Vicky Setiawan                 murid4.116@smpia2.sch.id                      123456      
+   124  Vina Hidayat                   murid4.140@smpia2.sch.id                      123456      
+   125  Vina Nugroho                   murid4.40@smpia2.sch.id                       123456      
+   126  Vina Setiawan                  murid4.90@smpia2.sch.id                       123456      
+   127  Wawan Hidayat                  murid4.141@smpia2.sch.id                      123456      
+   128  Wawan Nugroho                  murid4.41@smpia2.sch.id                       123456      
+   129  Wawan Setiawan                 murid4.91@smpia2.sch.id                       123456      
+   130  Wendi Handayani                murid4.17@smpia2.sch.id                       123456      
+   131  Wendi Nugroho                  murid4.67@smpia2.sch.id                       123456      
+   132  Wendi Setiawan                 murid4.117@smpia2.sch.id                      123456      
+   133  Xena Hidayat                   murid4.142@smpia2.sch.id                      123456      
+   134  Xena Nugroho                   murid4.42@smpia2.sch.id                       123456      
+   135  Xena Setiawan                  murid4.92@smpia2.sch.id                       123456      
+   136  Yuni Handayani                 murid4.18@smpia2.sch.id                       123456      
+   137  Yuni Nugroho                   murid4.68@smpia2.sch.id                       123456      
+   138  Yuni Setiawan                  murid4.118@smpia2.sch.id                      123456      
+   139  Yusuf Hidayat                  murid4.143@smpia2.sch.id                      123456      
+   140  Yusuf Nugroho                  murid4.43@smpia2.sch.id                       123456      
+   141  Yusuf Setiawan                 murid4.93@smpia2.sch.id                       123456      
+   142  Zainab Hidayat                 murid4.144@smpia2.sch.id                      123456      
+   143  Zainab Nugroho                 murid4.44@smpia2.sch.id                       123456      
+   144  Zainab Setiawan                murid4.94@smpia2.sch.id                       123456      
+
+   Hak Akses Murid:
+   - Join kelas via class code
+   - Kerjakan quiz & tugas
+   - View materi pembelajaran
+   - Participate dalam diskusi
+   - View nilai sendiri
+
+----------------------------------------------------------------------------------------------------
+TOTAL USER SEKOLAH INI: 155 user
+   - Admin: 1
+   - Guru: 10
+   - Murid: 144
+
+====================================================================================================
+GRAND TOTAL SUMMARY
+====================================================================================================
+Total Schools: 9
+Total Admins: 9
+Total Teachers: 90
+Total Students: 1296
+GRAND TOTAL USERS: 1395
+
+====================================================================================================
+QUICK LOGIN REFERENCE
+====================================================================================================
+
+GURU LOGIN:
+   Format: guru[no_sekolah].[no_guru]@[slug_sekolah].sch.id
+   Password: 123456
+
+   Contoh:
+   - guru1.1@sdia-1.sch.id / 123456
+   - guru2.1@sdia2.sch.id / 123456
+   - guru3.1@sman5-bandung.sch.id / 123456
+
+MURID LOGIN:
+   Format: murid[no_sekolah].[no_murid]@[slug_sekolah].sch.id
+   Password: 123456
+
+   Contoh:
+   - murid1.1@sdia-1.sch.id / 123456
+   - murid1.144@sdia-1.sch.id / 123456
+   - murid2.1@sdia2.sch.id / 123456
+   - murid2.144@sdia2.sch.id / 123456
+   - murid3.1@sman5-bandung.sch.id / 123456
+   - murid3.144@sman5-bandung.sch.id / 123456
+
+====================================================================================================
+END OF REPORT
+====================================================================================================
