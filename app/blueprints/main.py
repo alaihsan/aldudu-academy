@@ -150,6 +150,23 @@ def serve_question_image(course_id, filename):
     upload_folder = os.path.join(os.getcwd(), 'instance', 'uploads', str(course_id))
     return send_from_directory(upload_folder, filename, as_attachment=False)
 
+@main_bp.route('/kelas/<int:course_id>/diskusi')
+@login_required
+def course_discussions(course_id):
+    """Halaman Forum Diskusi per kelas"""
+    course = db.session.get(Course, course_id)
+    if course is None:
+        abort(404)
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(course, school_id)
+    
+    is_teacher = (current_user.id == course.teacher_id)
+    is_student = current_user in course.students
+    if not is_teacher and not is_student:
+        abort(403)
+    
+    return render_template('course_discussions.html', course=course, is_teacher=is_teacher)
+
 @main_bp.route('/kelas/<int:course_id>/diskusi/<int:discussion_id>')
 @login_required
 def discussion_detail(course_id, discussion_id):

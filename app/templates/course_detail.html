@@ -6,24 +6,23 @@
 <style>
     :root {
         --course-theme: {{ course.color or '#2563eb' }};
-        --course-theme-light: {{ course.color }}15; /* 10% opacity */
+        --course-theme-light: {{ course.color }}15;
     }
     .bg-theme { background-color: var(--course-theme) !important; }
     .text-theme { color: var(--course-theme) !important; }
     .border-theme { border-color: var(--course-theme) !important; }
     .bg-theme-light { background-color: var(--course-theme-light) !important; }
-    
+
     .tab-btn.active {
         background-color: var(--course-theme) !important;
         box-shadow: 0 10px 15px -3px var(--course-theme-light);
     }
-    
+
     .btn-shine-theme:hover {
         background-color: var(--course-theme);
         filter: brightness(90%);
     }
 
-    /* Modal Theme Overrides */
     .modal-header-theme {
         background: linear-gradient(to bottom right, var(--course-theme), var(--course-theme));
         filter: brightness(90%);
@@ -38,6 +37,27 @@
     .focus-theme:focus {
         border-color: var(--course-theme) !important;
         box-shadow: 0 0 0 2px var(--course-theme-light) !important;
+    }
+    
+    /* Class Switcher Smooth Transitions */
+    #class-switcher-menu {
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    #class-switcher-menu:not(.hidden) {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    #switcher-arrow {
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .class-switcher-btn {
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .class-switcher-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px -1px var(--course-theme-light);
     }
 </style>
 {% endblock %}
@@ -57,9 +77,35 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
                 </a>
+                
+                <!-- Class Switcher Dropdown -->
+                {% if is_teacher %}
+                <div class="relative" id="class-switcher">
+                    <button onclick="toggleClassSwitcher()" class="class-switcher-btn flex items-center space-x-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl transition-all group">
+                        <svg class="w-5 h-5 text-gray-500 group-hover:text-primary-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                        </svg>
+                        <span class="text-sm font-bold text-gray-700 group-hover:text-primary-700 transition-colors">{{ course.name }}</span>
+                        <svg class="w-4 h-4 text-gray-400 transition-transform" id="switcher-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    
+                    <!-- Dropdown Menu -->
+                    <div id="class-switcher-menu" class="hidden absolute top-full left-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 z-50 animate-slide-up overflow-hidden">
+                        <div class="px-4 py-2 border-b border-gray-100">
+                            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Pilih Kelas</p>
+                        </div>
+                        <div id="class-switcher-list" class="max-h-96 overflow-y-auto">
+                            <!-- Will be populated by JS -->
+                        </div>
+                    </div>
+                </div>
+                {% else %}
                 <h2 class="text-lg font-bold text-gray-900 truncate">{{ course.name }}</h2>
+                {% endif %}
             </div>
-            
+
             <div class="flex items-center space-x-3">
                 <a href="{{ url_for('main.issues') }}" class="p-2 text-primary-600 hover:bg-primary-50 rounded-lg transition-colors" title="Manajemen Masalah">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -117,9 +163,10 @@
                         <button data-tab="Kuis" class="tab-btn px-6 py-2.5 text-gray-500 hover:bg-gray-50 rounded-xl font-bold text-sm transition-all whitespace-nowrap">Kuis</button>
                         <button data-tab="Berkas" class="tab-btn px-6 py-2.5 text-gray-500 hover:bg-gray-50 rounded-xl font-bold text-sm transition-all whitespace-nowrap">Berkas</button>
                         <button data-tab="Link" class="tab-btn px-6 py-2.5 text-gray-500 hover:bg-gray-50 rounded-xl font-bold text-sm transition-all whitespace-nowrap">Link</button>
-                        <button data-tab="Diskusi" class="tab-btn px-6 py-2.5 text-gray-500 hover:bg-gray-50 rounded-xl font-bold text-sm transition-all whitespace-nowrap">Diskusi</button>
+                        <button data-tab="diskusi" class="tab-btn px-6 py-2.5 text-gray-500 hover:bg-gray-50 rounded-xl font-bold text-sm transition-all whitespace-nowrap">Forum Diskusi</button>
                         {% if is_teacher %}
-                        <button data-tab="kbm" class="tab-btn px-6 py-2.5 text-gray-500 hover:bg-gray-50 rounded-xl font-bold text-sm transition-all whitespace-nowrap">📚 Catatan KBM</button>
+                        <!-- Hidden KBM tab button for sidebar access -->
+                        <button data-tab="kbm" class="hidden" onclick="activateKbmTab()"></button>
                         {% endif %}
                     </div>
 
@@ -217,20 +264,22 @@
                     {% endif %}
                 </div>
 
-                <!-- Discussions Header -->
-                <div class="flex items-center justify-between pt-10 border-t border-gray-200" id="diskusi">
-                    <div>
-                        <h2 class="text-2xl font-black text-gray-900">Forum Diskusi</h2>
-                        <p class="text-sm text-gray-500 mt-1">Ruang interaksi tanya jawab antara guru dan murid.</p>
+                <!-- Discussions Section -->
+                <div class="pt-10 border-t border-gray-200" id="diskusi-section">
+                    <div class="flex items-center justify-between mb-8">
+                        <div>
+                            <h2 class="text-2xl font-black text-gray-900">Forum Diskusi</h2>
+                            <p class="text-sm text-gray-500 mt-1">Ruang interaksi tanya jawab antara guru dan murid.</p>
+                        </div>
+                        <button id="show-create-discussion-modal" class="px-6 py-3 bg-primary-50 text-primary-700 rounded-2xl font-black text-sm flex items-center space-x-2 hover:bg-primary-100 transition-all active:scale-95">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                            </svg>
+                            <span>Mulai Diskusi</span>
+                        </button>
                     </div>
-                    <button id="show-create-discussion-modal" class="px-6 py-3 bg-primary-50 text-primary-700 rounded-2xl font-black text-sm flex items-center space-x-2 hover:bg-primary-100 transition-all active:scale-95">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                        </svg>
-                        <span>Mulai Diskusi</span>
-                    </button>
+                    <div id="discussions-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
                 </div>
-                <div id="discussions-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 pb-20"></div>
 
                 <!-- KBM Notes Section (Teacher Only) -->
                 <div id="kbm-section" class="hidden pt-10 border-t border-gray-200">
@@ -490,28 +539,49 @@
 </div>
 
 <script>
-// KBM Notes Functions
+/**
+ * Course Detail - Main JavaScript
+ * Clean and maintainable code structure
+ */
+
 const COURSE_ID = {{ course.id }};
 let currentKbmNotes = [];
 
-// Initialize KBM tab
-function initKbmTab() {
-    const kbmBtn = document.querySelector('[data-tab="kbm"]');
-    if (kbmBtn) {
-        kbmBtn.addEventListener('click', function() {
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('bg-primary-600', 'text-white');
-                btn.classList.add('text-gray-500');
-            });
-            this.classList.add('active');
-            this.classList.remove('text-gray-500');
-            this.classList.add('bg-primary-600', 'text-white');
-            
-            document.querySelectorAll('[id$="-section"]').forEach(section => section.classList.add('hidden'));
-            document.getElementById('kbm-section').classList.remove('hidden');
-            loadKbmNotes();
-        });
+/**
+ * KBM Tab Activation - Called from sidebar
+ */
+function activateKbmTab() {
+    const kbmSection = document.getElementById('kbm-section');
+    const diskusiSection = document.getElementById('diskusi-section');
+    
+    // Hide discussion section
+    if (diskusiSection) diskusiSection.classList.add('hidden');
+    
+    // Show KBM section
+    if (kbmSection) {
+        kbmSection.classList.remove('hidden');
+        kbmSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    
+    // Update tab state
+    updateTabState('kbm');
+    
+    // Load KBM data
+    if (typeof loadKbmNotes === 'function') {
+        loadKbmNotes();
+    }
+}
+
+function updateTabState(tabName) {
+    document.querySelectorAll('[data-tab]').forEach(btn => {
+        btn.classList.remove('active', 'bg-primary-600', 'text-white');
+        btn.classList.add('text-gray-500');
+    });
+    
+    const activeBtn = document.querySelector(`[data-tab="${tabName}"]`);
+    if (activeBtn) {
+        activeBtn.classList.add('active', 'bg-primary-600', 'text-white');
+        activeBtn.classList.remove('text-gray-500');
     }
 }
 
@@ -696,8 +766,112 @@ async function updateKbmNote() {
 }
 
 // Initialize on page load
+const CURRENT_COURSE_ID = {{ course.id }};
+
 document.addEventListener('DOMContentLoaded', function() {
     initKbmTab();
+    initClassSwitcher();
+    
+    // Check if URL has KBM hash (from sidebar link)
+    if (window.location.hash === '#kbm-section') {
+        const kbmBtn = document.querySelector('[data-tab="kbm"]');
+        if (kbmBtn) {
+            kbmBtn.click();
+        }
+    }
+});
+
+// Class Switcher Functions
+let allClasses = [];
+
+async function initClassSwitcher() {
+    const switcher = document.getElementById('class-switcher');
+    if (!switcher) return;
+    
+    try {
+        const allCoursesRes = await fetch('/api/initial-data');
+        const data = await allCoursesRes.json();
+        allClasses = data.courses || [];
+        
+        renderClassSwitcher();
+    } catch (err) {
+        console.error('Failed to load classes:', err);
+    }
+}
+
+function renderClassSwitcher() {
+    const list = document.getElementById('class-switcher-list');
+    if (!list || allClasses.length === 0) return;
+
+    list.innerHTML = '';
+    allClasses.forEach(course => {
+        const a = document.createElement('a');
+        a.href = `/course/${course.id}`;
+        a.className = 'flex items-center space-x-4 px-4 py-3 hover:bg-gray-50 group transition-all border-b border-gray-50 last:border-0';
+        const isActive = course.id == CURRENT_COURSE_ID;
+        a.innerHTML = `
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold" style="background-color: ${course.color}">
+                ${course.name.charAt(0).toUpperCase()}
+            </div>
+            <div class="flex-1 min-w-0">
+                <p class="font-bold text-gray-900 text-sm truncate group-hover:text-primary-700 transition-colors">${course.name}</p>
+                <p class="text-xs text-gray-500">${course.students_count || 0} siswa • ${course.class_code}</p>
+            </div>
+            ${isActive ? '<span class="text-primary-600 text-xs font-bold">✓ Aktif</span>' : ''}
+        `;
+        list.appendChild(a);
+    });
+}
+
+function toggleClassSwitcher() {
+    const menu = document.getElementById('class-switcher-menu');
+    const arrow = document.getElementById('switcher-arrow');
+    
+    if (menu.classList.contains('hidden')) {
+        menu.classList.remove('hidden');
+        arrow.style.transform = 'rotate(180deg)';
+    } else {
+        menu.classList.add('hidden');
+        arrow.style.transform = 'rotate(0deg)';
+    }
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(event) {
+    const switcher = document.getElementById('class-switcher');
+    if (switcher && !switcher.contains(event.target)) {
+        const menu = document.getElementById('class-switcher-menu');
+        const arrow = document.getElementById('switcher-arrow');
+        menu.classList.add('hidden');
+        arrow.style.transform = 'rotate(0deg)';
+    }
+});
+
+// Initialize discussion tab
+document.addEventListener('DOMContentLoaded', function() {
+    const diskusiBtn = document.querySelector('[data-tab="diskusi"]');
+    if (diskusiBtn) {
+        diskusiBtn.addEventListener('click', function() {
+            const diskusiSection = document.getElementById('diskusi-section');
+            const kbmSection = document.getElementById('kbm-section');
+            
+            // Hide KBM section
+            if (kbmSection) kbmSection.classList.add('hidden');
+            
+            // Show and scroll to discussion
+            if (diskusiSection) {
+                diskusiSection.classList.remove('hidden');
+                diskusiSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            
+            updateTabState('diskusi');
+        });
+    }
+    
+    // Handle hash navigation
+    if (window.location.hash === '#kbm-section') {
+        activateKbmTab();
+    }
 });
 </script>
 

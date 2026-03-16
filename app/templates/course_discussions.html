@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+
+{% block title %}Forum Diskusi - {{ course.name }}{% endblock %}
+
+{% block extra_head %}
+<style>
+    :root {
+        --course-theme: {{ course.color or '#2563eb' }};
+        --course-theme-light: {{ course.color }}15;
+    }
+    .bg-theme { background-color: var(--course-theme) !important; }
+    .text-theme { color: var(--course-theme) !important; }
+    .border-theme { border-color: var(--course-theme) !important; }
+</style>
+{% endblock %}
+
+{% block body %}
+<div id="app-page" class="min-h-screen bg-gray-50 flex">
+    {% include '_sidebar.html' %}
+
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <header class="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-8 sticky top-0 z-30">
+            <div class="flex items-center space-x-4">
+                <a href="{{ url_for('main.course_detail', course_id=course.id) }}" class="p-2 text-gray-400 hover:text-theme transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                </a>
+                <div>
+                    <h2 class="text-lg font-bold text-gray-900">{{ course.name }}</h2>
+                    <p class="text-xs text-gray-500">Forum Diskusi</p>
+                </div>
+            </div>
+            {% if is_teacher or is_student %}
+            <button onclick="showCreateDiscussionModal()" class="px-6 py-3 bg-theme text-white rounded-2xl font-bold text-sm flex items-center space-x-2 hover:opacity-90 transition-all">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+                </svg>
+                <span>Mulai Diskusi</span>
+            </button>
+            {% endif %}
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-8">
+            <div class="max-w-5xl mx-auto space-y-6">
+                <!-- Discussions List -->
+                <div id="discussions-list" class="space-y-4">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Create Discussion Modal -->
+<div id="create-discussion-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden animate-slide-up border border-primary-50">
+        <form id="create-discussion-form">
+            <input type="hidden" id="course-id" value="{{ course.id }}">
+            <div class="bg-gradient-to-br from-primary-500 to-primary-700 px-8 py-8 text-white">
+                <h3 class="text-2xl font-black">Mulai Diskusi Baru</h3>
+                <p class="text-primary-100 text-sm mt-1">Bangun interaksi positif di kelas Anda.</p>
+            </div>
+            <div class="p-8 space-y-6">
+                <div>
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Judul Topik</label>
+                    <input type="text" id="discussion-title-input" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold" required>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Isi Pertanyaan</label>
+                    <textarea id="discussion-content-input" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold" rows="4" required></textarea>
+                </div>
+                <div id="discussion-modal-error" class="hidden p-4 bg-red-50 text-red-600 rounded-2xl text-xs font-bold text-center"></div>
+            </div>
+            <div class="px-8 pb-8 flex space-x-3">
+                <button type="button" onclick="closeCreateDiscussionModal()" class="flex-1 px-6 py-4 text-gray-500 bg-gray-100 rounded-2xl font-bold hover:bg-gray-200 transition-all">Batal</button>
+                <button type="submit" class="flex-[2] px-6 py-4 bg-primary-600 text-white rounded-2xl font-bold shadow-lg shadow-primary-200 hover:bg-primary-700 active:scale-95">Mulai Forum</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+const COURSE_ID = {{ course.id }};
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadDiscussions();
+    setupCreateDiscussion();
+});
+
+async function loadDiscussions() {
+    const container = document.getElementById('discussions-list');
+    container.innerHTML = '<div class="text-center py-12"><div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-theme"></div></div>';
+    
+    try {
+        const res = await fetch(`/api/courses/${COURSE_ID}/discussions`);
+        const data = await res.json();
+        
+        if (data.success && data.discussions.length > 0) {
+            container.innerHTML = '';
+            data.discussions.forEach(discussion => {
+                const div = createDiscussionCard(discussion);
+                container.appendChild(div);
+            });
+        } else {
+            container.innerHTML = `
+                <div class="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-200">
+                    <div class="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Belum ada diskusi</h3>
+                    <p class="text-gray-500 mb-6">Jadilah yang pertama memulai diskusi di kelas ini!</p>
+                    ${ {{ 'true' if is_teacher or is_student else 'false' }} ? '<button onclick="showCreateDiscussionModal()" class="px-6 py-3 bg-theme text-white rounded-2xl font-bold text-sm">Mulai Diskusi Pertama</button>' : '' }
+                </div>
+            `;
+        }
+    } catch (err) {
+        container.innerHTML = '<div class="text-center py-8 text-red-500">Gagal memuat diskusi</div>';
+    }
+}
+
+function createDiscussionCard(discussion) {
+    const div = document.createElement('div');
+    div.className = 'bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hover:shadow-lg transition-all cursor-pointer';
+    div.onclick = () => window.location.href = `/kelas/${COURSE_ID}/diskusi/${discussion.id}`;
+    
+    const date = new Date(discussion.created_at);
+    const dateStr = date.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+    
+    div.innerHTML = `
+        <div class="flex items-start justify-between mb-4">
+            <div class="flex-1">
+                <h3 class="text-lg font-bold text-gray-900 mb-2">${discussion.title}</h3>
+                <p class="text-sm text-gray-600 line-clamp-2">${discussion.content}</p>
+            </div>
+            <div class="ml-4 flex-shrink-0">
+                <span class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-bold">${discussion.posts_count || 0} Balasan</span>
+            </div>
+        </div>
+        <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 rounded-full bg-theme text-white flex items-center justify-center text-sm font-bold">
+                    ${discussion.creator_name.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                    <p class="text-xs font-bold text-gray-900">${discussion.creator_name}</p>
+                    <p class="text-[10px] text-gray-500">${dateStr}</p>
+                </div>
+            </div>
+            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+        </div>
+    `;
+    
+    return div;
+}
+
+function showCreateDiscussionModal() {
+    document.getElementById('create-discussion-modal').classList.remove('hidden');
+}
+
+function closeCreateDiscussionModal() {
+    document.getElementById('create-discussion-modal').classList.add('hidden');
+    document.getElementById('create-discussion-form').reset();
+}
+
+function setupCreateDiscussionModal() {
+    const modal = document.getElementById('create-discussion-modal');
+    const form = document.getElementById('create-discussion-form');
+    const errorDiv = document.getElementById('discussion-modal-error');
+    
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const title = document.getElementById('discussion-title-input').value;
+        const content = document.getElementById('discussion-content-input').value;
+        
+        try {
+            const res = await fetch(`/api/courses/${COURSE_ID}/discussions`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, content }),
+            });
+            const data = await res.json();
+            
+            if (data.success) {
+                window.location.reload();
+            } else {
+                errorDiv.textContent = data.message;
+                errorDiv.classList.remove('hidden');
+            }
+        } catch (err) {
+            errorDiv.textContent = 'Gagal membuat diskusi';
+            errorDiv.classList.remove('hidden');
+        }
+    });
+}
+
+function setupCreateDiscussion() {
+    setupCreateDiscussionModal();
+}
+</script>
+{% endblock %}
