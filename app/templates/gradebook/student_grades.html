@@ -1,0 +1,249 @@
+{% extends "base.html" %}
+
+{% block title %}Nilai Saya - {{ course.name }}{% endblock %}
+
+{% block extra_head %}
+<style>
+    :root {
+        --course-theme: {{ course.color or '#2563eb' }};
+        --course-theme-light: {{ course.color }}15;
+    }
+    .bg-theme { background-color: var(--course-theme) !important; }
+    .text-theme { color: var(--course-theme) !important; }
+    .border-theme { border-color: var(--course-theme) !important; }
+    .bg-theme-light { background-color: var(--course-theme-light) !important; }
+</style>
+{% endblock %}
+
+{% block body %}
+<div id="app-page" class="min-h-screen bg-gray-50 flex">
+    {% include '_sidebar.html' %}
+
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <header class="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-8 sticky top-0 z-30">
+            <div class="flex items-center space-x-4">
+                <a href="{{ url_for('main.course_detail', course_id=course.id) }}" class="p-2 text-gray-400 hover:text-theme transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                </a>
+                <div>
+                    <h2 class="text-lg font-bold text-gray-900">{{ course.name }}</h2>
+                    <p class="text-xs text-gray-500">Nilai Saya</p>
+                </div>
+            </div>
+            <div class="px-4 py-1.5 bg-gray-100 rounded-full text-[10px] font-black uppercase tracking-widest text-gray-500">
+                {{ course.class_code }}
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-8">
+            <div class="max-w-5xl mx-auto space-y-6">
+                <!-- Summary Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-semibold text-gray-500 uppercase tracking-wider">Nilai Akhir</p>
+                                <p id="final-grade" class="text-5xl font-bold text-theme mt-2">-</p>
+                            </div>
+                            <div class="w-20 h-20 bg-theme-light rounded-2xl flex items-center justify-center text-4xl">🎯</div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-semibold text-gray-500 uppercase tracking-wider">Predikat</p>
+                                <p id="grade-predicate" class="text-2xl font-bold text-theme mt-2">-</p>
+                            </div>
+                            <div class="w-20 h-20 bg-theme-light rounded-2xl flex items-center justify-center text-4xl">🏆</div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-semibold text-gray-500 uppercase tracking-wider">Kategori</p>
+                                <p id="grade-category" class="text-lg font-bold text-gray-700 mt-2">-</p>
+                            </div>
+                            <div class="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center text-4xl">📊</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Category Breakdown -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <h2 class="text-lg font-bold text-gray-900 mb-6">📊 Ringkasan per Kategori</h2>
+                    <div id="category-breakdown" class="space-y-4">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Detailed Grades -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <h2 class="text-lg font-bold text-gray-900 mb-6">📝 Detail Penilaian</h2>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">No</th>
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Item Penilaian</th>
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Kategori</th>
+                                    <th class="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Nilai</th>
+                                    <th class="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Max</th>
+                                    <th class="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">%</th>
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Feedback</th>
+                                </tr>
+                            </thead>
+                            <tbody id="grades-body" class="bg-white divide-y divide-gray-200"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Learning Objectives -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <h2 class="text-lg font-bold text-gray-900 mb-6">🎯 Capaian Pembelajaran</h2>
+                    <div id="cp-breakdown" class="space-y-4">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+const COURSE_ID = {{ course.id }};
+const STUDENT_ID = {{ current_user.id }};
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadMyGrades();
+});
+
+async function loadMyGrades() {
+    try {
+        const res = await fetch(`/gradebook/api/student/${STUDENT_ID}/course/${COURSE_ID}`);
+        const data = await res.json();
+        
+        if (data.success) {
+            const summary = data.summary;
+            const finalGrade = summary.final_grade || 0;
+            
+            document.getElementById('final-grade').textContent = finalGrade.toFixed(1);
+            document.getElementById('grade-predicate').textContent = getPredicate(finalGrade).split(' ')[0];
+            document.getElementById('grade-category').textContent = getPredicate(finalGrade).split('(')[1]?.replace(')', '') || '-';
+            
+            // Category breakdown
+            const catContainer = document.getElementById('category-breakdown');
+            catContainer.innerHTML = '';
+            
+            if (summary.categories && summary.categories.length > 0) {
+                summary.categories.forEach(cat => {
+                    const div = document.createElement('div');
+                    div.className = 'flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:shadow-md transition-all';
+                    div.innerHTML = `
+                        <div>
+                            <h4 class="font-bold text-gray-900">${cat.category_name}</h4>
+                            <p class="text-xs text-gray-500 mt-1">${cat.items_count} item | Bobot: ${cat.weight}%</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-3xl font-bold ${getScoreColor(cat.score)}">${cat.score.toFixed(1)}</p>
+                            <p class="text-xs text-gray-500 uppercase font-bold mt-1">${cat.category_type}</p>
+                        </div>
+                    `;
+                    catContainer.appendChild(div);
+                });
+            } else {
+                catContainer.innerHTML = '<div class="text-center py-8 text-gray-400">Belum ada nilai</div>';
+            }
+            
+            // Detailed grades
+            const tbody = document.getElementById('grades-body');
+            tbody.innerHTML = '';
+            
+            let rowNum = 1;
+            summary.categories.forEach(cat => {
+                cat.items.forEach(item => {
+                    const percentage = item.percentage || 0;
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 text-sm text-gray-900">${rowNum++}</td>
+                            <td class="px-6 py-4 text-sm font-semibold text-gray-900">${item.item_name}</td>
+                            <td class="px-6 py-4 text-sm text-gray-600">${cat.category_name}</td>
+                            <td class="px-6 py-4 text-sm text-center font-bold ${getScoreColor(item.percentage)}">${item.score !== null ? item.score : '-'}</td>
+                            <td class="px-6 py-4 text-sm text-center text-gray-500">${item.max_score}</td>
+                            <td class="px-6 py-4 text-sm text-center">
+                                <span class="px-3 py-1 rounded-full text-xs font-bold ${getPercentageColor(percentage)}">${percentage ? percentage.toFixed(1) : '-'}%</span>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-600">${item.feedback || '-'}</td>
+                        </tr>
+                    `;
+                });
+            });
+            
+            if (rowNum === 1) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center py-8 text-gray-400">Belum ada nilai</td></tr>';
+            }
+            
+            // CP breakdown
+            const cpContainer = document.getElementById('cp-breakdown');
+            cpContainer.innerHTML = '';
+            
+            if (summary.learning_objectives && summary.learning_objectives.length > 0) {
+                summary.learning_objectives.forEach(cp => {
+                    const div = document.createElement('div');
+                    div.className = 'border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all';
+                    
+                    let tpHtml = '';
+                    if (cp.items && cp.items.length > 0) {
+                        const avgScore = cp.items.reduce((sum, item) => sum + (item.percentage || 0), 0) / cp.items.length;
+                        tpHtml = `
+                            <div class="mt-3 flex items-center space-x-2">
+                                <span class="text-xs text-gray-500 font-semibold">Nilai rata-rata:</span>
+                                <span class="px-3 py-1 rounded-full text-xs font-bold ${getPercentageColor(avgScore)}">${avgScore.toFixed(1)}%</span>
+                            </div>
+                        `;
+                    }
+                    
+                    div.innerHTML = `
+                        <div>
+                            <div class="flex items-center space-x-2 mb-2">
+                                <span class="px-2 py-1 bg-theme-light text-theme rounded text-xs font-bold">${cp.code}</span>
+                            </div>
+                            <p class="text-sm text-gray-700">${cp.description}</p>
+                            ${tpHtml}
+                        </div>
+                    `;
+                    cpContainer.appendChild(div);
+                });
+            } else {
+                cpContainer.innerHTML = '<div class="text-center py-8 text-gray-400">Belum ada capaian pembelajaran</div>';
+            }
+        }
+    } catch (err) {
+        console.error('Failed to load grades:', err);
+    }
+}
+
+function getPredicate(grade) {
+    if (grade >= 90) return 'A (Sangat Baik)';
+    if (grade >= 80) return 'B (Baik)';
+    if (grade >= 70) return 'C (Cukup)';
+    if (grade >= 60) return 'D (Kurang)';
+    return 'E (Sangat Kurang)';
+}
+
+function getScoreColor(score) {
+    if (score >= 85) return 'text-green-600';
+    if (score >= 70) return 'text-blue-600';
+    if (score >= 60) return 'text-yellow-600';
+    return 'text-red-600';
+}
+
+function getPercentageColor(pct) {
+    if (pct >= 85) return 'bg-green-100 text-green-700';
+    if (pct >= 70) return 'bg-blue-100 text-blue-700';
+    if (pct >= 60) return 'bg-yellow-100 text-yellow-700';
+    return 'bg-red-100 text-red-700';
+}
+</script>
+{% endblock %}

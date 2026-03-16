@@ -1,0 +1,769 @@
+{% extends "base.html" %}
+
+{% block title %}Buku Nilai - {{ course.name }}{% endblock %}
+
+{% block extra_head %}
+<style>
+    :root {
+        --course-theme: {{ course.color or '#2563eb' }};
+        --course-theme-light: {{ course.color }}15;
+    }
+    .bg-theme { background-color: var(--course-theme) !important; }
+    .text-theme { color: var(--course-theme) !important; }
+    .border-theme { border-color: var(--course-theme) !important; }
+    .bg-theme-light { background-color: var(--course-theme-light) !important; }
+    .focus-theme:focus {
+        border-color: var(--course-theme) !important;
+        box-shadow: 0 0 0 3px var(--course-theme-light) !important;
+    }
+    .tab-btn.active {
+        background-color: var(--course-theme) !important;
+        color: white !important;
+        box-shadow: 0 4px 6px -1px var(--course-theme-light);
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div id="app-page" class="min-h-screen bg-gray-50 flex">
+    {% include '_sidebar.html' %}
+
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <!-- Header -->
+        <header class="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-8 sticky top-0 z-30">
+            <div class="flex items-center space-x-4">
+                <a href="{{ url_for('main.course_detail', course_id=course.id) }}" class="p-2 text-gray-400 hover:text-theme transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                </a>
+                <div>
+                    <h2 class="text-lg font-bold text-gray-900">{{ course.name }}</h2>
+                    <p class="text-xs text-gray-500">Buku Nilai</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-3">
+                <a href="{{ url_for('gradebook.course_setup', course_id=course.id) }}" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all">
+                    ⚙️ Setup CP/TP
+                </a>
+                <a href="{{ url_for('gradebook.my_grades', course_id=course.id) }}" class="px-4 py-2 text-sm font-medium text-white bg-theme rounded-lg hover:opacity-90 transition-all">
+                    👁️ Preview Siswa
+                </a>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto p-8">
+            <div class="max-w-7xl mx-auto space-y-6">
+                
+                <!-- Tabs -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-2">
+                    <div class="flex space-x-2">
+                        <button onclick="switchTab('input')" id="tab-input" class="tab-btn active flex-1 px-4 py-3 rounded-lg text-sm font-bold transition-all">
+                            📝 Input Nilai
+                        </button>
+                        <button onclick="switchTab('recap')" id="tab-recap" class="tab-btn flex-1 px-4 py-3 rounded-lg text-sm font-bold text-gray-600 hover:bg-gray-100 transition-all">
+                            📊 Rekap Nilai
+                        </button>
+                        <button onclick="switchTab('quiz')" id="tab-quiz" class="tab-btn flex-1 px-4 py-3 rounded-lg text-sm font-bold text-gray-600 hover:bg-gray-100 transition-all">
+                            🎯 Import dari Quiz
+                        </button>
+                        <button onclick="switchTab('analytics')" id="tab-analytics" class="tab-btn flex-1 px-4 py-3 rounded-lg text-sm font-bold text-gray-600 hover:bg-gray-100 transition-all">
+                            📈 Analitik
+                        </button>
+                    </div>
+                </div>
+
+                <!-- INPUT TAB -->
+                <div id="content-input" class="tab-content space-y-6">
+                    <!-- Filter Bar -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <div class="flex items-end gap-4">
+                            <div class="flex-1">
+                                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Kategori</label>
+                                <select id="filter-category" onchange="loadGradeItems()" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none transition-all">
+                                    <option value="">Semua Kategori</option>
+                                </select>
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">CP / TP</label>
+                                <select id="filter-cp" onchange="loadGradeItems()" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none transition-all">
+                                    <option value="">Semua CP/TP</option>
+                                </select>
+                            </div>
+                            <div>
+                                <button onclick="openAddItemModal()" class="px-6 py-2.5 bg-theme text-white rounded-lg font-bold hover:opacity-90 transition-all shadow-lg">
+                                    + Tambah Item
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Grade Items Grid -->
+                    <div id="grade-items-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- RECAP TAB -->
+                <div id="content-recap" class="tab-content hidden space-y-6">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <h3 class="text-lg font-bold text-gray-900 mb-6">📊 Rekap Nilai Siswa</h3>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">No</th>
+                                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Nama Siswa</th>
+                                        <th class="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Formatif</th>
+                                        <th class="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Sumatif</th>
+                                        <th class="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Total</th>
+                                        <th class="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Predikat</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recap-body" class="bg-white divide-y divide-gray-200"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- QUIZ TAB -->
+                <div id="content-quiz" class="tab-content hidden space-y-6">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <h3 class="text-lg font-bold text-gray-900 mb-6">🎯 Import Nilai dari Quiz</h3>
+                        <div id="quiz-list" class="space-y-4"></div>
+                    </div>
+                </div>
+
+                <!-- ANALYTICS TAB -->
+                <div id="content-analytics" class="tab-content hidden space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            <p class="text-sm text-gray-500 font-semibold uppercase tracking-wider">Rata-rata Kelas</p>
+                            <p id="stat-average" class="text-4xl font-bold text-theme mt-2">-</p>
+                        </div>
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            <p class="text-sm text-gray-500 font-semibold uppercase tracking-wider">Nilai Tertinggi</p>
+                            <p id="stat-highest" class="text-4xl font-bold text-green-600 mt-2">-</p>
+                        </div>
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            <p class="text-sm text-gray-500 font-semibold uppercase tracking-wider">Nilai Terendah</p>
+                            <p id="stat-lowest" class="text-4xl font-bold text-orange-600 mt-2">-</p>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <h3 class="text-lg font-bold text-gray-900 mb-6">Distribusi Nilai</h3>
+                        <div id="grade-distribution" class="space-y-4"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- ADD ITEM MODAL -->
+<div id="add-item-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg animate-slide-up">
+        <div class="modal-header-theme px-6 py-4">
+            <h3 class="text-xl font-bold text-white">Tambah Item Penilaian</h3>
+            <p class="text-white/80 text-sm mt-1">Tambah tugas, ujian, atau penilaian lainnya</p>
+        </div>
+        <form id="add-item-form" class="p-6 space-y-4">
+            <input type="hidden" id="item-course-id" value="{{ course.id }}">
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Nama Item *</label>
+                <input type="text" id="item-name" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none" placeholder="Contoh: Tugas 1 - Aljabar">
+            </div>
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Kategori *</label>
+                <select id="item-category" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none">
+                    <option value="">Pilih Kategori</option>
+                </select>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Nilai Maksimal</label>
+                    <input type="number" id="item-max-score" value="100" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Bobot (%)</label>
+                    <input type="number" id="item-weight" value="0" step="0.1" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none">
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">CP (Opsional)</label>
+                <select id="item-cp" onchange="loadTPForItem()" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none">
+                    <option value="">Tidak ada</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">TP (Opsional)</label>
+                <select id="item-tp" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none">
+                    <option value="">Tidak ada</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Deskripsi</label>
+                <textarea id="item-description" rows="2" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none" placeholder="Deskripsi singkat"></textarea>
+            </div>
+            <div id="add-item-error" class="hidden text-red-600 text-sm"></div>
+        </form>
+        <div class="bg-gray-50 px-6 py-4 flex justify-end space-x-3 rounded-b-2xl">
+            <button type="button" onclick="closeAddItemModal()" class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all font-semibold">Batal</button>
+            <button type="button" onclick="saveGradeItem()" class="px-4 py-2 bg-theme text-white rounded-lg hover:opacity-90 transition-all font-semibold">Simpan</button>
+        </div>
+    </div>
+</div>
+
+<!-- GRADE ENTRY MODAL -->
+<div id="grade-entry-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-5xl animate-slide-up">
+        <div class="modal-header-theme px-6 py-4">
+            <h3 class="text-xl font-bold text-white" id="entry-modal-title">Input Nilai</h3>
+            <p class="text-white/80 text-sm mt-1" id="entry-modal-desc">Masukkan nilai untuk semua siswa</p>
+        </div>
+        <div class="p-6">
+            <div class="overflow-x-auto max-h-[60vh]">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50 sticky top-0">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">No</th>
+                            <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">Nama Siswa</th>
+                            <th class="px-4 py-3 text-center text-xs font-bold text-gray-500 uppercase">Nilai</th>
+                            <th class="px-4 py-3 text-center text-xs font-bold text-gray-500 uppercase">Feedback</th>
+                        </tr>
+                    </thead>
+                    <tbody id="grade-entry-body" class="bg-white divide-y divide-gray-200"></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="bg-gray-50 px-6 py-4 flex justify-between items-center rounded-b-2xl">
+            <button type="button" onclick="autoFillGrades()" class="px-4 py-2 text-theme bg-theme-light rounded-lg hover:bg-theme/10 transition-all text-sm font-bold">
+                ⚡ Isi Otomatis (Max)
+            </button>
+            <div class="flex space-x-3">
+                <button type="button" onclick="closeGradeEntryModal()" class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all font-semibold">Batal</button>
+                <button type="button" onclick="saveAllGrades()" class="px-4 py-2 bg-theme text-white rounded-lg hover:opacity-90 transition-all font-semibold">Simpan Semua</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- IMPORT QUIZ MODAL -->
+<div id="import-quiz-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md animate-slide-up">
+        <div class="modal-header-theme px-6 py-4">
+            <h3 class="text-xl font-bold text-white">Import Quiz ke Buku Nilai</h3>
+        </div>
+        <form id="import-quiz-form" class="p-6 space-y-4">
+            <input type="hidden" id="import-quiz-id">
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Kategori *</label>
+                <select id="import-category" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none">
+                    <option value="">Pilih Kategori</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">TP (Opsional)</label>
+                <select id="import-tp" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none">
+                    <option value="">Tidak ada</option>
+                </select>
+            </div>
+            <div id="import-error" class="hidden text-red-600 text-sm"></div>
+        </form>
+        <div class="bg-gray-50 px-6 py-4 flex justify-end space-x-3 rounded-b-2xl">
+            <button type="button" onclick="closeImportQuizModal()" class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all font-semibold">Batal</button>
+            <button type="button" onclick="confirmImportQuiz()" class="px-4 py-2 bg-theme text-white rounded-lg hover:opacity-90 transition-all font-semibold">Import</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const COURSE_ID = {{ course.id }};
+const COURSE_COLOR = '{{ course.color }}';
+let currentGradeItem = null;
+let students = [];
+
+function switchTab(tabName) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+    document.querySelectorAll('.tab-btn').forEach(el => {
+        el.classList.remove('active');
+        el.classList.add('text-gray-600', 'hover:bg-gray-100');
+    });
+    
+    document.getElementById('content-' + tabName).classList.remove('hidden');
+    document.getElementById('tab-' + tabName).classList.add('active');
+    document.getElementById('tab-' + tabName).classList.remove('text-gray-600', 'hover:bg-gray-100');
+    
+    if (tabName === 'input') loadGradeItems();
+    if (tabName === 'recap') loadRecap();
+    if (tabName === 'quiz') loadAvailableQuizzes();
+    if (tabName === 'analytics') loadAnalytics();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadCategories();
+    loadLearningObjectives();
+    loadStudents();
+    loadGradeItems();
+});
+
+async function loadStudents() {
+    try {
+        const res = await fetch(`/api/courses/${COURSE_ID}/students`);
+        const data = await res.json();
+        students = data.students || [];
+    } catch (err) {
+        console.error('Failed to load students:', err);
+    }
+}
+
+async function loadCategories() {
+    try {
+        const res = await fetch(`/gradebook/api/categories?course_id=${COURSE_ID}`);
+        const data = await res.json();
+        if (data.success) {
+            const selects = ['filter-category', 'item-category', 'import-category'];
+            selects.forEach(id => {
+                const select = document.getElementById(id);
+                if (select) {
+                    data.categories.forEach(cat => {
+                        const opt = document.createElement('option');
+                        opt.value = cat.id;
+                        opt.textContent = `${cat.name} (${cat.category_type})`;
+                        select.appendChild(opt);
+                    });
+                }
+            });
+        }
+    } catch (err) {
+        console.error('Failed to load categories:', err);
+    }
+}
+
+async function loadLearningObjectives() {
+    try {
+        const res = await fetch(`/gradebook/api/learning-objectives?course_id=${COURSE_ID}`);
+        const data = await res.json();
+        if (data.success) {
+            const select = document.getElementById('filter-cp');
+            const itemCpSelect = document.getElementById('item-cp');
+            data.learning_objectives.forEach(cp => {
+                const opt = document.createElement('option');
+                opt.value = cp.id;
+                opt.textContent = `${cp.code}: ${cp.description.substring(0, 50)}...`;
+                if (select) select.appendChild(opt.cloneNode(true));
+                if (itemCpSelect) itemCpSelect.appendChild(opt.cloneNode(true));
+            });
+        }
+    } catch (err) {
+        console.error('Failed to load learning objectives:', err);
+    }
+}
+
+async function loadGradeItems() {
+    const container = document.getElementById('grade-items-container');
+    container.innerHTML = '<div class="col-span-full text-center py-12"><div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-theme"></div></div>';
+    
+    try {
+        let url = `/gradebook/api/items?course_id=${COURSE_ID}`;
+        const categoryId = document.getElementById('filter-category').value;
+        if (categoryId) url += `&category_id=${categoryId}`;
+        
+        const res = await fetch(url);
+        const data = await res.json();
+        
+        if (data.success) {
+            let items = data.items;
+            if (items.length === 0) {
+                container.innerHTML = '<div class="col-span-full text-center py-12 text-gray-500">Belum ada item penilaian. Klik "Tambah Item" untuk membuat.</div>';
+                return;
+            }
+            
+            container.innerHTML = '';
+            items.forEach(item => {
+                container.appendChild(createGradeItemCard(item));
+            });
+        }
+    } catch (err) {
+        container.innerHTML = '<div class="col-span-full text-center py-12 text-red-500">Gagal memuat item penilaian</div>';
+    }
+}
+
+function createGradeItemCard(item) {
+    const div = document.createElement('div');
+    div.className = 'bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-lg transition-all';
+    div.innerHTML = `
+        <div class="flex items-start justify-between mb-4">
+            <div class="flex-1">
+                <div class="flex items-center space-x-2 mb-2">
+                    <span class="px-2 py-1 bg-theme-light text-theme rounded text-xs font-bold">📝</span>
+                    <h4 class="font-bold text-gray-900">${item.name}</h4>
+                </div>
+                <p class="text-sm text-gray-500">Max: ${item.max_score} | Bobot: ${item.weight}%</p>
+            </div>
+        </div>
+        <div class="flex items-center justify-between text-sm mb-4">
+            <span class="text-gray-500">${item.entries_count || 0} / ${students.length} siswa dinilai</span>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="openGradeEntryModal(${item.id})" class="flex-1 px-4 py-2.5 bg-theme text-white rounded-lg font-semibold hover:opacity-90 transition-all">
+                ✏️ Input Nilai
+            </button>
+            <button onclick="editGradeItem(${item.id})" class="px-4 py-2.5 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition-all">
+                Edit
+            </button>
+        </div>
+    `;
+    return div;
+}
+
+async function loadRecap() {
+    const tbody = document.getElementById('recap-body');
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8"><div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-theme"></div></td></tr>';
+    
+    try {
+        const res = await fetch(`/gradebook/api/stats/${COURSE_ID}`);
+        const data = await res.json();
+        
+        if (data.success && data.stats.grades) {
+            tbody.innerHTML = '';
+            data.stats.grades.forEach((grade, idx) => {
+                const predikat = getPredikat(grade.final_grade);
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 text-sm text-gray-900">${idx + 1}</td>
+                        <td class="px-6 py-4 text-sm font-semibold text-gray-900">${grade.student_name}</td>
+                        <td class="px-6 py-4 text-sm text-center text-gray-600">-</td>
+                        <td class="px-6 py-4 text-sm text-center text-gray-600">-</td>
+                        <td class="px-6 py-4 text-sm text-center font-bold text-theme">${grade.final_grade.toFixed(1)}</td>
+                        <td class="px-6 py-4 text-sm text-center"><span class="px-3 py-1 rounded-full text-xs font-bold ${getPredikatClass(predikat)}">${predikat.split(' ')[0]}</span></td>
+                    </tr>
+                `;
+            });
+        }
+    } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-red-500">Gagal memuat rekap</td></tr>';
+    }
+}
+
+function getPredikat(grade) {
+    if (grade >= 90) return 'A (Sangat Baik)';
+    if (grade >= 80) return 'B (Baik)';
+    if (grade >= 70) return 'C (Cukup)';
+    if (grade >= 60) return 'D (Kurang)';
+    return 'E (Sangat Kurang)';
+}
+
+function getPredikatClass(predikat) {
+    if (predikat.startsWith('A')) return 'bg-green-100 text-green-700';
+    if (predikat.startsWith('B')) return 'bg-blue-100 text-blue-700';
+    if (predikat.startsWith('C')) return 'bg-yellow-100 text-yellow-700';
+    if (predikat.startsWith('D')) return 'bg-orange-100 text-orange-700';
+    return 'bg-red-100 text-red-700';
+}
+
+async function loadAvailableQuizzes() {
+    const container = document.getElementById('quiz-list');
+    container.innerHTML = '<div class="text-center py-8"><div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-theme"></div></div>';
+    
+    try {
+        const res = await fetch(`/gradebook/api/quizzes/available?course_id=${COURSE_ID}`);
+        const data = await res.json();
+        
+        if (data.success) {
+            if (data.quizzes.length === 0) {
+                container.innerHTML = '<div class="text-center py-8 text-gray-500">Semua quiz sudah diimpor atau belum ada quiz</div>';
+                return;
+            }
+            
+            container.innerHTML = '';
+            data.quizzes.forEach(quiz => {
+                const div = document.createElement('div');
+                div.className = 'bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between hover:shadow-md transition-all';
+                div.innerHTML = `
+                    <div>
+                        <h4 class="font-bold text-gray-900">${quiz.name}</h4>
+                        <p class="text-sm text-gray-500">Max Points: ${quiz.points} | Submissions: ${quiz.submissions_count}</p>
+                    </div>
+                    <button onclick="openImportQuizModal(${quiz.id})" class="px-4 py-2 bg-theme text-white rounded-lg text-sm font-semibold hover:opacity-90 transition-all">
+                        Import
+                    </button>
+                `;
+                container.appendChild(div);
+            });
+        }
+    } catch (err) {
+        container.innerHTML = '<div class="text-center py-8 text-red-500">Gagal memuat quiz</div>';
+    }
+}
+
+async function loadAnalytics() {
+    try {
+        const res = await fetch(`/gradebook/api/stats/${COURSE_ID}`);
+        const data = await res.json();
+        
+        if (data.success) {
+            document.getElementById('stat-average').textContent = data.stats.average_grade ? data.stats.average_grade.toFixed(1) : '-';
+            document.getElementById('stat-highest').textContent = data.stats.highest_grade ? data.stats.highest_grade.toFixed(1) : '-';
+            document.getElementById('stat-lowest').textContent = data.stats.lowest_grade ? data.stats.lowest_grade.toFixed(1) : '-';
+            
+            const grades = data.stats.grades.map(g => g.final_grade);
+            const distribution = {
+                '90-100 (A)': grades.filter(g => g >= 90).length,
+                '80-89 (B)': grades.filter(g => g >= 80 && g < 90).length,
+                '70-79 (C)': grades.filter(g => g >= 70 && g < 80).length,
+                '60-69 (D)': grades.filter(g => g >= 60 && g < 70).length,
+                '< 60 (E)': grades.filter(g => g < 60).length,
+            };
+            
+            const maxCount = Math.max(...Object.values(distribution), 1);
+            const distContainer = document.getElementById('grade-distribution');
+            distContainer.innerHTML = '';
+            
+            for (const [range, count] of Object.entries(distribution)) {
+                const width = (count / maxCount * 100);
+                distContainer.innerHTML += `
+                    <div class="flex items-center space-x-4">
+                        <span class="text-sm font-semibold text-gray-600 w-28">${range}</span>
+                        <div class="flex-1 bg-gray-200 rounded-full h-8">
+                            <div class="bg-theme h-8 rounded-full transition-all font-bold text-white text-sm flex items-center px-3" style="width: ${width}%"></div>
+                        </div>
+                        <span class="text-sm font-bold text-gray-700 w-12 text-right">${count}</span>
+                    </div>
+                `;
+            }
+        }
+    } catch (err) {
+        console.error('Failed to load analytics:', err);
+    }
+}
+
+// Modal functions
+function openAddItemModal() {
+    document.getElementById('add-item-modal').classList.remove('hidden');
+}
+
+function closeAddItemModal() {
+    document.getElementById('add-item-modal').classList.add('hidden');
+    document.getElementById('add-item-form').reset();
+}
+
+async function saveGradeItem() {
+    const errorDiv = document.getElementById('add-item-error');
+    errorDiv.classList.add('hidden');
+    
+    const data = {
+        course_id: document.getElementById('item-course-id').value,
+        name: document.getElementById('item-name').value,
+        category_id: document.getElementById('item-category').value,
+        max_score: document.getElementById('item-max-score').value,
+        weight: document.getElementById('item-weight').value,
+        description: document.getElementById('item-description').value,
+        learning_objective_id: document.getElementById('item-cp').value || null,
+        learning_goal_id: document.getElementById('item-tp').value || null,
+    };
+    
+    if (!data.name || !data.category_id) {
+        errorDiv.textContent = 'Nama dan kategori wajib diisi';
+        errorDiv.classList.remove('hidden');
+        return;
+    }
+    
+    try {
+        const res = await fetch('/gradebook/api/items', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+        const result = await res.json();
+        
+        if (result.success) {
+            closeAddItemModal();
+            loadGradeItems();
+        } else {
+            errorDiv.textContent = result.message;
+            errorDiv.classList.remove('hidden');
+        }
+    } catch (err) {
+        errorDiv.textContent = 'Gagal menyimpan item';
+        errorDiv.classList.remove('hidden');
+    }
+}
+
+async function loadTPForItem() {
+    const cpId = document.getElementById('item-cp').value;
+    const tpSelect = document.getElementById('item-tp');
+    tpSelect.innerHTML = '<option value="">Tidak ada</option>';
+    
+    if (!cpId) return;
+    
+    try {
+        const res = await fetch(`/gradebook/api/learning-objectives?course_id=${COURSE_ID}`);
+        const data = await res.json();
+        
+        if (data.success) {
+            const cp = data.learning_objectives.find(c => c.id == cpId);
+            if (cp && cp.goals) {
+                cp.goals.forEach(goal => {
+                    const opt = document.createElement('option');
+                    opt.value = goal.id;
+                    opt.textContent = `${goal.code}: ${goal.description}`;
+                    tpSelect.appendChild(opt);
+                });
+            }
+        }
+    } catch (err) {
+        console.error('Failed to load TP:', err);
+    }
+}
+
+async function openGradeEntryModal(itemId) {
+    currentGradeItem = itemId;
+    
+    try {
+        const res = await fetch(`/gradebook/api/items/${itemId}`);
+        const data = await res.json();
+        
+        if (data.success) {
+            const item = data.item;
+            document.getElementById('entry-modal-title').textContent = `Input Nilai - ${item.name}`;
+            document.getElementById('entry-modal-desc').textContent = `Max Score: ${item.max_score} | Bobot: ${item.weight}%`;
+            
+            const entriesRes = await fetch(`/gradebook/api/entries?grade_item_id=${itemId}`);
+            const entriesData = await entriesRes.json();
+            
+            const tbody = document.getElementById('grade-entry-body');
+            tbody.innerHTML = '';
+            
+            if (entriesData.success) {
+                const entriesMap = {};
+                entriesData.entries.forEach(e => entriesMap[e.student_id] = e);
+                
+                students.forEach((student, idx) => {
+                    const entry = entriesMap[student.id];
+                    tbody.innerHTML += `
+                        <tr data-student-id="${student.id}">
+                            <td class="px-4 py-3 text-sm text-gray-900">${idx + 1}</td>
+                            <td class="px-4 py-3 text-sm font-semibold text-gray-900">${student.name}</td>
+                            <td class="px-4 py-3 text-center">
+                                <input type="number" step="0.1" data-score 
+                                    class="w-24 px-3 py-2 border border-gray-300 rounded-lg text-center focus:ring-2 focus-theme focus:border-theme outline-none"
+                                    value="${entry ? entry.score : ''}"
+                                    max="${item.max_score}">
+                            </td>
+                            <td class="px-4 py-3 text-center">
+                                <input type="text" data-feedback
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg text-center focus:ring-2 focus-theme focus:border-theme outline-none"
+                                    value="${entry ? entry.feedback || '' : ''}"
+                                    placeholder="Feedback...">
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+            
+            document.getElementById('grade-entry-modal').classList.remove('hidden');
+        }
+    } catch (err) {
+        alert('Gagal memuat data');
+    }
+}
+
+function closeGradeEntryModal() {
+    document.getElementById('grade-entry-modal').classList.add('hidden');
+    currentGradeItem = null;
+}
+
+function autoFillGrades() {
+    const inputs = document.querySelectorAll('input[data-score]');
+    inputs.forEach(input => input.value = 100);
+}
+
+async function saveAllGrades() {
+    const rows = document.querySelectorAll('#grade-entry-body tr');
+    const entries = [];
+    
+    rows.forEach(row => {
+        const studentId = row.dataset.studentId;
+        const score = row.querySelector('input[data-score]').value;
+        const feedback = row.querySelector('input[data-feedback]').value;
+        
+        if (score !== '') {
+            entries.push({
+                grade_item_id: currentGradeItem,
+                student_id: parseInt(studentId),
+                score: parseFloat(score),
+                feedback: feedback,
+            });
+        }
+    });
+    
+    if (entries.length === 0) {
+        alert('Minimal satu nilai harus diisi');
+        return;
+    }
+    
+    try {
+        const res = await fetch('/gradebook/api/entries/bulk', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ entries }),
+        });
+        const result = await res.json();
+        
+        if (result.success) {
+            alert(`Berhasil menyimpan ${result.saved_count} nilai`);
+            closeGradeEntryModal();
+            loadGradeItems();
+        } else {
+            alert('Gagal menyimpan: ' + result.message);
+        }
+    } catch (err) {
+        alert('Gagal menyimpan nilai');
+    }
+}
+
+function openImportQuizModal(quizId) {
+    document.getElementById('import-quiz-id').value = quizId;
+    document.getElementById('import-quiz-modal').classList.remove('hidden');
+}
+
+function closeImportQuizModal() {
+    document.getElementById('import-quiz-modal').classList.add('hidden');
+}
+
+async function confirmImportQuiz() {
+    const quizId = document.getElementById('import-quiz-id').value;
+    const categoryId = document.getElementById('import-category').value;
+    const tpId = document.getElementById('import-tp').value;
+    
+    if (!categoryId) {
+        alert('Pilih kategori terlebih dahulu');
+        return;
+    }
+    
+    try {
+        const res = await fetch(`/gradebook/api/quizzes/${quizId}/import`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                category_id: categoryId,
+                learning_goal_id: tpId || null,
+            }),
+        });
+        const result = await res.json();
+        
+        if (result.success) {
+            alert('Quiz berhasil diimpor!');
+            closeImportQuizModal();
+            loadGradeItems();
+        } else {
+            alert('Gagal mengimpor: ' + result.message);
+        }
+    } catch (err) {
+        alert('Gagal mengimpor quiz');
+    }
+}
+</script>
+{% endblock %}

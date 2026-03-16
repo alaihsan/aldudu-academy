@@ -118,6 +118,9 @@
                         <button data-tab="Berkas" class="tab-btn px-6 py-2.5 text-gray-500 hover:bg-gray-50 rounded-xl font-bold text-sm transition-all whitespace-nowrap">Berkas</button>
                         <button data-tab="Link" class="tab-btn px-6 py-2.5 text-gray-500 hover:bg-gray-50 rounded-xl font-bold text-sm transition-all whitespace-nowrap">Link</button>
                         <button data-tab="Diskusi" class="tab-btn px-6 py-2.5 text-gray-500 hover:bg-gray-50 rounded-xl font-bold text-sm transition-all whitespace-nowrap">Diskusi</button>
+                        {% if is_teacher %}
+                        <button data-tab="kbm" class="tab-btn px-6 py-2.5 text-gray-500 hover:bg-gray-50 rounded-xl font-bold text-sm transition-all whitespace-nowrap">📚 Catatan KBM</button>
+                        {% endif %}
                     </div>
 
                     {% if is_teacher %}
@@ -228,6 +231,78 @@
                     </button>
                 </div>
                 <div id="discussions-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 pb-20"></div>
+
+                <!-- KBM Notes Section (Teacher Only) -->
+                <div id="kbm-section" class="hidden pt-10 border-t border-gray-200">
+                    <div class="bg-white rounded-3xl shadow-sm border border-gray-200 p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h2 class="text-2xl font-black text-gray-900">📚 Catatan KBM</h2>
+                                <p class="text-sm text-gray-500 mt-1">Timeline kegiatan belajar mengajar</p>
+                            </div>
+                            <button onclick="toggleKbmForm()" class="px-6 py-3 bg-theme text-white rounded-2xl font-bold text-sm flex items-center space-x-2 hover:opacity-90 transition-all">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+                                </svg>
+                                <span>Tambah Catatan</span>
+                            </button>
+                        </div>
+
+                        <!-- Inline Add Form -->
+                        <div id="kbm-add-form" class="hidden bg-gray-50 rounded-2xl border-2 border-dashed border-gray-300 p-6 mb-6">
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-500 mb-1">Tanggal *</label>
+                                    <input type="date" id="kbm-date" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-500 mb-1">Waktu Mulai</label>
+                                    <input type="time" id="kbm-start-time" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-500 mb-1">Waktu Selesai</label>
+                                    <input type="time" id="kbm-end-time" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-500 mb-1">Kegiatan</label>
+                                    <select id="kbm-type" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none bg-white">
+                                        <option value="teori">📖 Teori</option>
+                                        <option value="praktikum">🧪 Praktikum</option>
+                                        <option value="ujian">📝 Ujian</option>
+                                        <option value="tugas">📋 Tugas</option>
+                                        <option value="review">🔁 Review</option>
+                                        <option value="lainnya">📌 Lainnya</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-xs font-semibold text-gray-500 mb-1">Materi/Topik *</label>
+                                <input type="text" id="kbm-topic" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none" placeholder="Contoh: Stoikiometri - Konsep Mol">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-xs font-semibold text-gray-500 mb-1">Detail KBM</label>
+                                <textarea id="kbm-description" rows="2" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none" placeholder="Jelaskan kegiatan yang dilakukan..."></textarea>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-xs font-semibold text-gray-500 mb-1">Catatan Tambahan</label>
+                                <textarea id="kbm-notes" rows="2" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none" placeholder="Refleksi, kendala, dll (opsional)"></textarea>
+                            </div>
+                            <div class="flex justify-end space-x-3">
+                                <button type="button" onclick="toggleKbmForm()" class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all font-semibold">Batal</button>
+                                <button type="button" onclick="saveKbmNote()" class="px-4 py-2 bg-theme text-white rounded-lg hover:opacity-90 transition-all font-semibold">Simpan</button>
+                            </div>
+                        </div>
+
+                        <!-- Timeline -->
+                        <div id="kbm-timeline" class="relative">
+                            <!-- Vertical line -->
+                            <div class="absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-theme to-gray-200"></div>
+                            
+                            <!-- Timeline items will be inserted here -->
+                            <div id="kbm-timeline-content" class="space-y-6"></div>
+                        </div>
+                    </div>
+                </div>
 
             </div>
         </main>
@@ -356,6 +431,275 @@
         </form>
     </div>
 </div>
+
+<!-- KBM Edit Modal -->
+<div id="kbm-edit-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden animate-slide-up border border-primary-50">
+        <form id="kbm-edit-form">
+            <div class="bg-gradient-to-br from-primary-500 to-primary-700 px-8 py-8 text-white">
+                <h3 class="text-2xl font-black">Edit Catatan KBM</h3>
+                <p class="text-primary-100 text-sm mt-1">Update informasi kegiatan</p>
+            </div>
+            <input type="hidden" id="kbm-edit-id">
+            <div class="p-8 space-y-4">
+                <div>
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Tanggal *</label>
+                    <input type="date" id="kbm-edit-date" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold" required>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Waktu Mulai</label>
+                        <input type="time" id="kbm-edit-start-time" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Waktu Selesai</label>
+                        <input type="time" id="kbm-edit-end-time" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Kegiatan</label>
+                    <select id="kbm-edit-type" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold bg-white">
+                        <option value="teori">📖 Teori</option>
+                        <option value="praktikum">🧪 Praktikum</option>
+                        <option value="ujian">📝 Ujian</option>
+                        <option value="tugas">📋 Tugas</option>
+                        <option value="review">🔁 Review</option>
+                        <option value="lainnya">📌 Lainnya</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Materi/Topik *</label>
+                    <input type="text" id="kbm-edit-topic" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold" required>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Detail KBM</label>
+                    <textarea id="kbm-edit-description" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold" rows="3"></textarea>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Catatan Tambahan</label>
+                    <textarea id="kbm-edit-notes" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold" rows="2"></textarea>
+                </div>
+                <div id="kbm-edit-error" class="hidden p-4 bg-red-50 text-red-600 rounded-2xl text-xs font-bold text-center"></div>
+            </div>
+            <div class="px-8 pb-8 flex space-x-3">
+                <button type="button" onclick="closeKbmEditModal()" class="flex-1 px-6 py-4 text-gray-500 bg-gray-100 rounded-2xl font-bold hover:bg-gray-200 transition-all">Batal</button>
+                <button type="button" onclick="updateKbmNote()" class="flex-[2] px-6 py-4 bg-primary-600 text-white rounded-2xl font-bold shadow-lg shadow-primary-200 hover:bg-primary-700 active:scale-95">Update</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// KBM Notes Functions
+const COURSE_ID = {{ course.id }};
+let currentKbmNotes = [];
+
+// Initialize KBM tab
+function initKbmTab() {
+    const kbmBtn = document.querySelector('[data-tab="kbm"]');
+    if (kbmBtn) {
+        kbmBtn.addEventListener('click', function() {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-primary-600', 'text-white');
+                btn.classList.add('text-gray-500');
+            });
+            this.classList.add('active');
+            this.classList.remove('text-gray-500');
+            this.classList.add('bg-primary-600', 'text-white');
+            
+            document.querySelectorAll('[id$="-section"]').forEach(section => section.classList.add('hidden'));
+            document.getElementById('kbm-section').classList.remove('hidden');
+            loadKbmNotes();
+        });
+    }
+}
+
+function toggleKbmForm() {
+    const form = document.getElementById('kbm-add-form');
+    form.classList.toggle('hidden');
+    if (!form.classList.contains('hidden')) {
+        // Set default date to today
+        document.getElementById('kbm-date').valueAsDate = new Date();
+        document.getElementById('kbm-topic').focus();
+    }
+}
+
+async function loadKbmNotes() {
+    const container = document.getElementById('kbm-timeline-content');
+    container.innerHTML = '<div class="text-center py-8 text-gray-500">Memuat catatan...</div>';
+    
+    try {
+        const res = await fetch(`/api/courses/${COURSE_ID}/kbm-notes`);
+        const data = await res.json();
+        
+        if (data.success) {
+            currentKbmNotes = data.notes;
+            renderKbmTimeline(data.notes);
+        } else {
+            container.innerHTML = '<div class="text-center py-8 text-red-500">Gagal memuat catatan</div>';
+        }
+    } catch (err) {
+        container.innerHTML = '<div class="text-center py-8 text-red-500">Error loading notes</div>';
+    }
+}
+
+function renderKbmTimeline(notes) {
+    const container = document.getElementById('kbm-timeline-content');
+    
+    if (notes.length === 0) {
+        container.innerHTML = '<div class="text-center py-12 text-gray-400 ml-12">Belum ada catatan KBM. Klik "Tambah Catatan" untuk membuat.</div>';
+        return;
+    }
+    
+    container.innerHTML = '';
+    notes.forEach(note => {
+        const typeIcons = {
+            'teori': '📖',
+            'praktikum': '🧪',
+            'ujian': '📝',
+            'tugas': '📋',
+            'review': '🔁',
+            'lainnya': '📌'
+        };
+        
+        const date = new Date(note.activity_date);
+        const dateStr = date.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        
+        const div = document.createElement('div');
+        div.className = 'relative pl-16 group';
+        div.innerHTML = `
+            <!-- Dot on timeline -->
+            <div class="absolute left-0 top-0 w-12 h-12 rounded-full bg-white border-4 border-theme shadow-lg flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+                ${typeIcons[note.activity_type] || '📌'}
+            </div>
+            
+            <!-- Content card -->
+            <div class="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-lg transition-all cursor-pointer" onclick="openKbmEditModal(${note.id})">
+                <div class="flex items-start justify-between mb-2">
+                    <div class="flex-1">
+                        <h4 class="font-bold text-gray-900 text-lg">${note.topic}</h4>
+                        <p class="text-xs text-gray-500 mt-1">${dateStr}${note.start_time ? ' • ' + note.start_time + '-' + note.end_time : ''}</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-bold uppercase">${note.activity_type}</span>
+                        <span class="text-gray-400 group-hover:text-theme transition-colors">✏️</span>
+                    </div>
+                </div>
+                ${note.description ? `<p class="text-sm text-gray-700 mt-2 line-clamp-2">${note.description}</p>` : ''}
+                ${note.notes ? `<div class="mt-3 pt-3 border-t border-gray-100"><p class="text-xs text-gray-500 italic">📝 ${note.notes}</p></div>` : ''}
+            </div>
+        `;
+        container.appendChild(div);
+    });
+}
+
+async function saveKbmNote() {
+    const date = document.getElementById('kbm-date').value;
+    const topic = document.getElementById('kbm-topic').value.trim();
+    
+    if (!date || !topic) {
+        alert('Tanggal dan materi/topik wajib diisi');
+        return;
+    }
+    
+    const data = {
+        activity_date: date,
+        start_time: document.getElementById('kbm-start-time').value || null,
+        end_time: document.getElementById('kbm-end-time').value || null,
+        activity_type: document.getElementById('kbm-type').value,
+        topic: topic,
+        description: document.getElementById('kbm-description').value.trim(),
+        notes: document.getElementById('kbm-notes').value.trim(),
+    };
+    
+    try {
+        const res = await fetch(`/api/courses/${COURSE_ID}/kbm-notes`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+        const result = await res.json();
+        
+        if (result.success) {
+            toggleKbmForm();
+            loadKbmNotes();
+            // Reset form
+            document.getElementById('kbm-topic').value = '';
+            document.getElementById('kbm-description').value = '';
+            document.getElementById('kbm-notes').value = '';
+        } else {
+            alert('Gagal: ' + result.message);
+        }
+    } catch (err) {
+        alert('Gagal menyimpan catatan');
+    }
+}
+
+function openKbmEditModal(noteId) {
+    const note = currentKbmNotes.find(n => n.id === noteId);
+    if (!note) return;
+    
+    document.getElementById('kbm-edit-id').value = note.id;
+    document.getElementById('kbm-edit-date').value = note.activity_date;
+    document.getElementById('kbm-edit-start-time').value = note.start_time || '';
+    document.getElementById('kbm-edit-end-time').value = note.end_time || '';
+    document.getElementById('kbm-edit-type').value = note.activity_type;
+    document.getElementById('kbm-edit-topic').value = note.topic;
+    document.getElementById('kbm-edit-description').value = note.description || '';
+    document.getElementById('kbm-edit-notes').value = note.notes || '';
+    
+    document.getElementById('kbm-edit-modal').classList.remove('hidden');
+}
+
+function closeKbmEditModal() {
+    document.getElementById('kbm-edit-modal').classList.add('hidden');
+}
+
+async function updateKbmNote() {
+    const noteId = document.getElementById('kbm-edit-id').value;
+    const date = document.getElementById('kbm-edit-date').value;
+    const topic = document.getElementById('kbm-edit-topic').value.trim();
+    
+    if (!date || !topic) {
+        alert('Tanggal dan materi/topik wajib diisi');
+        return;
+    }
+    
+    const data = {
+        activity_date: date,
+        start_time: document.getElementById('kbm-edit-start-time').value || null,
+        end_time: document.getElementById('kbm-edit-end-time').value || null,
+        activity_type: document.getElementById('kbm-edit-type').value,
+        topic: topic,
+        description: document.getElementById('kbm-edit-description').value.trim(),
+        notes: document.getElementById('kbm-edit-notes').value.trim(),
+    };
+    
+    try {
+        const res = await fetch(`/api/kbm-notes/${noteId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+        const result = await res.json();
+        
+        if (result.success) {
+            closeKbmEditModal();
+            loadKbmNotes();
+        } else {
+            alert('Gagal: ' + result.message);
+        }
+    } catch (err) {
+        alert('Gagal update catatan');
+    }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    initKbmTab();
+});
+</script>
 
 {% endblock %}
 

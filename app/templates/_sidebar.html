@@ -49,6 +49,22 @@
                 </svg>
                 <span>Materi & Tugas</span>
             </a>
+            {% if current_user.role.value in ['guru', 'admin'] %}
+            <a href="{{ url_for('gradebook.course_gradebook', course_id=course.id) }}" class="flex items-center space-x-3 px-4 py-3 {% if 'gradebook' in request.endpoint %}bg-primary-50 text-primary-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} rounded-xl transition-all">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                </svg>
+                <span>Buku Nilai</span>
+            </a>
+            {% endif %}
+            {% if current_user.role.value == 'murid' %}
+            <a href="{{ url_for('gradebook.my_grades', course_id=course.id) }}" class="flex items-center space-x-3 px-4 py-3 {% if 'gradebook' in request.endpoint %}bg-primary-50 text-primary-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} rounded-xl transition-all">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                </svg>
+                <span>Nilai Saya</span>
+            </a>
+            {% endif %}
         </div>
         {% endif %}
 
