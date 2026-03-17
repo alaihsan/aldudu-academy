@@ -4,7 +4,7 @@ from flask import Blueprint, request, jsonify, abort
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 from sqlalchemy.orm import joinedload, selectinload
-from app.models import db, Course, AcademicYear, UserRole, Link, File, Discussion, Post, Like, UserCourseOrder, KbmNote, KbmActivityType
+from app.models import db, Course, AcademicYear, UserRole, Link, File, Discussion, Post, Like, UserCourseOrder, KbmNote, KbmActivityType, Quiz, GradeType, QuizStatus
 from app.helpers import sanitize_text, is_valid_color, is_valid_class_code, generate_class_code, get_courses_for_user, format_course_data, log_activity
 from app.tenant import get_school_id_or_abort, verify_course_in_school, verify_academic_year_in_school
 
@@ -127,9 +127,53 @@ def api_delete_course(course_id):
         )
         
         return jsonify({'success': True, 'message': 'Kelas berhasil dihapus'})
-    except Exception as e:
+    except Exception:
         db.session.rollback()
-        return jsonify({'success': False, 'message': f'Gagal menghapus kelas: {str(e)}'}), 500
+        return jsonify({'success': False, 'message': 'Gagal menghapus kelas'}), 500
+
+
+@courses_bp.route('/courses/<int:course_id>/quizzes', methods=['POST'])
+@login_required
+def api_create_quiz(course_id):
+    if current_user.role != UserRole.GURU:
+        return jsonify({'success': False, 'message': 'Hanya guru yang dapat membuat kuis'}), 403
+
+    course = db.session.get(Course, course_id)
+    if not course:
+        return jsonify({'success': False, 'message': 'Mata pelajaran tidak ditemukan'}), 404
+
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(course, school_id)
+
+    if course.teacher_id != current_user.id:
+        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
+
+    data = request.get_json() or {}
+    name = sanitize_text(data.get('name', ''), max_len=200) or 'Kuis Tanpa Judul'
+
+    try:
+        grade_type = GradeType(data.get('grade_type', 'numeric'))
+    except ValueError:
+        grade_type = GradeType.NUMERIC
+
+    try:
+        points = int(data.get('points', 100))
+    except (ValueError, TypeError):
+        points = 100
+
+    quiz = Quiz(
+        name=name,
+        course_id=course_id,
+        grade_type=grade_type,
+        points=points,
+        status=QuizStatus.DRAFT,
+    )
+    db.session.add(quiz)
+    db.session.commit()
+
+    log_activity(current_user.id, f'Membuat kuis: {name}', target_type='Quiz', target_id=quiz.id)
+
+    return jsonify({'success': True, 'quiz': {'id': quiz.id, 'name': quiz.name}}), 201
 
 
 @courses_bp.route('/enroll', methods=['POST'])
@@ -217,9 +261,9 @@ def api_create_link(course_id):
             }
         }), 201
 
-    except Exception as e:
+    except Exception:
         db.session.rollback()
-        return jsonify({'success': False, 'message': f'Terjadi kesalahan server: {e}'}), 500
+        return jsonify({'success': False, 'message': 'Terjadi kesalahan server'}), 500
 
 
 @courses_bp.route('/courses/<int:course_id>/files', methods=['POST'])
@@ -339,9 +383,9 @@ def create_discussion(course_id):
         db.session.commit()
 
         return jsonify({'success': True, 'discussion': {'id': new_discussion.id, 'title': new_discussion.title}}), 201
-    except Exception as e:
+    except Exception:
         db.session.rollback()
-        return jsonify({'success': False, 'message': f'Database error: {e}'}), 500
+        return jsonify({'success': False, 'message': 'Terjadi kesalahan saat membuat diskusi'}), 500
 
 
 @courses_bp.route('/courses/<int:course_id>/discussions', methods=['GET'])
@@ -484,9 +528,9 @@ def api_reorder_courses():
 
         db.session.commit()
         return jsonify({'success': True, 'message': 'Urutan kelas berhasil diperbarui'})
-    except Exception as e:
+    except Exception:
         db.session.rollback()
-        return jsonify({'success': False, 'message': f'Gagal memperbarui urutan: {str(e)}'}), 500
+        return jsonify({'success': False, 'message': 'Gagal memperbarui urutan'}), 500
 
 
 # ─── KBM Notes Routes ───────────────────────────────────────────────────────────

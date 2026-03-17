@@ -1,19 +1,22 @@
 import os
+import secrets
 
 
 class Config:
-    SECRET_KEY = os.environ.get('FLASK_SECRET_KEY', 'dev-secret-change-me')
+    SECRET_KEY = os.environ.get('FLASK_SECRET_KEY', secrets.token_hex(32))
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SAMESITE = 'Lax'
 
     # Database
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'mysql+pymysql://root:@localhost:3306/aldudu_academy')
 
-    # Mail (Mailtrap for development)
+    # Mail
     MAIL_SERVER = os.environ.get('MAIL_SERVER', 'sandbox.smtp.mailtrap.io')
     MAIL_PORT = int(os.environ.get('MAIL_PORT', 2525))
     MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS', 'true').lower() == 'true'
-    MAIL_USERNAME = os.environ.get('MAIL_USERNAME', 'fc23c6de6a88c3')
-    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD', '250aad26537c38')
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME', '')
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD', '')
     MAIL_DEFAULT_SENDER = (
         os.environ.get('MAIL_SENDER_NAME', 'Aldudu Academy'),
         os.environ.get('MAIL_SENDER_EMAIL', 'noreply@aldudu.academy')
@@ -33,6 +36,7 @@ class DevelopmentConfig(Config):
 
 class ProductionConfig(Config):
     DEBUG = False
+    SESSION_COOKIE_SECURE = True
 
 
 class TestingConfig(Config):
