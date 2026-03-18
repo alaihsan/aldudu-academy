@@ -135,7 +135,7 @@
                             <!-- Dropdown Menu (Styled like Dashboard) -->
                             <div id="topics-dropdown-menu" class="hidden absolute right-0 mt-3 w-64 bg-white rounded-[2rem] shadow-2xl border border-gray-100 py-4 z-50 animate-slide-up overflow-hidden">
                                 <p class="px-6 py-2 text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Pilih Jenis</p>
-                                <a href="#" id="show-create-quiz-modal" class="flex items-center space-x-4 px-6 py-3.5 hover:bg-amber-50 group transition-all">
+                                <a href="#" id="direct-create-quiz" class="flex items-center space-x-4 px-6 py-3.5 hover:bg-amber-50 group transition-all">
                                     <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center group-hover:bg-amber-600 group-hover:text-white transition-all">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -309,49 +309,6 @@
 
             </div>
         </main>
-    </div>
-</div>
-
-<!-- All the same modals, but restyled inside -->
-<!-- Create Quiz Modal -->
-<div id="create-quiz-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden animate-slide-up border border-amber-50">
-        <form id="create-quiz-form">
-            <div class="bg-gradient-to-br from-amber-500 to-amber-700 px-8 py-8">
-                <h3 class="text-2xl font-black text-white">Buat Kuis Baru</h3>
-                <p class="text-amber-100 text-sm mt-1">Siapkan tantangan belajar untuk murid Anda.</p>
-            </div>
-            <div class="p-8 space-y-6">
-                <div>
-                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Nama Kuis</label>
-                    <input type="text" id="quiz-name-input" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-amber-500 focus:ring-0 font-bold outline-none transition-all" required placeholder="...">
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Tipe Nilai</label>
-                        <select id="quiz-grade-type" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-amber-500 focus:ring-0 font-bold outline-none bg-white transition-all">
-                            <option value="numeric">Numeric (0-100)</option>
-                            <option value="letter">Letter (A, B, C, D)</option>
-                        </select>
-                    </div>
-                    <div id="points-container">
-                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Maksimal Poin</label>
-                        <input type="number" id="quiz-points" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-amber-500 focus:ring-0 font-bold outline-none transition-all" value="100">
-                    </div>
-                    <div id="letter-info-container" class="hidden">
-                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Format Nilai</label>
-                        <div class="w-full px-6 py-4 bg-amber-50 border-2 border-amber-100 rounded-2xl text-amber-700 font-bold text-center animate-fade-in">
-                            A, B, C, D
-                        </div>
-                    </div>
-                </div>
-                <div id="quiz-modal-error" class="hidden p-4 bg-red-50 text-red-600 rounded-2xl text-xs font-bold text-center"></div>
-            </div>
-            <div class="px-8 pb-8 flex space-x-3">
-                <button type="button" class="quiz-cancel-btn flex-1 px-6 py-4 text-gray-500 bg-gray-100 rounded-2xl font-bold hover:bg-gray-200 transition-all">Batal</button>
-                <button type="submit" class="flex-[2] px-6 py-4 bg-amber-600 text-white rounded-2xl font-bold shadow-lg shadow-amber-200 hover:bg-amber-700 transition-all active:scale-95">Simpan & Lanjut</button>
-            </div>
-        </form>
     </div>
 </div>
 

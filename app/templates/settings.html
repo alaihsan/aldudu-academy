@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}Pengaturan - Aldudu Academy{% endblock %}
+
+{% block body %}
+<div id="app-page" class="min-h-screen bg-gray-50 flex">
+    {% include '_sidebar.html' %}
+
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <header class="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-8 sticky top-0 z-30">
+            <div class="flex items-center space-x-4">
+                <a href="{{ url_for('main.dashboard') }}" class="p-2 text-gray-400 hover:text-primary-600 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                </a>
+                <h2 class="text-lg font-bold text-gray-900 truncate">Pengaturan</h2>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-8">
+            <div class="max-w-2xl mx-auto space-y-8 animate-fade-in">
+
+                <!-- Profile Section -->
+                <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+                    <div class="px-8 py-6 border-b border-gray-100">
+                        <h3 class="text-lg font-black text-gray-900">Profil</h3>
+                        <p class="text-sm text-gray-500 mt-1">Informasi akun Anda</p>
+                    </div>
+                    <div class="p-8 space-y-6">
+                        <div>
+                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Nama Lengkap</label>
+                            <input type="text" id="settings-name" value="{{ current_user.name }}" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold transition-all" placeholder="Nama Anda">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Email</label>
+                            <input type="email" value="{{ current_user.email }}" class="w-full px-6 py-4 bg-gray-100 border-2 border-gray-100 rounded-2xl font-bold text-gray-500 cursor-not-allowed" disabled>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Role</label>
+                                <input type="text" value="{{ current_user.role.value | capitalize }}" class="w-full px-6 py-4 bg-gray-100 border-2 border-gray-100 rounded-2xl font-bold text-gray-500 cursor-not-allowed" disabled>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Sekolah</label>
+                                <input type="text" value="{{ current_user.school.name if current_user.school else '-' }}" class="w-full px-6 py-4 bg-gray-100 border-2 border-gray-100 rounded-2xl font-bold text-gray-500 cursor-not-allowed" disabled>
+                            </div>
+                        </div>
+                        <div id="profile-message" class="hidden p-4 rounded-2xl text-sm font-bold text-center"></div>
+                        <button id="save-profile-btn" class="w-full py-4 bg-primary-600 text-white rounded-2xl font-bold shadow-lg shadow-primary-100 hover:bg-primary-700 transition-all active:scale-95">
+                            Simpan Perubahan
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Password Section -->
+                <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+                    <div class="px-8 py-6 border-b border-gray-100">
+                        <h3 class="text-lg font-black text-gray-900">Ganti Password</h3>
+                        <p class="text-sm text-gray-500 mt-1">Pastikan menggunakan password yang kuat</p>
+                    </div>
+                    <div class="p-8 space-y-6">
+                        <div>
+                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Password Lama</label>
+                            <input type="password" id="old-password" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold transition-all" placeholder="Masukkan password lama">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Password Baru</label>
+                            <input type="password" id="new-password" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold transition-all" placeholder="Minimal 6 karakter">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Konfirmasi Password Baru</label>
+                            <input type="password" id="confirm-password" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold transition-all" placeholder="Ulangi password baru">
+                        </div>
+                        <div id="password-message" class="hidden p-4 rounded-2xl text-sm font-bold text-center"></div>
+                        <button id="change-password-btn" class="w-full py-4 bg-gray-900 text-white rounded-2xl font-bold shadow-lg hover:bg-gray-800 transition-all active:scale-95">
+                            Ganti Password
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Save profile
+    document.getElementById('save-profile-btn')?.addEventListener('click', async () => {
+        const name = document.getElementById('settings-name').value.trim();
+        const msgEl = document.getElementById('profile-message');
+        if (!name) { showMsg(msgEl, 'Nama tidak boleh kosong', 'error'); return; }
+
+        try {
+            const res = await fetch('/api/profile', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name })
+            });
+            const data = await res.json();
+            showMsg(msgEl, data.message, data.success ? 'success' : 'error');
+        } catch { showMsg(msgEl, 'Kesalahan koneksi ke server', 'error'); }
+    });
+
+    // Change password
+    document.getElementById('change-password-btn')?.addEventListener('click', async () => {
+        const old_password = document.getElementById('old-password').value;
+        const new_password = document.getElementById('new-password').value;
+        const confirm_password = document.getElementById('confirm-password').value;
+        const msgEl = document.getElementById('password-message');
+
+        if (!old_password || !new_password || !confirm_password) {
+            showMsg(msgEl, 'Semua field wajib diisi', 'error'); return;
+        }
+        if (new_password !== confirm_password) {
+            showMsg(msgEl, 'Password baru dan konfirmasi tidak cocok', 'error'); return;
+        }
+        if (new_password.length < 6) {
+            showMsg(msgEl, 'Password minimal 6 karakter', 'error'); return;
+        }
+
+        try {
+            const res = await fetch('/api/change-password', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ old_password, new_password })
+            });
+            const data = await res.json();
+            if (data.success) {
+                document.getElementById('old-password').value = '';
+                document.getElementById('new-password').value = '';
+                document.getElementById('confirm-password').value = '';
+            }
+            showMsg(msgEl, data.message, data.success ? 'success' : 'error');
+        } catch { showMsg(msgEl, 'Kesalahan koneksi ke server', 'error'); }
+    });
+
+    function showMsg(el, text, type) {
+        el.textContent = text;
+        el.className = `p-4 rounded-2xl text-sm font-bold text-center ${type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'}`;
+        el.classList.remove('hidden');
+        setTimeout(() => el.classList.add('hidden'), 4000);
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Privacy & Policy - Aldudu Academy{% endblock %}
+
+{% block body %}
+<div id="app-page" class="min-h-screen bg-gray-50 flex">
+    {% include '_sidebar.html' %}
+
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <header class="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-8 sticky top-0 z-30">
+            <div class="flex items-center space-x-4">
+                <a href="{{ url_for('main.dashboard') }}" class="p-2 text-gray-400 hover:text-primary-600 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                </a>
+                <h2 class="text-lg font-bold text-gray-900 truncate">Privacy & Policy</h2>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-8">
+            <div class="max-w-3xl mx-auto space-y-8 animate-fade-in">
+
+                <!-- Hero -->
+                <div class="bg-gradient-to-br from-emerald-600 to-emerald-900 rounded-[2.5rem] p-10 text-white relative overflow-hidden shadow-2xl shadow-emerald-100">
+                    <div class="relative z-10">
+                        <h1 class="text-3xl font-black mb-3">Kebijakan Privasi</h1>
+                        <p class="text-emerald-100 opacity-90 max-w-xl">Kami berkomitmen untuk melindungi privasi dan data pribadi Anda.</p>
+                    </div>
+                    <div class="absolute right-0 bottom-0 opacity-10 pointer-events-none transform translate-y-1/4 translate-x-1/4">
+                        <svg class="w-64 h-64" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Content -->
+                <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-10 space-y-8">
+
+                    <section>
+                        <h2 class="text-xl font-black text-gray-900 mb-4">1. Penggunaan Aplikasi</h2>
+                        <p class="text-gray-600 leading-relaxed">
+                            Aldudu Academy adalah platform pembelajaran daring yang dirancang untuk mendukung kegiatan belajar mengajar.
+                            Aplikasi ini digunakan secara bijak untuk kepentingan pendidikan dan tidak diperuntukkan untuk aktivitas yang melanggar hukum atau norma-norma yang berlaku.
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2 class="text-xl font-black text-gray-900 mb-4">2. Data yang Dikumpulkan</h2>
+                        <p class="text-gray-600 leading-relaxed mb-4">Untuk menjalankan layanan dengan baik, kami mengumpulkan data berikut:</p>
+                        <ul class="space-y-3">
+                            <li class="flex items-start space-x-3">
+                                <div class="w-2 h-2 mt-2 rounded-full bg-emerald-500 flex-shrink-0"></div>
+                                <span class="text-gray-600"><strong class="text-gray-900">Informasi Identitas</strong> - Nama lengkap dan alamat email untuk keperluan autentikasi akun.</span>
+                            </li>
+                            <li class="flex items-start space-x-3">
+                                <div class="w-2 h-2 mt-2 rounded-full bg-emerald-500 flex-shrink-0"></div>
+                                <span class="text-gray-600"><strong class="text-gray-900">Data Aktivitas Belajar</strong> - Riwayat pengerjaan kuis, nilai, dan partisipasi dalam diskusi.</span>
+                            </li>
+                            <li class="flex items-start space-x-3">
+                                <div class="w-2 h-2 mt-2 rounded-full bg-emerald-500 flex-shrink-0"></div>
+                                <span class="text-gray-600"><strong class="text-gray-900">Log Akses</strong> - Waktu login dan aktivitas dalam sistem untuk keamanan akun.</span>
+                            </li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h2 class="text-xl font-black text-gray-900 mb-4">3. Penggunaan Data</h2>
+                        <div class="bg-emerald-50 border border-emerald-100 rounded-2xl p-6">
+                            <p class="text-emerald-800 font-bold text-sm mb-3">Data Anda TIDAK digunakan untuk kepentingan bisnis atau komersial.</p>
+                            <p class="text-emerald-700 text-sm leading-relaxed">
+                                Seluruh data yang dikumpulkan hanya digunakan untuk menjalankan layanan pendidikan, meningkatkan kualitas pembelajaran,
+                                dan memastikan keamanan platform. Kami tidak menjual, menyewakan, atau membagikan data pribadi Anda kepada pihak ketiga manapun.
+                            </p>
+                        </div>
+                    </section>
+
+                    <section>
+                        <h2 class="text-xl font-black text-gray-900 mb-4">4. Hak Pengguna</h2>
+                        <p class="text-gray-600 leading-relaxed mb-4">Sebagai pengguna, Anda memiliki hak untuk:</p>
+                        <ul class="space-y-3">
+                            <li class="flex items-start space-x-3">
+                                <div class="w-2 h-2 mt-2 rounded-full bg-primary-500 flex-shrink-0"></div>
+                                <span class="text-gray-600">Mengakses dan melihat data pribadi yang tersimpan dalam sistem.</span>
+                            </li>
+                            <li class="flex items-start space-x-3">
+                                <div class="w-2 h-2 mt-2 rounded-full bg-primary-500 flex-shrink-0"></div>
+                                <span class="text-gray-600">Memperbarui atau memperbaiki informasi profil Anda melalui halaman Pengaturan.</span>
+                            </li>
+                            <li class="flex items-start space-x-3">
+                                <div class="w-2 h-2 mt-2 rounded-full bg-primary-500 flex-shrink-0"></div>
+                                <span class="text-gray-600">Meminta penghapusan akun dan seluruh data terkait dengan menghubungi administrator sekolah.</span>
+                            </li>
+                            <li class="flex items-start space-x-3">
+                                <div class="w-2 h-2 mt-2 rounded-full bg-primary-500 flex-shrink-0"></div>
+                                <span class="text-gray-600">Mendapatkan informasi mengenai bagaimana data Anda diproses dan disimpan.</span>
+                            </li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h2 class="text-xl font-black text-gray-900 mb-4">5. Keamanan Data</h2>
+                        <p class="text-gray-600 leading-relaxed">
+                            Kami menerapkan langkah-langkah keamanan teknis dan organisasional yang wajar untuk melindungi data Anda dari akses yang tidak sah,
+                            perubahan, pengungkapan, atau penghancuran. Password Anda disimpan dalam bentuk terenkripsi dan tidak dapat dibaca oleh siapapun termasuk administrator.
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2 class="text-xl font-black text-gray-900 mb-4">6. Kontak</h2>
+                        <p class="text-gray-600 leading-relaxed">
+                            Jika Anda memiliki pertanyaan atau kekhawatiran mengenai kebijakan privasi ini, silakan hubungi administrator sekolah Anda
+                            atau kirim pesan melalui fitur <strong>Manajemen Masalah</strong> di aplikasi.
+                        </p>
+                    </section>
+
+                    <div class="pt-4 border-t border-gray-100">
+                        <p class="text-xs text-gray-400 text-center">Terakhir diperbarui: Maret 2026</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

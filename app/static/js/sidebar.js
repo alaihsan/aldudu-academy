@@ -21,15 +21,27 @@ const SidebarManager = {
             mainContent: document.getElementById('main-content'),
             unhideBtn: document.getElementById('sidebar-unhide-btn'),
             profileBtn: document.getElementById('user-profile-btn'),
+            dropdownMenu: document.getElementById('user-dropdown-menu'),
+            dropdownLogoutBtn: document.getElementById('user-dropdown-logout'),
             logoutModal: document.getElementById('logout-modal'),
             closeLogoutBtn: document.getElementById('close-logout-modal')
         };
     },
 
     bindEvents() {
+        // Toggle dropdown on profile button click
         if (this.elements.profileBtn) {
             this.elements.profileBtn.onclick = (e) => {
                 e.stopPropagation();
+                this.toggleDropdown();
+            };
+        }
+
+        // Dropdown logout button opens logout modal
+        if (this.elements.dropdownLogoutBtn) {
+            this.elements.dropdownLogoutBtn.onclick = (e) => {
+                e.stopPropagation();
+                this.closeDropdown();
                 this.elements.logoutModal?.classList.remove('hidden');
             };
         }
@@ -40,11 +52,25 @@ const SidebarManager = {
             };
         }
 
-        window.onclick = (e) => {
+        // Close dropdown and modal on outside click
+        window.addEventListener('click', (e) => {
+            if (this.elements.dropdownMenu && !this.elements.dropdownMenu.contains(e.target) && !this.elements.profileBtn?.contains(e.target)) {
+                this.closeDropdown();
+            }
             if (e.target === this.elements.logoutModal) {
                 this.elements.logoutModal.classList.add('hidden');
             }
-        };
+        });
+    },
+
+    toggleDropdown() {
+        const menu = this.elements.dropdownMenu;
+        if (!menu) return;
+        menu.classList.toggle('hidden');
+    },
+
+    closeDropdown() {
+        this.elements.dropdownMenu?.classList.add('hidden');
     },
 
     toggle() {

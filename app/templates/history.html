@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Riwayat Akses - Aldudu Academy{% endblock %}
+
+{% block body %}
+<div id="app-page" class="min-h-screen bg-gray-50 flex">
+    {% include '_sidebar.html' %}
+
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <header class="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-8 sticky top-0 z-30">
+            <div class="flex items-center space-x-4">
+                <a href="{{ url_for('main.dashboard') }}" class="p-2 text-gray-400 hover:text-primary-600 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                </a>
+                <h2 class="text-lg font-bold text-gray-900 truncate">Riwayat Akses</h2>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-8">
+            <div class="max-w-5xl mx-auto space-y-8 animate-fade-in">
+
+                <!-- Hero -->
+                <div class="bg-gradient-to-br from-primary-600 to-primary-900 rounded-[2.5rem] p-10 text-white relative overflow-hidden shadow-2xl shadow-primary-100">
+                    <div class="relative z-10">
+                        <h1 class="text-3xl font-black mb-3">Riwayat Akses</h1>
+                        <p class="text-primary-100 opacity-90 max-w-xl">Log aktivitas akun Anda{% if is_teacher %} dan murid di kelas Anda{% endif %}.</p>
+                    </div>
+                    <div class="absolute right-0 bottom-0 opacity-10 pointer-events-none transform translate-y-1/4 translate-x-1/4">
+                        <svg class="w-64 h-64" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Activity Log Table -->
+                <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+                    <div class="px-8 py-6 border-b border-gray-100 flex items-center justify-between">
+                        <h3 class="text-lg font-black text-gray-900">Log Aktivitas</h3>
+                        <div class="flex items-center space-x-3">
+                            <button id="load-more-btn" class="px-5 py-2 bg-gray-100 text-gray-600 rounded-xl font-bold text-sm hover:bg-gray-200 transition-all hidden">
+                                Muat Lebih Banyak
+                            </button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="bg-gray-50 text-left">
+                                    <th class="px-8 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Waktu</th>
+                                    <th class="px-8 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">User</th>
+                                    <th class="px-8 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Role</th>
+                                    <th class="px-8 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="activity-log-body">
+                                <tr><td colspan="4" class="px-8 py-12 text-center text-gray-400 font-medium">Memuat data...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let page = 1;
+    const perPage = 50;
+
+    loadLogs();
+
+    document.getElementById('load-more-btn')?.addEventListener('click', () => {
+        page++;
+        loadLogs(true);
+    });
+
+    async function loadLogs(append = false) {
+        try {
+            const res = await fetch(`/api/activity-logs?page=${page}&per_page=${perPage}`);
+            const data = await res.json();
+            if (data.success) {
+                renderLogs(data.logs, append);
+                const btn = document.getElementById('load-more-btn');
+                if (data.has_more) btn?.classList.remove('hidden');
+                else btn?.classList.add('hidden');
+            }
+        } catch (err) {
+            console.error('Failed to load logs', err);
+        }
+    }
+
+    function renderLogs(logs, append) {
+        const tbody = document.getElementById('activity-log-body');
+        if (!append) tbody.innerHTML = '';
+
+        if (logs.length === 0 && !append) {
+            tbody.innerHTML = '<tr><td colspan="4" class="px-8 py-12 text-center text-gray-400 font-medium">Belum ada aktivitas tercatat.</td></tr>';
+            return;
+        }
+
+        logs.forEach(log => {
+            const row = document.createElement('tr');
+            row.className = 'border-t border-gray-50 hover:bg-gray-50 transition-colors';
+            row.innerHTML = `
+                <td class="px-8 py-4 text-sm text-gray-500 whitespace-nowrap">${log.created_at}</td>
+                <td class="px-8 py-4 text-sm font-bold text-gray-900">${log.user_name}</td>
+                <td class="px-8 py-4"><span class="px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-lg ${getRoleBadge(log.user_role)}">${log.user_role}</span></td>
+                <td class="px-8 py-4 text-sm text-gray-600">${log.action}</td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    function getRoleBadge(role) {
+        switch(role) {
+            case 'guru': return 'bg-blue-50 text-blue-700';
+            case 'murid': return 'bg-green-50 text-green-700';
+            case 'admin': return 'bg-purple-50 text-purple-700';
+            default: return 'bg-gray-50 text-gray-700';
+        }
+    }
+});
+</script>
+{% endblock %}

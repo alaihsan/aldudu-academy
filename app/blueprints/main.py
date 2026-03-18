@@ -4,7 +4,7 @@ from flask_login import login_required, current_user
 from app.models import (
     db, Course, Quiz, Question, Option,
     QuestionType, GradeType, UserRole, Link, File,
-    QuizSubmission, Answer, Discussion
+    QuizSubmission, Answer, Discussion, QuizStatus, ActivityLog
 )
 from app.helpers import get_jakarta_now
 from app.tenant import get_school_id_or_abort, verify_course_in_school
@@ -32,7 +32,10 @@ def course_detail(course_id):
     verify_course_in_school(course, school_id)
     is_teacher = (current_user.id == course.teacher_id)
     
-    quizzes = Quiz.query.filter_by(course_id=course.id).all()
+    if is_teacher:
+        quizzes = Quiz.query.filter_by(course_id=course.id).all()
+    else:
+        quizzes = Quiz.query.filter_by(course_id=course.id, status=QuizStatus.PUBLISHED).all()
     links = Link.query.filter_by(course_id=course.id).all()
     files = File.query.filter_by(course_id=course.id).all()
     
@@ -86,6 +89,9 @@ def quiz_detail(quiz_id):
 
     if not is_teacher and current_user not in course.students:
         abort(403)
+
+    if not is_teacher and quiz.status != QuizStatus.PUBLISHED:
+        abort(403, description='Kuis ini belum tersedia.')
 
     if is_teacher and not is_preview:
         return render_template('quiz_editor.html', quiz=quiz, QuestionType=QuestionType, Question=Question, Option=Option)
@@ -182,6 +188,27 @@ def discussion_detail(course_id, discussion_id):
     if not is_teacher and current_user not in course.students:
         abort(403)
     return render_template('discussion_detail.html', course=course, discussion=discussion, is_teacher=is_teacher)
+
+@main_bp.route('/settings')
+@login_required
+def settings():
+    return render_template('settings.html')
+
+@main_bp.route('/history')
+@login_required
+def history():
+    is_teacher = current_user.role in (UserRole.GURU, UserRole.ADMIN)
+    return render_template('history.html', is_teacher=is_teacher)
+
+@main_bp.route('/privacy-policy')
+@login_required
+def privacy_policy():
+    return render_template('privacy_policy.html')
+
+@main_bp.route('/sponsor')
+@login_required
+def sponsor():
+    return render_template('sponsor.html')
 
 @main_bp.route('/issues')
 @login_required

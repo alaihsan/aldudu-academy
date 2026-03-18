@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify, render_template, redirect
-from flask_login import login_user, logout_user, current_user
+from flask_login import login_user, logout_user, current_user, login_required
 from app.models import User, UserRole, SchoolStatus, PasswordResetToken, School
 from app.helpers import is_valid_email, log_activity
 from app.extensions import limiter, db
@@ -109,8 +109,10 @@ def api_login():
 
     if user.role == UserRole.SUPER_ADMIN:
         response_data['redirect'] = '/superadmin/dashboard'
-    elif user.school:
+    elif user.role == UserRole.ADMIN and user.school:
         response_data['redirect'] = '/admin/dashboard'
+    elif user.school:
+        response_data['redirect'] = '/dashboard'
 
     return jsonify(response_data)
 
@@ -253,9 +255,71 @@ def api_register_user():
     return jsonify({'success': True, 'message': 'Registrasi berhasil. Cek email untuk verifikasi.'}), 201
 
 
+@auth_bp.route('/api/profile', methods=['PUT'])
+@login_required
+def api_update_profile():
+    data = request.get_json() or {}
+    name = data.get('name', '').strip()
+    if not name or len(name) < 2:
+        return jsonify({'success': False, 'message': 'Nama minimal 2 karakter'}), 400
+    if len(name) > 100:
+        return jsonify({'success': False, 'message': 'Nama maksimal 100 karakter'}), 400
+    current_user.name = name
+    db.session.commit()
+    return jsonify({'success': True, 'message': 'Profil berhasil diperbarui'})
+
+
+@auth_bp.route('/api/change-password', methods=['PUT'])
+@login_required
+def api_change_password():
+    data = request.get_json() or {}
+    old_password = data.get('old_password', '')
+    new_password = data.get('new_password', '')
+
+    if not old_password or not new_password:
+        return jsonify({'success': False, 'message': 'Semua field wajib diisi'}), 400
+    if not current_user.check_password(old_password):
+        return jsonify({'success': False, 'message': 'Password lama salah'}), 401
+    if len(new_password) < 6:
+        return jsonify({'success': False, 'message': 'Password baru minimal 6 karakter'}), 400
+
+    current_user.set_password(new_password)
+    db.session.commit()
+    log_activity(current_user.id, "Ganti password")
+    return jsonify({'success': True, 'message': 'Password berhasil diubah'})
+
+
+@auth_bp.route('/api/activity-logs', methods=['GET'])
+@login_required
+def api_activity_logs():
+    from app.models import ActivityLog
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 50, type=int)
+    per_page = min(per_page, 100)
+
+    is_teacher = current_user.role in (UserRole.GURU, UserRole.ADMIN)
+
+    if is_teacher and current_user.school_id:
+        query = ActivityLog.query.filter_by(school_id=current_user.school_id)
+    else:
+        query = ActivityLog.query.filter_by(user_id=current_user.id)
+
+    query = query.order_by(ActivityLog.created_at.desc())
+    total = query.count()
+    logs = query.offset((page - 1) * per_page).limit(per_page).all()
+
+    return jsonify({
+        'success': True,
+        'logs': [log.to_dict() for log in logs],
+        'has_more': (page * per_page) < total
+    })
+
+
 def _redirect_after_login(user):
     if user.role == UserRole.SUPER_ADMIN:
         return redirect('/superadmin/dashboard')
-    if user.school:
+    if user.role == UserRole.ADMIN and user.school:
         return redirect('/admin/dashboard')
+    if user.school:
+        return redirect('/dashboard')
     return redirect('/')

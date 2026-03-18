@@ -171,7 +171,8 @@ def api_update_question_points(question_id):
     try:
         question.points = int(request.form.get('points', 0))
         db.session.commit()
-    except: pass
+    except (ValueError, TypeError):
+        pass
     return ""
 
 @quiz_bp.route('/question/<int:question_id>/toggle-required', methods=['POST'])
@@ -252,7 +253,8 @@ def api_set_quiz_status(quiz_id):
         quiz.status = QuizStatus(status_str)
         db.session.commit()
         return jsonify({'success': True, 'status': quiz.status.value})
-    except: return jsonify({'success': False}), 400
+    except (ValueError, KeyError):
+        return jsonify({'success': False}), 400
 
 @quiz_bp.route('/submission/<int:submission_id>')
 @login_required
@@ -363,7 +365,19 @@ def api_update_quiz_duration(quiz_id):
         quiz.duration = int(data.get('duration', 0))
         db.session.commit()
         return jsonify({'success': True})
-    except:
+    except (ValueError, TypeError):
+        return jsonify({'success': False}), 400
+
+@quiz_bp.route('/quiz/<int:quiz_id>/update-max-attempts', methods=['PUT'])
+@login_required
+def api_update_quiz_max_attempts(quiz_id):
+    quiz = get_quiz_or_abort(quiz_id)
+    data = request.get_json() or {}
+    try:
+        quiz.max_attempts = int(data.get('max_attempts', 1))
+        db.session.commit()
+        return jsonify({'success': True})
+    except (ValueError, TypeError):
         return jsonify({'success': False}), 400
 
 @quiz_bp.route('/quiz/<int:quiz_id>/questions/reorder', methods=['POST'])
@@ -398,7 +412,8 @@ def api_update_upload_settings(question_id):
             question.allowed_file_types = ""
             
         db.session.commit()
-    except: pass
+    except (ValueError, TypeError):
+        pass
     return render_template('_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question)
 
 @quiz_bp.route('/question/<int:question_id>/upload-image', methods=['POST'])
@@ -423,7 +438,7 @@ def api_upload_question_image(question_id):
             old_path = os.path.join(upload_folder, question.image)
             if os.path.exists(old_path):
                 try: os.remove(old_path)
-                except: pass
+                except OSError: pass
         
         question.image = filename
         db.session.commit()
@@ -439,7 +454,7 @@ def api_remove_question_image(question_id):
         path = os.path.join(upload_folder, question.image)
         if os.path.exists(path):
             try: os.remove(path)
-            except: pass
+            except OSError: pass
         question.image = None
         db.session.commit()
     
@@ -455,6 +470,15 @@ def api_submit_quiz(quiz_id):
 
     school_id = get_school_id_or_abort()
     verify_course_in_school(quiz.course, school_id)
+
+    if quiz.status != QuizStatus.PUBLISHED:
+        return jsonify({'success': False, 'message': 'Kuis ini belum dipublikasikan.'}), 403
+
+    # Check max attempts
+    if quiz.max_attempts > 0:
+        attempt_count = QuizSubmission.query.filter_by(quiz_id=quiz.id, user_id=current_user.id).count()
+        if attempt_count >= quiz.max_attempts:
+            return jsonify({'success': False, 'message': f'Batas pengerjaan ({quiz.max_attempts}x) telah tercapai.'}), 409
 
     # Handle both JSON and FormData
     if request.is_json:

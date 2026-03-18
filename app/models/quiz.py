@@ -43,6 +43,7 @@ class Quiz(db.Model):
     
     points: Mapped[int] = mapped_column(db.Integer, default=100)
     duration: Mapped[int] = mapped_column(db.Integer, default=0) # Duration in minutes, 0 means unlimited
+    max_attempts: Mapped[int] = mapped_column(db.Integer, default=1) # 0 = unlimited
     is_published: Mapped[bool] = mapped_column(db.Boolean, default=False, nullable=False) # Legacy, keeping for migration safety
     
     created_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=get_jakarta_now, nullable=False)

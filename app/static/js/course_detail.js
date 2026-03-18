@@ -11,8 +11,7 @@ const CourseDetail = {
     init() {
         this.cacheElements();
         this.bindEvents();
-        this.loadDiscussions(); // Load discussions initial
-        console.log('Course Detail Initialized');
+        this.loadDiscussions();
     },
 
     cacheElements() {
@@ -22,10 +21,10 @@ const CourseDetail = {
         this.topicsContainer = document.getElementById('topics-container');
         this.discussionsContainer = document.getElementById('discussions-container');
         this.tabBtns = document.querySelectorAll('.tab-btn');
-        
-        // Modals
+        this.directCreateQuizBtn = document.getElementById('direct-create-quiz');
+
+        // Modals (quiz removed - now uses direct creation)
         this.modals = {
-            quiz: { el: document.getElementById('create-quiz-modal'), showBtn: document.getElementById('show-create-quiz-modal'), form: document.getElementById('create-quiz-form'), cancelBtn: document.querySelector('.quiz-cancel-btn') },
             file: { el: document.getElementById('create-file-modal'), showBtn: document.getElementById('show-create-file-modal'), form: document.getElementById('create-file-form'), cancelBtn: document.querySelector('.file-cancel-btn') },
             link: { el: document.getElementById('create-link-modal'), showBtn: document.getElementById('show-create-link-modal'), form: document.getElementById('create-link-form'), cancelBtn: document.querySelector('.link-cancel-btn') },
             discussion: { el: document.getElementById('create-discussion-modal'), showBtn: document.getElementById('show-create-discussion-modal'), form: document.getElementById('create-discussion-form'), cancelBtn: document.querySelector('.discussion-cancel-btn') }
@@ -33,7 +32,6 @@ const CourseDetail = {
     },
 
     bindEvents() {
-        // ... previous events ...
         this.addTopicsBtn?.addEventListener('click', (e) => {
             e.stopPropagation();
             this.addTopicsMenu.classList.toggle('hidden');
@@ -41,15 +39,11 @@ const CourseDetail = {
 
         window.addEventListener('click', () => this.addTopicsMenu?.classList.add('hidden'));
 
-        // Quiz Grade Type Logic
-        const gradeTypeSelect = document.getElementById('quiz-grade-type');
-        const pointsContainer = document.getElementById('points-container');
-        const letterInfoContainer = document.getElementById('letter-info-container');
-
-        gradeTypeSelect?.addEventListener('change', (e) => {
-            const isLetter = e.target.value === 'letter';
-            pointsContainer.classList.toggle('hidden', isLetter);
-            letterInfoContainer.classList.toggle('hidden', !isLetter);
+        // Direct quiz creation (no modal)
+        this.directCreateQuizBtn?.addEventListener('click', (e) => {
+            e.preventDefault();
+            this.addTopicsMenu?.classList.add('hidden');
+            this.createQuizDirectly();
         });
 
         // Tab Switching Logic
@@ -74,8 +68,26 @@ const CourseDetail = {
         });
     },
 
+    async createQuizDirectly() {
+        try {
+            const res = await fetch(`/api/courses/${this.courseId}/quizzes`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: 'Kuis Tanpa Judul', points: 100, grade_type: 'numeric' })
+            });
+            const data = await res.json();
+            if (data.success) {
+                window.location.href = `/quiz/${data.quiz.id}`;
+            } else {
+                alert(data.message || 'Gagal membuat kuis');
+            }
+        } catch (err) {
+            console.error('Failed to create quiz', err);
+            alert('Kesalahan koneksi ke server');
+        }
+    },
+
     switchTab(activeBtn, tabType) {
-        // Update UI Tabs
         this.tabBtns.forEach(b => {
             b.classList.remove('active', 'bg-primary-600', 'text-white', 'shadow-lg', 'shadow-primary-100');
             b.classList.add('text-gray-500', 'hover:bg-gray-50');
@@ -83,18 +95,16 @@ const CourseDetail = {
         activeBtn.classList.add('active', 'bg-primary-600', 'text-white', 'shadow-lg', 'shadow-primary-100');
         activeBtn.classList.remove('text-gray-500', 'hover:bg-gray-50');
 
-        // Filter Topics
         const topicCards = this.topicsContainer.querySelectorAll('.group');
-        
+
         if (tabType === 'Diskusi') {
             this.topicsContainer.classList.add('hidden');
             this.discussionsContainer.classList.remove('hidden');
-            // Ensure Discussions header is visible if needed
             document.getElementById('diskusi')?.scrollIntoView({ behavior: 'smooth' });
         } else {
             this.topicsContainer.classList.remove('hidden');
             this.discussionsContainer.classList.add('hidden');
-            
+
             topicCards.forEach(card => {
                 const typeText = card.querySelector('p.text-gray-500')?.textContent || '';
                 if (tabType === 'all' || typeText.includes(tabType)) {
@@ -157,19 +167,11 @@ const CourseDetail = {
         e.preventDefault();
         const form = e.target;
         const errorEl = form.querySelector('[id$="-error"]');
-        
+
         let url = `/api/courses/${this.courseId}/`;
         let options = { method: 'POST' };
 
-        if (type === 'quiz') {
-            url += 'quizzes';
-            options.headers = { 'Content-Type': 'application/json' };
-            options.body = JSON.stringify({
-                name: document.getElementById('quiz-name-input').value,
-                points: document.getElementById('quiz-points').value,
-                grade_type: document.getElementById('quiz-grade-type').value
-            });
-        } else if (type === 'file') {
+        if (type === 'file') {
             url += 'files';
             const formData = new FormData();
             formData.append('name', document.getElementById('file-name-input').value);
@@ -195,8 +197,7 @@ const CourseDetail = {
             const res = await fetch(url, options);
             const data = await res.json();
             if (data.success) {
-                if (type === 'quiz') window.location.href = `/quiz/${data.quiz.id}`;
-                else window.location.reload();
+                window.location.reload();
             } else {
                 errorEl.textContent = data.message || 'Terjadi kesalahan';
                 errorEl.classList.remove('hidden');
