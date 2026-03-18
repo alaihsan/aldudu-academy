@@ -15,7 +15,7 @@
 {% endblock %}
 
 {% block body %}
-<div id="app-page" class="min-h-screen bg-gray-50 flex">
+<div id="app-page" class="min-h-screen bg-gray-50 flex" x-data="courseDetailPage()" x-init="init()">
     <!-- Sidebar (Shared Partial) -->
     {% include '_sidebar.html' %}
 
@@ -29,27 +29,44 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
                 </a>
-                
-                <!-- Class Switcher Dropdown -->
+
+                <!-- Class Switcher Dropdown - Alpine.js -->
                 {% if is_teacher %}
-                <div class="relative" id="class-switcher">
-                    <button onclick="toggleClassSwitcher()" class="class-switcher-btn flex items-center space-x-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl transition-all group">
+                <div class="relative" x-data="{ switcherOpen: false }" @keydown.escape.window="switcherOpen = false">
+                    <button @click="switcherOpen = !switcherOpen" class="class-switcher-btn flex items-center space-x-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl transition-all group">
                         <svg class="w-5 h-5 text-gray-500 group-hover:text-primary-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
                         </svg>
                         <span class="text-sm font-bold text-gray-700 group-hover:text-primary-700 transition-colors">{{ course.name }}</span>
-                        <svg class="w-4 h-4 text-gray-400 transition-transform" id="switcher-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4 text-gray-400 transition-transform" :class="switcherOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
                     </button>
-                    
+
                     <!-- Dropdown Menu -->
-                    <div id="class-switcher-menu" class="hidden absolute top-full left-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 z-50 animate-slide-up overflow-hidden">
+                    <div x-show="switcherOpen" x-cloak
+                         @click.outside="switcherOpen = false"
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 translate-y-2 scale-95"
+                         x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                         x-transition:leave="transition ease-in duration-150"
+                         x-transition:leave-start="opacity-100"
+                         x-transition:leave-end="opacity-0 translate-y-2 scale-95"
+                         class="absolute top-full left-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 z-50 overflow-hidden">
                         <div class="px-4 py-2 border-b border-gray-100">
                             <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Pilih Kelas</p>
                         </div>
-                        <div id="class-switcher-list" class="max-h-96 overflow-y-auto">
-                            <!-- Will be populated by JS -->
+                        <div class="max-h-96 overflow-y-auto">
+                            <template x-for="c in allClasses" :key="c.id">
+                                <a :href="'/course/' + c.id" class="flex items-center space-x-4 px-4 py-3 hover:bg-gray-50 group transition-all border-b border-gray-50 last:border-0">
+                                    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold" :style="'background-color: ' + c.color" x-text="c.name.charAt(0).toUpperCase()"></div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="font-bold text-gray-900 text-sm truncate group-hover:text-primary-600 transition-colors" x-text="c.name"></p>
+                                        <p class="text-xs text-gray-500" x-text="(c.students_count || 0) + ' siswa \u2022 ' + c.class_code"></p>
+                                    </div>
+                                    <span x-show="c.id == {{ course.id }}" class="text-primary-600 text-xs font-bold">\u2713 Aktif</span>
+                                </a>
+                            </template>
                         </div>
                     </div>
                 </div>
@@ -73,17 +90,16 @@
         <!-- Main Scrollable Area -->
         <main class="flex-1 overflow-y-auto p-8" data-course-id="{{ course.id }}">
             <div class="max-w-6xl mx-auto space-y-10 animate-fade-in">
-                
+
                 <!-- Hero Section -->
                 <div class="relative rounded-[3rem] overflow-hidden shadow-2xl shadow-primary-100 h-64 flex items-center px-12 group" style="background-color: {{ course.color }}">
-                    <!-- Decor -->
                     <div class="absolute inset-0 opacity-20 group-hover:scale-110 transition-transform duration-1000">
                         <svg class="w-full h-full" fill="currentColor" viewBox="0 0 100 100" preserveAspectRatio="none">
                             <path d="M0 100 C 20 0 50 0 100 100 Z" />
                         </svg>
                     </div>
                     <div class="absolute -right-20 -bottom-20 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
-                    
+
                     <div class="relative z-10 text-white max-w-2xl">
                         <span class="inline-block px-4 py-1.5 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-4">Mata Pelajaran</span>
                         <h1 class="text-4xl sm:text-5xl font-black mb-4 drop-shadow-lg leading-tight">{{ course.name }}</h1>
@@ -108,33 +124,39 @@
                     </div>
                 </div>
 
-                <!-- Tabs & Controls -->
+                <!-- Tabs & Controls - Alpine.js -->
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div class="flex space-x-1 bg-white p-1.5 rounded-2xl border border-gray-200 shadow-sm self-start overflow-x-auto no-scrollbar">
-                        <button data-tab="all" class="tab-btn active px-6 py-2.5 bg-theme text-white rounded-xl font-bold text-sm shadow-lg shadow-theme transition-all whitespace-nowrap">Semua Konten</button>
-                        <button data-tab="Tugas" class="tab-btn px-6 py-2.5 text-gray-500 hover:bg-gray-50 rounded-xl font-bold text-sm transition-all whitespace-nowrap">Tugas</button>
-                        <button data-tab="Kuis" class="tab-btn px-6 py-2.5 text-gray-500 hover:bg-gray-50 rounded-xl font-bold text-sm transition-all whitespace-nowrap">Kuis</button>
-                        <button data-tab="Berkas" class="tab-btn px-6 py-2.5 text-gray-500 hover:bg-gray-50 rounded-xl font-bold text-sm transition-all whitespace-nowrap">Berkas</button>
-                        <button data-tab="Link" class="tab-btn px-6 py-2.5 text-gray-500 hover:bg-gray-50 rounded-xl font-bold text-sm transition-all whitespace-nowrap">Link</button>
-                        <button data-tab="diskusi" class="tab-btn px-6 py-2.5 text-gray-500 hover:bg-gray-50 rounded-xl font-bold text-sm transition-all whitespace-nowrap">Forum Diskusi</button>
+                        <button @click="setTab('all')" class="px-6 py-2.5 rounded-xl font-bold text-sm transition-all whitespace-nowrap" :class="activeTab === 'all' ? 'bg-theme text-white shadow-lg shadow-theme' : 'text-gray-500 hover:bg-gray-50'">Semua Konten</button>
+                        <button @click="setTab('Tugas')" class="px-6 py-2.5 rounded-xl font-bold text-sm transition-all whitespace-nowrap" :class="activeTab === 'Tugas' ? 'bg-theme text-white shadow-lg shadow-theme' : 'text-gray-500 hover:bg-gray-50'">Tugas</button>
+                        <button @click="setTab('Kuis')" class="px-6 py-2.5 rounded-xl font-bold text-sm transition-all whitespace-nowrap" :class="activeTab === 'Kuis' ? 'bg-theme text-white shadow-lg shadow-theme' : 'text-gray-500 hover:bg-gray-50'">Kuis</button>
+                        <button @click="setTab('Berkas')" class="px-6 py-2.5 rounded-xl font-bold text-sm transition-all whitespace-nowrap" :class="activeTab === 'Berkas' ? 'bg-theme text-white shadow-lg shadow-theme' : 'text-gray-500 hover:bg-gray-50'">Berkas</button>
+                        <button @click="setTab('Link')" class="px-6 py-2.5 rounded-xl font-bold text-sm transition-all whitespace-nowrap" :class="activeTab === 'Link' ? 'bg-theme text-white shadow-lg shadow-theme' : 'text-gray-500 hover:bg-gray-50'">Link</button>
+                        <button @click="setTab('diskusi')" class="px-6 py-2.5 rounded-xl font-bold text-sm transition-all whitespace-nowrap" :class="activeTab === 'diskusi' ? 'bg-theme text-white shadow-lg shadow-theme' : 'text-gray-500 hover:bg-gray-50'">Forum Diskusi</button>
                         {% if is_teacher %}
-                        <!-- Hidden KBM tab button for sidebar access -->
-                        <button data-tab="kbm" class="hidden" onclick="activateKbmTab()"></button>
+                        <button @click="setTab('kbm')" class="px-6 py-2.5 rounded-xl font-bold text-sm transition-all whitespace-nowrap" :class="activeTab === 'kbm' ? 'bg-theme text-white shadow-lg shadow-theme' : 'text-gray-500 hover:bg-gray-50'">Catatan KBM</button>
                         {% endif %}
                     </div>
 
                     {% if is_teacher %}
-                    <!-- Button Tambah Konten tetap sama -->
+                    <!-- Button Tambah Konten - Alpine.js Dropdown -->
                     <div class="flex items-center space-x-3">
-                        <div class="relative" id="add-topics-dropdown">
-                            <button id="add-topics-button" class="px-6 py-3 bg-white border-2 border-primary-600 text-primary-600 rounded-2xl font-black text-sm flex items-center space-x-2 hover:bg-primary-50 transition-all active:scale-95 shadow-sm">
+                        <div class="relative" x-data="{ addOpen: false }">
+                            <button @click="addOpen = !addOpen" class="px-6 py-3 bg-white border-2 border-primary-600 text-primary-600 rounded-2xl font-black text-sm flex items-center space-x-2 hover:bg-primary-50 transition-all active:scale-95 shadow-sm">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"/>
                                 </svg>
                                 <span>Tambah Konten</span>
                             </button>
-                            <!-- Dropdown Menu (Styled like Dashboard) -->
-                            <div id="topics-dropdown-menu" class="hidden absolute right-0 mt-3 w-64 bg-white rounded-[2rem] shadow-2xl border border-gray-100 py-4 z-50 animate-slide-up overflow-hidden">
+                            <div x-show="addOpen" x-cloak
+                                 @click.outside="addOpen = false"
+                                 x-transition:enter="transition ease-out duration-200"
+                                 x-transition:enter-start="opacity-0 translate-y-2 scale-95"
+                                 x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                                 x-transition:leave="transition ease-in duration-150"
+                                 x-transition:leave-start="opacity-100"
+                                 x-transition:leave-end="opacity-0 translate-y-2 scale-95"
+                                 class="absolute right-0 mt-3 w-64 bg-white rounded-[2rem] shadow-2xl border border-gray-100 py-4 z-50 overflow-hidden">
                                 <p class="px-6 py-2 text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Pilih Jenis</p>
                                 <a href="#" id="show-create-assignment-modal" class="flex items-center space-x-4 px-6 py-3.5 hover:bg-green-50 group transition-all">
                                     <div class="w-10 h-10 rounded-xl bg-green-100 text-green-600 flex items-center justify-center group-hover:bg-green-600 group-hover:text-white transition-all">
@@ -144,27 +166,21 @@
                                     </div>
                                     <span class="font-bold text-gray-700">Buat Tugas</span>
                                 </a>
-                                <a href="#" id="direct-create-quiz" class="flex items-center space-x-4 px-6 py-3.5 hover:bg-amber-50 group transition-all">
+                                <a href="#" @click.prevent="addOpen = false; createQuizDirectly()" class="flex items-center space-x-4 px-6 py-3.5 hover:bg-amber-50 group transition-all">
                                     <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center group-hover:bg-amber-600 group-hover:text-white transition-all">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                        </svg>
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                     </div>
                                     <span class="font-bold text-gray-700">Buat Kuis</span>
                                 </a>
-                                <a href="#" id="show-create-file-modal" class="flex items-center space-x-4 px-6 py-3.5 hover:bg-blue-50 group transition-all">
+                                <a href="#" @click.prevent="addOpen = false; $dispatch('open-file-modal')" class="flex items-center space-x-4 px-6 py-3.5 hover:bg-blue-50 group transition-all">
                                     <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-                                        </svg>
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
                                     </div>
                                     <span class="font-bold text-gray-700">Unggah Berkas</span>
                                 </a>
-                                <a href="#" id="show-create-link-modal" class="flex items-center space-x-4 px-6 py-3.5 hover:bg-indigo-50 group transition-all">
+                                <a href="#" @click.prevent="addOpen = false; $dispatch('open-link-modal')" class="flex items-center space-x-4 px-6 py-3.5 hover:bg-indigo-50 group transition-all">
                                     <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-all">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
-                                        </svg>
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
                                     </div>
                                     <span class="font-bold text-gray-700">Sematkan Link</span>
                                 </a>
@@ -175,10 +191,11 @@
                 </div>
 
                 <!-- Materials Grid -->
-                <div id="topics-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div x-show="activeTab !== 'diskusi' && activeTab !== 'kbm'" id="topics-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     {% if topics %}
                         {% for topic in topics %}
-                        <div class="group bg-white rounded-[2.5rem] border border-gray-100 shadow-premium hover:shadow-2xl transition-all duration-500 overflow-hidden flex flex-col h-full transform hover:-translate-y-2">
+                        <div class="group bg-white rounded-[2.5rem] border border-gray-100 shadow-premium hover:shadow-2xl transition-all duration-500 overflow-hidden flex flex-col h-full transform hover:-translate-y-2"
+                             x-show="activeTab === 'all' || activeTab === '{{ topic.type }}'">
                             <a href="{{ topic.url }}" {% if topic.type != 'Kuis' %}target="_blank"{% endif %} class="block p-8 flex-1">
                                 <div class="flex items-start justify-between mb-6">
                                     <div class="w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500
@@ -213,7 +230,7 @@
                         </div>
                         {% endfor %}
                     {% else %}
-                        <div class="col-span-full py-20 text-center bg-white rounded-[3rem] border-2 border-dashed border-gray-200">
+                        <div class="col-span-full py-20 text-center bg-white rounded-[3rem] border-2 border-dashed border-gray-200" x-show="activeTab === 'all'">
                             <div class="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
                                 <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
@@ -226,13 +243,13 @@
                 </div>
 
                 <!-- Discussions Section -->
-                <div class="pt-10 border-t border-gray-200" id="diskusi-section">
+                <div x-show="activeTab === 'diskusi' || activeTab === 'all'" class="pt-10 border-t border-gray-200" :class="activeTab !== 'diskusi' && activeTab !== 'all' ? 'hidden' : ''">
                     <div class="flex items-center justify-between mb-8">
                         <div>
                             <h2 class="text-2xl font-black text-gray-900">Forum Diskusi</h2>
                             <p class="text-sm text-gray-500 mt-1">Ruang interaksi tanya jawab antara guru dan murid.</p>
                         </div>
-                        <button id="show-create-discussion-modal" class="px-6 py-3 bg-theme text-white rounded-2xl font-black text-sm flex items-center space-x-2 hover:opacity-90 transition-all shadow-theme">
+                        <button @click="$dispatch('open-discussion-modal')" class="px-6 py-3 bg-theme text-white rounded-2xl font-black text-sm flex items-center space-x-2 hover:opacity-90 transition-all shadow-theme">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
                             </svg>
@@ -242,15 +259,16 @@
                     <div id="discussions-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
                 </div>
 
-                <!-- KBM Notes Section (Teacher Only) - SEPARATE SECTION -->
-                <div id="kbm-section" class="hidden">
+                <!-- KBM Notes Section (Teacher Only) - Alpine.js -->
+                {% if is_teacher %}
+                <div x-show="activeTab === 'kbm'" x-cloak x-data="kbmManager()" x-init="loadNotes()">
                     <div class="bg-white rounded-3xl shadow-sm border border-gray-200 p-8">
                         <div class="flex items-center justify-between mb-8">
                             <div>
-                                <h2 class="text-2xl font-black text-gray-900">📚 Catatan KBM</h2>
+                                <h2 class="text-2xl font-black text-gray-900">Catatan KBM</h2>
                                 <p class="text-sm text-gray-500 mt-1">Timeline kegiatan belajar mengajar</p>
                             </div>
-                            <button onclick="toggleKbmForm()" class="px-6 py-3 bg-theme text-white rounded-2xl font-bold text-sm flex items-center space-x-2 hover:opacity-90 transition-all shadow-theme-lg">
+                            <button @click="toggleForm()" class="px-6 py-3 bg-theme text-white rounded-2xl font-bold text-sm flex items-center space-x-2 hover:opacity-90 transition-all shadow-theme-lg">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
                                 </svg>
@@ -259,68 +277,146 @@
                         </div>
 
                         <!-- Inline Add Form -->
-                        <div id="kbm-add-form" class="hidden bg-gray-50 rounded-2xl border-2 border-dashed border-gray-300 p-6 mb-8">
+                        <div x-show="showForm" x-cloak x-transition class="bg-gray-50 rounded-2xl border-2 border-dashed border-gray-300 p-6 mb-8">
                             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-500 mb-1">Tanggal *</label>
-                                    <input type="date" id="kbm-date" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none">
+                                    <input type="date" x-model="form.date" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-500 mb-1">Waktu Mulai</label>
-                                    <input type="time" id="kbm-start-time" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none">
+                                    <input type="time" x-model="form.startTime" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-500 mb-1">Waktu Selesai</label>
-                                    <input type="time" id="kbm-end-time" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none">
+                                    <input type="time" x-model="form.endTime" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-500 mb-1">Kegiatan</label>
-                                    <select id="kbm-type" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none bg-white">
-                                        <option value="teori">📖 Teori</option>
-                                        <option value="praktikum">🧪 Praktikum</option>
-                                        <option value="ujian">📝 Ujian</option>
-                                        <option value="tugas">📋 Tugas</option>
-                                        <option value="review">🔁 Review</option>
-                                        <option value="lainnya">📌 Lainnya</option>
+                                    <select x-model="form.type" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none bg-white">
+                                        <option value="teori">Teori</option>
+                                        <option value="praktikum">Praktikum</option>
+                                        <option value="ujian">Ujian</option>
+                                        <option value="tugas">Tugas</option>
+                                        <option value="review">Review</option>
+                                        <option value="lainnya">Lainnya</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="mb-4">
                                 <label class="block text-xs font-semibold text-gray-500 mb-1">Materi/Topik *</label>
-                                <input type="text" id="kbm-topic" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none" placeholder="Contoh: Stoikiometri - Konsep Mol">
+                                <input type="text" x-model="form.topic" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none" placeholder="Contoh: Stoikiometri - Konsep Mol">
                             </div>
                             <div class="mb-4">
                                 <label class="block text-xs font-semibold text-gray-500 mb-1">Detail KBM</label>
-                                <textarea id="kbm-description" rows="2" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none" placeholder="Jelaskan kegiatan yang dilakukan..."></textarea>
+                                <textarea x-model="form.description" rows="2" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none" placeholder="Jelaskan kegiatan yang dilakukan..."></textarea>
                             </div>
                             <div class="mb-4">
                                 <label class="block text-xs font-semibold text-gray-500 mb-1">Catatan Tambahan</label>
-                                <textarea id="kbm-notes" rows="2" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none" placeholder="Refleksi, kendala, dll (opsional)"></textarea>
+                                <textarea x-model="form.notes" rows="2" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none" placeholder="Refleksi, kendala, dll (opsional)"></textarea>
                             </div>
                             <div class="flex justify-end space-x-3">
-                                <button type="button" onclick="toggleKbmForm()" class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all font-semibold">Batal</button>
-                                <button type="button" onclick="saveKbmNote()" class="px-4 py-2 bg-theme text-white rounded-lg hover:opacity-90 transition-all font-semibold">Simpan</button>
+                                <button type="button" @click="showForm = false" class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all font-semibold">Batal</button>
+                                <button type="button" @click="saveNote()" class="px-4 py-2 bg-theme text-white rounded-lg hover:opacity-90 transition-all font-semibold">Simpan</button>
                             </div>
                         </div>
 
                         <!-- Timeline -->
-                        <div id="kbm-timeline" class="relative">
-                            <!-- Vertical line -->
-                            <div class="absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-theme to-gray-200"></div>
+                        <div class="relative">
+                            <div class="absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-theme to-gray-200" x-show="notes.length > 0"></div>
+                            <div class="space-y-6">
+                                <template x-for="note in notes" :key="note.id">
+                                    <div class="relative pl-16 group">
+                                        <div class="absolute left-0 top-0 w-12 h-12 rounded-full bg-white border-4 border-theme shadow-lg flex items-center justify-center text-xl group-hover:scale-110 transition-transform" x-text="typeIcons[note.activity_type] || '\ud83d\udccc'"></div>
+                                        <div class="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-lg transition-all cursor-pointer" @click="openEdit(note)">
+                                            <div class="flex items-start justify-between mb-2">
+                                                <div class="flex-1">
+                                                    <h4 class="font-bold text-gray-900 text-lg" x-text="note.topic"></h4>
+                                                    <p class="text-xs text-gray-500 mt-1" x-text="formatDate(note.activity_date) + (note.start_time ? ' \u2022 ' + note.start_time + '-' + note.end_time : '')"></p>
+                                                </div>
+                                                <div class="flex items-center space-x-2">
+                                                    <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-bold uppercase" x-text="note.activity_type"></span>
+                                                    <span class="text-gray-400 group-hover:text-theme transition-colors">\u270f\ufe0f</span>
+                                                </div>
+                                            </div>
+                                            <p x-show="note.description" class="text-sm text-gray-700 mt-2 line-clamp-2" x-text="note.description"></p>
+                                            <div x-show="note.notes" class="mt-3 pt-3 border-t border-gray-100">
+                                                <p class="text-xs text-gray-500 italic" x-text="'\ud83d\udcdd ' + note.notes"></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                                <div x-show="notes.length === 0" class="text-center py-12 text-gray-400 ml-12">
+                                    Belum ada catatan KBM. Klik "Tambah Catatan" untuk membuat.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-                            <!-- Timeline items will be inserted here -->
-                            <div id="kbm-timeline-content" class="space-y-6">
-                                <!-- KBM notes will be loaded here -->
+                    <!-- KBM Edit Modal - Alpine.js -->
+                    <div x-show="editOpen" x-cloak
+                         @keydown.escape.window="editOpen = false"
+                         class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                         @click.self="editOpen = false">
+                        <div x-show="editOpen" x-transition class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden border border-primary-50">
+                            <div class="bg-gradient-to-br from-primary-500 to-primary-700 px-8 py-8 text-white">
+                                <h3 class="text-2xl font-black">Edit Catatan KBM</h3>
+                                <p class="text-primary-100 text-sm mt-1">Update informasi kegiatan</p>
+                            </div>
+                            <div class="p-8 space-y-4">
+                                <div>
+                                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Tanggal *</label>
+                                    <input type="date" x-model="editData.activity_date" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold" required>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Waktu Mulai</label>
+                                        <input type="time" x-model="editData.start_time" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Waktu Selesai</label>
+                                        <input type="time" x-model="editData.end_time" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Kegiatan</label>
+                                    <select x-model="editData.activity_type" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold bg-white">
+                                        <option value="teori">Teori</option>
+                                        <option value="praktikum">Praktikum</option>
+                                        <option value="ujian">Ujian</option>
+                                        <option value="tugas">Tugas</option>
+                                        <option value="review">Review</option>
+                                        <option value="lainnya">Lainnya</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Materi/Topik *</label>
+                                    <input type="text" x-model="editData.topic" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold" required>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Detail KBM</label>
+                                    <textarea x-model="editData.description" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold" rows="3"></textarea>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Catatan Tambahan</label>
+                                    <textarea x-model="editData.notes" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold" rows="2"></textarea>
+                                </div>
+                            </div>
+                            <div class="px-8 pb-8 flex space-x-3">
+                                <button type="button" @click="editOpen = false" class="flex-1 px-6 py-4 text-gray-500 bg-gray-100 rounded-2xl font-bold hover:bg-gray-200 transition-all">Batal</button>
+                                <button type="button" @click="updateNote()" class="flex-[2] px-6 py-4 bg-theme text-white rounded-2xl font-bold shadow-lg shadow-theme hover:opacity-90 active:scale-95">Update</button>
                             </div>
                         </div>
                     </div>
                 </div>
+                {% endif %}
 
             </div>
         </main>
     </div>
 </div>
 
+<<<<<<< HEAD
 <!-- Modal Tugas -->
 <div id="create-assignment-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden animate-slide-up border border-green-50">
@@ -362,6 +458,17 @@
 <div id="create-file-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden animate-slide-up border border-blue-50">
         <form id="create-file-form">
+=======
+<!-- File Upload Modal - Alpine.js -->
+<div x-data="fileModal()"
+     x-on:open-file-modal.window="open = true; error = ''"
+     x-show="open" x-cloak
+     @keydown.escape.window="open = false"
+     class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+     @click.self="open = false">
+    <div x-show="open" x-transition class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden border border-blue-50">
+        <form @submit.prevent="submitFile()">
+>>>>>>> d48d301e389cda5d63b9fe46b05a8f900088de8b
             <div class="bg-gradient-to-br from-blue-500 to-blue-700 px-8 py-8 text-white">
                 <h3 class="text-2xl font-black">Unggah Materi</h3>
                 <p class="text-blue-100 text-sm mt-1">Bagikan dokumen atau modul pembelajaran.</p>
@@ -369,25 +476,31 @@
             <div class="p-8 space-y-6">
                 <div>
                     <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Nama Berkas</label>
-                    <input type="text" id="file-name-input" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-blue-500 outline-none font-bold" required>
+                    <input type="text" x-ref="fileName" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-blue-500 outline-none font-bold" required>
                 </div>
                 <div>
                     <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Pilih File</label>
-                    <input type="file" id="file-upload-input" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-blue-500 outline-none font-bold">
+                    <input type="file" x-ref="fileInput" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-blue-500 outline-none font-bold">
                 </div>
-                <div id="file-modal-error" class="hidden p-4 bg-red-50 text-red-600 rounded-2xl text-xs font-bold text-center"></div>
+                <div x-show="error" x-cloak class="p-4 bg-red-50 text-red-600 rounded-2xl text-xs font-bold text-center" x-text="error"></div>
             </div>
             <div class="px-8 pb-8 flex space-x-3">
-                <button type="button" class="file-cancel-btn flex-1 px-6 py-4 text-gray-500 bg-gray-100 rounded-2xl font-bold hover:bg-gray-200 transition-all">Batal</button>
+                <button type="button" @click="open = false" class="flex-1 px-6 py-4 text-gray-500 bg-gray-100 rounded-2xl font-bold hover:bg-gray-200 transition-all">Batal</button>
                 <button type="submit" class="flex-[2] px-6 py-4 bg-blue-600 text-white rounded-2xl font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 active:scale-95">Simpan Berkas</button>
             </div>
         </form>
     </div>
 </div>
 
-<div id="create-link-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden animate-slide-up border border-indigo-50">
-        <form id="create-link-form">
+<!-- Link Modal - Alpine.js -->
+<div x-data="linkModal()"
+     x-on:open-link-modal.window="open = true; error = ''"
+     x-show="open" x-cloak
+     @keydown.escape.window="open = false"
+     class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+     @click.self="open = false">
+    <div x-show="open" x-transition class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden border border-indigo-50">
+        <form @submit.prevent="submitLink()">
             <div class="bg-gradient-to-br from-indigo-500 to-indigo-700 px-8 py-8 text-white">
                 <h3 class="text-2xl font-black">Sematkan Link</h3>
                 <p class="text-indigo-100 text-sm mt-1">Bagikan referensi website atau video eksternal.</p>
@@ -395,26 +508,31 @@
             <div class="p-8 space-y-6">
                 <div>
                     <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Judul Link</label>
-                    <input type="text" id="link-name-input" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-indigo-500 outline-none font-bold" required>
+                    <input type="text" x-model="linkName" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-indigo-500 outline-none font-bold" required>
                 </div>
                 <div>
                     <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">URL (http/https)</label>
-                    <input type="url" id="link-url-input" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-indigo-500 outline-none font-bold" required>
+                    <input type="url" x-model="linkUrl" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-indigo-500 outline-none font-bold" required>
                 </div>
-                <div id="link-modal-error" class="hidden p-4 bg-red-50 text-red-600 rounded-2xl text-xs font-bold text-center"></div>
+                <div x-show="error" x-cloak class="p-4 bg-red-50 text-red-600 rounded-2xl text-xs font-bold text-center" x-text="error"></div>
             </div>
             <div class="px-8 pb-8 flex space-x-3">
-                <button type="button" class="link-cancel-btn flex-1 px-6 py-4 text-gray-500 bg-gray-100 rounded-2xl font-bold hover:bg-gray-200 transition-all">Batal</button>
+                <button type="button" @click="open = false" class="flex-1 px-6 py-4 text-gray-500 bg-gray-100 rounded-2xl font-bold hover:bg-gray-200 transition-all">Batal</button>
                 <button type="submit" class="flex-[2] px-6 py-4 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700 active:scale-95">Simpan Link</button>
             </div>
         </form>
     </div>
 </div>
 
-<!-- Create Discussion Modal -->
-<div id="create-discussion-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden animate-slide-up border border-primary-50">
-        <form id="create-discussion-form">
+<!-- Discussion Modal - Alpine.js -->
+<div x-data="discussionModal()"
+     x-on:open-discussion-modal.window="open = true; error = ''"
+     x-show="open" x-cloak
+     @keydown.escape.window="open = false"
+     class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+     @click.self="open = false">
+    <div x-show="open" x-transition class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden border border-primary-50">
+        <form @submit.prevent="submitDiscussion()">
             <div class="bg-gradient-to-br from-primary-500 to-primary-700 px-8 py-8 text-white">
                 <h3 class="text-2xl font-black">Mulai Diskusi Baru</h3>
                 <p class="text-primary-100 text-sm mt-1">Bangun interaksi positif di kelas Anda.</p>
@@ -422,421 +540,274 @@
             <div class="p-8 space-y-6">
                 <div>
                     <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Judul Topik</label>
-                    <input type="text" id="discussion-title-input" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold" required>
+                    <input type="text" x-model="title" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold" required>
                 </div>
                 <div>
                     <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Isi Pertanyaan</label>
-                    <textarea id="discussion-content-input" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold" rows="4" required></textarea>
+                    <textarea x-model="content" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold" rows="4" required></textarea>
                 </div>
-                <div id="discussion-modal-error" class="hidden p-4 bg-red-50 text-red-600 rounded-2xl text-xs font-bold text-center"></div>
+                <div x-show="error" x-cloak class="p-4 bg-red-50 text-red-600 rounded-2xl text-xs font-bold text-center" x-text="error"></div>
             </div>
             <div class="px-8 pb-8 flex space-x-3">
-                <button type="button" class="discussion-cancel-btn flex-1 px-6 py-4 text-gray-500 bg-gray-100 rounded-2xl font-bold hover:bg-gray-200 transition-all">Batal</button>
+                <button type="button" @click="open = false" class="flex-1 px-6 py-4 text-gray-500 bg-gray-100 rounded-2xl font-bold hover:bg-gray-200 transition-all">Batal</button>
                 <button type="submit" class="flex-[2] px-6 py-4 bg-theme text-white rounded-2xl font-bold shadow-lg shadow-theme hover:opacity-90 active:scale-95">Mulai Forum</button>
             </div>
         </form>
     </div>
 </div>
 
-<!-- KBM Edit Modal -->
-<div id="kbm-edit-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden animate-slide-up border border-primary-50">
-        <form id="kbm-edit-form">
-            <div class="bg-gradient-to-br from-primary-500 to-primary-700 px-8 py-8 text-white">
-                <h3 class="text-2xl font-black">Edit Catatan KBM</h3>
-                <p class="text-primary-100 text-sm mt-1">Update informasi kegiatan</p>
-            </div>
-            <input type="hidden" id="kbm-edit-id">
-            <div class="p-8 space-y-4">
-                <div>
-                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Tanggal *</label>
-                    <input type="date" id="kbm-edit-date" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold" required>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Waktu Mulai</label>
-                        <input type="time" id="kbm-edit-start-time" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Waktu Selesai</label>
-                        <input type="time" id="kbm-edit-end-time" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Kegiatan</label>
-                    <select id="kbm-edit-type" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold bg-white">
-                        <option value="teori">📖 Teori</option>
-                        <option value="praktikum">🧪 Praktikum</option>
-                        <option value="ujian">📝 Ujian</option>
-                        <option value="tugas">📋 Tugas</option>
-                        <option value="review">🔁 Review</option>
-                        <option value="lainnya">📌 Lainnya</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Materi/Topik *</label>
-                    <input type="text" id="kbm-edit-topic" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold" required>
-                </div>
-                <div>
-                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Detail KBM</label>
-                    <textarea id="kbm-edit-description" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold" rows="3"></textarea>
-                </div>
-                <div>
-                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Catatan Tambahan</label>
-                    <textarea id="kbm-edit-notes" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold" rows="2"></textarea>
-                </div>
-                <div id="kbm-edit-error" class="hidden p-4 bg-red-50 text-red-600 rounded-2xl text-xs font-bold text-center"></div>
-            </div>
-            <div class="px-8 pb-8 flex space-x-3">
-                <button type="button" onclick="closeKbmEditModal()" class="flex-1 px-6 py-4 text-gray-500 bg-gray-100 rounded-2xl font-bold hover:bg-gray-200 transition-all">Batal</button>
-                <button type="button" onclick="updateKbmNote()" class="flex-[2] px-6 py-4 bg-theme text-white rounded-2xl font-bold shadow-lg shadow-theme hover:opacity-90 active:scale-95">Update</button>
-            </div>
-        </form>
-    </div>
-</div>
-
 <script>
-/**
- * Course Detail - Main JavaScript
- * Clean and maintainable code structure
- */
-
 const COURSE_ID = {{ course.id }};
-let currentKbmNotes = [];
 
 /**
- * KBM Tab Activation - Called from sidebar
+ * Course Detail Page - Alpine.js Component
  */
-function activateKbmTab() {
-    const kbmSection = document.getElementById('kbm-section');
-    const diskusiSection = document.getElementById('diskusi-section');
-    const topicsContainer = document.getElementById('topics-container');
-    
-    // Hide other sections
-    if (diskusiSection) diskusiSection.classList.add('hidden');
-    if (topicsContainer) topicsContainer.classList.add('hidden');
-    
-    // Show KBM section
-    if (kbmSection) {
-        kbmSection.classList.remove('hidden');
-        kbmSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-    
-    // Update tab state
-    updateTabState('kbm');
-    
-    // Load KBM data
-    if (typeof loadKbmNotes === 'function') {
-        loadKbmNotes();
-    }
-}
+function courseDetailPage() {
+    return {
+        activeTab: 'all',
+        allClasses: [],
 
-function updateTabState(tabName) {
-    document.querySelectorAll('[data-tab]').forEach(btn => {
-        btn.classList.remove('active', 'bg-theme', 'text-white');
-        btn.classList.add('text-gray-500');
-    });
-    
-    const activeBtn = document.querySelector(`[data-tab="${tabName}"]`);
-    if (activeBtn) {
-        activeBtn.classList.add('active', 'bg-theme', 'text-white');
-        activeBtn.classList.remove('text-gray-500');
-    }
-}
+        init() {
+            this.loadClasses();
+            this.loadDiscussions();
 
-function toggleKbmForm() {
-    const form = document.getElementById('kbm-add-form');
-    form.classList.toggle('hidden');
-    if (!form.classList.contains('hidden')) {
-        // Set default date to today
-        document.getElementById('kbm-date').valueAsDate = new Date();
-        document.getElementById('kbm-topic').focus();
-    }
-}
-
-async function loadKbmNotes() {
-    const container = document.getElementById('kbm-timeline-content');
-    container.innerHTML = '<div class="text-center py-8 text-gray-500">Memuat catatan...</div>';
-    
-    try {
-        const res = await fetch(`/api/courses/${COURSE_ID}/kbm-notes`);
-        const data = await res.json();
-        
-        if (data.success) {
-            currentKbmNotes = data.notes;
-            renderKbmTimeline(data.notes);
-        } else {
-            container.innerHTML = '<div class="text-center py-8 text-red-500">Gagal memuat catatan</div>';
-        }
-    } catch (err) {
-        container.innerHTML = '<div class="text-center py-8 text-red-500">Error loading notes</div>';
-    }
-}
-
-function renderKbmTimeline(notes) {
-    const container = document.getElementById('kbm-timeline-content');
-    
-    if (notes.length === 0) {
-        container.innerHTML = '<div class="text-center py-12 text-gray-400 ml-12">Belum ada catatan KBM. Klik "Tambah Catatan" untuk membuat.</div>';
-        return;
-    }
-    
-    container.innerHTML = '';
-    notes.forEach(note => {
-        const typeIcons = {
-            'teori': '📖',
-            'praktikum': '🧪',
-            'ujian': '📝',
-            'tugas': '📋',
-            'review': '🔁',
-            'lainnya': '📌'
-        };
-        
-        const date = new Date(note.activity_date);
-        const dateStr = date.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-        
-        const div = document.createElement('div');
-        div.className = 'relative pl-16 group';
-        div.innerHTML = `
-            <!-- Dot on timeline -->
-            <div class="absolute left-0 top-0 w-12 h-12 rounded-full bg-white border-4 border-theme shadow-lg flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
-                ${typeIcons[note.activity_type] || '📌'}
-            </div>
-            
-            <!-- Content card -->
-            <div class="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-lg transition-all cursor-pointer" onclick="openKbmEditModal(${note.id})">
-                <div class="flex items-start justify-between mb-2">
-                    <div class="flex-1">
-                        <h4 class="font-bold text-gray-900 text-lg">${note.topic}</h4>
-                        <p class="text-xs text-gray-500 mt-1">${dateStr}${note.start_time ? ' • ' + note.start_time + '-' + note.end_time : ''}</p>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-bold uppercase">${note.activity_type}</span>
-                        <span class="text-gray-400 group-hover:text-theme transition-colors">✏️</span>
-                    </div>
-                </div>
-                ${note.description ? `<p class="text-sm text-gray-700 mt-2 line-clamp-2">${note.description}</p>` : ''}
-                ${note.notes ? `<div class="mt-3 pt-3 border-t border-gray-100"><p class="text-xs text-gray-500 italic">📝 ${note.notes}</p></div>` : ''}
-            </div>
-        `;
-        container.appendChild(div);
-    });
-}
-
-async function saveKbmNote() {
-    const date = document.getElementById('kbm-date').value;
-    const topic = document.getElementById('kbm-topic').value.trim();
-    
-    if (!date || !topic) {
-        alert('Tanggal dan materi/topik wajib diisi');
-        return;
-    }
-    
-    const data = {
-        activity_date: date,
-        start_time: document.getElementById('kbm-start-time').value || null,
-        end_time: document.getElementById('kbm-end-time').value || null,
-        activity_type: document.getElementById('kbm-type').value,
-        topic: topic,
-        description: document.getElementById('kbm-description').value.trim(),
-        notes: document.getElementById('kbm-notes').value.trim(),
-    };
-    
-    try {
-        const res = await fetch(`/api/courses/${COURSE_ID}/kbm-notes`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data),
-        });
-        const result = await res.json();
-        
-        if (result.success) {
-            toggleKbmForm();
-            loadKbmNotes();
-            // Reset form
-            document.getElementById('kbm-topic').value = '';
-            document.getElementById('kbm-description').value = '';
-            document.getElementById('kbm-notes').value = '';
-        } else {
-            alert('Gagal: ' + result.message);
-        }
-    } catch (err) {
-        alert('Gagal menyimpan catatan');
-    }
-}
-
-function openKbmEditModal(noteId) {
-    const note = currentKbmNotes.find(n => n.id === noteId);
-    if (!note) return;
-    
-    document.getElementById('kbm-edit-id').value = note.id;
-    document.getElementById('kbm-edit-date').value = note.activity_date;
-    document.getElementById('kbm-edit-start-time').value = note.start_time || '';
-    document.getElementById('kbm-edit-end-time').value = note.end_time || '';
-    document.getElementById('kbm-edit-type').value = note.activity_type;
-    document.getElementById('kbm-edit-topic').value = note.topic;
-    document.getElementById('kbm-edit-description').value = note.description || '';
-    document.getElementById('kbm-edit-notes').value = note.notes || '';
-    
-    document.getElementById('kbm-edit-modal').classList.remove('hidden');
-}
-
-function closeKbmEditModal() {
-    document.getElementById('kbm-edit-modal').classList.add('hidden');
-}
-
-async function updateKbmNote() {
-    const noteId = document.getElementById('kbm-edit-id').value;
-    const date = document.getElementById('kbm-edit-date').value;
-    const topic = document.getElementById('kbm-edit-topic').value.trim();
-    
-    if (!date || !topic) {
-        alert('Tanggal dan materi/topik wajib diisi');
-        return;
-    }
-    
-    const data = {
-        activity_date: date,
-        start_time: document.getElementById('kbm-edit-start-time').value || null,
-        end_time: document.getElementById('kbm-edit-end-time').value || null,
-        activity_type: document.getElementById('kbm-edit-type').value,
-        topic: topic,
-        description: document.getElementById('kbm-edit-description').value.trim(),
-        notes: document.getElementById('kbm-edit-notes').value.trim(),
-    };
-    
-    try {
-        const res = await fetch(`/api/kbm-notes/${noteId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data),
-        });
-        const result = await res.json();
-        
-        if (result.success) {
-            closeKbmEditModal();
-            loadKbmNotes();
-        } else {
-            alert('Gagal: ' + result.message);
-        }
-    } catch (err) {
-        alert('Gagal update catatan');
-    }
-}
-
-// Initialize on page load
-const CURRENT_COURSE_ID = {{ course.id }};
-
-document.addEventListener('DOMContentLoaded', function() {
-    initKbmTab();
-    initClassSwitcher();
-    
-    // Check if URL has KBM hash (from sidebar link)
-    if (window.location.hash === '#kbm-section') {
-        const kbmBtn = document.querySelector('[data-tab="kbm"]');
-        if (kbmBtn) {
-            kbmBtn.click();
-        }
-    }
-});
-
-// Class Switcher Functions
-let allClasses = [];
-
-async function initClassSwitcher() {
-    const switcher = document.getElementById('class-switcher');
-    if (!switcher) return;
-    
-    try {
-        const allCoursesRes = await fetch('/api/initial-data');
-        const data = await allCoursesRes.json();
-        allClasses = data.courses || [];
-        
-        renderClassSwitcher();
-    } catch (err) {
-        console.error('Failed to load classes:', err);
-    }
-}
-
-function renderClassSwitcher() {
-    const list = document.getElementById('class-switcher-list');
-    if (!list || allClasses.length === 0) return;
-
-    list.innerHTML = '';
-    allClasses.forEach(course => {
-        const a = document.createElement('a');
-        a.href = `/course/${course.id}`;
-        a.className = 'flex items-center space-x-4 px-4 py-3 hover:bg-gray-50 group transition-all border-b border-gray-50 last:border-0';
-        const isActive = course.id == CURRENT_COURSE_ID;
-        a.innerHTML = `
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold" style="background-color: ${course.color}">
-                ${course.name.charAt(0).toUpperCase()}
-            </div>
-            <div class="flex-1 min-w-0">
-                <p class="font-bold text-gray-900 text-sm truncate group-hover:text-theme transition-colors">${course.name}</p>
-                <p class="text-xs text-gray-500">${course.students_count || 0} siswa • ${course.class_code}</p>
-            </div>
-            ${isActive ? '<span class="text-theme text-xs font-bold">✓ Aktif</span>' : ''}
-        `;
-        list.appendChild(a);
-    });
-}
-
-function toggleClassSwitcher() {
-    const menu = document.getElementById('class-switcher-menu');
-    const arrow = document.getElementById('switcher-arrow');
-    
-    if (menu.classList.contains('hidden')) {
-        menu.classList.remove('hidden');
-        arrow.style.transform = 'rotate(180deg)';
-    } else {
-        menu.classList.add('hidden');
-        arrow.style.transform = 'rotate(0deg)';
-    }
-}
-
-// Close dropdown when clicking outside
-document.addEventListener('click', function(event) {
-    const switcher = document.getElementById('class-switcher');
-    if (switcher && !switcher.contains(event.target)) {
-        const menu = document.getElementById('class-switcher-menu');
-        const arrow = document.getElementById('switcher-arrow');
-        menu.classList.add('hidden');
-        arrow.style.transform = 'rotate(0deg)';
-    }
-});
-
-// Initialize discussion tab
-document.addEventListener('DOMContentLoaded', function() {
-    const diskusiBtn = document.querySelector('[data-tab="diskusi"]');
-    if (diskusiBtn) {
-        diskusiBtn.addEventListener('click', function() {
-            const diskusiSection = document.getElementById('diskusi-section');
-            const kbmSection = document.getElementById('kbm-section');
-            
-            // Hide KBM section
-            if (kbmSection) kbmSection.classList.add('hidden');
-            
-            // Show and scroll to discussion
-            if (diskusiSection) {
-                diskusiSection.classList.remove('hidden');
-                diskusiSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // Handle hash navigation
+            if (window.location.hash === '#kbm-section') {
+                this.activeTab = 'kbm';
             }
-            
-            updateTabState('diskusi');
-        });
-    }
-    
-    // Handle hash navigation
-    if (window.location.hash === '#kbm-section') {
-        activateKbmTab();
-    }
-});
-</script>
+        },
 
+        setTab(tab) {
+            this.activeTab = tab;
+            if (tab === 'kbm') {
+                // KBM manager handles its own loading via x-init
+            }
+        },
+
+        async loadClasses() {
+            try {
+                const res = await fetch('/api/initial-data');
+                const data = await res.json();
+                this.allClasses = data.courses || [];
+            } catch (err) { console.error('Failed to load classes:', err); }
+        },
+
+        async createQuizDirectly() {
+            try {
+                const res = await fetch('/api/courses/' + COURSE_ID + '/quizzes', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: 'Kuis Tanpa Judul', points: 100, grade_type: 'numeric' })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    window.location.href = '/quiz/' + data.quiz.id;
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Gagal', text: data.message || 'Gagal membuat kuis' });
+                }
+            } catch (err) {
+                Swal.fire({ icon: 'error', title: 'Error', text: 'Kesalahan koneksi ke server' });
+            }
+        },
+
+        async loadDiscussions() {
+            try {
+                const res = await fetch('/api/courses/' + COURSE_ID + '/discussions');
+                const data = await res.json();
+                if (data.success) {
+                    this.renderDiscussions(data.discussions);
+                }
+            } catch (err) { console.error('Failed to load discussions', err); }
+        },
+
+        renderDiscussions(discussions) {
+            const container = document.getElementById('discussions-container');
+            if (!container) return;
+            if (discussions.length === 0) {
+                container.innerHTML = '<div class="col-span-full py-10 text-center text-gray-400 font-medium">Belum ada diskusi di kelas ini.</div>';
+                return;
+            }
+            container.innerHTML = discussions.map(d => '<div class="group bg-white rounded-[2rem] border border-gray-100 shadow-premium hover:shadow-xl transition-all duration-500 p-8 flex flex-col h-full transform hover:-translate-y-2"><div class="flex items-center space-x-3 mb-6"><div class="w-10 h-10 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-bold">' + d.user.name[0].toUpperCase() + '</div><div><p class="text-xs font-black text-gray-400 uppercase tracking-widest leading-none mb-1">' + d.user.name + '</p><p class="text-[10px] text-gray-400">' + new Date(d.created_at).toLocaleDateString() + '</p></div></div><h3 class="text-lg font-bold text-gray-900 group-hover:text-primary-600 transition-colors mb-4 line-clamp-2">' + d.title + '</h3><div class="mt-auto pt-6 border-t border-gray-50 flex items-center justify-between text-gray-400"><div class="flex items-center space-x-4"><div class="flex items-center space-x-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg><span class="text-xs font-bold">' + d.posts.length + ' Balasan</span></div></div><a href="/kelas/' + COURSE_ID + '/diskusi/' + d.id + '" class="text-xs font-black text-primary-600 uppercase tracking-widest hover:underline">Buka Diskusi</a></div></div>').join('');
+        }
+    }
+}
+
+// KBM tab activation for sidebar links
+function activateKbmTab() {
+    const pageData = document.getElementById('app-page')?.__x;
+    if (pageData) {
+        pageData.$data.activeTab = 'kbm';
+    }
+}
+
+/**
+ * KBM Manager - Alpine.js Component
+ */
+function kbmManager() {
+    return {
+        showForm: false,
+        notes: [],
+        editOpen: false,
+        editData: {},
+        form: { date: '', startTime: '', endTime: '', type: 'teori', topic: '', description: '', notes: '' },
+        typeIcons: { teori: '\ud83d\udcd6', praktikum: '\ud83e\uddea', ujian: '\ud83d\udcdd', tugas: '\ud83d\udccb', review: '\ud83d\udd01', lainnya: '\ud83d\udccc' },
+
+        toggleForm() {
+            this.showForm = !this.showForm;
+            if (this.showForm) {
+                this.form.date = new Date().toISOString().split('T')[0];
+            }
+        },
+
+        formatDate(dateStr) {
+            return new Date(dateStr).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        },
+
+        async loadNotes() {
+            try {
+                const res = await fetch('/api/courses/' + COURSE_ID + '/kbm-notes');
+                const data = await res.json();
+                if (data.success) this.notes = data.notes;
+            } catch (err) { console.error('Failed to load KBM notes', err); }
+        },
+
+        async saveNote() {
+            if (!this.form.date || !this.form.topic.trim()) {
+                Swal.fire({ icon: 'warning', title: 'Perhatian', text: 'Tanggal dan materi/topik wajib diisi' });
+                return;
+            }
+            try {
+                const res = await fetch('/api/courses/' + COURSE_ID + '/kbm-notes', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        activity_date: this.form.date,
+                        start_time: this.form.startTime || null,
+                        end_time: this.form.endTime || null,
+                        activity_type: this.form.type,
+                        topic: this.form.topic.trim(),
+                        description: this.form.description.trim(),
+                        notes: this.form.notes.trim()
+                    })
+                });
+                const result = await res.json();
+                if (result.success) {
+                    this.showForm = false;
+                    this.form = { date: '', startTime: '', endTime: '', type: 'teori', topic: '', description: '', notes: '' };
+                    this.loadNotes();
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Gagal', text: result.message });
+                }
+            } catch (err) {
+                Swal.fire({ icon: 'error', title: 'Error', text: 'Gagal menyimpan catatan' });
+            }
+        },
+
+        openEdit(note) {
+            this.editData = { ...note };
+            this.editOpen = true;
+        },
+
+        async updateNote() {
+            if (!this.editData.activity_date || !this.editData.topic?.trim()) {
+                Swal.fire({ icon: 'warning', title: 'Perhatian', text: 'Tanggal dan materi/topik wajib diisi' });
+                return;
+            }
+            try {
+                const res = await fetch('/api/kbm-notes/' + this.editData.id, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        activity_date: this.editData.activity_date,
+                        start_time: this.editData.start_time || null,
+                        end_time: this.editData.end_time || null,
+                        activity_type: this.editData.activity_type,
+                        topic: this.editData.topic.trim(),
+                        description: (this.editData.description || '').trim(),
+                        notes: (this.editData.notes || '').trim()
+                    })
+                });
+                const result = await res.json();
+                if (result.success) {
+                    this.editOpen = false;
+                    this.loadNotes();
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Gagal', text: result.message });
+                }
+            } catch (err) {
+                Swal.fire({ icon: 'error', title: 'Error', text: 'Gagal update catatan' });
+            }
+        }
+    }
+}
+
+/**
+ * File Modal - Alpine.js Component
+ */
+function fileModal() {
+    return {
+        open: false, error: '',
+        async submitFile() {
+            this.error = '';
+            const formData = new FormData();
+            formData.append('name', this.$refs.fileName.value);
+            formData.append('file', this.$refs.fileInput.files[0]);
+            try {
+                const res = await fetch('/api/courses/' + COURSE_ID + '/files', { method: 'POST', body: formData });
+                const data = await res.json();
+                if (data.success) { window.location.reload(); }
+                else { this.error = data.message || 'Terjadi kesalahan'; }
+            } catch (err) { this.error = 'Kesalahan koneksi ke server'; }
+        }
+    }
+}
+
+/**
+ * Link Modal - Alpine.js Component
+ */
+function linkModal() {
+    return {
+        open: false, linkName: '', linkUrl: '', error: '',
+        async submitLink() {
+            this.error = '';
+            try {
+                const res = await fetch('/api/courses/' + COURSE_ID + '/links', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: this.linkName, url: this.linkUrl })
+                });
+                const data = await res.json();
+                if (data.success) { window.location.reload(); }
+                else { this.error = data.message || 'Terjadi kesalahan'; }
+            } catch (err) { this.error = 'Kesalahan koneksi ke server'; }
+        }
+    }
+}
+
+/**
+ * Discussion Modal - Alpine.js Component
+ */
+function discussionModal() {
+    return {
+        open: false, title: '', content: '', error: '',
+        async submitDiscussion() {
+            this.error = '';
+            try {
+                const res = await fetch('/api/courses/' + COURSE_ID + '/discussions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title: this.title, content: this.content })
+                });
+                const data = await res.json();
+                if (data.success) { window.location.reload(); }
+                else { this.error = data.message || 'Terjadi kesalahan'; }
+            } catch (err) { this.error = 'Kesalahan koneksi ke server'; }
+        }
+    }
+}
+</script>
 {% endblock %}
 
 {% block extra_scripts %}
-<script src="{{ url_for('static', filename='js/course_detail.js') }}?v={{ range(1, 9999) | random }}"></script>
 <script src="{{ url_for('static', filename='js/discussion.js') }}?v={{ range(1, 9999) | random }}"></script>
 {% endblock %}

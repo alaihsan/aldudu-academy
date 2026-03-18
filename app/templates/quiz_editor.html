@@ -17,12 +17,12 @@
         --font-a: '{{ quiz.font_answer or 'Inter' }}', sans-serif;
     }
     body { background-color: var(--quiz-bg); min-height: 100vh; transition: background 0.3s; }
-    
+
     .font-question { font-family: var(--font-q) !important; }
     .font-answer { font-family: var(--font-a) !important; }
 
     .quiz-container { max-width: 770px; margin: 0 auto; padding-top: 12px; }
-    
+
     .form-card {
         background: white;
         border-radius: 8px;
@@ -31,12 +31,12 @@
         position: relative;
         transition: all 0.2s;
     }
-    
+
     .form-card:focus-within {
         box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         border-left: 6px solid var(--quiz-theme);
     }
-    
+
     .form-header-strip {
         height: 10px;
         background-color: var(--quiz-theme);
@@ -53,16 +53,11 @@
         width: 100%; font-size: 15px; font-weight: 500; border: none; border-bottom: 1px solid transparent; padding: 4px 0; outline: none; color: #5f6368; transition: border-color 0.3s;
     }
     .quiz-desc-input:focus { border-bottom-color: #dadce0; color: #202124; }
-    
+
     .nav-tab {
         padding: 12px 24px; font-weight: 600; color: #5f6368; border-bottom: 3px solid transparent; cursor: pointer; transition: all 0.2s;
     }
     .nav-tab.active { color: var(--quiz-theme); border-bottom-color: var(--quiz-theme); }
-    
-    #theme-panel {
-        position: fixed; right: -320px; top: 0; bottom: 0; width: 320px; background: white; box-shadow: -5px 0 30px rgba(0,0,0,0.15); z-index: 1000; transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); padding: 32px; overflow-y: auto;
-    }
-    #theme-panel.open { right: 0; }
 
     #side-toolbar {
         position: absolute;
@@ -80,7 +75,7 @@
         transition: top 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         z-index: 40;
     }
-    
+
     .toolbar-btn {
         width: 36px;
         height: 36px;
@@ -94,21 +89,15 @@
     }
     .toolbar-btn:hover { background: #f8f9fa; color: var(--quiz-theme); }
 
-    .save-toast {
-        position: fixed; bottom: 32px; left: 32px; background: #202124; color: white; padding: 12px 20px; border-radius: 12px; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 12px; z-index: 1000; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3); opacity: 0; visibility: hidden; transform: translateY(20px) scale(0.95); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none;
-    }
-    .save-toast.show { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
-
-    .publish-dropdown-content {
-        position: absolute; top: 100%; right: 0; margin-top: 8px; width: 240px; background: white; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid #eee; overflow: hidden; z-index: 100; opacity: 0; transform: translateY(10px) scale(0.95); pointer-events: none; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    .publish-dropdown-content.show { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
     .publish-item { padding: 14px 20px; display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; transition: background 0.2s; }
     .publish-item:hover { background: #f8f9fa; }
 </style>
 {% endblock %}
 
 {% block body %}
+<!-- Main Quiz Editor - Alpine.js Root -->
+<div x-data="quizEditor()" x-init="init()">
+
 <!-- Navbar Editor -->
 <div class="bg-white border-b border-gray-200 sticky top-0 z-50">
     <div class="px-6 py-2 flex items-center justify-between">
@@ -117,38 +106,40 @@
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
             </a>
             <div class="flex items-center space-x-3">
-                <input type="text" id="navbar-quiz-name-input" value="{{ quiz.name }}" 
+                <input type="text" id="navbar-quiz-name-input" x-model="quizName"
                     class="font-bold text-gray-800 bg-transparent border-none focus:ring-2 focus:ring-primary-500 rounded-lg px-2 py-1 w-auto min-w-[150px] hover:bg-gray-50 transition-all"
-                    hx-put="/api/quiz/{{ quiz.id }}/update-meta" 
-                    hx-trigger="blur" 
+                    hx-put="/api/quiz/{{ quiz.id }}/update-meta"
+                    hx-trigger="blur"
                     name="name"
-                    hx-include=".quiz-desc-input"
-                    oninput="syncQuizName(this.value, 'main')">
-                <div id="status-badge" class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest 
-                    {% if quiz.status.value == 'published' %} bg-green-100 text-green-600
-                    {% elif quiz.status.value == 'unpublished' %} bg-red-100 text-red-600
-                    {% else %} bg-amber-100 text-amber-600 {% endif %}">
-                    {% if quiz.status.value == 'published' %} Publikasikan
-                    {% elif quiz.status.value == 'unpublished' %} Tidak Diterbitkan
-                    {% else %} Draft {% endif %}
-                </div>
+                    hx-include=".quiz-desc-input">
+                <div class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest"
+                     :class="statusBadgeClass" x-text="statusLabel"></div>
             </div>
         </div>
         <div class="flex items-center space-x-3">
-            <button onclick="toggleThemePanel()" class="p-2.5 text-gray-500 hover:bg-gray-100 rounded-full" title="Sesuaikan Tema">
+            <button @click="themeOpen = !themeOpen" class="p-2.5 text-gray-500 hover:bg-gray-100 rounded-full" title="Sesuaikan Tema">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg>
             </button>
             <a href="{{ url_for('main.quiz_detail', quiz_id=quiz.id, preview='true') }}" target="_blank" class="p-2.5 text-gray-500 hover:bg-gray-100 rounded-full" title="Pratinjau">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-            </a>            
-            <div class="relative">
-                <button onclick="togglePublishDropdown()" class="flex items-center space-x-2 bg-primary-600 hover:bg-primary-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-primary-100 transition-all active:scale-95" id="publish-main-btn">
+            </a>
+            <!-- Publish Dropdown - Alpine.js -->
+            <div class="relative" x-data="{ publishOpen: false }" @keydown.escape.window="publishOpen = false">
+                <button @click="publishOpen = !publishOpen" class="flex items-center space-x-2 bg-primary-600 hover:bg-primary-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-primary-100 transition-all active:scale-95">
                     <span>Ubah Status</span>
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"/></svg>
+                    <svg class="w-4 h-4 transition-transform" :class="publishOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"/></svg>
                 </button>
-                
-                <div id="publish-dropdown" class="publish-dropdown-content">
-                    <button onclick="setQuizStatus('published')" class="publish-item group">
+
+                <div x-show="publishOpen" x-cloak
+                     @click.outside="publishOpen = false"
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 translate-y-2 scale-95"
+                     x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                     x-transition:leave="transition ease-in duration-150"
+                     x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                     x-transition:leave-end="opacity-0 translate-y-2 scale-95"
+                     class="absolute top-full right-0 mt-2 w-60 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-[100]">
+                    <button @click="setStatus('published'); publishOpen = false" class="publish-item group w-full">
                         <div class="w-8 h-8 rounded-lg bg-green-100 text-green-600 flex items-center justify-center group-hover:bg-green-600 group-hover:text-white transition-all">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                         </div>
@@ -157,7 +148,7 @@
                             <p class="text-[10px] text-gray-400">Terlihat oleh murid</p>
                         </div>
                     </button>
-                    <button onclick="setQuizStatus('unpublished')" class="publish-item group">
+                    <button @click="setStatus('unpublished'); publishOpen = false" class="publish-item group w-full">
                         <div class="w-8 h-8 rounded-lg bg-red-100 text-red-600 flex items-center justify-center group-hover:bg-red-600 group-hover:text-white transition-all">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>
                         </div>
@@ -166,7 +157,7 @@
                             <p class="text-[10px] text-gray-400">Menyembunyikan kuis</p>
                         </div>
                     </button>
-                    <button onclick="setQuizStatus('draft')" class="publish-item group border-t border-gray-50">
+                    <button @click="setStatus('draft'); publishOpen = false" class="publish-item group border-t border-gray-50 w-full">
                         <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center group-hover:bg-amber-600 group-hover:text-white transition-all">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                         </div>
@@ -179,16 +170,16 @@
             </div>
         </div>
     </div>
-    <!-- Tabs -->
+    <!-- Tabs - Alpine.js -->
     <div class="flex justify-center border-t border-gray-100">
-        <button onclick="switchMode('questions')" id="tab-questions" class="nav-tab active">Pertanyaan</button>
-        <button onclick="switchMode('results')" id="tab-results" class="nav-tab">Jawaban</button>
-        <button onclick="switchMode('settings')" id="tab-settings" class="nav-tab">Setelan</button>
+        <button @click="switchTab('questions')" class="nav-tab" :class="activeTab === 'questions' ? 'active' : ''">Pertanyaan</button>
+        <button @click="switchTab('results')" class="nav-tab" :class="activeTab === 'results' ? 'active' : ''">Jawaban</button>
+        <button @click="switchTab('settings')" class="nav-tab" :class="activeTab === 'settings' ? 'active' : ''">Setelan</button>
     </div>
 </div>
 
-<!-- All remaining sections same as previous -->
-<div id="questions-section" class="quiz-container pb-32 relative">
+<!-- Questions Section -->
+<div x-show="activeTab === 'questions'" id="questions-section" class="quiz-container pb-32 relative">
     <div id="side-toolbar">
         <button type="button" class="toolbar-btn" hx-post="/api/quiz/{{ quiz.id }}/question/add" hx-vals='{"question_type": "MULTIPLE_CHOICE"}' hx-target="#questions-list" hx-swap="beforeend" title="Tambah Pertanyaan">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
@@ -201,11 +192,10 @@
     <div class="form-card overflow-hidden">
         <div class="form-header-strip"></div>
         <div class="p-8">
-            <input type="text" name="name" value="{{ quiz.name }}" class="quiz-title-input" 
-                hx-put="/api/quiz/{{ quiz.id }}/update-meta" 
-                hx-trigger="blur" 
-                hx-include="next .quiz-desc-input"
-                oninput="syncQuizName(this.value, 'navbar')">
+            <input type="text" name="name" x-model="quizName" class="quiz-title-input"
+                hx-put="/api/quiz/{{ quiz.id }}/update-meta"
+                hx-trigger="blur"
+                hx-include="next .quiz-desc-input">
             <input type="text" name="description" value="{{ quiz.description or '' }}" class="quiz-desc-input" placeholder="Deskripsi formulir" hx-put="/api/quiz/{{ quiz.id }}/update-meta" hx-trigger="blur" hx-include="previous .quiz-title-input">
         </div>
     </div>
@@ -216,7 +206,8 @@
     </div>
 </div>
 
-<div id="results-section" class="quiz-container pb-32 hidden">
+<!-- Results Section -->
+<div x-show="activeTab === 'results'" x-cloak id="results-section" class="quiz-container pb-32">
     <div id="results-content" class="space-y-6">
         <div class="form-card p-8">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8 text-center md:text-left">
@@ -247,23 +238,39 @@
     </div>
 </div>
 
-<!-- Theme Panel Modal -->
-<div id="theme-panel">
+<!-- Theme Panel - Alpine.js Slide Panel -->
+<div x-show="themeOpen" x-cloak @click="themeOpen = false"
+     x-transition:enter="transition ease-out duration-300"
+     x-transition:enter-start="opacity-0"
+     x-transition:enter-end="opacity-100"
+     x-transition:leave="transition ease-in duration-200"
+     x-transition:leave-start="opacity-100"
+     x-transition:leave-end="opacity-0"
+     class="fixed inset-0 bg-black/30 z-[999]"></div>
+<div x-show="themeOpen" x-cloak
+     @keydown.escape.window="themeOpen = false"
+     x-transition:enter="transition ease-out duration-300"
+     x-transition:enter-start="translate-x-full"
+     x-transition:enter-end="translate-x-0"
+     x-transition:leave="transition ease-in duration-200"
+     x-transition:leave-start="translate-x-0"
+     x-transition:leave-end="translate-x-full"
+     class="fixed right-0 top-0 bottom-0 w-80 bg-white shadow-2xl z-[1000] p-8 overflow-y-auto">
     <div class="flex items-center justify-between mb-8 pb-4 border-b">
         <h3 class="font-black text-gray-800 uppercase tracking-tighter text-sm">Opsi Tema</h3>
-        <button onclick="toggleThemePanel()" class="p-2 hover:bg-gray-100 rounded-full transition-colors">
+        <button @click="themeOpen = false" class="p-2 hover:bg-gray-100 rounded-full transition-colors">
             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
     </div>
     <div class="space-y-8">
         <div>
             <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Warna Tema</label>
-            <input type="color" id="theme-color-input" value="{{ quiz.theme_color or '#673ab7' }}" 
-                onchange="updateQuizTheme()" class="w-full h-10 rounded-lg cursor-pointer border-none bg-transparent">
+            <input type="color" id="theme-color-input" value="{{ quiz.theme_color or '#673ab7' }}"
+                @change="updateTheme()" class="w-full h-10 rounded-lg cursor-pointer border-none bg-transparent">
         </div>
         <div>
             <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Font Pertanyaan</label>
-            <select id="font-q-select" onchange="updateQuizTheme()" class="w-full p-2 bg-gray-50 border rounded-lg text-sm font-bold">
+            <select id="font-q-select" @change="updateTheme()" class="w-full p-2 bg-gray-50 border rounded-lg text-sm font-bold">
                 <option value="Inter">Standard (Inter)</option>
                 <option value="Roboto">Roboto</option>
                 <option value="Poppins">Poppins</option>
@@ -273,7 +280,8 @@
     </div>
 </div>
 
-<div id="settings-section" class="quiz-container pb-32 hidden">
+<!-- Settings Section -->
+<div x-show="activeTab === 'settings'" x-cloak id="settings-section" class="quiz-container pb-32">
     <div class="space-y-4">
         <!-- Kuis Toggle -->
         <div class="form-card p-6">
@@ -302,9 +310,9 @@
                         <p class="text-xs text-gray-400">Isi 0 untuk tanpa batas waktu</p>
                     </div>
                     <div class="flex items-center border-b border-primary-500 pb-1">
-                        <input type="number" id="quiz-duration" value="{{ quiz.duration }}" 
+                        <input type="number" id="quiz-duration" value="{{ quiz.duration }}"
                             class="w-16 bg-transparent text-center font-bold text-primary-600 border-none focus:ring-0"
-                            onblur="updateDuration(this.value)">
+                            @blur="updateDuration($el.value)">
                     </div>
                 </div>
                 <div class="p-6 flex items-center justify-between">
@@ -323,7 +331,7 @@
                         <p class="text-xs text-gray-400">Jumlah maksimal murid mengerjakan kuis</p>
                     </div>
                     <select id="quiz-max-attempts" class="bg-gray-50 border border-gray-200 text-sm rounded-lg p-2 outline-none font-bold"
-                            onchange="updateMaxAttempts(this.value)">
+                            @change="updateMaxAttempts($el.value)">
                         <option value="1" {% if quiz.max_attempts == 1 %}selected{% endif %}>1 kali</option>
                         <option value="2" {% if quiz.max_attempts == 2 %}selected{% endif %}>2 kali</option>
                         <option value="3" {% if quiz.max_attempts == 3 %}selected{% endif %}>3 kali</option>
@@ -389,14 +397,36 @@
     </div>
 </div>
 
-<div id="save-indicator" class="save-toast">
-    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+<!-- Save Toast - Alpine.js -->
+<div x-data="{ showToast: false }"
+     x-on:show-save-toast.window="showToast = true; setTimeout(() => showToast = false, 3000)"
+     x-show="showToast" x-cloak
+     x-transition:enter="transition ease-out duration-300"
+     x-transition:enter-start="opacity-0 translate-y-4 scale-95"
+     x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+     x-transition:leave="transition ease-in duration-200"
+     x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+     x-transition:leave-end="opacity-0 translate-y-4 scale-95"
+     class="fixed bottom-8 left-8 bg-gray-900 text-white px-5 py-3 rounded-xl text-sm font-medium flex items-center gap-3 z-[1000] shadow-2xl pointer-events-none">
+    <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
     <span>Perubahan disimpan otomatis</span>
 </div>
 
-<!-- Modal Delete -->
-<div id="delete-q-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm z-[1100] flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-sm overflow-hidden border border-red-50">
+<!-- Delete Question Modal - Alpine.js -->
+<div x-data="{ deleteOpen: false, questionId: null }"
+     x-on:open-delete-question.window="deleteOpen = true; questionId = $event.detail.id"
+     x-show="deleteOpen" x-cloak
+     @keydown.escape.window="deleteOpen = false"
+     class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[1100] flex items-center justify-center p-4"
+     @click.self="deleteOpen = false">
+    <div x-show="deleteOpen"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         class="bg-white rounded-[2rem] shadow-2xl w-full max-w-sm overflow-hidden border border-red-50">
         <div class="p-8 text-center">
             <div class="w-20 h-20 bg-red-50 text-red-500 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-inner">
                 <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
@@ -405,229 +435,195 @@
             <p class="text-sm text-gray-500">Tindakan ini tidak bisa dibatalkan.</p>
         </div>
         <div class="px-8 pb-8 flex space-x-3">
-            <button type="button" onclick="closeDeleteQModal()" class="flex-1 px-6 py-3.5 text-gray-500 bg-gray-50 rounded-2xl font-bold">Batal</button>
-            <button type="button" id="confirm-delete-q-btn" class="flex-1 px-6 py-3.5 bg-red-600 text-white rounded-2xl font-bold shadow-lg shadow-red-200">Hapus</button>
+            <button type="button" @click="deleteOpen = false" class="flex-1 px-6 py-3.5 text-gray-500 bg-gray-50 rounded-2xl font-bold hover:bg-gray-100 transition-all">Batal</button>
+            <button type="button" @click="
+                if (questionId) {
+                    fetch('/api/question/' + questionId + '/delete', { method: 'DELETE' })
+                        .then(r => { if (r.ok) { document.getElementById('question-' + questionId)?.remove(); deleteOpen = false; window.dispatchEvent(new Event('show-save-toast')); } });
+                }
+            " class="flex-1 px-6 py-3.5 bg-red-600 text-white rounded-2xl font-bold shadow-lg shadow-red-200 hover:bg-red-700 transition-all active:scale-95">Hapus</button>
         </div>
     </div>
 </div>
+
+</div><!-- End Alpine.js Root -->
 {% endblock %}
 
 {% block extra_scripts %}
 <script src="{{ url_for('static', filename='quiz-editor.js') }}?v={{ range(1, 9999) | random }}"></script>
 <script>
-    function togglePublishDropdown() {
-        document.getElementById('publish-dropdown').classList.toggle('show');
-    }
+    /**
+     * Quiz Editor - Alpine.js Component
+     */
+    function quizEditor() {
+        return {
+            quizName: '{{ quiz.name | e }}',
+            activeTab: 'questions',
+            themeOpen: false,
+            currentStatus: '{{ quiz.status.value }}',
 
-    function syncQuizName(value, targetId) {
-        if (targetId === 'main') {
-            document.querySelector('.quiz-title-input').value = value;
-        } else {
-            document.getElementById('navbar-quiz-name-input').value = value;
-        }
-    }
+            get statusLabel() {
+                const labels = { published: 'Publikasikan', unpublished: 'Tidak Diterbitkan', draft: 'Draft' };
+                return labels[this.currentStatus] || 'Draft';
+            },
 
-    window.addEventListener('click', (e) => {
-        if (!e.target.closest('#publish-main-btn')) {
-            document.getElementById('publish-dropdown')?.classList.remove('show');
-        }
-    });
+            get statusBadgeClass() {
+                const classes = {
+                    published: 'bg-green-100 text-green-600',
+                    unpublished: 'bg-red-100 text-red-600',
+                    draft: 'bg-amber-100 text-amber-600'
+                };
+                return classes[this.currentStatus] || 'bg-amber-100 text-amber-600';
+            },
 
-    async function setQuizStatus(newStatus) {
-        const res = await fetch(`/api/quiz/{{ quiz.id }}/status`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status: newStatus })
-        });
-        const data = await res.json();
-        if (data.success) {
-            const badge = document.getElementById('status-badge');
-            let label = 'Draft';
-            let classes = 'px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ';
-            
-            if (newStatus === 'published') {
-                label = 'Publikasikan';
-                classes += 'bg-green-100 text-green-600';
-            } else if (newStatus === 'unpublished') {
-                label = 'Tidak Diterbitkan';
-                classes += 'bg-red-100 text-red-600';
-            } else {
-                label = 'Draft';
-                classes += 'bg-amber-100 text-amber-600';
-            }
-            
-            badge.textContent = label;
-            badge.className = classes;
-            togglePublishDropdown();
-            showSaveIndicator();
-        }
-    }
+            init() {
+                this.initToolbar();
+                this.initSortable();
+            },
 
-    async function updateDuration(value) {
-        const res = await fetch(`/api/quiz/{{ quiz.id }}/update-duration`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ duration: parseInt(value || 0) })
-        });
-        if (res.ok) showSaveIndicator();
-    }
+            switchTab(tab) {
+                this.activeTab = tab;
+                const toolbar = document.getElementById('side-toolbar');
+                if (tab !== 'questions' && toolbar) toolbar.style.display = 'none';
+                if (tab === 'results') this.loadResults();
+            },
 
-    async function updateMaxAttempts(value) {
-        const res = await fetch(`/api/quiz/{{ quiz.id }}/update-max-attempts`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ max_attempts: parseInt(value || 1) })
-        });
-        if (res.ok) showSaveIndicator();
-    }
+            async setStatus(newStatus) {
+                try {
+                    const res = await fetch('/api/quiz/{{ quiz.id }}/status', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ status: newStatus })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        this.currentStatus = newStatus;
+                        window.dispatchEvent(new Event('show-save-toast'));
+                    }
+                } catch (err) { console.error('Failed to update status', err); }
+            },
 
-    function toggleThemePanel() {
-        document.getElementById('theme-panel').classList.toggle('open');
-    }
+            async updateDuration(value) {
+                try {
+                    const res = await fetch('/api/quiz/{{ quiz.id }}/update-duration', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ duration: parseInt(value || 0) })
+                    });
+                    if (res.ok) window.dispatchEvent(new Event('show-save-toast'));
+                } catch (err) { console.error(err); }
+            },
 
-    async function updateQuizTheme() {
-        const data = {
-            theme_color: document.getElementById('theme-color-input').value,
-            font_question: document.getElementById('font-q-select').value,
-            font_answer: 'Inter',
-            bg_pattern: 'none'
-        };
-        document.documentElement.style.setProperty('--quiz-theme', data.theme_color);
-        await fetch(`/api/quiz/{{ quiz.id }}/update-theme`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-        showSaveIndicator();
-    }
+            async updateMaxAttempts(value) {
+                try {
+                    const res = await fetch('/api/quiz/{{ quiz.id }}/update-max-attempts', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ max_attempts: parseInt(value || 1) })
+                    });
+                    if (res.ok) window.dispatchEvent(new Event('show-save-toast'));
+                } catch (err) { console.error(err); }
+            },
 
-    function switchMode(mode) {
-        const qSection = document.getElementById('questions-section');
-        const rSection = document.getElementById('results-section');
-        const sSection = document.getElementById('settings-section');
-        const qTab = document.getElementById('tab-questions');
-        const rTab = document.getElementById('tab-results');
-        const sTab = document.getElementById('tab-settings');
-        const toolbar = document.getElementById('side-toolbar');
+            async updateTheme() {
+                const data = {
+                    theme_color: document.getElementById('theme-color-input').value,
+                    font_question: document.getElementById('font-q-select').value,
+                    font_answer: 'Inter',
+                    bg_pattern: 'none'
+                };
+                document.documentElement.style.setProperty('--quiz-theme', data.theme_color);
+                try {
+                    await fetch('/api/quiz/{{ quiz.id }}/update-theme', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    window.dispatchEvent(new Event('show-save-toast'));
+                } catch (err) { console.error(err); }
+            },
 
-        // Hide toolbar when switching away from questions
-        if (mode !== 'questions' && toolbar) toolbar.style.display = 'none';
+            initToolbar() {
+                const toolbar = document.getElementById('side-toolbar');
+                const duplicateBtn = document.getElementById('duplicate-btn');
+                if (!toolbar || !duplicateBtn) return;
 
-        if (mode === 'results') {
-            qSection.classList.add('hidden'); rSection.classList.remove('hidden'); sSection.classList.add('hidden');
-            qTab.classList.remove('active'); rTab.classList.add('active'); sTab.classList.remove('active');
-            loadResults();
-        } else if (mode === 'settings') {
-            qSection.classList.add('hidden'); rSection.classList.add('hidden'); sSection.classList.remove('hidden');
-            qTab.classList.remove('active'); rTab.classList.remove('active'); sTab.classList.add('active');
-        } else {
-            qSection.classList.remove('hidden'); rSection.classList.add('hidden'); sSection.classList.add('hidden');
-            qTab.classList.add('active'); rTab.classList.remove('active'); sTab.classList.remove('active');
-        }
-    }
+                document.body.addEventListener('click', (e) => {
+                    const card = e.target.closest('.form-card');
+                    if (card && this.activeTab === 'questions') {
+                        const isHeader = card.querySelector('.form-header-strip') !== null;
+                        const questionId = card.dataset.questionId;
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const toolbar = document.getElementById('side-toolbar');
-        const duplicateBtn = document.getElementById('duplicate-btn');
-        let activeQuestionId = null;
-        let activeCard = null;
-        
-        function updateToolbar(card) {
-            if (card && toolbar && !document.getElementById('questions-section').classList.contains('hidden')) {
-                const isHeader = card.querySelector('.form-header-strip') !== null;
-                activeCard = card;
-                activeQuestionId = card.dataset.questionId;
-                
-                toolbar.style.display = 'flex';
-                toolbar.style.top = card.offsetTop + 'px';
-                
-                // Hide duplicate button if it's the header card
-                if (isHeader) {
-                    duplicateBtn.style.display = 'none';
-                } else {
-                    duplicateBtn.style.display = 'flex';
-                    duplicateBtn.setAttribute('hx-post', `/api/question/${activeQuestionId}/duplicate`);
-                    duplicateBtn.setAttribute('hx-target', `#question-${activeQuestionId}`);
-                    duplicateBtn.setAttribute('hx-swap', 'afterend');
-                    htmx.process(duplicateBtn);
-                }
-            }
-        }
+                        toolbar.style.display = 'flex';
+                        toolbar.style.top = card.offsetTop + 'px';
 
-        // Listen for clicks on cards to move toolbar
-        document.body.addEventListener('click', (e) => {
-            const card = e.target.closest('.form-card');
-            if (card) updateToolbar(card);
-        });
-
-        const el = document.getElementById('questions-list');
-        if (el) {
-            Sortable.create(el, {
-                animation: 150,
-                handle: '.drag-handle',
-                ghostClass: 'opacity-50',
-                onEnd: async function() {
-                    const order = Array.from(el.querySelectorAll('.form-card')).map((card, index) => ({
-                        id: parseInt(card.dataset.questionId),
-                        order: index + 1
-                    }));
-                    
-                    try {
-                        const res = await fetch(`/api/quiz/{{ quiz.id }}/questions/reorder`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ order })
-                        });
-                        if (res.ok) showSaveIndicator();
-                    } catch (e) { console.error('Failed to reorder', e); }
-                }
-            });
-        }
-    });
-
-    async function loadResults() {
-        const res = await fetch(`/api/quiz/{{ quiz.id }}/stats`);
-        const data = await res.json();
-        if (data.total_submissions > 0) {
-            document.getElementById('no-responses-view').classList.add('hidden');
-            document.getElementById('total-responses').textContent = data.total_submissions;
-            document.getElementById('avg-score').textContent = `${data.average_score}%`;
-            document.getElementById('max-score').textContent = `${data.max_score}%`;
-            document.getElementById('min-score').textContent = `${data.min_score}%`;
-            const breakdown = document.getElementById('question-breakdown');
-            breakdown.innerHTML = '';
-            data.questions_stats.forEach((stat, index) => {
-                const card = document.createElement('div');
-                card.className = 'form-card p-8';
-                card.innerHTML = `<h3 class="font-bold text-gray-800 mb-6">${index + 1}. ${stat.question_text || 'Tanpa Judul'}</h3><div class="flex flex-col md:flex-row items-center gap-10"><div class="chart-container"><canvas id="chart-${index}"></canvas></div><div class="flex-1 space-y-3 w-full"><div class="flex items-center justify-between text-sm"><span class="text-green-600 font-bold">Benar</span><span class="font-black">${stat.correct}</span></div><div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden"><div class="bg-green-500 h-full" style="width: ${(stat.correct/stat.total)*100}%"></div></div><div class="flex items-center justify-between text-sm"><span class="text-red-600 font-bold">Salah</span><span class="font-black">${stat.incorrect}</span></div><div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden"><div class="bg-red-500 h-full" style="width: ${(stat.incorrect/stat.total)*100}%"></div></div></div></div>`;
-                breakdown.appendChild(card);
-                new Chart(document.getElementById(`chart-${index}`), {
-                    type: 'pie',
-                    data: { labels: ['Benar', 'Salah'], datasets: [{ data: [stat.correct, stat.incorrect], backgroundColor: ['#10b981', '#ef4444'], borderWidth: 0 }] },
-                    options: { plugins: { legend: { position: 'bottom' } } }
+                        if (isHeader) {
+                            duplicateBtn.style.display = 'none';
+                        } else {
+                            duplicateBtn.style.display = 'flex';
+                            duplicateBtn.setAttribute('hx-post', '/api/question/' + questionId + '/duplicate');
+                            duplicateBtn.setAttribute('hx-target', '#question-' + questionId);
+                            duplicateBtn.setAttribute('hx-swap', 'afterend');
+                            htmx.process(duplicateBtn);
+                        }
+                    }
                 });
-            });
-            const studentRows = document.getElementById('student-rows');
-            document.getElementById('student-results-list').classList.remove('hidden');
-            studentRows.innerHTML = data.submissions.map(s => `
-                <div class="flex items-center justify-between p-4 px-6 hover:bg-gray-50 transition-colors">
-                    <div class="flex items-center space-x-4">
-                        <div class="w-10 h-10 rounded-full bg-primary-50 text-primary-600 flex items-center justify-center font-black">
-                            ${s.student_name.charAt(0).toUpperCase()}
-                        </div>
-                        <div>
-                            <p class="font-bold text-gray-800">${s.student_name}</p>
-                            <p class="text-[10px] text-gray-400 uppercase tracking-widest">${s.submitted_at}</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-6">
-                        <span class="font-black text-primary-600 text-lg">${s.score}%</span>
-                        <a href="/api/submission/${s.id}" target="_blank" class="p-2 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-xl transition-all" title="Lihat Detail Jawaban">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                        </a>
-                    </div>
-                </div>
-            `).join('');
+            },
+
+            initSortable() {
+                const el = document.getElementById('questions-list');
+                if (el) {
+                    Sortable.create(el, {
+                        animation: 150,
+                        handle: '.drag-handle',
+                        ghostClass: 'opacity-50',
+                        onEnd: async () => {
+                            const order = Array.from(el.querySelectorAll('.form-card')).map((card, index) => ({
+                                id: parseInt(card.dataset.questionId),
+                                order: index + 1
+                            }));
+                            try {
+                                const res = await fetch('/api/quiz/{{ quiz.id }}/questions/reorder', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ order })
+                                });
+                                if (res.ok) window.dispatchEvent(new Event('show-save-toast'));
+                            } catch (e) { console.error('Failed to reorder', e); }
+                        }
+                    });
+                }
+            },
+
+            async loadResults() {
+                try {
+                    const res = await fetch('/api/quiz/{{ quiz.id }}/stats');
+                    const data = await res.json();
+                    if (data.total_submissions > 0) {
+                        document.getElementById('no-responses-view').classList.add('hidden');
+                        document.getElementById('total-responses').textContent = data.total_submissions;
+                        document.getElementById('avg-score').textContent = data.average_score + '%';
+                        document.getElementById('max-score').textContent = data.max_score + '%';
+                        document.getElementById('min-score').textContent = data.min_score + '%';
+                        const breakdown = document.getElementById('question-breakdown');
+                        breakdown.innerHTML = '';
+                        data.questions_stats.forEach((stat, index) => {
+                            const card = document.createElement('div');
+                            card.className = 'form-card p-8';
+                            card.innerHTML = '<h3 class="font-bold text-gray-800 mb-6">' + (index + 1) + '. ' + (stat.question_text || 'Tanpa Judul') + '</h3><div class="flex flex-col md:flex-row items-center gap-10"><div class="chart-container"><canvas id="chart-' + index + '"></canvas></div><div class="flex-1 space-y-3 w-full"><div class="flex items-center justify-between text-sm"><span class="text-green-600 font-bold">Benar</span><span class="font-black">' + stat.correct + '</span></div><div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden"><div class="bg-green-500 h-full" style="width: ' + (stat.correct/stat.total*100) + '%"></div></div><div class="flex items-center justify-between text-sm"><span class="text-red-600 font-bold">Salah</span><span class="font-black">' + stat.incorrect + '</span></div><div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden"><div class="bg-red-500 h-full" style="width: ' + (stat.incorrect/stat.total*100) + '%"></div></div></div></div>';
+                            breakdown.appendChild(card);
+                            new Chart(document.getElementById('chart-' + index), {
+                                type: 'pie',
+                                data: { labels: ['Benar', 'Salah'], datasets: [{ data: [stat.correct, stat.incorrect], backgroundColor: ['#10b981', '#ef4444'], borderWidth: 0 }] },
+                                options: { plugins: { legend: { position: 'bottom' } } }
+                            });
+                        });
+                        const studentRows = document.getElementById('student-rows');
+                        document.getElementById('student-results-list').classList.remove('hidden');
+                        studentRows.innerHTML = data.submissions.map(s => '<div class="flex items-center justify-between p-4 px-6 hover:bg-gray-50 transition-colors"><div class="flex items-center space-x-4"><div class="w-10 h-10 rounded-full bg-primary-50 text-primary-600 flex items-center justify-center font-black">' + s.student_name.charAt(0).toUpperCase() + '</div><div><p class="font-bold text-gray-800">' + s.student_name + '</p><p class="text-[10px] text-gray-400 uppercase tracking-widest">' + s.submitted_at + '</p></div></div><div class="flex items-center space-x-6"><span class="font-black text-primary-600 text-lg">' + s.score + '%</span><a href="/api/submission/' + s.id + '" target="_blank" class="p-2 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-xl transition-all" title="Lihat Detail Jawaban"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></a></div></div>').join('');
+                    }
+                } catch (err) { console.error('Failed to load results', err); }
+            }
         }
     }
 </script>
