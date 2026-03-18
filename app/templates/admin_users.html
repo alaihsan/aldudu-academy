@@ -2,6 +2,12 @@
 
 {% block title %}Manajemen User - Aldudu Academy{% endblock %}
 
+{% block extra_head %}
+<style>
+    [x-cloak] { display: none !important; }
+</style>
+{% endblock %}
+
 {% block body %}
 <div id="app-page" class="min-h-screen bg-gray-50 flex">
     {% include '_sidebar.html' %}
@@ -12,7 +18,8 @@
                 <h2 class="text-lg font-bold text-gray-900">Manajemen Pengguna</h2>
             </div>
             <div class="flex space-x-3">
-                <button onclick="toggleModal('import-modal', true)" class="px-6 py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all active:scale-95 flex items-center space-x-2">
+                <button @click="$dispatch('open-import-modal')"
+                        class="px-6 py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all active:scale-95 flex items-center space-x-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                     <span>Impor dari Excel</span>
                 </button>
@@ -58,7 +65,7 @@
                                         <button onclick="Admin.handleRename({{ user.id }}, '{{ user.name | e }}')" class="p-2 text-gray-400 hover:text-amber-500 transition-colors" title="Ubah Nama">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                         </button>
-                                        <button onclick="openResetModal({{ user.id }}, '{{ user.name | e }}')" class="p-2 text-gray-400 hover:text-indigo-600 transition-colors" title="Reset Password">
+                                        <button @click="window.dispatchEvent(new CustomEvent('open-reset-modal', { detail: { id: {{ user.id }}, name: '{{ user.name | e }}' } }))" class="p-2 text-gray-400 hover:text-indigo-600 transition-colors" title="Reset Password">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
                                         </button>
                                         <button onclick="Admin.toggleStatus({{ user.id }})" class="p-2 {% if user.is_active %}text-gray-400 hover:text-red-500{% else %}text-green-500{% endif %} transition-colors">
@@ -108,7 +115,7 @@
                                         <button onclick="Admin.handleRename({{ user.id }}, '{{ user.name | e }}')" class="p-2 text-gray-400 hover:text-amber-500 transition-colors" title="Ubah Nama">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                         </button>
-                                        <button onclick="openResetModal({{ user.id }}, '{{ user.name | e }}')" class="p-2 text-gray-400 hover:text-indigo-600 transition-colors" title="Reset Password">
+                                        <button @click="window.dispatchEvent(new CustomEvent('open-reset-modal', { detail: { id: {{ user.id }}, name: '{{ user.name | e }}' } }))" class="p-2 text-gray-400 hover:text-indigo-600 transition-colors" title="Reset Password">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
                                         </button>
                                         <button onclick="Admin.toggleStatus({{ user.id }})" class="p-2 {% if user.is_active %}text-gray-400 hover:text-red-500{% else %}text-green-500{% endif %} transition-colors">
@@ -127,9 +134,17 @@
 </div>
 
 <!-- MODAL IMPORT EXCEL -->
-<div id="import-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-2xl overflow-hidden animate-slide-up border border-indigo-50">
-        <form id="bulk-import-form">
+<div x-data="importModal"
+     x-init="init()"
+     x-on:open-import-modal.window="open = true; reset()"
+     x-on:keydown.escape.window="open = false"
+     x-show="open"
+     x-cloak
+     class="modal fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+     @click.self="open = false">
+    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-2xl overflow-hidden animate-slide-up border border-indigo-50"
+         @click.outside="open = false">
+        <form @submit.prevent="processImport">
             <div class="bg-gradient-to-br from-indigo-600 to-indigo-800 px-8 py-8 text-white">
                 <h3 class="text-2xl font-black">Impor User Massal</h3>
                 <p class="text-indigo-100 text-sm mt-1">Copy data dari Excel (Kolom A: Nama, Kolom B: Email) lalu paste di sini.</p>
@@ -137,54 +152,69 @@
             <div class="p-8 space-y-6">
                 <div>
                     <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Role Akun</label>
-                    <select id="import-role" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-indigo-500 outline-none font-bold bg-white transition-all">
+                    <select x-model="role" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-indigo-500 outline-none font-bold bg-white transition-all">
                         <option value="murid">Murid (Siswa)</option>
                         <option value="guru">Guru (Pengajar)</option>
                     </select>
                 </div>
                 <div>
                     <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Paste Data Excel Di Sini</label>
-                    <textarea id="raw-data" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-indigo-500 outline-none font-mono text-xs transition-all" rows="10" placeholder="Muhamad Ikhsan   iksan@email.com&#10;John Doe   john@email.com"></textarea>
+                    <textarea x-model="rawData" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-indigo-500 outline-none font-mono text-xs transition-all" rows="10" placeholder="Muhamad Ikhsan   iksan@email.com&#10;John Doe   john@email.com"></textarea>
                 </div>
-                <div id="import-error" class="hidden p-4 bg-red-50 text-red-600 rounded-2xl text-xs font-bold text-center"></div>
-                
+                <div x-show="error" x-cloak class="p-4 bg-red-50 text-red-600 rounded-2xl text-xs font-bold text-center" x-text="error"></div>
+
                 <!-- Hasil Password Tergenerate -->
-                <div id="import-results" class="hidden space-y-4">
+                <div x-show="results" x-cloak class="space-y-4">
                     <p class="text-sm font-bold text-green-600">Berhasil mengimpor! Silakan simpan daftar password berikut:</p>
                     <div class="max-h-40 overflow-y-auto bg-gray-900 text-green-400 p-4 rounded-2xl font-mono text-[10px]">
                         <table class="w-full">
-                            <tbody id="results-body"></tbody>
+                            <tbody>
+                                <template x-for="(item, index) in results" :key="index">
+                                    <tr>
+                                        <td x-text="item.name" class="text-green-300"></td>
+                                        <td x-text="item.email" class="text-green-500"></td>
+                                        <td x-text="item.password" class="text-green-400 font-bold"></td>
+                                    </tr>
+                                </template>
+                            </tbody>
                         </table>
                     </div>
-                    <button type="button" onclick="window.location.reload()" class="w-full py-4 bg-gray-100 text-gray-600 rounded-2xl font-bold">Selesai & Refresh Halaman</button>
+                    <button type="button" @click="window.location.reload()" class="w-full py-4 bg-gray-100 text-gray-600 rounded-2xl font-bold">Selesai & Refresh Halaman</button>
                 </div>
             </div>
-            <div id="import-footer" class="px-8 pb-8 flex space-x-3">
-                <button type="button" onclick="toggleModal('import-modal', false)" class="flex-1 px-6 py-4 text-gray-500 bg-gray-100 rounded-2xl font-bold hover:bg-gray-200 transition-all">Batal</button>
-                <button type="submit" class="flex-[2] px-6 py-4 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all active:scale-95">Proses Impor</button>
+            <div class="px-8 pb-8 flex space-x-3">
+                <button type="button" @click="open = false" class="flex-1 px-6 py-4 text-gray-500 bg-gray-100 rounded-2xl font-bold hover:bg-gray-200 transition-all">Batal</button>
+                <button type="submit" x-show="!results" class="flex-[2] px-6 py-4 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all active:scale-95">Proses Impor</button>
             </div>
         </form>
     </div>
 </div>
 
 <!-- MODAL RESET PASSWORD -->
-<div id="reset-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden animate-slide-up border border-indigo-50">
-        <form id="reset-password-form">
-            <input type="hidden" id="reset-user-id">
+<div x-data="resetPasswordModal"
+     x-init="init()"
+     x-on:open-reset-modal.window="open = true; userId = $event.detail.id; userName = $event.detail.name"
+     x-on:keydown.escape.window="open = false"
+     x-show="open"
+     x-cloak
+     class="modal fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] flex items-center justify-center p-4"
+     @click.self="open = false">
+    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden animate-slide-up border border-indigo-50"
+         @click.outside="open = false">
+        <form @submit.prevent="resetPassword">
             <div class="bg-gradient-to-br from-indigo-600 to-indigo-800 px-8 py-8 text-white">
                 <h3 class="text-2xl font-black">Reset Password</h3>
-                <p id="reset-user-name" class="text-indigo-100 text-sm mt-1">Mengubah password untuk User.</p>
+                <p class="text-indigo-100 text-sm mt-1" x-text="`Mengubah password untuk ${userName}`"></p>
             </div>
             <div class="p-8 space-y-6">
                 <div>
                     <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Password Baru (Min. 6 Karakter)</label>
-                    <input type="password" id="new-password" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-indigo-500 outline-none font-bold transition-all" required>
+                    <input type="password" x-model="newPassword" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-indigo-500 outline-none font-bold transition-all" required minlength="6">
                 </div>
-                <div id="reset-error" class="hidden p-4 bg-red-50 text-red-600 rounded-2xl text-xs font-bold text-center"></div>
+                <div x-show="error" x-cloak class="p-4 bg-red-50 text-red-600 rounded-2xl text-xs font-bold text-center" x-text="error"></div>
             </div>
             <div class="px-8 pb-8 flex space-x-3">
-                <button type="button" onclick="toggleModal('reset-modal', false)" class="flex-1 px-6 py-4 text-gray-500 bg-gray-100 rounded-2xl font-bold hover:bg-gray-200 transition-all">Batal</button>
+                <button type="button" @click="open = false" class="flex-1 px-6 py-4 text-gray-500 bg-gray-100 rounded-2xl font-bold hover:bg-gray-200 transition-all">Batal</button>
                 <button type="submit" class="flex-[2] px-6 py-4 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all active:scale-95">Simpan Password</button>
             </div>
         </form>
@@ -195,16 +225,74 @@
 {% block extra_scripts %}
 <script src="{{ url_for('static', filename='js/admin.js') }}?v={{ range(1, 9999) | random }}"></script>
 <script>
-    function toggleModal(id, show) {
-        const m = document.getElementById(id);
-        if (show) m.classList.remove('hidden');
-        else m.classList.add('hidden');
+// Alpine.js components for modals
+function importModal() {
+    return {
+        open: false,
+        role: 'murid',
+        rawData: '',
+        error: '',
+        results: null,
+        init() {
+            this.open = false;
+        },
+        async processImport() {
+            this.error = '';
+            try {
+                const res = await fetch('/admin/api/users/bulk-import', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ raw_data: this.rawData, role: this.role })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    this.results = data.results;
+                } else {
+                    this.error = data.message || 'Gagal mengimpor data';
+                }
+            } catch (err) {
+                this.error = 'Kesalahan koneksi ke server';
+            }
+        },
+        reset() {
+            this.rawData = '';
+            this.error = '';
+            this.results = null;
+        }
     }
+}
 
-    function openResetModal(id, name) {
-        document.getElementById('reset-user-id').value = id;
-        document.getElementById('reset-user-name').innerText = `Mengubah password untuk ${name}`;
-        toggleModal('reset-modal', true);
+function resetPasswordModal() {
+    return {
+        open: false,
+        userId: null,
+        userName: '',
+        newPassword: '',
+        error: '',
+        init() {
+            this.open = false;
+        },
+        async resetPassword() {
+            this.error = '';
+            try {
+                const res = await fetch(`/admin/api/users/${this.userId}/reset-password`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: this.newPassword })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    Swal.fire({ icon: 'success', title: 'Berhasil', text: 'Password berhasil direset!', timer: 2000, showConfirmButton: false });
+                    this.open = false;
+                    this.newPassword = '';
+                } else {
+                    this.error = data.message || 'Gagal mereset password';
+                }
+            } catch (err) {
+                this.error = 'Kesalahan koneksi ke server';
+            }
+        }
     }
+}
 </script>
 {% endblock %}
