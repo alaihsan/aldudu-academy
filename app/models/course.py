@@ -101,6 +101,7 @@ class Course(db.Model):
     students: Mapped[List['User']] = relationship('User', secondary=enrollments, lazy='subquery', back_populates='courses_enrolled')
 
     quizzes: Mapped[List['Quiz']] = relationship('Quiz', back_populates='course', lazy='dynamic', cascade='all, delete-orphan')
+    assignments: Mapped[List['Assignment']] = relationship('Assignment', back_populates='course', lazy='dynamic', cascade='all, delete-orphan')
     links: Mapped[List['Link']] = relationship('Link', back_populates='course', lazy='dynamic', cascade='all, delete-orphan')
     files: Mapped[List['File']] = relationship('File', back_populates='course', lazy='dynamic', cascade='all, delete-orphan')
     discussions: Mapped[List['Discussion']] = relationship('Discussion', back_populates='course', lazy='dynamic', cascade='all, delete-orphan')

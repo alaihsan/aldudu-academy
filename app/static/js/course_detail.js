@@ -25,6 +25,7 @@ const CourseDetail = {
 
         // Modals (quiz removed - now uses direct creation)
         this.modals = {
+            assignment: { el: document.getElementById('create-assignment-modal'), showBtn: document.getElementById('show-create-assignment-modal'), form: document.getElementById('create-assignment-form'), cancelBtn: document.querySelector('.assignment-cancel-btn') },
             file: { el: document.getElementById('create-file-modal'), showBtn: document.getElementById('show-create-file-modal'), form: document.getElementById('create-file-form'), cancelBtn: document.querySelector('.file-cancel-btn') },
             link: { el: document.getElementById('create-link-modal'), showBtn: document.getElementById('show-create-link-modal'), form: document.getElementById('create-link-form'), cancelBtn: document.querySelector('.link-cancel-btn') },
             discussion: { el: document.getElementById('create-discussion-modal'), showBtn: document.getElementById('show-create-discussion-modal'), form: document.getElementById('create-discussion-form'), cancelBtn: document.querySelector('.discussion-cancel-btn') }
@@ -176,6 +177,10 @@ const CourseDetail = {
             const formData = new FormData();
             formData.append('name', document.getElementById('file-name-input').value);
             formData.append('file', document.getElementById('file-upload-input').files[0]);
+            options.body = formData;
+        } else if (type === 'assignment') {
+            url = `/assignment/course/${this.courseId}/create`;
+            const formData = new FormData(form);
             options.body = formData;
         } else if (type === 'link') {
             url += 'links';

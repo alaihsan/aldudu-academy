@@ -112,6 +112,7 @@
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div class="flex space-x-1 bg-white p-1.5 rounded-2xl border border-gray-200 shadow-sm self-start overflow-x-auto no-scrollbar">
                         <button data-tab="all" class="tab-btn active px-6 py-2.5 bg-theme text-white rounded-xl font-bold text-sm shadow-lg shadow-theme transition-all whitespace-nowrap">Semua Konten</button>
+                        <button data-tab="Tugas" class="tab-btn px-6 py-2.5 text-gray-500 hover:bg-gray-50 rounded-xl font-bold text-sm transition-all whitespace-nowrap">Tugas</button>
                         <button data-tab="Kuis" class="tab-btn px-6 py-2.5 text-gray-500 hover:bg-gray-50 rounded-xl font-bold text-sm transition-all whitespace-nowrap">Kuis</button>
                         <button data-tab="Berkas" class="tab-btn px-6 py-2.5 text-gray-500 hover:bg-gray-50 rounded-xl font-bold text-sm transition-all whitespace-nowrap">Berkas</button>
                         <button data-tab="Link" class="tab-btn px-6 py-2.5 text-gray-500 hover:bg-gray-50 rounded-xl font-bold text-sm transition-all whitespace-nowrap">Link</button>
@@ -135,6 +136,14 @@
                             <!-- Dropdown Menu (Styled like Dashboard) -->
                             <div id="topics-dropdown-menu" class="hidden absolute right-0 mt-3 w-64 bg-white rounded-[2rem] shadow-2xl border border-gray-100 py-4 z-50 animate-slide-up overflow-hidden">
                                 <p class="px-6 py-2 text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Pilih Jenis</p>
+                                <a href="#" id="show-create-assignment-modal" class="flex items-center space-x-4 px-6 py-3.5 hover:bg-green-50 group transition-all">
+                                    <div class="w-10 h-10 rounded-xl bg-green-100 text-green-600 flex items-center justify-center group-hover:bg-green-600 group-hover:text-white transition-all">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                                        </svg>
+                                    </div>
+                                    <span class="font-bold text-gray-700">Buat Tugas</span>
+                                </a>
                                 <a href="#" id="direct-create-quiz" class="flex items-center space-x-4 px-6 py-3.5 hover:bg-amber-50 group transition-all">
                                     <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center group-hover:bg-amber-600 group-hover:text-white transition-all">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -309,6 +318,43 @@
 
             </div>
         </main>
+    </div>
+</div>
+
+<!-- Modal Tugas -->
+<div id="create-assignment-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden animate-slide-up border border-green-50">
+        <form id="create-assignment-form">
+            <div class="bg-gradient-to-br from-green-500 to-green-700 px-8 py-8 text-white">
+                <h3 class="text-2xl font-black">Buat Tugas Baru</h3>
+                <p class="text-green-100 text-sm mt-1">Berikan tugas dan penilaian untuk murid.</p>
+            </div>
+            <div class="p-8 space-y-6">
+                <div>
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Judul Tugas</label>
+                    <input type="text" id="assignment-title-input" name="title" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-green-500 outline-none font-bold" required>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Instruksi (Opsional)</label>
+                    <textarea id="assignment-description-input" name="description" rows="3" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-green-500 outline-none font-bold"></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Tenggat Waktu</label>
+                        <input type="datetime-local" id="assignment-due-date-input" name="due_date" class="w-full px-4 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-green-500 outline-none font-bold text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Nilai Maksimal</label>
+                        <input type="number" id="assignment-max-score-input" name="max_score" value="100" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-green-500 outline-none font-bold text-sm" required>
+                    </div>
+                </div>
+                <div id="assignment-modal-error" class="hidden p-4 bg-red-50 text-red-600 rounded-2xl text-xs font-bold text-center"></div>
+            </div>
+            <div class="px-8 pb-8 flex space-x-3">
+                <button type="button" class="assignment-cancel-btn flex-1 px-6 py-4 text-gray-500 bg-gray-100 rounded-2xl font-bold hover:bg-gray-200 transition-all">Batal</button>
+                <button type="submit" class="flex-[2] px-6 py-4 bg-green-600 text-white rounded-2xl font-bold shadow-lg shadow-green-200 hover:bg-green-700 active:scale-95">Simpan Tugas</button>
+            </div>
+        </form>
     </div>
 </div>
 

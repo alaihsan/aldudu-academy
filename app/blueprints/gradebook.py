@@ -1,7 +1,7 @@
 """
 Gradebook Blueprint - Routes for managing grades
 """
-from flask import Blueprint, render_template, request, jsonify, redirect, url_for
+from flask import Blueprint, render_template, request, jsonify, redirect, url_for, abort
 from flask_login import login_required, current_user
 from app.models import Course, User, UserRole, Quiz, QuizStatus, AcademicYear
 from app.models.gradebook import (
@@ -55,20 +55,58 @@ def course_setup(course_id):
     return render_template('gradebook/course_setup.html', course=course)
 
 
+@gradebook_bp.route('/my-grades')
+@login_required
+def my_grades_index():
+    """General view for student to see all their courses and grades"""
+    if current_user.role != UserRole.MURID and current_user.role != UserRole.SUPER_ADMIN:
+        abort(403)
+    
+    courses = current_user.courses_enrolled
+    return render_template('gradebook/student_grades_index.html', courses=courses)
+
+
 @gradebook_bp.route('/course/<int:course_id>/my-grades')
 @login_required
 def my_grades(course_id):
-    """Student view of their own grades"""
+    """Student view of their own grades for a specific course"""
     course = Course.query.get_or_404(course_id)
     
     # Check if student is enrolled
-    is_student = current_user.id in [s.id for s in course.students.all()]
+    is_student = current_user.id in [s.id for s in course.students]
     is_teacher = course.teacher_id == current_user.id
     
     if not is_student and not is_teacher and current_user.role != UserRole.SUPER_ADMIN:
         return render_template('error/403.html'), 403
     
-    return render_template('gradebook/student_grades.html', course=course)
+    # Get all grade items and entries for this student
+    categories = GradeCategory.query.filter_by(course_id=course.id).all()
+    grade_data = []
+    
+    for category in categories:
+        items = []
+        cat_total_score = 0
+        cat_max_score = 0
+        
+        for item in category.grade_items:
+            entry = GradeEntry.query.filter_by(grade_item_id=item.id, student_id=current_user.id).first()
+            items.append({
+                'item': item,
+                'entry': entry
+            })
+            if entry and entry.score is not None:
+                cat_total_score += entry.score
+            cat_max_score += item.max_score
+            
+        grade_data.append({
+            'category': category,
+            'items': items,
+            'total_score': cat_total_score,
+            'max_score': cat_max_score,
+            'percentage': (cat_total_score / cat_max_score * 100) if cat_max_score > 0 else 0
+        })
+
+    return render_template('gradebook/student_grades.html', course=course, grade_data=grade_data)
 
 
 # ─── API Routes - Categories ────────────────────────────────────────────────────

@@ -25,20 +25,25 @@ def dashboard():
 @main_bp.route('/kelas/<int:course_id>')
 @login_required
 def course_detail(course_id):
+    from app.models import Course, File, Link, Quiz, QuizStatus, Assignment, AssignmentStatus
+
     course = db.session.get(Course, course_id)
     if course is None:
         abort(404)
+
     school_id = get_school_id_or_abort()
     verify_course_in_school(course, school_id)
     is_teacher = (current_user.id == course.teacher_id)
-    
+
     if is_teacher:
         quizzes = Quiz.query.filter_by(course_id=course.id).all()
+        assignments = Assignment.query.filter_by(course_id=course.id).all()
     else:
         quizzes = Quiz.query.filter_by(course_id=course.id, status=QuizStatus.PUBLISHED).all()
+        assignments = Assignment.query.filter_by(course_id=course.id, status=AssignmentStatus.PUBLISHED).all()
     links = Link.query.filter_by(course_id=course.id).all()
     files = File.query.filter_by(course_id=course.id).all()
-    
+
     topics = []
     for quiz in quizzes:
         topics.append({
@@ -47,6 +52,14 @@ def course_detail(course_id):
             'type': 'Kuis',
             'url': url_for('main.quiz_detail', quiz_id=quiz.id),
             'created_at': quiz.created_at
+        })
+    for assignment in assignments:
+        topics.append({
+            'id': assignment.id,
+            'name': assignment.title,
+            'type': 'Tugas',
+            'url': url_for('assignment.detail', assignment_id=assignment.id),
+            'created_at': assignment.created_at
         })
     for link in links:
         topics.append({

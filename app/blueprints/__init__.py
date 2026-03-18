@@ -12,5 +12,6 @@ def create_blueprints():
     from .superadmin import superadmin_bp
     from .tickets import tickets_bp
     from .gradebook import gradebook_bp
+    from .assignment import assignment_bp
 
-    return [main_bp, auth_bp, courses_bp, quiz_bp, discussion_bp, issues_bp, admin_bp, superadmin_bp, tickets_bp, gradebook_bp]
+    return [main_bp, auth_bp, courses_bp, quiz_bp, discussion_bp, issues_bp, admin_bp, superadmin_bp, tickets_bp, gradebook_bp, assignment_bp]

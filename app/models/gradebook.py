@@ -134,6 +134,9 @@ class GradeItem(db.Model):
     
     # Quiz Integration
     quiz_id: Mapped[Optional[int]] = mapped_column(db.Integer, db.ForeignKey('quizzes.id'), nullable=True, index=True)
+
+    # Assignment Integration
+    assignment_id: Mapped[Optional[int]] = mapped_column(db.Integer, db.ForeignKey('assignments.id'), nullable=True, index=True)
     
     # Metadata
     created_at: Mapped[datetime] = mapped_column(db.DateTime, default=get_jakarta_now)
@@ -145,6 +148,7 @@ class GradeItem(db.Model):
     learning_goal = relationship('LearningGoal', back_populates='grade_items')
     course = relationship('Course', back_populates='grade_items')
     quiz = relationship('Quiz', backref='grade_item')
+    assignment = relationship('Assignment', back_populates='grade_item')
     grade_entries: Mapped[List['GradeEntry']] = relationship('GradeEntry', back_populates='grade_item', lazy='dynamic', cascade='all, delete-orphan')
 
     def to_dict(self):
@@ -160,6 +164,7 @@ class GradeItem(db.Model):
             'due_date': self.due_date.strftime('%Y-%m-%d') if self.due_date else None,
             'course_id': self.course_id,
             'quiz_id': self.quiz_id,
+            'assignment_id': self.assignment_id,
             'entries_count': self.grade_entries.count(),
         }
 

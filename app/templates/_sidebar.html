@@ -72,9 +72,9 @@
             {% endif %}
             
             {% if current_user.role.value == 'murid' %}
-            <a href="{{ url_for('gradebook.my_grades', course_id=course.id) }}" 
-               class="nav-link-grades flex items-center space-x-3 px-4 py-3 rounded-xl transition-all {% if 'gradebook' in request.endpoint|default('') %}active{% endif %}">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <a href="{{ url_for('gradebook.my_grades_index') }}" 
+               class="nav-link-grades flex items-center space-x-3 px-4 py-3 rounded-xl transition-all {% if request.endpoint == 'gradebook.my_grades_index' or request.endpoint == 'gradebook.my_grades' %}active bg-primary-50 text-primary-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %}">
+                <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                 </svg>
                 <span>Nilai Saya</span>

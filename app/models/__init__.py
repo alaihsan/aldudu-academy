@@ -10,3 +10,4 @@ from .ticket import Ticket, TicketMessage, TicketCategory, TicketStatus, TicketP
 from .token import EmailVerificationToken, PasswordResetToken
 from .activity_log import ActivityLog
 from .gradebook import GradeCategory, GradeCategoryType, LearningObjective, LearningGoal, GradeItem, GradeEntry
+from .assignment import Assignment, AssignmentSubmission, AssignmentStatus, AssignmentSubmissionStatus
