@@ -65,6 +65,33 @@ class KbmNote(db.Model):
         return f'<KbmNote {self.topic} on {self.activity_date}>'
 
 
+class ContentFolder(db.Model):
+    __tablename__ = 'content_folders'
+
+    id: Mapped[int] = mapped_column(db.Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(db.String(200), nullable=False)
+    course_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('courses.id'), nullable=False, index=True)
+    parent_folder_id: Mapped[Optional[int]] = mapped_column(db.Integer, db.ForeignKey('content_folders.id'), nullable=True, index=True)
+    order: Mapped[int] = mapped_column(db.Integer, default=0, nullable=False)
+    created_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=get_jakarta_now)
+
+    course = relationship('Course', back_populates='folders')
+    parent = relationship('ContentFolder', remote_side='ContentFolder.id', backref='children')
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'course_id': self.course_id,
+            'parent_folder_id': self.parent_folder_id,
+            'order': self.order,
+            'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S') if self.created_at else None,
+        }
+
+    def __repr__(self) -> str:
+        return f'<ContentFolder {self.name}>'
+
+
 class AcademicYear(db.Model):
     __tablename__ = 'academic_years'
 
@@ -105,6 +132,7 @@ class Course(db.Model):
     links: Mapped[List['Link']] = relationship('Link', back_populates='course', lazy='dynamic', cascade='all, delete-orphan')
     files: Mapped[List['File']] = relationship('File', back_populates='course', lazy='dynamic', cascade='all, delete-orphan')
     discussions: Mapped[List['Discussion']] = relationship('Discussion', back_populates='course', lazy='dynamic', cascade='all, delete-orphan')
+    folders: Mapped[List['ContentFolder']] = relationship('ContentFolder', back_populates='course', lazy='dynamic', cascade='all, delete-orphan')
     kbm_notes: Mapped[List['KbmNote']] = relationship('KbmNote', back_populates='course', lazy='dynamic', cascade='all, delete-orphan')
 
     # Gradebook relationships
@@ -134,9 +162,12 @@ class Link(db.Model):
     name: Mapped[str] = mapped_column(db.String(200), nullable=False)
     url: Mapped[str] = mapped_column(db.String(500), nullable=False)
     course_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('courses.id'), nullable=False, index=True)
+    folder_id: Mapped[Optional[int]] = mapped_column(db.Integer, db.ForeignKey('content_folders.id'), nullable=True, index=True)
+    order: Mapped[int] = mapped_column(db.Integer, default=0, nullable=False)
     created_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=get_jakarta_now)
 
     course: Mapped[Course] = relationship('Course', back_populates='links')
+    folder = relationship('ContentFolder', foreign_keys=[folder_id])
 
     def __repr__(self) -> str:
         return f'<Link {self.name}>'
@@ -150,11 +181,14 @@ class File(db.Model):
     description: Mapped[Optional[str]] = mapped_column(db.Text, nullable=True)
     filename: Mapped[str] = mapped_column(db.String(200), nullable=False)
     course_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('courses.id'), nullable=False, index=True)
+    folder_id: Mapped[Optional[int]] = mapped_column(db.Integer, db.ForeignKey('content_folders.id'), nullable=True, index=True)
+    order: Mapped[int] = mapped_column(db.Integer, default=0, nullable=False)
     start_date: Mapped[Optional[datetime.datetime]] = mapped_column(db.DateTime, nullable=True)
     end_date: Mapped[Optional[datetime.datetime]] = mapped_column(db.DateTime, nullable=True)
     created_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=get_jakarta_now)
 
     course: Mapped['Course'] = relationship('Course', back_populates='files')
+    folder = relationship('ContentFolder', foreign_keys=[folder_id])
 
     def __repr__(self) -> str:
         return f'<File {self.name}>'

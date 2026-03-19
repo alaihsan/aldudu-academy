@@ -4,7 +4,7 @@ from flask import Blueprint, request, jsonify, abort
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 from sqlalchemy.orm import joinedload, selectinload
-from app.models import db, Course, AcademicYear, UserRole, Link, File, Discussion, Post, Like, UserCourseOrder, KbmNote, KbmActivityType, Quiz, GradeType, QuizStatus
+from app.models import db, Course, AcademicYear, UserRole, Link, File, Discussion, Post, Like, UserCourseOrder, KbmNote, KbmActivityType, Quiz, GradeType, QuizStatus, ContentFolder, Assignment
 from app.helpers import sanitize_text, is_valid_color, is_valid_class_code, generate_class_code, get_courses_for_user, format_course_data, log_activity
 from app.tenant import get_school_id_or_abort, verify_course_in_school, verify_academic_year_in_school
 
@@ -531,6 +531,195 @@ def api_reorder_courses():
     except Exception:
         db.session.rollback()
         return jsonify({'success': False, 'message': 'Gagal memperbarui urutan'}), 500
+
+
+# ─── Content Folder Routes ───────────────────────────────────────────────────────
+
+@courses_bp.route('/courses/<int:course_id>/folders', methods=['POST'])
+@login_required
+def api_create_folder(course_id):
+    if current_user.role != UserRole.GURU:
+        return jsonify({'success': False, 'message': 'Hanya guru yang dapat membuat folder'}), 403
+
+    course = db.session.get(Course, course_id)
+    if not course:
+        return jsonify({'success': False, 'message': 'Kelas tidak ditemukan'}), 404
+
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(course, school_id)
+
+    if course.teacher_id != current_user.id:
+        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
+
+    data = request.get_json() or {}
+    name = sanitize_text(data.get('name', ''), max_len=200)
+    parent_folder_id = data.get('parent_folder_id')
+
+    if not name:
+        return jsonify({'success': False, 'message': 'Nama folder wajib diisi'}), 400
+
+    if parent_folder_id:
+        parent = db.session.get(ContentFolder, parent_folder_id)
+        if not parent or parent.course_id != course_id:
+            return jsonify({'success': False, 'message': 'Folder induk tidak valid'}), 400
+
+    folder = ContentFolder(
+        name=name,
+        course_id=course_id,
+        parent_folder_id=parent_folder_id,
+    )
+    db.session.add(folder)
+    db.session.commit()
+
+    return jsonify({'success': True, 'folder': folder.to_dict()}), 201
+
+
+@courses_bp.route('/courses/<int:course_id>/folders', methods=['GET'])
+@login_required
+def api_get_folders(course_id):
+    course = db.session.get(Course, course_id)
+    if not course:
+        return jsonify({'success': False, 'message': 'Kelas tidak ditemukan'}), 404
+
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(course, school_id)
+
+    folders = ContentFolder.query.filter_by(course_id=course_id).order_by(ContentFolder.order).all()
+    return jsonify({'success': True, 'folders': [f.to_dict() for f in folders]})
+
+
+@courses_bp.route('/folders/<int:folder_id>', methods=['PUT'])
+@login_required
+def api_update_folder(folder_id):
+    folder = db.session.get(ContentFolder, folder_id)
+    if not folder:
+        return jsonify({'success': False, 'message': 'Folder tidak ditemukan'}), 404
+
+    course = db.session.get(Course, folder.course_id)
+    if not course or course.teacher_id != current_user.id:
+        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
+
+    data = request.get_json() or {}
+    if 'name' in data:
+        name = sanitize_text(data['name'], max_len=200)
+        if not name:
+            return jsonify({'success': False, 'message': 'Nama folder tidak valid'}), 400
+        folder.name = name
+
+    db.session.commit()
+    return jsonify({'success': True, 'folder': folder.to_dict()})
+
+
+@courses_bp.route('/folders/<int:folder_id>', methods=['DELETE'])
+@login_required
+def api_delete_folder(folder_id):
+    folder = db.session.get(ContentFolder, folder_id)
+    if not folder:
+        return jsonify({'success': False, 'message': 'Folder tidak ditemukan'}), 404
+
+    course = db.session.get(Course, folder.course_id)
+    if not course or course.teacher_id != current_user.id:
+        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
+
+    # Move all content out of folder (set folder_id to None)
+    Quiz.query.filter_by(folder_id=folder_id).update({'folder_id': None})
+    Assignment.query.filter_by(folder_id=folder_id).update({'folder_id': None})
+    File.query.filter_by(folder_id=folder_id).update({'folder_id': None})
+    Link.query.filter_by(folder_id=folder_id).update({'folder_id': None})
+    # Move child folders out
+    ContentFolder.query.filter_by(parent_folder_id=folder_id).update({'parent_folder_id': folder.parent_folder_id})
+
+    db.session.delete(folder)
+    db.session.commit()
+
+    return jsonify({'success': True})
+
+
+@courses_bp.route('/courses/<int:course_id>/content/reorder', methods=['POST'])
+@login_required
+def api_reorder_content(course_id):
+    if current_user.role != UserRole.GURU:
+        return jsonify({'success': False, 'message': 'Hanya guru yang dapat mengatur urutan'}), 403
+
+    course = db.session.get(Course, course_id)
+    if not course or course.teacher_id != current_user.id:
+        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
+
+    data = request.get_json() or {}
+    items = data.get('items', [])
+
+    try:
+        for item in items:
+            item_id = item.get('id')
+            item_type = item.get('type')
+            order = item.get('order', 0)
+            folder_id = item.get('folder_id')  # None means root level
+
+            if item_type == 'quiz':
+                obj = db.session.get(Quiz, item_id)
+            elif item_type == 'assignment':
+                obj = db.session.get(Assignment, item_id)
+            elif item_type == 'file':
+                obj = db.session.get(File, item_id)
+            elif item_type == 'link':
+                obj = db.session.get(Link, item_id)
+            elif item_type == 'folder':
+                obj = db.session.get(ContentFolder, item_id)
+            else:
+                continue
+
+            if obj and hasattr(obj, 'order'):
+                obj.order = order
+            if obj and item_type != 'folder' and hasattr(obj, 'folder_id'):
+                obj.folder_id = folder_id
+            if obj and item_type == 'folder' and hasattr(obj, 'parent_folder_id'):
+                obj.parent_folder_id = folder_id
+
+        db.session.commit()
+        return jsonify({'success': True})
+    except Exception:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': 'Gagal menyimpan urutan'}), 500
+
+
+@courses_bp.route('/courses/<int:course_id>/content/move-to-folder', methods=['POST'])
+@login_required
+def api_move_to_folder(course_id):
+    if current_user.role != UserRole.GURU:
+        return jsonify({'success': False, 'message': 'Hanya guru yang dapat memindahkan konten'}), 403
+
+    course = db.session.get(Course, course_id)
+    if not course or course.teacher_id != current_user.id:
+        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
+
+    data = request.get_json() or {}
+    item_id = data.get('item_id')
+    item_type = data.get('item_type')
+    folder_id = data.get('folder_id')  # None to move to root
+
+    if folder_id:
+        folder = db.session.get(ContentFolder, folder_id)
+        if not folder or folder.course_id != course_id:
+            return jsonify({'success': False, 'message': 'Folder tidak valid'}), 400
+
+    if item_type == 'quiz':
+        obj = db.session.get(Quiz, item_id)
+    elif item_type == 'assignment':
+        obj = db.session.get(Assignment, item_id)
+    elif item_type == 'file':
+        obj = db.session.get(File, item_id)
+    elif item_type == 'link':
+        obj = db.session.get(Link, item_id)
+    else:
+        return jsonify({'success': False, 'message': 'Tipe konten tidak valid'}), 400
+
+    if not obj:
+        return jsonify({'success': False, 'message': 'Konten tidak ditemukan'}), 404
+
+    obj.folder_id = folder_id
+    db.session.commit()
+
+    return jsonify({'success': True})
 
 
 # ─── KBM Notes Routes ───────────────────────────────────────────────────────────

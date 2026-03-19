@@ -21,6 +21,8 @@ class Assignment(db.Model):
     title: Mapped[str] = mapped_column(db.String(200), nullable=False)
     description: Mapped[Optional[str]] = mapped_column(db.Text, nullable=True)
     course_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('courses.id'), nullable=False, index=True)
+    folder_id: Mapped[Optional[int]] = mapped_column(db.Integer, db.ForeignKey('content_folders.id'), nullable=True, index=True)
+    order: Mapped[int] = mapped_column(db.Integer, default=0, nullable=False)
     due_date: Mapped[Optional[datetime]] = mapped_column(db.DateTime, nullable=True)
     max_score: Mapped[float] = mapped_column(db.Float, nullable=False, default=100.0)
     status: Mapped[AssignmentStatus] = mapped_column(db.Enum(AssignmentStatus), nullable=False, default=AssignmentStatus.PUBLISHED)
@@ -28,6 +30,7 @@ class Assignment(db.Model):
     updated_at: Mapped[datetime] = mapped_column(db.DateTime, default=get_jakarta_now, onupdate=get_jakarta_now)
 
     course = relationship('Course', back_populates='assignments')
+    folder = relationship('ContentFolder', foreign_keys=[folder_id])
     submissions: Mapped[List['AssignmentSubmission']] = relationship('AssignmentSubmission', back_populates='assignment', lazy='dynamic', cascade='all, delete-orphan')
     grade_item = relationship('GradeItem', back_populates='assignment', uselist=False, cascade='all, delete-orphan')
 

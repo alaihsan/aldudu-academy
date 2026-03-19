@@ -256,6 +256,82 @@ body {
     transform: scale(1.1);
 }
 
+/* --- Drag & Drop for Course Content --- */
+.draggable-item {
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.draggable-item.dragging {
+    opacity: 0.4 !important;
+    transform: scale(0.95) !important;
+    z-index: 10;
+}
+
+.draggable-item.cursor-grab {
+    cursor: grab;
+}
+
+.draggable-item.cursor-grab:active {
+    cursor: grabbing;
+}
+
+/* Folder drag-over highlight */
+.folder-card.drag-over {
+    border-color: #a855f7 !important;
+    background: #faf5ff !important;
+    box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.2) !important;
+    transform: scale(1.02) !important;
+}
+
+/* Folder drop zone highlight */
+.folder-drop-zone {
+    transition: all 0.2s ease;
+}
+
+.folder-drop-zone.folder-drop-highlight {
+    border-color: #a855f7 !important;
+    background: #faf5ff !important;
+    box-shadow: inset 0 0 0 2px rgba(168, 85, 247, 0.3);
+}
+
+/* Mini items inside folders */
+.folder-mini-item {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.folder-mini-item:hover {
+    transform: translateX(4px);
+}
+
+.folder-mini-item.dragging {
+    opacity: 0.4;
+    transform: scale(0.95);
+}
+
+/* Folder expand/collapse arrow */
+.folder-arrow {
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Sort dropdown active state */
+.sort-option:hover {
+    background: #f9fafb;
+}
+
+.sort-option.active {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+/* No-scrollbar for tabs */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
 /* --- Touch Optimizations --- */
 button, a {
     min-height: 44px; /* iOS Human Interface Guideline */

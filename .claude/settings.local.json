@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Claude_Preview__preview_start",
+      "Bash(python -m flask db upgrade)",
+      "Bash(python -m flask db heads)",
+      "Bash(python -m flask db current)",
+      "Bash(python -m flask db stamp a4bfedd613ff)",
+      "Bash(python -c \":*)"
+    ]
+  }
+}

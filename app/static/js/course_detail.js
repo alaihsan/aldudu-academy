@@ -1,6 +1,7 @@
 /**
  * Aldudu Academy - Course Detail JavaScript
  * Modern interactions for an elegant learning experience
+ * Features: Drag & Drop, Sorting, Folders
  */
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -8,10 +9,17 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 const CourseDetail = {
+    currentSort: 'newest',
+    draggedEl: null,
+
     init() {
         this.cacheElements();
         this.bindEvents();
         this.loadDiscussions();
+        this.initSorting();
+        this.initDragAndDrop();
+        this.initFolders();
+        this.updateFolderCounts();
     },
 
     cacheElements() {
@@ -22,13 +30,15 @@ const CourseDetail = {
         this.discussionsContainer = document.getElementById('discussions-container');
         this.tabBtns = document.querySelectorAll('.tab-btn');
         this.directCreateQuizBtn = document.getElementById('direct-create-quiz');
+        this.sortBtn = document.getElementById('sort-button');
+        this.sortMenu = document.getElementById('sort-dropdown-menu');
 
-        // Modals (quiz removed - now uses direct creation)
         this.modals = {
             assignment: { el: document.getElementById('create-assignment-modal'), showBtn: document.getElementById('show-create-assignment-modal'), form: document.getElementById('create-assignment-form'), cancelBtn: document.querySelector('.assignment-cancel-btn') },
             file: { el: document.getElementById('create-file-modal'), showBtn: document.getElementById('show-create-file-modal'), form: document.getElementById('create-file-form'), cancelBtn: document.querySelector('.file-cancel-btn') },
             link: { el: document.getElementById('create-link-modal'), showBtn: document.getElementById('show-create-link-modal'), form: document.getElementById('create-link-form'), cancelBtn: document.querySelector('.link-cancel-btn') },
-            discussion: { el: document.getElementById('create-discussion-modal'), showBtn: document.getElementById('show-create-discussion-modal'), form: document.getElementById('create-discussion-form'), cancelBtn: document.querySelector('.discussion-cancel-btn') }
+            discussion: { el: document.getElementById('create-discussion-modal'), showBtn: document.getElementById('show-create-discussion-modal'), form: document.getElementById('create-discussion-form'), cancelBtn: document.querySelector('.discussion-cancel-btn') },
+            folder: { el: document.getElementById('create-folder-modal'), showBtn: document.getElementById('show-create-folder-modal'), form: document.getElementById('create-folder-form'), cancelBtn: document.querySelector('.folder-cancel-btn') }
         };
     },
 
@@ -38,16 +48,21 @@ const CourseDetail = {
             this.addTopicsMenu.classList.toggle('hidden');
         });
 
-        window.addEventListener('click', () => this.addTopicsMenu?.classList.add('hidden'));
+        window.addEventListener('click', (e) => {
+            if (!e.target.closest('#add-topics-dropdown')) {
+                this.addTopicsMenu?.classList.add('hidden');
+            }
+            if (!e.target.closest('#sort-dropdown')) {
+                this.sortMenu?.classList.add('hidden');
+            }
+        });
 
-        // Direct quiz creation (no modal)
         this.directCreateQuizBtn?.addEventListener('click', (e) => {
             e.preventDefault();
             this.addTopicsMenu?.classList.add('hidden');
             this.createQuizDirectly();
         });
 
-        // Tab Switching Logic
         this.tabBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 const tab = btn.dataset.tab;
@@ -58,6 +73,7 @@ const CourseDetail = {
         // Initialize all modals
         Object.keys(this.modals).forEach(key => {
             const modal = this.modals[key];
+            if (!modal.el) return;
             modal.showBtn?.addEventListener('click', (e) => {
                 e.preventDefault();
                 this.closeAllModals();
@@ -65,9 +81,534 @@ const CourseDetail = {
                 this.addTopicsMenu?.classList.add('hidden');
             });
             modal.cancelBtn?.addEventListener('click', () => modal.el.classList.add('hidden'));
-            if (modal.form) modal.form.addEventListener('submit', (e) => this.handleFormSubmit(e, key));
+            if (modal.form) {
+                modal.form.addEventListener('submit', (e) => {
+                    if (key === 'folder') {
+                        this.handleFolderCreate(e);
+                    } else {
+                        this.handleFormSubmit(e, key);
+                    }
+                });
+            }
         });
     },
+
+    // ─── Sorting ────────────────────────────────────────────────
+
+    initSorting() {
+        this.sortBtn?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.sortMenu?.classList.toggle('hidden');
+        });
+
+        document.querySelectorAll('.sort-option').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const sort = btn.dataset.sort;
+                this.currentSort = sort;
+                document.getElementById('sort-label').textContent = btn.querySelector('span').textContent;
+                this.sortMenu?.classList.add('hidden');
+                this.applySorting(sort);
+            });
+        });
+    },
+
+    applySorting(sort) {
+        const container = this.topicsContainer;
+        const items = Array.from(container.querySelectorAll('.draggable-item'));
+
+        if (sort === 'newest') {
+            items.sort((a, b) => {
+                const dateA = new Date(a.dataset.created || 0);
+                const dateB = new Date(b.dataset.created || 0);
+                return dateB - dateA;
+            });
+        } else if (sort === 'oldest') {
+            items.sort((a, b) => {
+                const dateA = new Date(a.dataset.created || 0);
+                const dateB = new Date(b.dataset.created || 0);
+                return dateA - dateB;
+            });
+        } else if (sort === 'manual') {
+            items.sort((a, b) => {
+                return (parseInt(a.dataset.order) || 0) - (parseInt(b.dataset.order) || 0);
+            });
+        }
+
+        // Re-append in sorted order (preserves non-draggable items like empty state)
+        items.forEach(item => container.appendChild(item));
+    },
+
+    // ─── Drag & Drop ────────────────────────────────────────────
+
+    initDragAndDrop() {
+        this.setupDraggables();
+        this.setupDropZones();
+    },
+
+    setupDraggables() {
+        const items = document.querySelectorAll('.draggable-item');
+        items.forEach(item => {
+            item.setAttribute('draggable', 'true');
+
+            item.addEventListener('dragstart', (e) => {
+                this.draggedEl = item;
+                item.classList.add('dragging');
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/plain', JSON.stringify({
+                    id: item.dataset.itemId,
+                    type: item.dataset.itemType
+                }));
+            });
+
+            item.addEventListener('dragend', () => {
+                item.classList.remove('dragging');
+                this.draggedEl = null;
+                // Remove all drag-over states
+                document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+                document.querySelectorAll('.folder-drop-highlight').forEach(el => el.classList.remove('folder-drop-highlight'));
+            });
+        });
+    },
+
+    setupDropZones() {
+        const container = this.topicsContainer;
+
+        // Main grid as drop zone for reordering
+        container.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+
+            const afterElement = this.getDragAfterElement(container, e.clientY, e.clientX);
+            if (this.draggedEl) {
+                if (afterElement == null) {
+                    container.appendChild(this.draggedEl);
+                } else {
+                    container.insertBefore(this.draggedEl, afterElement);
+                }
+            }
+        });
+
+        container.addEventListener('drop', (e) => {
+            e.preventDefault();
+            if (!this.draggedEl) return;
+
+            // If dropped on the main container (not in a folder), remove from folder
+            if (this.draggedEl.dataset.folderId) {
+                this.draggedEl.dataset.folderId = '';
+            }
+
+            this.saveOrder();
+        });
+
+        // Folder drop zones
+        document.querySelectorAll('.folder-drop-zone').forEach(zone => {
+            zone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                e.dataTransfer.dropEffect = 'move';
+                zone.classList.add('folder-drop-highlight');
+            });
+
+            zone.addEventListener('dragleave', (e) => {
+                if (!zone.contains(e.relatedTarget)) {
+                    zone.classList.remove('folder-drop-highlight');
+                }
+            });
+
+            zone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                zone.classList.remove('folder-drop-highlight');
+
+                if (!this.draggedEl || this.draggedEl.classList.contains('folder-card')) return;
+
+                const folderId = zone.dataset.folderId;
+                this.moveToFolder(this.draggedEl, folderId);
+            });
+        });
+
+        // Folder cards as drop targets
+        document.querySelectorAll('.folder-card').forEach(folderCard => {
+            folderCard.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                if (this.draggedEl && !this.draggedEl.classList.contains('folder-card')) {
+                    folderCard.classList.add('drag-over');
+                    e.dataTransfer.dropEffect = 'move';
+                }
+            });
+
+            folderCard.addEventListener('dragleave', (e) => {
+                if (!folderCard.contains(e.relatedTarget)) {
+                    folderCard.classList.remove('drag-over');
+                }
+            });
+
+            folderCard.addEventListener('drop', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                folderCard.classList.remove('drag-over');
+
+                if (!this.draggedEl || this.draggedEl.classList.contains('folder-card')) return;
+
+                const folderId = folderCard.dataset.itemId;
+                this.moveToFolder(this.draggedEl, folderId);
+            });
+        });
+    },
+
+    getDragAfterElement(container, y, x) {
+        const draggableElements = [...container.querySelectorAll('.draggable-item:not(.dragging)')];
+
+        return draggableElements.reduce((closest, child) => {
+            const box = child.getBoundingClientRect();
+            const offsetY = y - box.top - box.height / 2;
+            const offsetX = x - box.left - box.width / 2;
+            const offset = Math.sqrt(offsetY * offsetY + offsetX * offsetX);
+
+            if (offsetY < 0 && offset < (closest.offset || Infinity)) {
+                return { offset: offset, element: child };
+            }
+            return closest;
+        }, {}).element;
+    },
+
+    async moveToFolder(itemEl, folderId) {
+        const itemId = itemEl.dataset.itemId;
+        const itemType = itemEl.dataset.itemType;
+
+        try {
+            const res = await fetch(`/api/courses/${this.courseId}/content/move-to-folder`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ item_id: itemId, item_type: itemType, folder_id: folderId })
+            });
+            const data = await res.json();
+            if (data.success) {
+                // Move item visually into the folder's drop zone
+                const folderCard = document.querySelector(`.folder-card[data-item-id="${folderId}"]`);
+                if (folderCard) {
+                    const dropZone = folderCard.querySelector('.folder-drop-zone');
+                    const emptyMsg = dropZone.querySelector('.folder-empty-msg');
+                    if (emptyMsg) emptyMsg.remove();
+
+                    // Create a compact version of the item inside the folder
+                    const miniItem = this.createMiniItem(itemEl, folderId);
+                    dropZone.appendChild(miniItem);
+
+                    // Remove from main grid
+                    itemEl.remove();
+
+                    // Expand folder to show the item
+                    const contents = folderCard.querySelector('.folder-contents');
+                    contents.classList.remove('hidden');
+                    const arrow = folderCard.querySelector('.folder-arrow');
+                    if (arrow) arrow.style.transform = 'rotate(180deg)';
+
+                    this.updateFolderCounts();
+                }
+            }
+        } catch (err) {
+            console.error('Failed to move item', err);
+        }
+    },
+
+    createMiniItem(originalItem, folderId) {
+        const type = originalItem.dataset.itemType;
+        const id = originalItem.dataset.itemId;
+        const link = originalItem.querySelector('a');
+        const name = originalItem.querySelector('h3')?.textContent || 'Untitled';
+        const href = link?.getAttribute('href') || '#';
+        const typeLabel = originalItem.querySelector('p.text-gray-500')?.textContent || '';
+
+        const colorMap = {
+            quiz: { bg: 'bg-amber-100', text: 'text-amber-600' },
+            assignment: { bg: 'bg-green-100', text: 'text-green-600' },
+            file: { bg: 'bg-blue-100', text: 'text-blue-600' },
+            link: { bg: 'bg-indigo-100', text: 'text-indigo-600' }
+        };
+        const color = colorMap[type] || colorMap.file;
+
+        const div = document.createElement('div');
+        div.className = 'folder-mini-item flex items-center space-x-3 bg-white rounded-xl p-3 border border-gray-100 hover:shadow-md transition-all cursor-grab';
+        div.setAttribute('draggable', 'true');
+        div.dataset.itemId = id;
+        div.dataset.itemType = type;
+        div.dataset.folderId = folderId;
+
+        div.innerHTML = `
+            <div class="w-8 h-8 rounded-lg ${color.bg} ${color.text} flex items-center justify-center flex-shrink-0">
+                ${this.getTypeIcon(type)}
+            </div>
+            <a href="${href}" class="flex-1 min-w-0 text-sm font-bold text-gray-700 truncate hover:text-primary-600">${name}</a>
+            ${typeof IS_TEACHER !== 'undefined' && IS_TEACHER ? `<button class="remove-from-folder-btn p-1 text-gray-300 hover:text-red-500 transition-colors flex-shrink-0" data-item-id="${id}" data-item-type="${type}" title="Keluarkan dari folder">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>` : ''}
+        `;
+
+        // Drag events for mini items
+        div.addEventListener('dragstart', (e) => {
+            this.draggedEl = div;
+            div.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', JSON.stringify({ id, type }));
+        });
+
+        div.addEventListener('dragend', () => {
+            div.classList.remove('dragging');
+            this.draggedEl = null;
+            document.querySelectorAll('.drag-over, .folder-drop-highlight').forEach(el => {
+                el.classList.remove('drag-over', 'folder-drop-highlight');
+            });
+        });
+
+        // Remove from folder button
+        const removeBtn = div.querySelector('.remove-from-folder-btn');
+        removeBtn?.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.removeFromFolder(id, type, div);
+        });
+
+        return div;
+    },
+
+    getTypeIcon(type) {
+        const icons = {
+            quiz: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>',
+            assignment: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>',
+            file: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>',
+            link: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>'
+        };
+        return icons[type] || icons.file;
+    },
+
+    async removeFromFolder(itemId, itemType, miniItemEl) {
+        try {
+            const res = await fetch(`/api/courses/${this.courseId}/content/move-to-folder`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ item_id: itemId, item_type: itemType, folder_id: null })
+            });
+            const data = await res.json();
+            if (data.success) {
+                miniItemEl.remove();
+                this.updateFolderCounts();
+                // Reload to get full card back in main grid
+                window.location.reload();
+            }
+        } catch (err) {
+            console.error('Failed to remove from folder', err);
+        }
+    },
+
+    async saveOrder() {
+        const items = [];
+        const allItems = this.topicsContainer.querySelectorAll('.draggable-item');
+        allItems.forEach((item, index) => {
+            items.push({
+                id: parseInt(item.dataset.itemId),
+                type: item.dataset.itemType,
+                order: index,
+                folder_id: item.dataset.folderId || null
+            });
+        });
+
+        try {
+            await fetch(`/api/courses/${this.courseId}/content/reorder`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ items })
+            });
+            // Update data attributes
+            allItems.forEach((item, index) => {
+                item.dataset.order = index;
+            });
+        } catch (err) {
+            console.error('Failed to save order', err);
+        }
+    },
+
+    // ─── Folders ────────────────────────────────────────────────
+
+    initFolders() {
+        // Folder toggle (expand/collapse)
+        document.querySelectorAll('.folder-toggle-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const folderCard = btn.closest('.folder-card');
+                const contents = folderCard.querySelector('.folder-contents');
+                const arrow = folderCard.querySelector('.folder-arrow');
+                const label = btn.querySelector('span');
+
+                contents.classList.toggle('hidden');
+                if (contents.classList.contains('hidden')) {
+                    arrow.style.transform = 'rotate(0deg)';
+                    label.textContent = 'Buka Folder';
+                } else {
+                    arrow.style.transform = 'rotate(180deg)';
+                    label.textContent = 'Tutup Folder';
+                }
+            });
+        });
+
+        // Rename folder
+        document.querySelectorAll('.rename-folder-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const folderCard = btn.closest('.folder-card');
+                const folderId = folderCard.dataset.itemId;
+                const currentName = folderCard.querySelector('.folder-name').textContent.trim();
+                const newName = prompt('Nama folder baru:', currentName);
+                if (newName && newName.trim() !== currentName) {
+                    this.renameFolder(folderId, newName.trim(), folderCard);
+                }
+            });
+        });
+
+        // Delete folder
+        document.querySelectorAll('.delete-folder-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const folderCard = btn.closest('.folder-card');
+                const folderId = folderCard.dataset.itemId;
+                const folderName = folderCard.querySelector('.folder-name').textContent.trim();
+                if (confirm(`Hapus folder "${folderName}"? Konten di dalamnya akan dipindah ke level atas.`)) {
+                    this.deleteFolder(folderId, folderCard);
+                }
+            });
+        });
+
+        // Populate folder contents from server data
+        this.populateFolderContents();
+    },
+
+    populateFolderContents() {
+        // Find items that are inside folders (rendered by server with folder_id)
+        // These are in the topics data passed via template
+        if (typeof FOLDERS_DATA === 'undefined') return;
+
+        // Items with folder_id are not rendered in main grid (template filters them)
+        // But we need to show them inside their folders
+        // We'll load them via API
+        this.loadFolderContents();
+    },
+
+    loadFolderContents() {
+        if (typeof TOPICS_DATA === 'undefined') return;
+
+        TOPICS_DATA.forEach(topic => {
+            if (topic.folder_id) {
+                const folderCard = document.querySelector(`.folder-card[data-item-id="${topic.folder_id}"]`);
+                if (folderCard) {
+                    const dropZone = folderCard.querySelector('.folder-drop-zone');
+                    const emptyMsg = dropZone.querySelector('.folder-empty-msg');
+                    if (emptyMsg) emptyMsg.remove();
+
+                    // Create a pseudo-element for createMiniItem
+                    const pseudoItem = {
+                        dataset: {
+                            itemId: topic.id,
+                            itemType: topic.type.toLowerCase().replace('kuis', 'quiz').replace('tugas', 'assignment').replace('berkas', 'file'),
+                        },
+                        querySelector: (selector) => {
+                            if (selector === 'a') return { getAttribute: () => topic.url };
+                            if (selector === 'h3') return { textContent: topic.name };
+                            if (selector === 'p.text-gray-500') return { textContent: topic.type };
+                            return null;
+                        }
+                    };
+
+                    const miniItem = this.createMiniItem(pseudoItem, topic.folder_id);
+                    dropZone.appendChild(miniItem);
+                }
+            }
+        });
+        this.updateFolderCounts();
+    },
+
+    async renameFolder(folderId, newName, folderCard) {
+        try {
+            const res = await fetch(`/api/folders/${folderId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: newName })
+            });
+            const data = await res.json();
+            if (data.success) {
+                folderCard.querySelector('.folder-name').textContent = newName;
+            }
+        } catch (err) {
+            console.error('Failed to rename folder', err);
+        }
+    },
+
+    async deleteFolder(folderId, folderCard) {
+        try {
+            const res = await fetch(`/api/folders/${folderId}`, { method: 'DELETE' });
+            const data = await res.json();
+            if (data.success) {
+                folderCard.remove();
+                window.location.reload();
+            }
+        } catch (err) {
+            console.error('Failed to delete folder', err);
+        }
+    },
+
+    async handleFolderCreate(e) {
+        e.preventDefault();
+        const nameInput = document.getElementById('folder-name-input');
+        const errorEl = document.getElementById('folder-modal-error');
+        const name = nameInput.value.trim();
+
+        if (!name) {
+            errorEl.textContent = 'Nama folder wajib diisi';
+            errorEl.classList.remove('hidden');
+            return;
+        }
+
+        try {
+            const res = await fetch(`/api/courses/${this.courseId}/folders`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name })
+            });
+            const data = await res.json();
+            if (data.success) {
+                window.location.reload();
+            } else {
+                errorEl.textContent = data.message || 'Gagal membuat folder';
+                errorEl.classList.remove('hidden');
+            }
+        } catch (err) {
+            errorEl.textContent = 'Kesalahan koneksi ke server';
+            errorEl.classList.remove('hidden');
+        }
+    },
+
+    updateFolderCounts() {
+        document.querySelectorAll('.folder-card').forEach(folderCard => {
+            const dropZone = folderCard.querySelector('.folder-drop-zone');
+            const items = dropZone.querySelectorAll('.folder-mini-item');
+            const countEl = folderCard.querySelector('.folder-item-count');
+            const emptyMsg = dropZone.querySelector('.folder-empty-msg');
+
+            if (countEl) {
+                countEl.textContent = `${items.length} item`;
+            }
+
+            if (items.length === 0 && !emptyMsg) {
+                const msg = document.createElement('p');
+                msg.className = 'folder-empty-msg col-span-full text-center text-xs text-gray-400 py-4';
+                msg.textContent = 'Seret konten ke sini';
+                dropZone.appendChild(msg);
+            } else if (items.length > 0 && emptyMsg) {
+                emptyMsg.remove();
+            }
+        });
+    },
+
+    // ─── Quiz Creation ──────────────────────────────────────────
 
     async createQuizDirectly() {
         try {
@@ -88,6 +629,8 @@ const CourseDetail = {
         }
     },
 
+    // ─── Tab Switching ──────────────────────────────────────────
+
     switchTab(activeBtn, tabType) {
         this.tabBtns.forEach(b => {
             b.classList.remove('active', 'bg-primary-600', 'text-white', 'shadow-lg', 'shadow-primary-100');
@@ -96,19 +639,24 @@ const CourseDetail = {
         activeBtn.classList.add('active', 'bg-primary-600', 'text-white', 'shadow-lg', 'shadow-primary-100');
         activeBtn.classList.remove('text-gray-500', 'hover:bg-gray-50');
 
-        const topicCards = this.topicsContainer.querySelectorAll('.group');
+        const topicCards = this.topicsContainer.querySelectorAll('.draggable-item');
 
-        if (tabType === 'Diskusi') {
+        if (tabType === 'Diskusi' || tabType === 'diskusi') {
             this.topicsContainer.classList.add('hidden');
             this.discussionsContainer.classList.remove('hidden');
-            document.getElementById('diskusi')?.scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('diskusi-section')?.scrollIntoView({ behavior: 'smooth' });
         } else {
             this.topicsContainer.classList.remove('hidden');
             this.discussionsContainer.classList.add('hidden');
 
             topicCards.forEach(card => {
                 const typeText = card.querySelector('p.text-gray-500')?.textContent || '';
-                if (tabType === 'all' || typeText.includes(tabType)) {
+                if (tabType === 'all') {
+                    card.classList.remove('hidden');
+                } else if (card.classList.contains('folder-card')) {
+                    // Show folders in all tabs
+                    card.classList.remove('hidden');
+                } else if (typeText.includes(tabType)) {
                     card.classList.remove('hidden');
                 } else {
                     card.classList.add('hidden');
@@ -116,6 +664,8 @@ const CourseDetail = {
             });
         }
     },
+
+    // ─── Discussions ────────────────────────────────────────────
 
     async loadDiscussions() {
         if (!this.courseId) return;
@@ -159,6 +709,8 @@ const CourseDetail = {
             </div>
         `).join('');
     },
+
+    // ─── Modals & Forms ─────────────────────────────────────────
 
     closeAllModals() {
         Object.values(this.modals).forEach(m => m.el?.classList.add('hidden'));

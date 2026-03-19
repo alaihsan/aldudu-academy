@@ -4,7 +4,7 @@ from flask_login import login_required, current_user
 from app.models import (
     db, Course, Quiz, Question, Option,
     QuestionType, GradeType, UserRole, Link, File,
-    QuizSubmission, Answer, Discussion, QuizStatus, ActivityLog
+    QuizSubmission, Answer, Discussion, QuizStatus, ActivityLog, ContentFolder
 )
 from app.helpers import get_jakarta_now
 from app.tenant import get_school_id_or_abort, verify_course_in_school
@@ -44,6 +44,8 @@ def course_detail(course_id):
     links = Link.query.filter_by(course_id=course.id).all()
     files = File.query.filter_by(course_id=course.id).all()
 
+    folders = ContentFolder.query.filter_by(course_id=course.id).order_by(ContentFolder.order).all()
+
     topics = []
     for quiz in quizzes:
         topics.append({
@@ -51,7 +53,9 @@ def course_detail(course_id):
             'name': quiz.name,
             'type': 'Kuis',
             'url': url_for('main.quiz_detail', quiz_id=quiz.id),
-            'created_at': quiz.created_at
+            'created_at': quiz.created_at,
+            'folder_id': quiz.folder_id,
+            'order': quiz.order,
         })
     for assignment in assignments:
         topics.append({
@@ -59,7 +63,9 @@ def course_detail(course_id):
             'name': assignment.title,
             'type': 'Tugas',
             'url': url_for('assignment.detail', assignment_id=assignment.id),
-            'created_at': assignment.created_at
+            'created_at': assignment.created_at,
+            'folder_id': assignment.folder_id,
+            'order': assignment.order,
         })
     for link in links:
         topics.append({
@@ -67,7 +73,9 @@ def course_detail(course_id):
             'name': link.name,
             'type': 'Link',
             'url': link.url,
-            'created_at': link.created_at
+            'created_at': link.created_at,
+            'folder_id': link.folder_id,
+            'order': link.order,
         })
     for file in files:
         topics.append({
@@ -75,16 +83,21 @@ def course_detail(course_id):
             'name': file.name,
             'type': 'Berkas',
             'url': url_for('main.serve_file', file_id=file.id),
-            'created_at': file.created_at
+            'created_at': file.created_at,
+            'folder_id': file.folder_id,
+            'order': file.order,
         })
-    
+
     topics.sort(key=lambda x: x['created_at'], reverse=True)
-    
+
+    folders_data = [f.to_dict() for f in folders]
+
     return render_template(
-        'course_detail.html', 
-        course=course, 
+        'course_detail.html',
+        course=course,
         is_teacher=is_teacher,
-        topics=topics
+        topics=topics,
+        folders=folders_data,
     )
 
 @main_bp.route('/quiz/<int:quiz_id>')
