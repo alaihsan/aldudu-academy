@@ -8,7 +8,7 @@ from app.models import (
     Question, Option, QuestionType,
     QuizSubmission, Answer
 )
-from app.helpers import sanitize_text
+from app.helpers import sanitize_text, sanitize_rich_text
 import datetime
 import os
 from werkzeug.utils import secure_filename
@@ -53,11 +53,12 @@ def api_add_question(quiz_id):
     new_order = (last_q.order + 1) if last_q else 1
 
     question = Question(
-        quiz_id=quiz.id, 
-        question_text="", 
-        question_type=q_type, 
+        quiz_id=quiz.id,
+        question_text="",
+        question_type=q_type,
         order=new_order,
-        points=10
+        points=quiz.default_points,
+        is_required=quiz.required_by_default
     )
     
     if q_type in [QuestionType.MULTIPLE_CHOICE, QuestionType.DROPDOWN, QuestionType.CHECKBOX]:
@@ -342,7 +343,7 @@ def api_get_quiz_stats(quiz_id):
 def api_update_quiz_meta(quiz_id):
     quiz = get_quiz_or_abort(quiz_id)
     quiz.name = sanitize_text(request.form.get('name', quiz.name))
-    quiz.description = sanitize_text(request.form.get('description', ''))
+    quiz.description = sanitize_rich_text(request.form.get('description', ''))
     db.session.commit()
     return "", 204
 
@@ -353,6 +354,11 @@ def api_update_quiz_theme(quiz_id):
     data = request.get_json() or {}
     quiz.theme_color = data.get('theme_color', quiz.theme_color)
     quiz.font_question = data.get('font_question', quiz.font_question)
+    quiz.bg_pattern = data.get('bg_pattern', quiz.bg_pattern)
+    try:
+        quiz.bg_opacity = int(data.get('bg_opacity', quiz.bg_opacity))
+    except (ValueError, TypeError):
+        pass
     db.session.commit()
     return jsonify({'success': True})
 
@@ -379,6 +385,36 @@ def api_update_quiz_max_attempts(quiz_id):
         return jsonify({'success': True})
     except (ValueError, TypeError):
         return jsonify({'success': False}), 400
+
+@quiz_bp.route('/quiz/<int:quiz_id>/update-settings', methods=['PUT'])
+@login_required
+def api_update_quiz_settings(quiz_id):
+    quiz = get_quiz_or_abort(quiz_id)
+    data = request.get_json() or {}
+    field = data.get('field')
+    value = data.get('value')
+
+    if field == 'is_quiz':
+        quiz.is_quiz = bool(value)
+    elif field == 'collect_email':
+        if value in ('none', 'verified'):
+            quiz.collect_email = value
+    elif field == 'shuffle_questions':
+        quiz.shuffle_questions = bool(value)
+    elif field == 'confirmation_message':
+        quiz.confirmation_message = sanitize_text(str(value or ''), max_len=500)
+    elif field == 'default_points':
+        try:
+            quiz.default_points = max(0, int(value))
+        except (ValueError, TypeError):
+            return jsonify({'success': False}), 400
+    elif field == 'required_by_default':
+        quiz.required_by_default = bool(value)
+    else:
+        return jsonify({'success': False, 'message': 'Unknown field'}), 400
+
+    db.session.commit()
+    return jsonify({'success': True})
 
 @quiz_bp.route('/quiz/<int:quiz_id>/questions/reorder', methods=['POST'])
 @login_required
@@ -539,6 +575,58 @@ def api_submit_quiz(quiz_id):
 
     submission.total_points = total_possible_points
     submission.score = (earned_points / total_possible_points * 100) if total_possible_points > 0 else 0
+
+    # ── Auto-sync quiz score to gradebook ──────────────────────────────
+    try:
+        from app.models.gradebook import GradeItem, GradeEntry, GradeCategory, GradeCategoryType
+        from app.helpers import get_jakarta_now
+
+        grade_item = GradeItem.query.filter_by(quiz_id=quiz.id).first()
+        if not grade_item:
+            # Find or create a category for quizzes
+            category = GradeCategory.query.filter_by(course_id=quiz.course_id).first()
+            if not category:
+                category = GradeCategory(
+                    name="Kuis",
+                    course_id=quiz.course_id,
+                    category_type=GradeCategoryType.FORMATIF,
+                    weight=100.0
+                )
+                db.session.add(category)
+                db.session.flush()
+
+            grade_item = GradeItem(
+                name=f"Kuis: {quiz.name}",
+                description=quiz.description,
+                category_id=category.id,
+                max_score=float(total_possible_points) if total_possible_points > 0 else float(quiz.points),
+                course_id=quiz.course_id,
+                quiz_id=quiz.id,
+            )
+            db.session.add(grade_item)
+            db.session.flush()
+
+        # Create or update GradeEntry for this student
+        grade_entry = GradeEntry.query.filter_by(
+            grade_item_id=grade_item.id,
+            student_id=current_user.id
+        ).first()
+
+        if not grade_entry:
+            grade_entry = GradeEntry(
+                grade_item_id=grade_item.id,
+                student_id=current_user.id
+            )
+            db.session.add(grade_entry)
+
+        grade_entry.score = submission.score
+        grade_entry.percentage = submission.score  # score is already percentage
+        grade_entry.graded_at = get_jakarta_now()
+        grade_entry.graded_by = quiz.course.teacher_id
+    except Exception:
+        pass  # Don't fail quiz submission if gradebook sync fails
+    # ───────────────────────────────────────────────────────────────────
+
     db.session.commit()
-    
+
     return jsonify({'success': True, 'score': submission.score, 'message': 'Kuis berhasil dikirim.'})

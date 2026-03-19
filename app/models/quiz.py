@@ -45,6 +45,17 @@ class Quiz(db.Model):
     duration: Mapped[int] = mapped_column(db.Integer, default=0) # Duration in minutes, 0 means unlimited
     max_attempts: Mapped[int] = mapped_column(db.Integer, default=1) # 0 = unlimited
     is_published: Mapped[bool] = mapped_column(db.Boolean, default=False, nullable=False) # Legacy, keeping for migration safety
+
+    # Settings fields
+    is_quiz: Mapped[bool] = mapped_column(db.Boolean, default=True, nullable=False)
+    collect_email: Mapped[str] = mapped_column(db.String(20), default='verified', nullable=False)
+    shuffle_questions: Mapped[bool] = mapped_column(db.Boolean, default=False, nullable=False)
+    confirmation_message: Mapped[Optional[str]] = mapped_column(db.Text, nullable=True, default='Jawaban Anda telah direkam.')
+    default_points: Mapped[int] = mapped_column(db.Integer, default=10, nullable=False)
+    required_by_default: Mapped[bool] = mapped_column(db.Boolean, default=False, nullable=False)
+
+    # Background opacity (0-100)
+    bg_opacity: Mapped[int] = mapped_column(db.Integer, default=60, nullable=False)
     
     created_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=get_jakarta_now, nullable=False)
     updated_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=get_jakarta_now, onupdate=get_jakarta_now, nullable=False)

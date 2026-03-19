@@ -105,6 +105,23 @@ def sanitize_text(value: str, max_len: int = 150) -> str:
         s = s[:max_len]
     return s
 
+def sanitize_rich_text(value: str, max_len: int = 5000) -> str:
+    """Sanitize rich text HTML, allowing only safe formatting tags."""
+    if value is None:
+        return ''
+    s = value.strip()
+    allowed_tags = {'b', 'i', 'u', 'strong', 'em', 'ol', 'ul', 'li', 'br', 'p', 'div'}
+    def replace_tag(match):
+        tag_content = match.group(1)
+        tag_name = re.match(r'/?(\w+)', tag_content)
+        if tag_name and tag_name.group(1).lower() in allowed_tags:
+            return match.group(0)
+        return ''
+    s = re.sub(r'<([^>]*?)>', replace_tag, s)
+    if len(s) > max_len:
+        s = s[:max_len]
+    return s
+
 def is_valid_email(email: str) -> bool:
     from email_validator import validate_email, EmailNotValidError
     if not isinstance(email, str):

@@ -6,11 +6,12 @@
 <style>
     :root {
         --quiz-theme: {{ quiz.theme_color or '#673ab7' }};
+        --quiz-theme-rgb: 103, 58, 183;
         --quiz-bg: #f0ebf8;
     }
     body { background-color: var(--quiz-bg); }
-    .quiz-container { max-width: 770px; margin: 0 auto; }
-    
+    .quiz-container { max-width: 770px; margin: 0 auto; position: relative; z-index: 1; }
+
     .start-screen {
         max-width: 500px;
         margin: 100px auto;
@@ -20,6 +21,8 @@
         text-align: center;
         border: 1px solid #dadce0;
         box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+        position: relative;
+        z-index: 1;
     }
 
     .timer-badge {
@@ -44,10 +47,9 @@
         margin-bottom: 12px;
     }
 
-    /* Font Settings */
     .question-text { font-family: '{{ quiz.font_question or 'Inter' }}', sans-serif; }
     .answer-text { font-family: '{{ quiz.font_answer or 'Inter' }}', sans-serif; }
-    
+
     .option-item {
         display: flex;
         align-items: center;
@@ -57,25 +59,69 @@
         transition: background 0.2s;
     }
     .option-item:hover { background: #f8f9fa; }
-    
+
     .form-header-strip {
         height: 10px;
         background-color: var(--quiz-theme);
         border-top-left-radius: 8px;
         border-top-right-radius: 8px;
     }
+
+    /* Background Pattern Overlay */
+    .bg-pattern-overlay {
+        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+        pointer-events: none; z-index: 0; transition: opacity 0.3s;
+    }
+    .bg-geometric-circles {
+        background-image: radial-gradient(circle at 20% 30%, rgba(var(--quiz-theme-rgb), 0.12) 0%, transparent 50%),
+                           radial-gradient(circle at 80% 20%, rgba(var(--quiz-theme-rgb), 0.08) 0%, transparent 45%),
+                           radial-gradient(circle at 60% 80%, rgba(var(--quiz-theme-rgb), 0.1) 0%, transparent 40%),
+                           radial-gradient(circle at 10% 90%, rgba(var(--quiz-theme-rgb), 0.06) 0%, transparent 35%);
+    }
+    .bg-wave {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23673ab7' fill-opacity='0.06' d='M0,160L48,170.7C96,181,192,203,288,192C384,181,480,139,576,138.7C672,139,768,181,864,197.3C960,213,1056,203,1152,186.7C1248,171,1344,149,1392,138.7L1440,128L1440,320L0,320Z'/%3E%3C/svg%3E");
+        background-repeat: repeat-y; background-size: 100% auto; background-position: bottom;
+    }
+    .bg-dot-grid {
+        background-image: radial-gradient(circle, rgba(var(--quiz-theme-rgb), 0.18) 1px, transparent 1px);
+        background-size: 24px 24px;
+    }
+    .bg-abstract-blobs {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Cg fill='none' stroke='%23673ab7' stroke-opacity='0.07' stroke-width='2'%3E%3Ccircle cx='150' cy='150' r='120'/%3E%3Ccircle cx='450' cy='120' r='80'/%3E%3Ccircle cx='300' cy='400' r='150'/%3E%3Ccircle cx='500' cy='450' r='100'/%3E%3Ccircle cx='80' cy='420' r='60'/%3E%3C/g%3E%3C/svg%3E");
+        background-size: 600px 600px;
+    }
+    .bg-topography {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Cg fill='none' stroke='%23673ab7' stroke-opacity='0.06' stroke-width='1.5'%3E%3Cpath d='M0 200c50-30 100 20 150-10s100-60 150 0 100 40 100 10'/%3E%3Cpath d='M0 250c60-20 90 30 160-5s80-50 140 5 100 30 100 5'/%3E%3Cpath d='M0 150c40-40 120 10 160-20s90-30 140 20 100 20 100 0'/%3E%3Cpath d='M0 100c70-10 80 40 170-15s70-40 130 15 100 25 100-5'/%3E%3Cpath d='M0 300c50-25 110 15 150-10s100-45 150 10 100 35 100 5'/%3E%3Cpath d='M0 350c40-15 100 25 160-8s80-35 140 12 100 20 100-2'/%3E%3C/g%3E%3C/svg%3E");
+        background-size: 400px 400px;
+    }
+    .bg-confetti {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 300 300'%3E%3Cg fill='%23673ab7' fill-opacity='0.06'%3E%3Crect x='20' y='30' width='8' height='3' rx='1' transform='rotate(45 24 31.5)'/%3E%3Crect x='80' y='70' width='6' height='3' rx='1' transform='rotate(-30 83 71.5)'/%3E%3Crect x='150' y='20' width='7' height='3' rx='1' transform='rotate(60 153.5 21.5)'/%3E%3Crect x='220' y='60' width='8' height='3' rx='1' transform='rotate(-15 224 61.5)'/%3E%3Crect x='270' y='30' width='6' height='3' rx='1' transform='rotate(75 273 31.5)'/%3E%3Crect x='50' y='140' width='7' height='3' rx='1' transform='rotate(-45 53.5 141.5)'/%3E%3Crect x='120' y='120' width='8' height='3' rx='1' transform='rotate(30 124 121.5)'/%3E%3Crect x='200' y='150' width='6' height='3' rx='1' transform='rotate(-60 203 151.5)'/%3E%3Crect x='260' y='130' width='7' height='3' rx='1' transform='rotate(15 263.5 131.5)'/%3E%3Crect x='30' y='220' width='8' height='3' rx='1' transform='rotate(50 34 221.5)'/%3E%3Crect x='100' y='240' width='6' height='3' rx='1' transform='rotate(-40 103 241.5)'/%3E%3Crect x='170' y='210' width='7' height='3' rx='1' transform='rotate(70 173.5 211.5)'/%3E%3Crect x='240' y='250' width='8' height='3' rx='1' transform='rotate(-20 244 251.5)'/%3E%3Crect x='280' y='220' width='6' height='3' rx='1' transform='rotate(55 283 221.5)'/%3E%3Ccircle cx='40' cy='80' r='3'/%3E%3Ccircle cx='160' cy='90' r='2'/%3E%3Ccircle cx='250' cy='100' r='3'/%3E%3Ccircle cx='70' cy='180' r='2'/%3E%3Ccircle cx='190' cy='270' r='3'/%3E%3Ccircle cx='130' cy='280' r='2'/%3E%3C/g%3E%3C/svg%3E");
+        background-size: 300px 300px;
+    }
+    .bg-gradient-mesh {
+        background: linear-gradient(135deg, rgba(var(--quiz-theme-rgb), 0.06) 0%, transparent 50%),
+                    linear-gradient(225deg, rgba(var(--quiz-theme-rgb), 0.08) 0%, transparent 50%),
+                    linear-gradient(315deg, rgba(var(--quiz-theme-rgb), 0.04) 0%, transparent 50%),
+                    linear-gradient(45deg, rgba(var(--quiz-theme-rgb), 0.05) 0%, transparent 40%);
+    }
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Roboto:wght@400;500;700&family=Open+Sans:wght@400;600;700&family=Poppins:wght@400;500;600&family=Lexend:wght@400;500;600&display=swap" rel="stylesheet">
 {% endblock %}
 
 {% block body %}
+<!-- Background Pattern Overlay -->
+{% if quiz.bg_pattern and quiz.bg_pattern != 'none' %}
+<div class="bg-pattern-overlay bg-{{ quiz.bg_pattern }}"
+     style="opacity: {{ (quiz.bg_opacity or 60) / 100 }};"></div>
+{% endif %}
+
 <!-- Start Screen -->
 <div id="start-screen" class="start-screen animate-fade-in">
     <div class="w-20 h-20 bg-primary-50 text-primary-600 rounded-3xl flex items-center justify-center mx-auto mb-8">
         <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
     </div>
     <h1 class="text-3xl font-black text-gray-900 mb-2">{{ quiz.name }}</h1>
-    <p class="text-gray-500 mb-8">{{ quiz.description or 'Selamat mengerjakan kuis ini. Pastikan koneksi internet Anda stabil.' }}</p>
+    <div class="text-gray-500 mb-8">{{ (quiz.description or 'Selamat mengerjakan kuis ini. Pastikan koneksi internet Anda stabil.')|safe }}</div>
     
     <div class="grid grid-cols-2 gap-4 mb-10">
         <div class="bg-gray-50 p-4 rounded-2xl">
@@ -219,6 +265,15 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+// Initialize theme RGB for CSS patterns
+(function() {
+    const hex = '{{ quiz.theme_color or "#673ab7" }}';
+    const r = parseInt(hex.slice(1,3), 16);
+    const g = parseInt(hex.slice(3,5), 16);
+    const b = parseInt(hex.slice(5,7), 16);
+    document.documentElement.style.setProperty('--quiz-theme-rgb', `${r}, ${g}, ${b}`);
+})();
+
 let timeRemaining = {{ quiz.duration * 60 if quiz.duration > 0 else 0 }};
 let timerInterval = null;
 let isQuizActive = false;
@@ -455,7 +510,7 @@ async function sendAnswers(formData) {
             Swal.fire({
                 icon: 'success',
                 title: 'Terkirim!',
-                text: `Skor Anda: ${data.score.toFixed(1)}%`,
+                html: `<p class="mb-2">{{ quiz.confirmation_message or 'Jawaban Anda telah direkam.' }}</p><p class="font-bold text-lg">Skor Anda: ${data.score.toFixed(1)}%</p>`,
                 confirmButtonText: 'Kembali ke Kelas',
                 customClass: { popup: 'rounded-3xl' }
             }).then(() => window.location.href = "{{ url_for('main.course_detail', course_id=quiz.course_id) }}");

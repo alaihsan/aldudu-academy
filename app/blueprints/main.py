@@ -110,6 +110,9 @@ def quiz_detail(quiz_id):
         return render_template('quiz_editor.html', quiz=quiz, QuestionType=QuestionType, Question=Question, Option=Option)
     else:
         questions = quiz.questions.order_by(Question.order).all()
+        if quiz.shuffle_questions:
+            import random
+            random.shuffle(questions)
         return render_template(
             'quiz_detail.html',
             quiz=quiz,

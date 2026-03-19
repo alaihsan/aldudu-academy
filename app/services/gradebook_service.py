@@ -229,69 +229,103 @@ def sync_quiz_grades(quiz_id: int) -> int:
     return updated_count
 
 
+def get_predicate(grade: float) -> Dict:
+    """
+    Get predicate letter and label based on standard grade intervals.
+    A >= 90: Sangat Baik
+    B >= 80: Baik
+    C >= 70: Cukup
+    D < 70: Kurang
+    """
+    if grade >= 90:
+        return {'letter': 'A', 'label': 'Sangat Baik'}
+    elif grade >= 80:
+        return {'letter': 'B', 'label': 'Baik'}
+    elif grade >= 70:
+        return {'letter': 'C', 'label': 'Cukup'}
+    else:
+        return {'letter': 'D', 'label': 'Kurang'}
+
+
+def get_mastery_status(grade: float) -> str:
+    """
+    Get mastery status message based on grade predicate.
+    """
+    if grade >= 90:
+        return 'Kamu mampu menguasai materi ini'
+    elif grade >= 80:
+        return 'Kamu cukup mampu menguasai materi ini'
+    elif grade >= 70:
+        return 'Kamu cukup untuk menguasai materi ini'
+    else:
+        return 'Kamu belum menguasai materi ini'
+
+
 def get_student_grades_summary(student_id: int, course_id: int) -> Dict:
     """
-    Get comprehensive grade summary for a student
+    Get comprehensive grade summary for a student.
+    Uses simple average (no category weighting) for final grade.
+    Includes predicate (A/B/C/D) and mastery status for each learning objective.
     """
     course = Course.query.get(course_id)
     if not course:
         return {}
-    
+
     # Check if student is enrolled
     if course.teacher_id != student_id and student_id not in [s.id for s in course.students.all()]:
         return {}
-    
-    categories = GradeCategory.query.filter_by(course_id=course_id).all()
-    learning_objectives = LearningObjective.query.filter_by(course_id=course_id).order_by(LearningObjective.order).all()
-    
-    summary = {
-        'course_id': course_id,
-        'course_name': course.name,
-        'student_id': student_id,
-        'categories': [],
-        'learning_objectives': [],
-        'final_grade': 0.0,
-    }
-    
-    # Category breakdown
-    for category in categories:
-        cat_data = calculate_category_grade(student_id, category.id)
-        cat_data['items'] = []
-        
-        # Get grade items in this category
-        items = GradeItem.query.filter_by(category_id=category.id).all()
-        for item in items:
-            entry = GradeEntry.query.filter_by(
-                grade_item_id=item.id,
-                student_id=student_id
-            ).first()
-            
-            if entry:
-                cat_data['items'].append({
-                    'item_id': item.id,
-                    'item_name': item.name,
-                    'score': entry.score,
-                    'max_score': item.max_score,
-                    'percentage': entry.percentage,
-                    'feedback': entry.feedback,
-                    'graded_at': entry.graded_at.strftime('%Y-%m-%d') if entry.graded_at else None,
-                })
-        
-        summary['categories'].append(cat_data)
-    
-    # Learning objectives breakdown
+
+    # ── Collect ALL grade items for this course ──────────────────────
+    all_items = GradeItem.query.filter_by(course_id=course_id).all()
+
+    items_list = []
+    all_percentages = []
+
+    for item in all_items:
+        entry = GradeEntry.query.filter_by(
+            grade_item_id=item.id,
+            student_id=student_id
+        ).first()
+
+        item_data = {
+            'item_id': item.id,
+            'item_name': item.name,
+            'score': entry.score if entry else None,
+            'max_score': item.max_score,
+            'percentage': entry.percentage if entry else None,
+            'feedback': entry.feedback if entry else None,
+            'graded_at': entry.graded_at.strftime('%Y-%m-%d') if entry and entry.graded_at else None,
+            'category_name': item.category.name if item.category else 'Umum',
+            'is_quiz': item.quiz_id is not None,
+            'is_assignment': item.assignment_id is not None,
+        }
+        items_list.append(item_data)
+
+        if entry and entry.percentage is not None:
+            all_percentages.append(entry.percentage)
+
+    # ── Calculate simple average final grade (no weighting) ──────────
+    final_grade = round(sum(all_percentages) / len(all_percentages), 2) if all_percentages else 0.0
+    predicate = get_predicate(final_grade)
+
+    # ── Learning objectives (Capaian Materi) with mastery status ─────
+    learning_objectives = LearningObjective.query.filter_by(
+        course_id=course_id
+    ).order_by(LearningObjective.order).all()
+
+    lo_list = []
     for lo in learning_objectives:
         lo_data = lo.to_dict()
         lo_data['items'] = []
-        
-        # Get grade items linked to this LO or its TPs
+        lo_percentages = []
+
+        # Items linked directly to this CP
         for item in lo.grade_items:
             entry = GradeEntry.query.filter_by(
                 grade_item_id=item.id,
                 student_id=student_id
             ).first()
-            
-            if entry:
+            if entry and entry.percentage is not None:
                 lo_data['items'].append({
                     'item_id': item.id,
                     'item_name': item.name,
@@ -299,16 +333,16 @@ def get_student_grades_summary(student_id: int, course_id: int) -> Dict:
                     'max_score': item.max_score,
                     'percentage': entry.percentage,
                 })
-        
-        # Also check TPs
+                lo_percentages.append(entry.percentage)
+
+        # Items linked through TPs
         for goal in lo.learning_goals:
             for item in goal.grade_items:
                 entry = GradeEntry.query.filter_by(
                     grade_item_id=item.id,
                     student_id=student_id
                 ).first()
-                
-                if entry:
+                if entry and entry.percentage is not None:
                     lo_data['items'].append({
                         'item_id': item.id,
                         'item_name': item.name,
@@ -317,13 +351,44 @@ def get_student_grades_summary(student_id: int, course_id: int) -> Dict:
                         'percentage': entry.percentage,
                         'goal_code': goal.code,
                     })
-        
-        summary['learning_objectives'].append(lo_data)
-    
-    # Calculate final grade
-    grade_data = calculate_student_grade(student_id, course_id)
-    summary['final_grade'] = round(grade_data['final_grade'], 2)
-    
+                    lo_percentages.append(entry.percentage)
+
+        # Calculate average score and mastery status for this CP
+        avg_score = round(sum(lo_percentages) / len(lo_percentages), 2) if lo_percentages else 0.0
+        lo_data['avg_score'] = avg_score
+        lo_data['predicate'] = get_predicate(avg_score)
+        lo_data['mastery_status'] = get_mastery_status(avg_score)
+
+        lo_list.append(lo_data)
+
+    # ── If no CP defined, create a virtual "overall" entry ───────────
+    if not lo_list and all_percentages:
+        lo_list.append({
+            'id': 0,
+            'code': 'Umum',
+            'description': course.name,
+            'course_id': course_id,
+            'order': 0,
+            'goals_count': 0,
+            'items': [],
+            'avg_score': final_grade,
+            'predicate': predicate,
+            'mastery_status': get_mastery_status(final_grade),
+        })
+
+    summary = {
+        'course_id': course_id,
+        'course_name': course.name,
+        'student_id': student_id,
+        'items': items_list,
+        'learning_objectives': lo_list,
+        'final_grade': final_grade,
+        'predicate': predicate,
+        'mastery_status': get_mastery_status(final_grade),
+        'total_items': len(all_items),
+        'graded_items': len(all_percentages),
+    }
+
     return summary
 
 

@@ -12,7 +12,16 @@
     .text-theme { color: var(--course-theme) !important; }
     .border-theme { border-color: var(--course-theme) !important; }
     .bg-theme-light { background-color: var(--course-theme-light) !important; }
-    .shadow-theme { shadow-color: var(--course-theme) !important; }
+
+    @keyframes grade-pop {
+        0% { transform: scale(0.5); opacity: 0; }
+        70% { transform: scale(1.1); }
+        100% { transform: scale(1); opacity: 1; }
+    }
+    .animate-grade-pop { animation: grade-pop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
+    .mastery-badge { transition: all 0.3s; }
+    .mastery-badge:hover { transform: translateY(-2px); box-shadow: 0 8px 20px -4px rgba(0,0,0,0.1); }
 </style>
 {% endblock %}
 
@@ -34,9 +43,8 @@
                     <p class="text-sm font-medium text-gray-500">Nilai Saya</p>
                 </div>
             </div>
-            
+
             <div class="flex items-center space-x-4">
-                <!-- Simple Course Selector -->
                 <select onchange="window.location.href='/gradebook/course/' + this.value + '/my-grades'" class="bg-gray-50 border border-gray-200 text-gray-700 text-xs font-bold rounded-xl focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 outline-none">
                     <option disabled>Pindah Mata Pelajaran</option>
                     {% for c in current_user.courses_enrolled %}
@@ -51,8 +59,8 @@
 
         <main class="flex-1 overflow-y-auto p-8">
             <div class="max-w-6xl mx-auto space-y-10 animate-fade-in">
-                
-                <!-- Hero Section -->
+
+                <!-- Hero Section: Nilai Akhir + Predikat -->
                 <div class="bg-white rounded-[3rem] p-10 border border-gray-100 shadow-premium flex flex-col md:flex-row items-center justify-between gap-10">
                     <div class="space-y-4 text-center md:text-left">
                         <span class="inline-block px-4 py-1.5 bg-theme-light text-theme rounded-full text-[10px] font-black uppercase tracking-widest">Detail Capaian</span>
@@ -66,17 +74,17 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="flex items-center space-x-10">
                         <div class="text-center">
                             <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Nilai Akhir</p>
-                            <div id="final-grade-circle" class="w-28 h-28 rounded-full border-8 border-theme-light flex items-center justify-center bg-white shadow-xl">
+                            <div id="final-grade-circle" class="w-28 h-28 rounded-full border-8 border-theme-light flex items-center justify-center bg-white shadow-xl animate-grade-pop">
                                 <span id="final-grade" class="text-3xl font-black text-theme">-</span>
                             </div>
                         </div>
                         <div class="text-center">
                             <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Predikat</p>
-                            <div class="w-28 h-28 rounded-3xl bg-theme text-white flex flex-col items-center justify-center shadow-lg shadow-theme/30">
+                            <div id="predicate-box" class="w-28 h-28 rounded-3xl bg-theme text-white flex flex-col items-center justify-center shadow-lg shadow-theme/30 animate-grade-pop">
                                 <span id="grade-predicate" class="text-4xl font-black">-</span>
                                 <span id="grade-category" class="text-[10px] font-bold uppercase mt-1">...</span>
                             </div>
@@ -84,20 +92,47 @@
                     </div>
                 </div>
 
+                <!-- Mastery Status Banner -->
+                <div id="mastery-banner" class="hidden bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex items-center space-x-4">
+                    <div id="mastery-icon" class="w-12 h-12 rounded-2xl flex items-center justify-center text-white flex-shrink-0">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <div>
+                        <p id="mastery-text" class="font-bold text-gray-800"></p>
+                        <p id="mastery-detail" class="text-sm text-gray-500 mt-0.5"></p>
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                    <!-- Left: Categories Breakdown -->
+                    <!-- Left: Capaian Materi -->
                     <div class="lg:col-span-1 space-y-8">
                         <div class="bg-white rounded-[2.5rem] border border-gray-100 shadow-premium p-8">
-                            <h3 class="text-lg font-black text-gray-900 mb-6">📊 Bobot Nilai</h3>
-                            <div id="category-breakdown" class="space-y-4">
+                            <h3 class="text-lg font-black text-gray-900 mb-6">
+                                <span class="mr-2">&#127919;</span> Capaian Materi
+                            </h3>
+                            <div id="cp-breakdown" class="space-y-4">
                                 <!-- Populated by JS -->
                             </div>
                         </div>
-                        
+
+                        <!-- Stats Card -->
                         <div class="bg-white rounded-[2.5rem] border border-gray-100 shadow-premium p-8">
-                            <h3 class="text-lg font-black text-gray-900 mb-6">🎯 Capaian Materi</h3>
-                            <div id="cp-breakdown" class="space-y-4">
-                                <!-- Populated by JS -->
+                            <h3 class="text-lg font-black text-gray-900 mb-6">
+                                <span class="mr-2">&#128202;</span> Statistik
+                            </h3>
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                                    <span class="text-sm font-bold text-gray-600">Total Tugas/Kuis</span>
+                                    <span id="stat-total" class="text-sm font-black text-gray-900">0</span>
+                                </div>
+                                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                                    <span class="text-sm font-bold text-gray-600">Sudah Dinilai</span>
+                                    <span id="stat-graded" class="text-sm font-black text-emerald-600">0</span>
+                                </div>
+                                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                                    <span class="text-sm font-bold text-gray-600">Belum Dinilai</span>
+                                    <span id="stat-ungraded" class="text-sm font-black text-amber-600">0</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -106,10 +141,9 @@
                     <div class="lg:col-span-2">
                         <div class="bg-white rounded-[2.5rem] border border-gray-100 shadow-premium overflow-hidden">
                             <div class="p-8 border-b border-gray-50 flex items-center justify-between">
-                                <h3 class="text-lg font-black text-gray-900">📝 Daftar Nilai Tugas & Kuis</h3>
-                                <div class="px-4 py-1.5 bg-gray-50 text-gray-400 rounded-lg text-[10px] font-black uppercase tracking-widest">
-                                    {{ current_user.courses_enrolled | length }} Mapel
-                                </div>
+                                <h3 class="text-lg font-black text-gray-900">
+                                    <span class="mr-2">&#128221;</span> Daftar Nilai Tugas & Kuis
+                                </h3>
                             </div>
                             <div class="overflow-x-auto">
                                 <table class="w-full">
@@ -119,6 +153,7 @@
                                             <th class="px-8 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Nama Tugas/Kuis</th>
                                             <th class="px-8 py-4 text-center text-[10px] font-black text-gray-400 uppercase tracking-widest">Nilai</th>
                                             <th class="px-8 py-4 text-center text-[10px] font-black text-gray-400 uppercase tracking-widest">%</th>
+                                            <th class="px-8 py-4 text-center text-[10px] font-black text-gray-400 uppercase tracking-widest">Predikat</th>
                                             <th class="px-8 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Feedback Guru</th>
                                         </tr>
                                     </thead>
@@ -146,146 +181,180 @@ document.addEventListener('DOMContentLoaded', function() {
     loadMyGrades();
 });
 
+function getPredicate(grade) {
+    if (grade >= 90) return { letter: 'A', label: 'Sangat Baik' };
+    if (grade >= 80) return { letter: 'B', label: 'Baik' };
+    if (grade >= 70) return { letter: 'C', label: 'Cukup' };
+    return { letter: 'D', label: 'Kurang' };
+}
+
+function getMasteryStatus(grade) {
+    if (grade >= 90) return 'Kamu mampu menguasai materi ini';
+    if (grade >= 80) return 'Kamu cukup mampu menguasai materi ini';
+    if (grade >= 70) return 'Kamu cukup untuk menguasai materi ini';
+    return 'Kamu belum menguasai materi ini';
+}
+
+function getMasteryColor(grade) {
+    if (grade >= 90) return { bg: 'bg-emerald-500', text: 'text-emerald-600', light: 'bg-emerald-50' };
+    if (grade >= 80) return { bg: 'bg-blue-500', text: 'text-blue-600', light: 'bg-blue-50' };
+    if (grade >= 70) return { bg: 'bg-amber-500', text: 'text-amber-600', light: 'bg-amber-50' };
+    return { bg: 'bg-rose-500', text: 'text-rose-600', light: 'bg-rose-50' };
+}
+
+function getScoreColor(score) {
+    if (score >= 90) return 'text-emerald-600';
+    if (score >= 80) return 'text-blue-600';
+    if (score >= 70) return 'text-amber-600';
+    return 'text-rose-600';
+}
+
+function getScoreBg(score) {
+    if (score >= 90) return 'bg-emerald-500';
+    if (score >= 80) return 'bg-blue-500';
+    if (score >= 70) return 'bg-amber-500';
+    return 'bg-rose-500';
+}
+
+function getPredicateBadge(pct) {
+    const p = getPredicate(pct);
+    const colors = getMasteryColor(pct);
+    return `<span class="px-2 py-0.5 rounded-lg text-[10px] font-black ${colors.light} ${colors.text}">${p.letter}</span>`;
+}
+
+function getPercentageColor(pct) {
+    if (pct >= 90) return 'bg-emerald-50 text-emerald-600';
+    if (pct >= 80) return 'bg-blue-50 text-blue-600';
+    if (pct >= 70) return 'bg-amber-50 text-amber-600';
+    return 'bg-rose-50 text-rose-600';
+}
+
 async function loadMyGrades() {
     const gradesBody = document.getElementById('grades-body');
     const noGradesMsg = document.getElementById('no-grades-msg');
-    
+
     try {
         const res = await fetch(`/gradebook/api/student/${STUDENT_ID}/course/${COURSE_ID}`);
         const data = await res.json();
-        
+
         if (data.success) {
             const summary = data.summary;
             const finalGrade = summary.final_grade || 0;
-            
-            // Hero section updates
+            const predicate = summary.predicate || getPredicate(finalGrade);
+
+            // ── Hero section: Nilai Akhir + Predikat ──────────────
             document.getElementById('final-grade').textContent = finalGrade.toFixed(0);
-            const predicateData = getPredicate(finalGrade);
-            document.getElementById('grade-predicate').textContent = predicateData.letter;
-            document.getElementById('grade-category').textContent = predicateData.label;
-            
-            // Category breakdown (Weighting)
-            const catContainer = document.getElementById('category-breakdown');
-            catContainer.innerHTML = '';
-            
-            if (summary.categories && summary.categories.length > 0) {
-                summary.categories.forEach(cat => {
-                    const pct = cat.score;
-                    const div = document.createElement('div');
-                    div.className = 'p-4 bg-gray-50 rounded-2xl border border-gray-100';
-                    div.innerHTML = `
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-sm font-bold text-gray-700">${cat.category_name}</span>
-                            <span class="text-sm font-black ${getScoreColor(pct)}">${pct.toFixed(1)}</span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-1.5">
-                            <div class="h-1.5 rounded-full ${getScoreBg(pct)}" style="width: ${pct}%"></div>
-                        </div>
-                        <p class="text-[10px] font-bold text-gray-400 mt-2 uppercase tracking-widest">${cat.category_type} | BOBOT ${cat.weight}%</p>
+            document.getElementById('grade-predicate').textContent = predicate.letter;
+            document.getElementById('grade-category').textContent = predicate.label;
+
+            // ── Mastery Banner ────────────────────────────────────
+            const masteryBanner = document.getElementById('mastery-banner');
+            const colors = getMasteryColor(finalGrade);
+
+            if (summary.graded_items > 0) {
+                masteryBanner.classList.remove('hidden');
+                document.getElementById('mastery-icon').className = `w-12 h-12 rounded-2xl flex items-center justify-center text-white flex-shrink-0 ${colors.bg}`;
+                document.getElementById('mastery-text').textContent = summary.mastery_status || getMasteryStatus(finalGrade);
+                document.getElementById('mastery-detail').textContent = `Nilai akhir: ${finalGrade.toFixed(1)} | Predikat: ${predicate.letter} (${predicate.label})`;
+            }
+
+            // ── Stats ─────────────────────────────────────────────
+            document.getElementById('stat-total').textContent = summary.total_items || 0;
+            document.getElementById('stat-graded').textContent = summary.graded_items || 0;
+            document.getElementById('stat-ungraded').textContent = (summary.total_items || 0) - (summary.graded_items || 0);
+
+            // ── Grades Table ──────────────────────────────────────
+            gradesBody.innerHTML = '';
+            const items = summary.items || [];
+
+            if (items.length > 0) {
+                let rowNum = 1;
+                items.forEach(item => {
+                    const percentage = item.percentage || 0;
+                    const hasScore = item.score !== null && item.score !== undefined;
+                    const itemPredicate = hasScore ? getPredicate(percentage) : null;
+
+                    const tr = document.createElement('tr');
+                    tr.className = 'group hover:bg-theme-light/30 transition-colors';
+                    tr.innerHTML = `
+                        <td class="px-8 py-6 text-sm text-gray-400 font-bold">${rowNum++}</td>
+                        <td class="px-8 py-6">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-lg">${item.is_quiz ? '&#128221;' : '&#128203;'}</span>
+                                <div>
+                                    <p class="text-sm font-bold text-gray-900 group-hover:text-theme transition-colors">${item.item_name}</p>
+                                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">${item.category_name}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-8 py-6 text-center">
+                            ${hasScore
+                                ? `<span class="text-sm font-black text-gray-900">${item.score.toFixed(1)}</span><span class="text-xs text-gray-400">/${item.max_score}</span>`
+                                : '<span class="text-sm text-gray-300 italic">Belum</span>'
+                            }
+                        </td>
+                        <td class="px-8 py-6 text-center">
+                            ${hasScore
+                                ? `<span class="px-3 py-1 rounded-full text-[10px] font-black ${getPercentageColor(percentage)}">${percentage.toFixed(0)}%</span>`
+                                : '<span class="text-gray-300">-</span>'
+                            }
+                        </td>
+                        <td class="px-8 py-6 text-center">
+                            ${hasScore ? getPredicateBadge(percentage) : '<span class="text-gray-300">-</span>'}
+                        </td>
+                        <td class="px-8 py-6">
+                            <p class="text-sm text-gray-600 line-clamp-2">${item.feedback || '<span class="text-gray-300 italic">Tidak ada feedback</span>'}</p>
+                        </td>
                     `;
-                    catContainer.appendChild(div);
+                    gradesBody.appendChild(tr);
                 });
             } else {
-                catContainer.innerHTML = '<div class="text-center py-4 text-gray-400 text-sm italic">Data belum tersedia</div>';
-            }
-            
-            // Detailed grades table
-            gradesBody.innerHTML = '';
-            let rowNum = 1;
-            let hasItems = false;
-            
-            summary.categories.forEach(cat => {
-                if (cat.items && cat.items.length > 0) {
-                    hasItems = true;
-                    cat.items.forEach(item => {
-                        const percentage = item.percentage || 0;
-                        const tr = document.createElement('tr');
-                        tr.className = 'group hover:bg-theme-light/30 transition-colors';
-                        tr.innerHTML = `
-                            <td class="px-8 py-6 text-sm text-gray-400 font-bold">${rowNum++}</td>
-                            <td class="px-8 py-6">
-                                <p class="text-sm font-bold text-gray-900 group-hover:text-theme transition-colors">${item.item_name}</p>
-                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">${cat.category_name}</p>
-                            </td>
-                            <td class="px-8 py-6 text-center">
-                                <span class="text-sm font-black text-gray-900">${item.score !== null ? item.score : '-'}</span>
-                                <span class="text-xs text-gray-400">/${item.max_score}</span>
-                            </td>
-                            <td class="px-8 py-6 text-center">
-                                <span class="px-3 py-1 rounded-full text-[10px] font-black ${getPercentageColor(percentage)}">${percentage ? percentage.toFixed(0) : '-'}%</span>
-                            </td>
-                            <td class="px-8 py-6">
-                                <p class="text-sm text-gray-600 line-clamp-2">${item.feedback || '<span class="text-gray-300 italic">Tidak ada feedback</span>'}</p>
-                            </td>
-                        `;
-                        gradesBody.appendChild(tr);
-                    });
-                }
-            });
-            
-            if (!hasItems) {
                 noGradesMsg.classList.remove('hidden');
             }
-            
-            // CP breakdown
+
+            // ── Capaian Materi with mastery status ────────────────
             const cpContainer = document.getElementById('cp-breakdown');
             cpContainer.innerHTML = '';
-            
-            if (summary.learning_objectives && summary.learning_objectives.length > 0) {
-                summary.learning_objectives.forEach(cp => {
-                    const avgScore = cp.items.reduce((sum, item) => sum + (item.percentage || 0), 0) / (cp.items.length || 1);
+
+            const objectives = summary.learning_objectives || [];
+
+            if (objectives.length > 0) {
+                objectives.forEach(cp => {
+                    const avgScore = cp.avg_score || 0;
+                    const cpPredicate = cp.predicate || getPredicate(avgScore);
+                    const cpMastery = cp.mastery_status || getMasteryStatus(avgScore);
+                    const cpColors = getMasteryColor(avgScore);
+
                     const div = document.createElement('div');
-                    div.className = 'flex items-start space-x-3 p-4 bg-gray-50 rounded-2xl';
+                    div.className = 'mastery-badge p-4 rounded-2xl border border-gray-100 bg-gray-50';
                     div.innerHTML = `
-                        <div class="w-10 h-10 rounded-xl bg-white border border-gray-100 flex-shrink-0 flex items-center justify-center text-xs font-black text-theme shadow-sm">
-                            ${cp.code}
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-xs text-gray-700 font-bold leading-relaxed line-clamp-2">${cp.description}</p>
-                            <div class="flex items-center space-x-2 mt-2">
-                                <span class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Progress:</span>
-                                <span class="text-[10px] font-black ${getScoreColor(avgScore)}">${avgScore.toFixed(0)}%</span>
+                        <div class="flex items-start space-x-3 mb-3">
+                            <div class="w-10 h-10 rounded-xl ${cpColors.bg} text-white flex-shrink-0 flex items-center justify-center text-xs font-black shadow-sm">
+                                ${cpPredicate.letter}
                             </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">${cp.code}</p>
+                                <p class="text-xs text-gray-700 font-bold leading-relaxed line-clamp-2 mt-0.5">${cp.description}</p>
+                            </div>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-1.5 mb-2">
+                            <div class="h-1.5 rounded-full ${cpColors.bg.replace('500','400')}" style="width: ${Math.min(avgScore, 100)}%"></div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <p class="text-[10px] font-bold ${cpColors.text}">${cpMastery}</p>
+                            <span class="text-[10px] font-black ${cpColors.text}">${avgScore.toFixed(0)}%</span>
                         </div>
                     `;
                     cpContainer.appendChild(div);
                 });
             } else {
-                cpContainer.innerHTML = '<div class="text-center py-4 text-gray-400 text-sm italic">Belum ada target pembelajaran</div>';
+                cpContainer.innerHTML = '<div class="text-center py-6 text-gray-400 text-sm italic">Belum ada target pembelajaran yang ditetapkan oleh guru</div>';
             }
         }
     } catch (err) {
         console.error('Failed to load grades:', err);
+        noGradesMsg.classList.remove('hidden');
     }
-}
-
-function getPredicate(grade) {
-    if (grade >= 90) return { letter: 'A', label: 'Sangat Baik' };
-    if (grade >= 80) return { letter: 'B', label: 'Baik' };
-    if (grade >= 70) return { letter: 'C', label: 'Cukup' };
-    if (grade >= 60) return { letter: 'D', label: 'Kurang' };
-    return { letter: 'E', label: 'Sangat Kurang' };
-}
-
-function getScoreColor(score) {
-    if (score >= 85) return 'text-emerald-600';
-    if (score >= 70) return 'text-blue-600';
-    if (score >= 60) return 'text-amber-600';
-    return 'text-rose-600';
-}
-
-function getScoreBg(score) {
-    if (score >= 85) return 'bg-emerald-500';
-    if (score >= 70) return 'bg-blue-500';
-    if (score >= 60) return 'bg-amber-500';
-    return 'bg-rose-500';
-}
-
-function getPercentageColor(pct) {
-    if (pct >= 85) return 'bg-emerald-50 text-emerald-600';
-    if (pct >= 70) return 'bg-blue-50 text-blue-600';
-    if (pct >= 60) return 'bg-amber-50 text-amber-600';
-    return 'bg-rose-50 text-rose-600';
 }
 </script>
 {% endblock %}
