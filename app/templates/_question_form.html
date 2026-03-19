@@ -17,16 +17,18 @@
     <div class="flex flex-col md:flex-row gap-8 mb-4 items-start">
         <!-- Question Text (Full Width & Auto Expand) -->
         <div class="flex-1 w-full flex items-start justify-between group/q-input">
-            <textarea 
+            <div 
+                contenteditable="true"
                 class="question-title-input font-bold text-xl w-full border-none focus:ring-0 bg-transparent p-0 placeholder-gray-300 resize-none overflow-hidden min-h-[40px]" 
-                rows="1"
-                placeholder="Pertanyaan Tanpa Judul"
+                data-placeholder="Pertanyaan Tanpa Judul"
                 hx-put="/api/question/{{ question.id }}/update"
                 hx-trigger="blur"
+                hx-ext="editable-submit"
                 name="question_text"
-                oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'"
+                onmouseup="checkSelection(event)"
+                onkeyup="checkSelection(event)"
                 style="font-family: var(--font-q);"
-            >{{ question.question_text }}</textarea>
+            >{{ question.question_text|safe }}</div>
             
             <!-- Inline Image Upload Button (Positioned to the right) -->
             <label class="p-2 ml-4 text-gray-400 hover:text-primary-600 hover:bg-gray-100 rounded-lg transition-all cursor-pointer flex-shrink-0" title="Tambah Gambar">

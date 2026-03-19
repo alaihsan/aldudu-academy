@@ -375,6 +375,26 @@ const Dashboard = {
                     }
                 }, 600);
             } else {
+                // Specific field highlighting
+                if (data.field === 'email') {
+                    const emailInput = document.getElementById('email');
+                    if (emailInput) {
+                        emailInput.classList.add('border-red-500', 'ring-4', 'ring-red-100');
+                        emailInput.focus();
+                        emailInput.addEventListener('input', () => {
+                            emailInput.classList.remove('border-red-500', 'ring-4', 'ring-red-100');
+                        }, { once: true });
+                    }
+                } else if (data.field === 'password') {
+                    const passwordInput = document.getElementById('password');
+                    if (passwordInput) {
+                        passwordInput.classList.add('border-red-500', 'ring-4', 'ring-red-100');
+                        passwordInput.focus();
+                        passwordInput.addEventListener('input', () => {
+                            passwordInput.classList.remove('border-red-500', 'ring-4', 'ring-red-100');
+                        }, { once: true });
+                    }
+                }
                 throw new Error(data.message || 'Email atau password salah');
             }
         } catch (err) {

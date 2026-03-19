@@ -757,25 +757,30 @@
         const buttons = toolbar.querySelectorAll('button');
         Object.entries(cmds).forEach(([cmd, idx]) => {
             if (buttons[idx]) {
-                buttons[idx].classList.toggle('active', document.queryCommandState(cmd));
+                const isActive = (cmd === 'insertOrderedList' || cmd === 'insertUnorderedList') 
+                    ? document.queryCommandState(cmd) 
+                    : document.queryCommandState(cmd);
+                buttons[idx].classList.toggle('active', isActive);
             }
         });
     }
 
     function checkSelection(event) {
-        // Small delay to let selection stabilize
         setTimeout(() => {
             const sel = window.getSelection();
             const toolbar = document.getElementById('rich-text-toolbar');
-            const descEl = document.getElementById('quiz-description');
-
             if (!sel || sel.isCollapsed || !sel.rangeCount) {
                 toolbar.style.display = 'none';
                 return;
             }
 
             const range = sel.getRangeAt(0);
-            if (!descEl.contains(range.commonAncestorContainer)) {
+            const container = range.commonAncestorContainer.nodeType === 3 
+                ? range.commonAncestorContainer.parentNode 
+                : range.commonAncestorContainer;
+            
+            const editable = container.closest('[contenteditable="true"]');
+            if (!editable || (!editable.classList.contains('quiz-desc-input') && !editable.classList.contains('question-title-input'))) {
                 toolbar.style.display = 'none';
                 return;
             }
@@ -783,17 +788,32 @@
             const rect = range.getBoundingClientRect();
             toolbar.style.display = 'flex';
             toolbar.style.left = (rect.left + rect.width / 2) + 'px';
-            toolbar.style.top = (rect.top - 44 + window.scrollY) + 'px';
+            toolbar.style.top = (rect.top - 48 + window.scrollY) + 'px';
             toolbar.style.position = 'absolute';
-
             updateToolbarState();
         }, 10);
     }
 
-    // Hide toolbar on click outside
     document.addEventListener('mousedown', (e) => {
-        if (!e.target.closest('#rich-text-toolbar') && !e.target.closest('#quiz-description')) {
-            document.getElementById('rich-text-toolbar').style.display = 'none';
+        const toolbar = document.getElementById('rich-text-toolbar');
+        if (!toolbar) return;
+        if (!e.target.closest('#rich-text-toolbar') && !e.target.closest('[contenteditable="true"]')) {
+            toolbar.style.display = 'none';
+        }
+    });
+
+    // HTMX extension to submit contenteditable content
+    htmx.defineExtension('editable-submit', {
+        onEvent: function(name, evt) {
+            if (name === 'htmx:configRequest') {
+                const elt = evt.detail.elt;
+                if (elt.getAttribute('contenteditable') === 'true') {
+                    const nameAttr = elt.getAttribute('name');
+                    if (nameAttr) {
+                        evt.detail.parameters[nameAttr] = elt.innerHTML;
+                    }
+                }
+            }
         }
     });
 

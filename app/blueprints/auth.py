@@ -80,8 +80,10 @@ def api_login():
         return jsonify({'success': False, 'message': 'Email atau password tidak valid'}), 400
 
     user = User.query.filter_by(email=email.strip()).first()
-    if not user or not user.check_password(password):
-        return jsonify({'success': False, 'message': 'Email atau password salah'}), 401
+    if not user:
+        return jsonify({'success': False, 'message': 'Email tidak terdaftar', 'field': 'email'}), 401
+    if not user.check_password(password):
+        return jsonify({'success': False, 'message': 'Password salah', 'field': 'password'}), 401
 
     if not user.is_active:
         return jsonify({'success': False, 'message': 'Akun Anda telah dinonaktifkan. Hubungi admin.'}), 403
