@@ -113,12 +113,14 @@ def quiz_detail(quiz_id):
         if quiz.shuffle_questions:
             import random
             random.shuffle(questions)
+        has_password = bool(quiz.quiz_password) and not is_preview
         return render_template(
             'quiz_detail.html',
             quiz=quiz,
             course=course,
             is_teacher=is_teacher,
             is_preview=is_preview,
+            has_password=has_password,
             questions=questions,
             QuestionType=QuestionType,
             Option=Option

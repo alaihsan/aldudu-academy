@@ -318,9 +318,13 @@ def get_student_grades_summary(student_id: int, course_id: int) -> Dict:
         lo_data = lo.to_dict()
         lo_data['items'] = []
         lo_percentages = []
+        seen_item_ids: set = set()
 
         # Items linked directly to this CP
         for item in lo.grade_items:
+            if item.id in seen_item_ids:
+                continue
+            seen_item_ids.add(item.id)
             entry = GradeEntry.query.filter_by(
                 grade_item_id=item.id,
                 student_id=student_id
@@ -338,6 +342,9 @@ def get_student_grades_summary(student_id: int, course_id: int) -> Dict:
         # Items linked through TPs
         for goal in lo.learning_goals:
             for item in goal.grade_items:
+                if item.id in seen_item_ids:
+                    continue
+                seen_item_ids.add(item.id)
                 entry = GradeEntry.query.filter_by(
                     grade_item_id=item.id,
                     student_id=student_id

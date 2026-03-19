@@ -1,6 +1,7 @@
 """
 Gradebook Blueprint - Routes for managing grades
 """
+from datetime import datetime
 from flask import Blueprint, render_template, request, jsonify, redirect, url_for, abort
 from flask_login import login_required, current_user
 from app.models import Course, User, UserRole, Quiz, QuizStatus, AcademicYear
@@ -79,34 +80,7 @@ def my_grades(course_id):
     if not is_student and not is_teacher and current_user.role != UserRole.SUPER_ADMIN:
         return render_template('error/403.html'), 403
     
-    # Get all grade items and entries for this student
-    categories = GradeCategory.query.filter_by(course_id=course.id).all()
-    grade_data = []
-    
-    for category in categories:
-        items = []
-        cat_total_score = 0
-        cat_max_score = 0
-        
-        for item in category.grade_items:
-            entry = GradeEntry.query.filter_by(grade_item_id=item.id, student_id=current_user.id).first()
-            items.append({
-                'item': item,
-                'entry': entry
-            })
-            if entry and entry.score is not None:
-                cat_total_score += entry.score
-            cat_max_score += item.max_score
-            
-        grade_data.append({
-            'category': category,
-            'items': items,
-            'total_score': cat_total_score,
-            'max_score': cat_max_score,
-            'percentage': (cat_total_score / cat_max_score * 100) if cat_max_score > 0 else 0
-        })
-
-    return render_template('gradebook/student_grades.html', course=course, grade_data=grade_data)
+    return render_template('gradebook/student_grades.html', course=course)
 
 
 # ─── API Routes - Categories ────────────────────────────────────────────────────

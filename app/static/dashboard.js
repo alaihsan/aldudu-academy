@@ -367,38 +367,71 @@ const Dashboard = {
             
             if (data.success) {
                 if (btn) btn.classList.add('bg-green-600', 'scale-95');
+                if (btnText) btnText.textContent = '✓';
                 setTimeout(() => {
                     if (data.redirect) {
                         window.location.href = data.redirect;
                     } else {
                         window.location.reload();
                     }
-                }, 600);
+                }, 200);
             } else {
-                throw new Error(data.message || 'Email atau password salah');
+                // Show field-specific error
+                const field = data.field;
+                const message = data.message || 'Email atau password salah';
+                const emailInput = document.getElementById('email');
+                const passwordInput = document.getElementById('password');
+                const errorClass = 'ring-2 ring-red-400 border-red-400 bg-red-50';
+
+                // Reset any previous highlights
+                [emailInput, passwordInput].forEach(el => {
+                    if (el) el.classList.remove(...errorClass.split(' '));
+                });
+
+                if (field === 'email' && emailInput) {
+                    emailInput.classList.add(...errorClass.split(' '));
+                    emailInput.focus();
+                    emailInput.addEventListener('input', () => emailInput.classList.remove(...errorClass.split(' ')), { once: true });
+                } else if (field === 'password' && passwordInput) {
+                    passwordInput.classList.add(...errorClass.split(' '));
+                    passwordInput.value = '';
+                    passwordInput.focus();
+                    passwordInput.addEventListener('input', () => passwordInput.classList.remove(...errorClass.split(' ')), { once: true });
+                }
+
+                if (btn) {
+                    btn.disabled = false;
+                    btn.classList.add('animate-bounce');
+                    setTimeout(() => btn.classList.remove('animate-bounce'), 500);
+                }
+                if (btnText) btnText.classList.remove('opacity-0', 'translate-y-2');
+                if (loader) loader.classList.add('hidden');
+
+                if (errorDiv) {
+                    const icon = field === 'email'
+                        ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>'
+                        : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>';
+                    errorDiv.innerHTML = `
+                        <div class="flex items-center space-x-3 animate-slide-up p-1">
+                            <div class="flex-shrink-0 w-8 h-8 bg-red-100 text-red-600 rounded-xl flex items-center justify-center shadow-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">${icon}</svg>
+                            </div>
+                            <div class="flex-1 font-bold text-red-800 text-xs">${message}</div>
+                        </div>
+                    `;
+                    errorDiv.classList.remove('hidden');
+                    errorDiv.className = "p-4 bg-red-50/80 backdrop-blur-md border border-red-100 rounded-2xl mt-4 shadow-xl shadow-red-200/20 ring-1 ring-red-200";
+                }
             }
         } catch (err) {
             console.error('Login error', err);
-            
-            if (btn) {
-                btn.disabled = false;
-                btn.classList.add('animate-bounce', 'border-red-500');
-                setTimeout(() => btn.classList.remove('animate-bounce'), 500);
-            }
+            if (btn) { btn.disabled = false; }
             if (btnText) btnText.classList.remove('opacity-0', 'translate-y-2');
             if (loader) loader.classList.add('hidden');
-
             if (errorDiv) {
-                errorDiv.innerHTML = `
-                    <div class="flex items-center space-x-3 animate-slide-up p-1">
-                        <div class="flex-shrink-0 w-8 h-8 bg-red-100 text-red-600 rounded-xl flex items-center justify-center shadow-sm">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                        </div>
-                        <div class="flex-1 font-bold text-red-800 text-xs">${err.message}</div>
-                    </div>
-                `;
+                errorDiv.innerHTML = `<div class="flex items-center space-x-3 p-1"><div class="flex-1 font-bold text-red-800 text-xs">Terjadi kesalahan koneksi, coba lagi.</div></div>`;
                 errorDiv.classList.remove('hidden');
-                errorDiv.className = "p-4 bg-red-50/80 backdrop-blur-md border border-red-100 rounded-2xl mt-4 shadow-xl shadow-red-200/20 ring-1 ring-red-200";
+                errorDiv.className = "p-4 bg-red-50/80 backdrop-blur-md border border-red-100 rounded-2xl mt-4";
             }
         }
     },

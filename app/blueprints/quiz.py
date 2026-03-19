@@ -232,7 +232,7 @@ def api_delete_option(option_id):
     verify_course_in_school(option.question.quiz.course, school_id)
     if option.question.quiz.course.teacher_id != current_user.id:
         abort(403)
-    if option and option.question.options.count() > 1:
+    if option.question.options.count() > 1:
         db.session.delete(option)
         db.session.commit()
     return "", 200
@@ -354,6 +354,7 @@ def api_update_quiz_theme(quiz_id):
     data = request.get_json() or {}
     quiz.theme_color = data.get('theme_color', quiz.theme_color)
     quiz.font_question = data.get('font_question', quiz.font_question)
+    quiz.font_answer = data.get('font_answer', quiz.font_answer)
     quiz.bg_pattern = data.get('bg_pattern', quiz.bg_pattern)
     try:
         quiz.bg_opacity = int(data.get('bg_opacity', quiz.bg_opacity))
@@ -410,11 +411,31 @@ def api_update_quiz_settings(quiz_id):
             return jsonify({'success': False}), 400
     elif field == 'required_by_default':
         quiz.required_by_default = bool(value)
+    elif field == 'quiz_password':
+        val = str(value or '').strip()
+        quiz.quiz_password = val if val else None
     else:
         return jsonify({'success': False, 'message': 'Unknown field'}), 400
 
     db.session.commit()
     return jsonify({'success': True})
+
+
+@quiz_bp.route('/quiz/<int:quiz_id>/verify-password', methods=['POST'])
+@login_required
+def api_verify_quiz_password(quiz_id):
+    from app.tenant import get_school_id_or_abort, verify_course_in_school
+    quiz = db.session.get(Quiz, quiz_id)
+    if not quiz:
+        abort(404)
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(quiz.course, school_id)
+    data = request.get_json() or {}
+    entered = str(data.get('password', '')).strip()
+    if quiz.quiz_password and entered != quiz.quiz_password:
+        return jsonify({'success': False, 'message': 'Password salah'}), 403
+    return jsonify({'success': True})
+
 
 @quiz_bp.route('/quiz/<int:quiz_id>/questions/reorder', methods=['POST'])
 @login_required

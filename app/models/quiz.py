@@ -56,7 +56,10 @@ class Quiz(db.Model):
 
     # Background opacity (0-100)
     bg_opacity: Mapped[int] = mapped_column(db.Integer, default=60, nullable=False)
-    
+
+    # Optional password protection
+    quiz_password: Mapped[Optional[str]] = mapped_column(db.String(100), nullable=True, default=None)
+
     created_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=get_jakarta_now, nullable=False)
     updated_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=get_jakarta_now, onupdate=get_jakarta_now, nullable=False)
 
