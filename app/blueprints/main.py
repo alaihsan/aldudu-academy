@@ -230,3 +230,25 @@ def sponsor():
 @login_required
 def issues():
     return render_template('issues.html')
+
+@main_bp.route('/api/set-language', methods=['POST'])
+@login_required
+def set_language():
+    """API endpoint untuk mengubah bahasa preferensi user"""
+    from flask import jsonify
+    data = request.get_json()
+    lang_code = data.get('language', 'id')
+    
+    # Validasi kode bahasa yang didukung
+    supported_languages = ['id', 'en', 'ar', 'jv', 'su', 'min', 'ban']
+    if lang_code not in supported_languages:
+        return jsonify({'success': False, 'message': 'Bahasa tidak didukung'}), 400
+    
+    current_user.preferred_language = lang_code
+    db.session.commit()
+    
+    return jsonify({
+        'success': True, 
+        'message': 'Bahasa berhasil diubah',
+        'language': lang_code
+    })
