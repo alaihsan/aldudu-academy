@@ -25,11 +25,15 @@ const translations = {
             yes: 'Ya', no: 'Tidak', ok: 'Oke', search: 'Cari', filter: 'Filter',
             language: 'Bahasa', loading: 'Memuat...',
         },
+        filter: {
+            all_items: 'Semua Item', recent: 'Terbaru', assignments: 'Tugas', quizzes: 'Kuis', files: 'File',
+            due_soon: 'Tenggat Waktu: Terdekat', due_latest: 'Tenggat Waktu: Terjauh', recently_added: 'Ditambahkan: Terbaru',
+        },
         nav: {
-            dashboard: 'Dashboard', admin_panel: 'Panel Admin', user_management: 'Manajemen User',
+            home: 'Rumah', classroom: 'Ruang Kelas', dashboard: 'Dashboard', admin_panel: 'Panel Admin', user_management: 'Manajemen User',
             course_nav: 'Navigasi Kelas', materials: 'Materi & Tugas', kbm_notes: 'Catatan KBM',
             gradebook: 'Buku Nilai', my_grades: 'Nilai Saya', help: 'Bantuan & Masalah',
-            issues: 'Manajemen Masalah',
+            issues: 'Manajemen Masalah', settings: 'Pengaturan',
         },
         profile: {
             settings: 'Pengaturan', history: 'Riwayat Akses', privacy: 'Privacy & Policy',
@@ -49,11 +53,15 @@ const translations = {
             yes: 'Yes', no: 'No', ok: 'OK', search: 'Search', filter: 'Filter',
             language: 'Language', loading: 'Loading...',
         },
+        filter: {
+            all_items: 'All Items', recent: 'Recent', assignments: 'Assignments', quizzes: 'Quizzes', files: 'Files',
+            due_soon: 'Due Date: Soonest', due_latest: 'Due Date: Latest', recently_added: 'Recently Added',
+        },
         nav: {
-            dashboard: 'Dashboard', admin_panel: 'Admin Panel', user_management: 'User Management',
+            home: 'Home', classroom: 'Classroom', dashboard: 'Dashboard', admin_panel: 'Admin Panel', user_management: 'User Management',
             course_nav: 'Course Navigation', materials: 'Materials & Tasks', kbm_notes: 'Teaching Notes',
             gradebook: 'Gradebook', my_grades: 'My Grades', help: 'Help & Issues',
-            issues: 'Issue Management',
+            issues: 'Issue Management', settings: 'Settings',
         },
         profile: {
             settings: 'Settings', history: 'Access History', privacy: 'Privacy & Policy',
@@ -73,11 +81,15 @@ const translations = {
             yes: 'نعم', no: 'لا', ok: 'موافق', search: 'بحث', filter: 'تصفية',
             language: 'اللغة', loading: 'جاري التحميل...',
         },
+        filter: {
+            all_items: 'جميع العناصر', recent: 'الأخيرة', assignments: 'الواجبات', quizzes: 'الاختبارات', files: 'الملفات',
+            due_soon: 'موعد الاستحقاق: الأقرب', due_latest: 'موعد الاستحقاق: الأبعد', recently_added: 'تم الإضافة مؤخراً',
+        },
         nav: {
-            dashboard: 'لوحة التحكم', admin_panel: 'لوحة الإدارة', user_management: 'إدارة المستخدمين',
+            home: 'الرئيسية', classroom: 'الفصل الدراسي', dashboard: 'لوحة التحكم', admin_panel: 'لوحة الإدارة', user_management: 'إدارة المستخدمين',
             course_nav: 'تنقل الدورة', materials: 'المواد والمهام', kbm_notes: 'ملاحظات التدريس',
             gradebook: 'سجل الدرجات', my_grades: 'درجاتي', help: 'المساعدة والمشاكل',
-            issues: 'إدارة المشاكل',
+            issues: 'إدارة المشاكل', settings: 'الإعدادات',
         },
         profile: {
             settings: 'الإعدادات', history: 'سجل الوصول', privacy: 'الخصوصية والسياسة',
@@ -97,11 +109,15 @@ const translations = {
             yes: 'Iya', no: 'Ora', ok: 'Oke', search: 'Goleki', filter: 'Saring',
             language: 'Basa', loading: 'Ngemu...',
         },
+        filter: {
+            all_items: 'Kabeh Bab', recent: 'Anyar', assignments: 'Tugas', quizzes: 'Kuis', files: 'File',
+            due_soon: 'Wektu Rampung: Ing Cetha', due_latest: 'Wektu Rampung: Ing Sawyane', recently_added: 'Ditambah Anyaran',
+        },
         nav: {
-            dashboard: 'Dashboard', admin_panel: 'Panel Admin', user_management: 'Manajemen User',
+            home: 'Omah', classroom: 'Kalas', dashboard: 'Dashboard', admin_panel: 'Panel Admin', user_management: 'Manajemen User',
             course_nav: 'Navigasi Kelas', materials: 'Materi & Tugas', kbm_notes: 'Cathetan KBM',
             gradebook: 'Buku Nilai', my_grades: 'Nilaiku', help: 'Bantuan & Masalah',
-            issues: 'Manajemen Masalah',
+            issues: 'Manajemen Masalah', settings: 'Setelan',
         },
         profile: {
             settings: 'Setelan', history: 'Riwayat Akses', privacy: 'Privasi & Kebijakan',
@@ -121,11 +137,15 @@ const translations = {
             yes: 'Enya', no: 'Henteu', ok: 'Oke', search: 'Cari', filter: 'Saring',
             language: 'Basa', loading: 'Ngamuatan...',
         },
+        filter: {
+            all_items: 'Sadaya Item', recent: 'Panganyar', assignments: 'Tugas', quizzes: 'Kuis', files: 'File',
+            due_soon: 'Deadline: Pangdeukatan', due_latest: 'Deadline: Pangjauh', recently_added: 'Ditambah Panganyar',
+        },
         nav: {
-            dashboard: 'Dashboard', admin_panel: 'Panel Admin', user_management: 'Manajemen User',
+            home: 'Pondok', classroom: 'Ruang Kelas', dashboard: 'Dashboard', admin_panel: 'Panel Admin', user_management: 'Manajemen User',
             course_nav: 'Navigasi Kelas', materials: 'Materi & Tugas', kbm_notes: 'Catetan KBM',
             gradebook: 'Buku Nilai', my_grades: 'Nilai Abdi', help: 'Bantuan & Masalah',
-            issues: 'Manajemen Masalah',
+            issues: 'Manajemen Masalah', settings: 'Setelan',
         },
         profile: {
             settings: 'Setelan', history: 'Riwayat Aksés', privacy: 'Privasi & Kawijakan',
@@ -145,11 +165,15 @@ const translations = {
             yes: 'Inggih', no: 'Nenten', ok: 'Oke', search: 'Rereh', filter: 'Saring',
             language: 'Basa', loading: 'Ngemu...',
         },
+        filter: {
+            all_items: 'Kabeh Item', recent: 'Anyaran', assignments: 'Tugas', quizzes: 'Kuis', files: 'File',
+            due_soon: 'Deadline: Keto', due_latest: 'Deadline: Kajauhan', recently_added: 'Ditambah Anyaran',
+        },
         nav: {
-            dashboard: 'Dashboard', admin_panel: 'Panel Admin', user_management: 'Manajemen User',
+            home: 'Rumah', classroom: 'Ruang Kalas', dashboard: 'Dashboard', admin_panel: 'Panel Admin', user_management: 'Manajemen User',
             course_nav: 'Navigasi Kelas', materials: 'Materi & Tugas', kbm_notes: 'Catetan KBM',
             gradebook: 'Buku Nilai', my_grades: 'Nilai Titiange', help: 'Bantuan & Masalah',
-            issues: 'Manajemen Masalah',
+            issues: 'Manajemen Masalah', settings: 'Setelan',
         },
         profile: {
             settings: 'Setelan', history: 'Sejarah Akses', privacy: 'Privasi & Kebijakan',
@@ -169,11 +193,15 @@ const translations = {
             yes: 'Iyo', no: 'Indak', ok: 'Oke', search: 'Cari', filter: 'Saring',
             language: 'Bahaso', loading: 'Samantaro...',
         },
+        filter: {
+            all_items: 'Sakiek Item', recent: 'Baruo', assignments: 'Tugas', quizzes: 'Kuis', files: 'File',
+            due_soon: 'Deadline: Paliang Dakek', due_latest: 'Deadline: Paliang Jauh', recently_added: 'Ditambah Baruo',
+        },
         nav: {
-            dashboard: 'Dashboard', admin_panel: 'Panel Admin', user_management: 'Manajemen User',
+            home: 'Rumah', classroom: 'Ruang Kalas', dashboard: 'Dashboard', admin_panel: 'Panel Admin', user_management: 'Manajemen User',
             course_nav: 'Navigasi Kelas', materials: 'Materi & Tugas', kbm_notes: 'Catatan KBM',
             gradebook: 'Buku Nilai', my_grades: 'Nilai Ambo', help: 'Bantuan & Masalah',
-            issues: 'Manajemen Masalah',
+            issues: 'Manajemen Masalah', settings: 'Setelan',
         },
         profile: {
             settings: 'Setelan', history: 'Riwayat Akses', privacy: 'Privasi & Kabijakan',

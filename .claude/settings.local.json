@@ -6,7 +6,19 @@
       "Bash(python -m flask db heads)",
       "Bash(python -m flask db current)",
       "Bash(python -m flask db stamp a4bfedd613ff)",
-      "Bash(python -c \":*)"
+      "Bash(python -c \":*)",
+      "Read(//c/Users/iksan/dev/aldudu-academy/**)",
+      "Bash(python -m flask run)",
+      "Bash(python -c \"from app import create_app; app = create_app\\(\\)\")",
+      "Bash(python -m flask db upgrade heads)",
+      "Bash(for f in \"C:/Users/iksan/dev/aldudu-academy/.claude/worktrees/interesting-hamilton/migrations/versions/\"*.py)",
+      "Bash(do grep -l \"down_revision\" \"$f\")",
+      "Bash(xargs -I{} sh -c 'echo \"\"=== {} ===\"\" && grep -E \"\"^\\(revision|down_revision\\)\"\" \"\"{}\"\"')",
+      "Bash(done)",
+      "Bash(grep -A1 \"revision = ''2c13b90e5d9c\\\\|revision = ''90f676653\\\\|revision = ''b621ddade\\\\|revision = ''3166bb1d\\\\|revision = ''a8f8c33e\")",
+      "Bash(python -m flask db history)",
+      "Bash(xargs grep -l \"set-language\\\\|/api.*lang\")",
+      "Bash(python -c \"from app import create_app; app = create_app\\(\\); print\\(''OK''\\)\")"
     ]
   }
 }
