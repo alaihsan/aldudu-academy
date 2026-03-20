@@ -36,8 +36,6 @@ class Quiz(db.Model):
     font_answer: Mapped[str] = mapped_column(db.String(50), default='Inter')
 
     course_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('courses.id'), nullable=False)
-    folder_id: Mapped[Optional[int]] = mapped_column(db.Integer, db.ForeignKey('content_folders.id'), nullable=True, index=True)
-    order: Mapped[int] = mapped_column(db.Integer, default=0, nullable=False)
     grade_type: Mapped[GradeType] = mapped_column(db.Enum(GradeType), nullable=False, default=GradeType.NUMERIC)
     
     # Status Management
@@ -58,15 +56,16 @@ class Quiz(db.Model):
 
     # Background opacity (0-100)
     bg_opacity: Mapped[int] = mapped_column(db.Integer, default=60, nullable=False)
-    
-    # Optional password protection
-    quiz_password: Mapped[Optional[str]] = mapped_column(db.String(100), nullable=True, default=None)
-    
+
+    # Folder organization
+    folder_id: Mapped[Optional[int]] = mapped_column(db.Integer, db.ForeignKey('content_folders.id'), nullable=True, index=True)
+    order: Mapped[int] = mapped_column(db.Integer, default=0, nullable=False)
+
     created_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=get_jakarta_now, nullable=False)
     updated_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=get_jakarta_now, onupdate=get_jakarta_now, nullable=False)
 
     course: Mapped['Course'] = relationship('Course', back_populates='quizzes')
-    folder = relationship('ContentFolder', foreign_keys=[folder_id])
+    folder = relationship('ContentFolder', back_populates='quizzes', foreign_keys=[folder_id])
     questions: Mapped[List['Question']] = relationship('Question', back_populates='quiz', lazy='dynamic', cascade="all, delete-orphan")
     submissions: Mapped[List['QuizSubmission']] = relationship('QuizSubmission', back_populates='quiz', cascade='all, delete-orphan')
 

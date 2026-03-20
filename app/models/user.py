@@ -26,6 +26,9 @@ class User(UserMixin, db.Model):
     school_id: Mapped[Optional[int]] = mapped_column(
         db.Integer, db.ForeignKey('schools.id'), nullable=True, index=True
     )
+    preferred_language: Mapped[Optional[str]] = mapped_column(
+        db.String(10), nullable=True, default='id'
+    )
 
     # Relationships
     school = relationship('School', back_populates='users')
@@ -40,6 +43,7 @@ class User(UserMixin, db.Model):
             'name': self.name,
             'role': self.role.value,
             'school_id': self.school_id,
+            'preferred_language': self.preferred_language or 'id',
         }
 
     def set_password(self, password: str) -> None:

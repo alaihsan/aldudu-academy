@@ -1,31 +1,52 @@
-# Byte-compiled / optimized / DLL files
+```
+# Compiled and build artifacts
+*.pyc
 __pycache__/
-*.py[cod]
-*$py.class
+*.o
+*.obj
+*.so
+*.dll
+*.exe
+*.class
+*.out
 
-# Virtual environments
+# Dependencies
 .venv/
 venv/
+node_modules/
+dist/
+build/
+target/
+.gradle/
+.mypy_cache/
+.pytest_cache/
 
-# Instance folder contains local config and the sqlite database
-/instance/config.py
+# Logs and temp files
+*.log
+*.tmp
+*.swp
+*.swo
 
-
-# Env files (credentials — never commit)
+# Environment
 .env
 .env.local
-.env.production
+.env.*
 
-# Deploy artifacts and logs
-/deploy/*.env
-/deploy/*.log
-/backups/
-gunicorn.log
-flask.log
-
-# Editor backups
+# Editors
+.vscode/
+.idea/
 *.swp
-.DS_Store
+*.swo
 
-# Claude Code worktrees (workspace-specific, not project code)
-.claude/worktrees/
+# System files
+.DS_Store
+Thumbs.db
+
+# Coverage
+coverage/
+htmlcov/
+.coverage
+
+# Migrations (if not already tracked)
+migrations/alembic_version
+```

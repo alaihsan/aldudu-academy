@@ -1,6 +1,7 @@
 """
 Gradebook Blueprint - Routes for managing grades
 """
+from datetime import datetime
 from flask import Blueprint, render_template, request, jsonify, redirect, url_for, abort
 from flask_login import login_required, current_user
 from app.models import Course, User, UserRole, Quiz, QuizStatus, AcademicYear
@@ -14,7 +15,7 @@ from app.services.gradebook_service import (
     import_quiz_to_gradebook, sync_quiz_grades, get_student_grades_summary,
     bulk_save_grades
 )
-from app.helpers import log_activity
+from app.helpers import log_activity, get_jakarta_now
 
 gradebook_bp = Blueprint('gradebook', __name__, url_prefix='/gradebook')
 

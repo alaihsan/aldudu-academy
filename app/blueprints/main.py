@@ -4,7 +4,7 @@ from flask_login import login_required, current_user
 from app.models import (
     db, Course, Quiz, Question, Option,
     QuestionType, GradeType, UserRole, Link, File,
-    QuizSubmission, Answer, Discussion, QuizStatus, ActivityLog, ContentFolder
+    QuizSubmission, Answer, Discussion, QuizStatus, ActivityLog
 )
 from app.helpers import get_jakarta_now
 from app.tenant import get_school_id_or_abort, verify_course_in_school
@@ -44,8 +44,6 @@ def course_detail(course_id):
     links = Link.query.filter_by(course_id=course.id).all()
     files = File.query.filter_by(course_id=course.id).all()
 
-    folders = ContentFolder.query.filter_by(course_id=course.id).order_by(ContentFolder.order).all()
-
     topics = []
     for quiz in quizzes:
         topics.append({
@@ -53,9 +51,7 @@ def course_detail(course_id):
             'name': quiz.name,
             'type': 'Kuis',
             'url': url_for('main.quiz_detail', quiz_id=quiz.id),
-            'created_at': quiz.created_at,
-            'folder_id': quiz.folder_id,
-            'order': quiz.order,
+            'created_at': quiz.created_at
         })
     for assignment in assignments:
         topics.append({
@@ -63,9 +59,7 @@ def course_detail(course_id):
             'name': assignment.title,
             'type': 'Tugas',
             'url': url_for('assignment.detail', assignment_id=assignment.id),
-            'created_at': assignment.created_at,
-            'folder_id': assignment.folder_id,
-            'order': assignment.order,
+            'created_at': assignment.created_at
         })
     for link in links:
         topics.append({
@@ -73,9 +67,7 @@ def course_detail(course_id):
             'name': link.name,
             'type': 'Link',
             'url': link.url,
-            'created_at': link.created_at,
-            'folder_id': link.folder_id,
-            'order': link.order,
+            'created_at': link.created_at
         })
     for file in files:
         topics.append({
@@ -83,21 +75,16 @@ def course_detail(course_id):
             'name': file.name,
             'type': 'Berkas',
             'url': url_for('main.serve_file', file_id=file.id),
-            'created_at': file.created_at,
-            'folder_id': file.folder_id,
-            'order': file.order,
+            'created_at': file.created_at
         })
-
+    
     topics.sort(key=lambda x: x['created_at'], reverse=True)
-
-    folders_data = [f.to_dict() for f in folders]
-
+    
     return render_template(
-        'course_detail.html',
-        course=course,
+        'course_detail.html', 
+        course=course, 
         is_teacher=is_teacher,
-        topics=topics,
-        folders=folders_data,
+        topics=topics
     )
 
 @main_bp.route('/quiz/<int:quiz_id>')
@@ -244,16 +231,50 @@ def sponsor():
 def issues():
     return render_template('issues.html')
 
-
 @main_bp.route('/api/set-language', methods=['POST'])
 @login_required
 def set_language():
+    """API endpoint untuk mengubah bahasa preferensi user"""
     from flask import jsonify
-    data = request.get_json() or {}
-    lang = data.get('language', 'id')
-    supported = ['id', 'en', 'ar', 'jv', 'su', 'ban', 'min']
-    if lang not in supported:
+    data = request.get_json()
+    lang_code = data.get('language', 'id')
+
+    # Validasi kode bahasa yang didukung
+    supported_languages = ['id', 'en', 'en-US', 'en-GB', 'ar', 'jv', 'jv-YO', 'jv-MA', 'su', 'min', 'ban']
+    if lang_code not in supported_languages:
         return jsonify({'success': False, 'message': 'Bahasa tidak didukung'}), 400
-    current_user.preferred_language = lang
+
+    current_user.preferred_language = lang_code
     db.session.commit()
-    return jsonify({'success': True, 'language': lang})
+
+    return jsonify({
+        'success': True,
+        'message': 'Bahasa berhasil diubah',
+        'language': lang_code
+    })
+
+
+@main_bp.route('/api/courses/<int:course_id>/students', methods=['GET'])
+@login_required
+def api_get_course_students(course_id):
+    """API endpoint untuk mendapatkan daftar siswa dalam course"""
+    from flask import jsonify
+    from app.models import Course, UserRole
+
+    course = Course.query.get(course_id)
+    if not course:
+        return jsonify({'success': False, 'message': 'Course not found'}), 404
+
+    # Check permission - only teacher or super admin can access
+    if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
+        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+
+    students = course.students.all()
+    return jsonify({
+        'success': True,
+        'students': [{
+            'id': s.id,
+            'name': s.name,
+            'email': s.email,
+        } for s in students]
+    })
