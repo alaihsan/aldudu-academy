@@ -955,6 +955,7 @@ function renderLanguageSelector() {
 }
 
 // Export for use in other modules
+window.setLanguage = setLanguage;
 window.LanguageManager = {
     translations,
     currentLang,
