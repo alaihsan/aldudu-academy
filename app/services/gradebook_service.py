@@ -60,20 +60,29 @@ def calculate_category_grade(student_id: int, category_id: int) -> Dict:
     total_score = 0.0
     total_max_score = 0.0
     items_count = 0
-    
+
+    # Use simple average when ALL items have weight=0 (default auto-created items)
+    all_zero_weight = all(item.weight == 0 for item in grade_items)
+
     for item in grade_items:
         entry = GradeEntry.query.filter_by(
             grade_item_id=item.id,
             student_id=student_id
         ).first()
-        
+
         if entry and entry.score is not None:
             # Normalize to percentage
             percentage = entry.percentage if entry.percentage else (entry.score / item.max_score * 100) if item.max_score > 0 else 0
-            total_score += percentage * (item.weight / 100) if item.weight > 0 else percentage
-            total_max_score += item.weight if item.weight > 0 else 100
+            if all_zero_weight:
+                # Simple average: all items count equally
+                total_score += percentage
+                total_max_score += 100
+            elif item.weight > 0:
+                # Weighted average: only include items with explicit weight
+                total_score += percentage * (item.weight / 100)
+                total_max_score += item.weight
             items_count += 1
-    
+
     # Calculate category average
     category_score = (total_score / total_max_score * 100) if total_max_score > 0 else 0
     

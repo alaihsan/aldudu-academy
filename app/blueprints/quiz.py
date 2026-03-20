@@ -648,8 +648,10 @@ def api_submit_quiz(quiz_id):
         grade_entry.percentage = submission.score  # score is already percentage
         grade_entry.graded_at = get_jakarta_now()
         grade_entry.graded_by = quiz.course.teacher_id
-    except Exception:
-        pass  # Don't fail quiz submission if gradebook sync fails
+    except Exception as e:
+        db.session.rollback()
+        import traceback
+        print(f"[WARN] Gradebook sync failed for quiz {quiz.id}: {e}\n{traceback.format_exc()}")
     # ───────────────────────────────────────────────────────────────────
 
     db.session.commit()

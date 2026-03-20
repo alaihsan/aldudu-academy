@@ -197,6 +197,9 @@ def grade(assignment_id, submission_id):
     # Find grade_item for this assignment or create one
     grade_item = assignment.grade_item
     if not grade_item:
+        # Re-check with explicit query in case relationship cache is stale
+        grade_item = GradeItem.query.filter_by(assignment_id=assignment.id).first()
+    if not grade_item:
         # Create a default GradeItem in the first category
         category = assignment.course.grade_categories.first()
         if not category:

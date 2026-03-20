@@ -577,7 +577,11 @@ function initLanguage() {
     initLanguageSelector();
 }
 
-// Language selector component - Vanilla JS Implementation
+// Track portal menu element and click-outside handler for cleanup
+let _langPortalMenu = null;
+let _langClickOutsideHandler = null;
+
+// Language selector component - Vanilla JS (Portal pattern)
 function initLanguageSelector() {
     const container = document.getElementById('language-selector-container');
     if (!container) return;
@@ -592,61 +596,109 @@ function initLanguageSelector() {
         { code: 'su', name: 'Sunda', flag: '🇮🇩' },
         { code: 'ban', name: 'Bali', flag: '🇮🇩' }
     ];
-    
+
     const current = languages.find(l => l.code === currentLang) || languages[0];
-    
+
+    // ── 1. Render toggle button inside sidebar container ──
     container.innerHTML = `
-        <div class="relative" id="lang-dropdown-wrapper">
-            <button id="lang-dropdown-toggle" class="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-2xl transition-all border border-gray-100 group">
-                <div class="flex items-center space-x-3">
-                    <span class="text-xl group-hover:scale-110 transition-transform">${current.flag}</span>
-                    <span class="text-sm font-bold text-gray-700">${current.name}</span>
-                </div>
-                <svg id="lang-dropdown-arrow" class="w-4 h-4 text-gray-400 group-hover:text-primary-500 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
-                </svg>
-            </button>
-            <div id="lang-dropdown-menu" class="hidden absolute bottom-full left-0 mb-2 w-full bg-white rounded-[1.5rem] shadow-2xl border border-gray-100 z-50 overflow-hidden py-2 animate-slide-up">
-                <div class="max-h-64 overflow-y-auto custom-scrollbar">
-                    ${languages.map(lang => `
-                        <button onclick="setLanguage('${lang.code}')" 
-                                class="w-full px-4 py-3 text-left hover:bg-primary-50 flex items-center space-x-3 transition-colors ${currentLang === lang.code ? 'bg-primary-50/50 text-primary-600' : 'text-gray-600'}">
-                            <span class="text-xl">${lang.flag}</span>
-                            <span class="text-sm font-bold">${lang.name}</span>
-                            ${currentLang === lang.code ? '<div class="ml-auto w-2 h-2 rounded-full bg-primary-500 shadow-sm shadow-primary-200"></div>' : ''}
-                        </button>
-                    `).join('')}
-                </div>
+        <button id="lang-dropdown-toggle" class="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-2xl transition-all border border-gray-100 group">
+            <div class="flex items-center space-x-3">
+                <span class="text-xl group-hover:scale-110 transition-transform">${current.flag}</span>
+                <span class="text-sm font-bold text-gray-700">${current.name}</span>
+            </div>
+            <svg id="lang-dropdown-arrow" class="w-4 h-4 text-gray-400 group-hover:text-primary-500 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+            </svg>
+        </button>
+    `;
+
+    // ── 2. Create portal menu on document.body (escapes sidebar stacking context) ──
+    if (_langPortalMenu) {
+        _langPortalMenu.remove();
+    }
+    _langPortalMenu = document.createElement('div');
+    _langPortalMenu.id = 'lang-portal-menu';
+    _langPortalMenu.style.cssText = 'display:none; position:fixed; z-index:99999;';
+    _langPortalMenu.innerHTML = `
+        <div class="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden py-2" style="min-width:200px;">
+            <div class="max-h-64 overflow-y-auto">
+                ${languages.map(lang => `
+                    <button data-lang-code="${lang.code}"
+                            class="w-full px-4 py-3 text-left hover:bg-blue-50 flex items-center space-x-3 transition-colors ${currentLang === lang.code ? 'bg-blue-50 text-blue-600' : 'text-gray-600'}">
+                        <span class="text-xl">${lang.flag}</span>
+                        <span class="text-sm font-bold">${lang.name}</span>
+                        ${currentLang === lang.code ? '<div class="ml-auto w-2 h-2 rounded-full bg-blue-500"></div>' : ''}
+                    </button>
+                `).join('')}
             </div>
         </div>
     `;
+    document.body.appendChild(_langPortalMenu);
 
-    // Bind events for Vanilla JS Dropdown
+    // ── 3. Bind language selection on portal buttons ──
+    _langPortalMenu.querySelectorAll('button[data-lang-code]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const code = btn.getAttribute('data-lang-code');
+            _langPortalMenu.style.display = 'none';
+            const arrow = document.getElementById('lang-dropdown-arrow');
+            if (arrow) arrow.classList.remove('rotate-180');
+            setLanguage(code);
+        });
+    });
+
+    // ── 4. Bind toggle button ──
     const toggle = document.getElementById('lang-dropdown-toggle');
-    const menu = document.getElementById('lang-dropdown-menu');
     const arrow = document.getElementById('lang-dropdown-arrow');
 
-    if (toggle && menu) {
+    if (toggle) {
         toggle.onclick = (e) => {
             e.stopPropagation();
-            const isHidden = menu.classList.contains('hidden');
-            if (isHidden) {
-                menu.classList.remove('hidden');
-                arrow.classList.add('rotate-180');
+            const isOpen = _langPortalMenu.style.display !== 'none';
+
+            if (isOpen) {
+                _langPortalMenu.style.display = 'none';
+                arrow?.classList.remove('rotate-180');
             } else {
-                menu.classList.add('hidden');
-                arrow.classList.remove('rotate-180');
+                // Calculate position from toggle button
+                const rect = toggle.getBoundingClientRect();
+                const menuHeight = 300;
+                const spaceBelow = window.innerHeight - rect.bottom - 12;
+                const spaceAbove = rect.top - 12;
+
+                _langPortalMenu.style.width = Math.max(rect.width, 220) + 'px';
+                _langPortalMenu.style.left = rect.left + 'px';
+
+                if (spaceBelow >= 150 || spaceBelow >= spaceAbove) {
+                    // Drop DOWN
+                    _langPortalMenu.style.top = (rect.bottom + 8) + 'px';
+                    _langPortalMenu.style.bottom = 'auto';
+                } else {
+                    // Drop UP
+                    _langPortalMenu.style.bottom = (window.innerHeight - rect.top + 8) + 'px';
+                    _langPortalMenu.style.top = 'auto';
+                }
+
+                _langPortalMenu.style.display = 'block';
+                arrow?.classList.add('rotate-180');
             }
         };
-
-        // Close on click outside
-        window.addEventListener('click', (e) => {
-            if (!container.contains(e.target)) {
-                menu.classList.add('hidden');
-                arrow?.classList.remove('rotate-180');
-            }
-        });
     }
+
+    // ── 5. Click-outside to close ──
+    if (_langClickOutsideHandler) {
+        window.removeEventListener('click', _langClickOutsideHandler);
+    }
+    _langClickOutsideHandler = (e) => {
+        if (_langPortalMenu &&
+            !container.contains(e.target) &&
+            !_langPortalMenu.contains(e.target)) {
+            _langPortalMenu.style.display = 'none';
+            const arr = document.getElementById('lang-dropdown-arrow');
+            if (arr) arr.classList.remove('rotate-180');
+        }
+    };
+    window.addEventListener('click', _langClickOutsideHandler);
 }
 
 // Export for use in other modules
