@@ -109,47 +109,12 @@
             </svg>
         </button>
 
-        <!-- Upward Dropdown Menu -->
+        <!-- Upward Dropdown Menu (All items moved to Settings) -->
         <div id="user-dropdown-menu" class="hidden absolute bottom-full left-4 right-4 mb-2 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50 animate-slide-up">
-            <div class="py-2">
-                <!-- Language Menu Item -->
-                <button onclick="LanguageManager.toggleSubmenu()" class="w-full flex items-center space-x-3 px-5 py-3 hover:bg-blue-50 transition-colors text-left group">
-                    <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="10" stroke-width="2"/>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/>
-                    </svg>
-                    <span class="text-sm font-semibold text-gray-700 flex-1" data-i18n="common.language">Bahasa</span>
-                    <div class="flex items-center space-x-1.5">
-                        <span id="sidebar-lang-flag" class="text-base leading-none">🇮🇩</span>
-                        <svg id="lang-chevron" class="w-3.5 h-3.5 text-gray-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
-                        </svg>
-                    </div>
-                </button>
-
-                <!-- Language Submenu (inline collapsible) -->
-                <div id="lang-submenu" class="hidden border-t border-gray-50 bg-gray-50/60 py-1">
-                    <!-- Populated by language.js -->
-                </div>
-
-                <a href="{{ url_for('main.history') }}" class="flex items-center space-x-3 px-5 py-3 hover:bg-gray-50 transition-colors">
-                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <span class="text-sm font-semibold text-gray-700" data-i18n="profile.history">Riwayat Akses</span>
-                </a>
-                <a href="{{ url_for('main.privacy_policy') }}" class="flex items-center space-x-3 px-5 py-3 hover:bg-gray-50 transition-colors">
-                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                    </svg>
-                    <span class="text-sm font-semibold text-gray-700" data-i18n="profile.privacy">Privacy & Policy</span>
-                </a>
-                <a href="{{ url_for('main.sponsor') }}" class="flex items-center space-x-3 px-5 py-3 hover:bg-gray-50 transition-colors">
-                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                    </svg>
-                    <span class="text-sm font-semibold text-gray-700" data-i18n="profile.sponsor">Sponsor</span>
-                </a>
+            <div class="py-6 px-6 text-center">
+                <p class="text-xs text-gray-500 font-semibold">
+                    <a href="{{ url_for('main.settings') }}" class="text-primary-600 hover:text-primary-700 font-bold">Pengaturan</a> untuk semua menu
+                </p>
             </div>
         </div>
     </div>

@@ -37,7 +37,7 @@ const translations = {
         },
         profile: {
             settings: 'Pengaturan', history: 'Riwayat Akses', privacy: 'Privacy & Policy',
-            sponsor: 'Sponsor', logout: 'Keluar',
+            sponsor: 'Sponsor', logout: 'Keluar', all_in_settings: 'Pengaturan untuk semua menu', my_grades: 'Nilai Saya',
         },
         logout_modal: {
             title: 'Keluar Sesi?', body: 'Anda perlu login kembali untuk mengakses data Anda.',
@@ -65,7 +65,7 @@ const translations = {
         },
         profile: {
             settings: 'Settings', history: 'Access History', privacy: 'Privacy & Policy',
-            sponsor: 'Sponsor', logout: 'Logout',
+            sponsor: 'Sponsor', logout: 'Logout', all_in_settings: 'Settings for all menus', my_grades: 'My Grades',
         },
         logout_modal: {
             title: 'Sign Out?', body: 'You need to log in again to access your data.',
