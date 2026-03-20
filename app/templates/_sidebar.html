@@ -183,11 +183,10 @@
 </div>
 
 <script>
-// Render language selector in sidebar when DOM is ready
+// Initialize language selector in sidebar when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
-    const container = document.getElementById('language-selector-container');
-    if (container && window.LanguageManager) {
-        container.innerHTML = window.LanguageManager.renderLanguageSelector();
+    if (window.LanguageManager) {
+        window.LanguageManager.initLanguageSelector();
     }
 });
 </script>
