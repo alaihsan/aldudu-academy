@@ -43,6 +43,7 @@ def course_detail(course_id):
         assignments = Assignment.query.filter_by(course_id=course.id, status=AssignmentStatus.PUBLISHED).all()
     links = Link.query.filter_by(course_id=course.id).all()
     files = File.query.filter_by(course_id=course.id).all()
+    discussions = Discussion.query.filter_by(course_id=course.id).all()
 
     topics = []
     for quiz in quizzes:
@@ -80,6 +81,15 @@ def course_detail(course_id):
             'url': url_for('main.serve_file', file_id=file.id),
             'created_at': file.created_at,
             'folder_id': getattr(file, 'folder_id', None)
+        })
+    for discussion in discussions:
+        topics.append({
+            'id': discussion.id,
+            'name': discussion.title,
+            'type': 'Diskusi',
+            'url': url_for('main.discussion_detail', course_id=course.id, discussion_id=discussion.id),
+            'created_at': discussion.created_at,
+            'folder_id': None
         })
     
     from datetime import datetime

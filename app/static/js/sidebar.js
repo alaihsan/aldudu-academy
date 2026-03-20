@@ -1,117 +1,153 @@
 /**
- * Aldudu Academy - Sidebar & Global Scripts
+ * Sidebar Manager
+ * Handles sidebar hide/unhide functionality with icon-only mode
  */
 
 const SidebarManager = {
-    state: {
-        isCollapsed: localStorage.getItem('sidebarCollapsed') === 'true'
-    },
+    sidebar: null,
+    unhideBtn: null,
+    isCollapsed: false,
 
     init() {
-        this.cacheElements();
-        if (!this.elements.sidebar) return;
-
-        this.applyState();
-        this.bindEvents();
+        this.sidebar = document.getElementById('main-sidebar');
+        this.createUnhideButton();
+        this.loadState();
+        this.attachEventListeners();
     },
 
-    cacheElements() {
-        this.elements = {
-            sidebar: document.getElementById('main-sidebar'),
-            mainContent: document.getElementById('main-content'),
-            unhideBtn: document.getElementById('sidebar-unhide-btn'),
-            profileBtn: document.getElementById('user-profile-btn'),
-            dropdownMenu: document.getElementById('user-dropdown-menu'),
-            dropdownLogoutBtn: document.getElementById('user-dropdown-logout'),
-            logoutModal: document.getElementById('logout-modal'),
-            closeLogoutBtn: document.getElementById('close-logout-modal')
-        };
-    },
-
-    bindEvents() {
-        // Toggle dropdown on profile button click
-        if (this.elements.profileBtn) {
-            this.elements.profileBtn.onclick = (e) => {
-                e.stopPropagation();
-                this.toggleDropdown();
-            };
-        }
-
-        // Dropdown logout button opens logout modal
-        if (this.elements.dropdownLogoutBtn) {
-            this.elements.dropdownLogoutBtn.onclick = (e) => {
-                e.stopPropagation();
-                this.closeDropdown();
-                this.elements.logoutModal?.classList.remove('hidden');
-            };
-        }
-
-        if (this.elements.closeLogoutBtn) {
-            this.elements.closeLogoutBtn.onclick = () => {
-                this.elements.logoutModal?.classList.add('hidden');
-            };
-        }
-
-        // Close dropdown and modal on outside click
-        window.addEventListener('click', (e) => {
-            if (this.elements.dropdownMenu && !this.elements.dropdownMenu.contains(e.target) && !this.elements.profileBtn?.contains(e.target)) {
-                this.closeDropdown();
-            }
-            if (e.target === this.elements.logoutModal) {
-                this.elements.logoutModal.classList.add('hidden');
-            }
-        });
-    },
-
-    toggleDropdown() {
-        const menu = this.elements.dropdownMenu;
-        if (!menu) return;
-        menu.classList.toggle('hidden');
-    },
-
-    closeDropdown() {
-        this.elements.dropdownMenu?.classList.add('hidden');
+    createUnhideButton() {
+        // Create unhide button that appears when sidebar is collapsed
+        this.unhideBtn = document.createElement('button');
+        this.unhideBtn.id = 'sidebar-unhide-btn';
+        this.unhideBtn.className = 'fixed left-0 top-1/2 -translate-y-1/2 z-50 bg-white border border-gray-200 shadow-lg p-3 rounded-r-xl hover:bg-gray-50 transition-all hidden';
+        this.unhideBtn.title = 'Tampilkan Sidebar';
+        this.unhideBtn.innerHTML = `
+            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 5l7 7-7 7M5 5l7 7-7 7"/>
+            </svg>
+        `;
+        this.unhideBtn.onclick = () => this.toggle();
+        document.body.appendChild(this.unhideBtn);
     },
 
     toggle() {
-        this.state.isCollapsed = !this.state.isCollapsed;
-        localStorage.setItem('sidebarCollapsed', this.state.isCollapsed);
-        this.applyState();
+        if (!this.sidebar) return;
+
+        this.isCollapsed = !this.isCollapsed;
+        this.saveState();
+        this.updateUI();
     },
 
-    applyState() {
-        const { sidebar, mainContent, unhideBtn } = this.elements;
-        if (!sidebar) return;
+    updateUI() {
+        if (!this.sidebar) return;
 
-        if (this.state.isCollapsed) {
-            sidebar.classList.add('sidebar-collapsed');
-            unhideBtn?.classList.remove('hidden');
-            unhideBtn?.classList.add('lg:flex');
+        if (this.isCollapsed) {
+            // Collapse sidebar - show only icons
+            this.sidebar.classList.remove('w-64');
+            this.sidebar.classList.add('w-20');
+            this.sidebar.classList.add('sidebar-collapsed');
+
+            // Hide text spans
+            this.sidebar.querySelectorAll('span:not(.sidebar-hide)').forEach(span => {
+                span.classList.add('hidden');
+            });
+
+            // Hide logo text
+            const logoText = this.sidebar.querySelector('.sidebar-logo-text');
+            if (logoText) logoText.classList.add('hidden');
+
+            // Hide toggle button in sidebar
+            const toggleBtn = this.sidebar.querySelector('.sidebar-toggle-btn');
+            if (toggleBtn) {
+                toggleBtn.innerHTML = `
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 5l7 7-7 7M5 5l7 7-7 7"/>
+                    </svg>
+                `;
+                toggleBtn.title = 'Tampilkan Sidebar';
+            }
+
+            // Show unhide button
+            this.unhideBtn.classList.remove('hidden');
+
+            // Center icons
+            this.sidebar.querySelectorAll('nav a').forEach(link => {
+                link.classList.add('justify-center');
+                link.classList.remove('space-x-3');
+            });
         } else {
-            sidebar.classList.remove('sidebar-collapsed');
-            unhideBtn?.classList.add('hidden');
-            unhideBtn?.classList.remove('lg:flex');
+            // Expand sidebar - show full
+            this.sidebar.classList.remove('w-20');
+            this.sidebar.classList.add('w-64');
+            this.sidebar.classList.remove('sidebar-collapsed');
+
+            // Show text spans
+            this.sidebar.querySelectorAll('span').forEach(span => {
+                span.classList.remove('hidden');
+            });
+
+            // Show logo text
+            const logoText = this.sidebar.querySelector('.sidebar-logo-text');
+            if (logoText) logoText.classList.remove('hidden');
+
+            // Update toggle button
+            const toggleBtn = this.sidebar.querySelector('.sidebar-toggle-btn');
+            if (toggleBtn) {
+                toggleBtn.innerHTML = `
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                `;
+                toggleBtn.title = 'Sembunyikan Sidebar';
+            }
+
+            // Hide unhide button
+            this.unhideBtn.classList.add('hidden');
+
+            // Restore link layout
+            this.sidebar.querySelectorAll('nav a').forEach(link => {
+                link.classList.remove('justify-center');
+                link.classList.add('space-x-3');
+            });
         }
+
+        // Save state to localStorage
+        this.saveState();
+    },
+
+    saveState() {
+        localStorage.setItem('sidebarCollapsed', this.isCollapsed.toString());
+    },
+
+    loadState() {
+        const saved = localStorage.getItem('sidebarCollapsed');
+        if (saved === 'true') {
+            this.isCollapsed = true;
+            this.updateUI();
+        }
+    },
+
+    attachEventListeners() {
+        // Handle toggle button in sidebar
+        const toggleBtn = this.sidebar?.querySelector('.sidebar-toggle-btn');
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', () => this.toggle());
+        }
+
+        // Keyboard shortcut (Ctrl/Cmd + B)
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+                e.preventDefault();
+                this.toggle();
+            }
+        });
     }
 };
 
-async function handleGlobalLogout() {
-    try {
-        const res = await fetch('/api/logout', { method: 'POST' });
-        if (res.ok) {
-            window.location.href = '/';
-        }
-    } catch (err) {
-        console.error('Logout failed', err);
-    }
-}
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', () => {
+    SidebarManager.init();
+});
 
-// Global handle for dashboard.js compatibility
-if (typeof window !== 'undefined') {
-    window.SidebarManager = SidebarManager;
-    window.handleGlobalLogout = handleGlobalLogout;
-}
-
-// Initial Run
-document.addEventListener('DOMContentLoaded', () => SidebarManager.init());
-document.body.addEventListener('htmx:afterSwap', () => SidebarManager.init());
+// Export for global access
+window.SidebarManager = SidebarManager;

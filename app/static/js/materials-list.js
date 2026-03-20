@@ -1,6 +1,8 @@
 /**
  * MaterialsList Component
- * Displays materials (quizzes, assignments, files, links) in list view
+ * Displays materials (quizzes, assignments, files, links) with List view
+ * macOS Finder-style list with detailed time and file type information
+ * Full-width layout with integrated folder management
  */
 class MaterialsList {
     constructor(containerId, courseId, options = {}) {
@@ -8,9 +10,9 @@ class MaterialsList {
         this.courseId = courseId;
         this.materials = [];
         this.filteredMaterials = [];
-        this.currentFolderId = null;
         this.filterType = 'all';
         this.searchQuery = '';
+        this.isTeacher = options.isTeacher || false;
         this.onMaterialSelect = options.onMaterialSelect || (() => {});
         this.onMaterialDelete = options.onMaterialDelete || (() => {});
 
@@ -25,29 +27,30 @@ class MaterialsList {
 
     async loadMaterials() {
         try {
-            // Load materials from window.topicsData if available (from template)
             if (window.topicsData && Array.isArray(window.topicsData)) {
-                // Transform topics from template to standardized format
                 this.materials = window.topicsData.map(topic => {
                     const typeMap = {
                         'Kuis': 'quiz',
                         'Tugas': 'assignment',
                         'Berkas': 'file',
-                        'Link': 'link'
+                        'Link': 'link',
+                        'Diskusi': 'discussion'
                     };
 
                     const colorMap = {
-                        'quiz': 'purple',
-                        'assignment': 'blue',
-                        'file': 'gray',
-                        'link': 'green'
+                        'quiz': 'amber',
+                        'assignment': 'green',
+                        'file': 'blue',
+                        'link': 'indigo',
+                        'discussion': 'purple'
                     };
 
                     const iconMap = {
                         'quiz': '📊',
                         'assignment': '📝',
                         'file': '📎',
-                        'link': '🔗'
+                        'link': '🔗',
+                        'discussion': '💬'
                     };
 
                     const type = typeMap[topic.type] || 'file';
@@ -57,17 +60,16 @@ class MaterialsList {
                         title: topic.name || 'Untitled',
                         name: topic.name || 'Untitled',
                         created_at: topic.created_at || new Date().toISOString(),
-                        folder_id: topic.folder_id || null,
                         order: topic.order || 0,
                         icon: iconMap[type],
                         color: colorMap[type],
                         due_date: topic.due_date,
                         filename: topic.filename,
-                        url: topic.url
+                        url: topic.url,
+                        description: topic.description
                     };
                 });
             } else {
-                // Fallback: Initialize empty
                 this.materials = [];
             }
 
@@ -80,26 +82,36 @@ class MaterialsList {
 
     applyFilters() {
         this.filteredMaterials = this.materials.filter(m => {
-            // Filter by folder
-            if (this.currentFolderId !== null) {
-                const folderMatch = m.folder_id === this.currentFolderId;
-                if (!folderMatch) return false;
-            } else {
-                // Show all materials not in any folder (root level)
-                const noFolder = !m.folder_id;
-                if (!noFolder) return false;
-            }
-
             // Filter by type
             if (this.filterType !== 'all' && m.type !== this.filterType) {
                 return false;
             }
 
-            // Filter by search
+            // Filter by search query
             if (this.searchQuery) {
-                const query = this.searchQuery.toLowerCase();
+                const query = this.searchQuery.toLowerCase().trim();
+                
+                // Search in title/name
                 const title = (m.title || m.name || '').toLowerCase();
-                return title.includes(query);
+                
+                // Search in description
+                const description = (m.description || '').toLowerCase();
+                
+                // Search in type label
+                const typeLabel = this.getTypeLabel(m.type).toLowerCase();
+                
+                // Search in file extension (for files)
+                const fileExt = (m.filename || '').split('.').pop().toLowerCase();
+                
+                // Check if query matches any field
+                const matchesTitle = title.includes(query);
+                const matchesDescription = description.includes(query);
+                const matchesType = typeLabel.includes(query);
+                const matchesFileExt = fileExt.includes(query);
+                
+                if (!matchesTitle && !matchesDescription && !matchesType && !matchesFileExt) {
+                    return false;
+                }
             }
 
             return true;
@@ -113,59 +125,82 @@ class MaterialsList {
         });
     }
 
+    getTypeLabel(type) {
+        const labels = {
+            quiz: 'Kuis',
+            assignment: 'Tugas',
+            file: 'Berkas',
+            link: 'Link',
+            discussion: 'Diskusi'
+        };
+        return labels[type] || type;
+    }
+
     render() {
         const typeFilterOptions = [
             { value: 'all', label: 'Semua' },
-            { value: 'quiz', label: 'Quiz' },
+            { value: 'quiz', label: 'Kuis' },
             { value: 'assignment', label: 'Tugas' },
-            { value: 'file', label: 'File' },
-            { value: 'link', label: 'Link' }
+            { value: 'file', label: 'Berkas' },
+            { value: 'link', label: 'Link' },
+            { value: 'discussion', label: 'Diskusi' }
         ];
 
         const html = `
-            <div class="materials-list">
+            <div class="materials-wrapper">
                 <!-- Header -->
-                <div class="materials-list-header flex items-center justify-between mb-6">
+                <div class="materials-header flex items-center justify-between mb-6">
                     <div>
-                        <h2 class="text-2xl font-bold text-gray-900" id="folder-title">Semua Materi</h2>
+                        <h2 class="text-2xl font-bold text-gray-900">Semua Materi</h2>
                         <p class="text-sm text-gray-500 mt-1">
-                            ${this.filteredMaterials.length} materi
+                            ${this.filteredMaterials.length} ${this.filteredMaterials.length === 1 ? 'materi' : 'materi'}${this.searchQuery ? ` (menampilkan hasil untuk "${this.searchQuery}")` : ''}
                         </p>
                     </div>
-                    <button class="btn btn-primary btn-add-material" title="Tambah Material">
-                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+
+                    ${this.isTeacher ? `
+                    <button class="btn btn-primary btn-add-material inline-flex items-center px-4 py-2.5 bg-green-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-green-200 hover:bg-green-700 transition-all active:scale-95">
+                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
                         </svg>
                         Tambah Materi
                     </button>
+                    ` : ''}
                 </div>
 
                 <!-- Search and Filter -->
-                <div class="materials-filters flex gap-4 mb-6">
-                    <div class="flex-1">
-                        <input type="text" id="search-materials" class="form-control w-full px-4 py-2 border border-gray-300 rounded-lg"
-                               placeholder="Cari materi...">
+                <div class="materials-filters flex flex-col sm:flex-row gap-4 mb-6">
+                    <div class="flex-1 relative">
+                        <svg class="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                        <input type="text" id="search-materials" class="w-full pl-10 pr-10 py-2.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all"
+                               placeholder="Cari materi, tugas, kuis, diskusi...">
+                        ${this.searchQuery ? `
+                        <button id="clear-search" class="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-all" title="Hapus pencarian">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                        ` : ''}
                     </div>
-                    <select id="filter-type" class="form-control px-4 py-2 border border-gray-300 rounded-lg">
+                    <select id="filter-type" class="form-control px-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all font-semibold text-sm min-w-[150px]">
                         ${typeFilterOptions.map(opt => `
                             <option value="${opt.value}" ${opt.value === this.filterType ? 'selected' : ''}>${opt.label}</option>
                         `).join('')}
                     </select>
                 </div>
 
-                <!-- Breadcrumb -->
-                <div class="materials-breadcrumb text-sm text-gray-600 mb-4" id="breadcrumb">
-                    Materi Kelas
-                </div>
-
                 <!-- Materials List -->
-                <div class="materials-items space-y-3">
-                    ${this.filteredMaterials.length > 0 ? this.renderMaterials() : `
-                        <div class="text-center py-12">
-                            <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                            </svg>
-                            <p class="text-gray-500">Belum ada materi</p>
+                <div class="materials-items materials-list-view">
+                    ${this.filteredMaterials.length > 0 ? this.renderListView() : `
+                        <div class="empty-state text-center py-16 bg-white rounded-3xl border-2 border-dashed border-gray-200">
+                            <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
+                            </div>
+                            <p class="text-gray-500 font-semibold">Belum ada materi</p>
+                            <p class="text-sm text-gray-400 mt-1">Klik "Tambah Materi" untuk menambahkan materi</p>
                         </div>
                     `}
                 </div>
@@ -176,97 +211,163 @@ class MaterialsList {
     }
 
     renderMaterials() {
-        return this.filteredMaterials.map(material => {
+        return this.renderListView();
+    }
+
+    renderListView() {
+        return `<div class="space-y-2">` + this.filteredMaterials.map(material => {
             const createdDate = new Date(material.created_at);
             const formattedDate = createdDate.toLocaleDateString('id-ID', {
-                year: 'numeric',
-                month: 'short',
                 day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+            const formattedTime = createdDate.toLocaleTimeString('id-ID', {
                 hour: '2-digit',
                 minute: '2-digit'
             });
 
             const typeLabels = {
-                quiz: 'Quiz',
+                quiz: 'Kuis',
                 assignment: 'Tugas',
-                file: 'File',
-                link: 'Link'
+                file: 'Berkas',
+                link: 'Link',
+                discussion: 'Diskusi'
             };
 
-            const typeColors = {
-                quiz: 'purple',
-                assignment: 'blue',
-                file: 'gray',
-                link: 'green'
+            const colorClasses = {
+                quiz: 'amber',
+                assignment: 'green',
+                file: 'blue',
+                link: 'indigo',
+                discussion: 'purple'
             };
+
+            const color = colorClasses[material.type];
+            const isAssignment = material.type === 'assignment';
+            const isFile = material.type === 'file';
+            const isDiscussion = material.type === 'discussion';
+
+            // Get file extension
+            let fileExtension = '';
+            if (isFile && material.filename) {
+                fileExtension = material.filename.split('.').pop().toUpperCase();
+            }
 
             return `
-                <div class="material-item flex items-center gap-4 p-4 rounded-lg border border-gray-200 hover:border-primary-300 hover:bg-primary-50 transition-all group cursor-move"
-                     draggable="true"
+                <div class="group bg-white rounded-2xl border border-gray-200 hover:border-green-300 hover:bg-green-50/50 transition-all duration-200 overflow-hidden material-list-item"
                      data-material-id="${material.id}"
                      data-material-type="${material.type}">
-
-                    <!-- Icon -->
-                    <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-${typeColors[material.type]}-100 flex items-center justify-center text-xl">
-                        ${material.icon || '📄'}
-                    </div>
-
-                    <!-- Content -->
-                    <div class="flex-1 min-w-0">
-                        <h3 class="text-sm font-semibold text-gray-900 truncate">
-                            ${material.title || material.name || 'Untitled'}
-                        </h3>
-                        <p class="text-xs text-gray-500 mt-1">
-                            <span class="badge badge-${typeColors[material.type]}">${typeLabels[material.type]}</span>
-                            <span class="ml-2">Dibuat ${formattedDate}</span>
-                        </p>
-                    </div>
-
-                    <!-- Additional Info -->
-                    ${material.type === 'assignment' && material.due_date ? `
-                        <div class="flex-shrink-0 text-right">
-                            <p class="text-xs text-gray-600">
-                                Deadline: ${new Date(material.due_date).toLocaleDateString('id-ID')}
-                            </p>
+                    <div class="flex items-center gap-4 px-5 py-4">
+                        <!-- Icon -->
+                        <div class="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-200 group-hover:scale-105 shadow-sm
+                            ${color === 'amber' ? 'bg-amber-100 text-amber-600 group-hover:bg-amber-600 group-hover:text-white' : ''}
+                            ${color === 'green' ? 'bg-green-100 text-green-600 group-hover:bg-green-600 group-hover:text-white' : ''}
+                            ${color === 'blue' ? 'bg-blue-100 text-blue-600 group-hover:bg-blue-600 group-hover:text-white' : ''}
+                            ${color === 'indigo' ? 'bg-indigo-100 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white' : ''}
+                            ${color === 'purple' ? 'bg-purple-100 text-purple-600 group-hover:bg-purple-600 group-hover:text-white' : ''}">
+                            <span class="text-xl">${material.icon || '📄'}</span>
                         </div>
-                    ` : material.type === 'file' && material.filename ? `
-                        <div class="flex-shrink-0 text-right">
-                            <p class="text-xs text-gray-600">
-                                ${material.filename.split('.').pop().toUpperCase()}
-                            </p>
-                        </div>
-                    ` : ''}
 
-                    <!-- Actions -->
-                    <div class="flex-shrink-0 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button class="btn-view-material p-2 text-gray-500 hover:text-primary-600 transition-colors"
-                                title="Lihat">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                            </svg>
-                        </button>
-                        <button class="btn-delete-material p-2 text-gray-500 hover:text-red-600 transition-colors"
-                                title="Hapus">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                            </svg>
-                        </button>
+                        <!-- Content -->
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-sm font-bold text-gray-900 group-hover:text-green-700 transition-colors truncate">
+                                ${material.title || material.name || 'Untitled'}
+                            </h3>
+                            <div class="flex items-center gap-3 mt-1">
+                                <span class="inline-flex items-center px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-[10px] font-bold uppercase tracking-wide">
+                                    ${typeLabels[material.type]}
+                                </span>
+                                <span class="text-xs text-gray-500 flex items-center gap-1">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    ${formattedDate} · ${formattedTime}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Additional Info -->
+                        ${isAssignment && material.due_date ? `
+                            <div class="flex-shrink-0 flex items-center gap-2 px-3 py-1.5 bg-orange-50 text-orange-700 rounded-lg">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span class="text-xs font-bold">Tenggat: ${new Date(material.due_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                            </div>
+                        ` : isFile && fileExtension ? `
+                            <div class="flex-shrink-0 flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
+                                <span class="text-xs font-bold">${fileExtension}</span>
+                            </div>
+                        ` : isFile ? `
+                            <div class="flex-shrink-0 flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
+                                <span class="text-xs font-bold">Dokumen</span>
+                            </div>
+                        ` : ''}
+
+                        <!-- Actions (Teacher Only) -->
+                        ${this.isTeacher ? `
+                        <div class="flex-shrink-0 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button class="btn-delete-material p-2 text-gray-400 hover:text-red-600 hover:bg-red-100 rounded-lg transition-all" title="Hapus">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                </svg>
+                            </button>
+                        </div>
+                        ` : ''}
                     </div>
                 </div>
             `;
-        }).join('');
+        }).join('') + `</div>`;
     }
 
     attachEventListeners() {
-        // Search input
+        // Search input with debounce for better performance
         const searchInput = this.container.querySelector('#search-materials');
         if (searchInput) {
+            let searchTimeout;
             searchInput.addEventListener('input', (e) => {
-                this.searchQuery = e.target.value;
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    this.searchQuery = e.target.value;
+                    this.applyFilters();
+                    this.render();
+                    this.attachEventListeners();
+                }, 300); // 300ms debounce
+            });
+            
+            // Clear search on Escape key
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    this.searchQuery = '';
+                    searchInput.value = '';
+                    this.applyFilters();
+                    this.render();
+                    this.attachEventListeners();
+                    searchInput.blur();
+                }
+            });
+        }
+        
+        // Clear search button
+        const clearSearchBtn = this.container.querySelector('#clear-search');
+        if (clearSearchBtn) {
+            clearSearchBtn.addEventListener('click', () => {
+                this.searchQuery = '';
+                const searchInput = this.container.querySelector('#search-materials');
+                if (searchInput) {
+                    searchInput.value = '';
+                }
                 this.applyFilters();
                 this.render();
                 this.attachEventListeners();
+                searchInput?.focus();
             });
         }
 
@@ -281,36 +382,22 @@ class MaterialsList {
             });
         }
 
-        // Drag and drop
-        this.container.querySelectorAll('.material-item').forEach(item => {
-            item.addEventListener('dragstart', (e) => {
-                const materialId = item.dataset.materialId;
-                const materialType = item.dataset.materialType;
-                e.dataTransfer.effectAllowed = 'move';
-                e.dataTransfer.setData('application/json', JSON.stringify({
-                    type: 'material',
-                    materialId: parseInt(materialId),
-                    materialType: materialType
-                }));
-            });
-        });
-
-        // View material
-        this.container.querySelectorAll('.btn-view-material').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                const item = btn.closest('.material-item');
+        // Material card/item click
+        this.container.querySelectorAll('.material-card, .material-list-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                if (e.target.closest('button')) return;
                 const materialType = item.dataset.materialType;
                 const materialId = item.dataset.materialId;
                 this.onMaterialSelect(materialType, parseInt(materialId));
             });
         });
 
-        // Delete material
+        // Delete material (Teacher Only)
         this.container.querySelectorAll('.btn-delete-material').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
-                const item = btn.closest('.material-item');
+                e.stopPropagation();
+                const item = btn.closest('.material-card, .material-list-item');
                 const materialType = item.dataset.materialType;
                 const materialId = item.dataset.materialId;
                 if (confirm('Hapus materi ini?')) {
@@ -325,19 +412,6 @@ class MaterialsList {
             addBtn.addEventListener('click', () => {
                 this.showAddMaterialModal();
             });
-        }
-    }
-
-    setFolder(folderId) {
-        this.currentFolderId = folderId;
-        this.applyFilters();
-        this.render();
-        this.attachEventListeners();
-
-        // Update title
-        const title = this.container.querySelector('#folder-title');
-        if (title) {
-            title.textContent = folderId === null ? 'Semua Materi' : 'Materi di Folder';
         }
     }
 
@@ -359,55 +433,180 @@ class MaterialsList {
 
     showAddMaterialModal() {
         const modal = document.createElement('div');
-        modal.className = 'modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+        modal.className = 'modal-overlay fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50';
         modal.innerHTML = `
-            <div class="modal-content bg-white rounded-2xl shadow-2xl p-6 w-96">
-                <h3 class="text-lg font-bold mb-6">Tambah Materi</h3>
-                <div class="space-y-2">
-                    <button class="add-quiz w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 border border-gray-200 transition-colors">
-                        <div class="font-semibold text-purple-600">📊 Quiz</div>
-                        <div class="text-xs text-gray-600">Buat kuis interaktif</div>
-                    </button>
-                    <button class="add-assignment w-full text-left px-4 py-3 rounded-lg hover:bg-blue-50 border border-gray-200 transition-colors">
-                        <div class="font-semibold text-blue-600">📝 Tugas</div>
-                        <div class="text-xs text-gray-600">Berikan tugas kepada siswa</div>
-                    </button>
-                    <button class="add-file w-full text-left px-4 py-3 rounded-lg hover:bg-gray-50 border border-gray-200 transition-colors">
-                        <div class="font-semibold text-gray-600">📎 File</div>
-                        <div class="text-xs text-gray-600">Upload file materi</div>
-                    </button>
-                    <button class="add-link w-full text-left px-4 py-3 rounded-lg hover:bg-green-50 border border-gray-200 transition-colors">
-                        <div class="font-semibold text-green-600">🔗 Link</div>
-                        <div class="text-xs text-gray-600">Tambahkan link eksternal</div>
-                    </button>
+            <div class="modal-content bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden animate-slide-up">
+                <div class="bg-gradient-to-br from-green-500 to-green-700 px-8 py-6 text-white">
+                    <h3 class="text-xl font-black">Tambah Konten Baru</h3>
+                    <p class="text-green-100 text-sm mt-1">Pilih jenis konten atau buat folder</p>
                 </div>
-                <button class="btn btn-secondary w-full mt-4">Batal</button>
+                <div class="p-6">
+                    <!-- Folder Section -->
+                    <div class="mb-4">
+                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 px-2">Organisasi</p>
+                        <button class="add-folder w-full text-left px-5 py-4 rounded-2xl hover:bg-purple-50 border border-gray-100 transition-all group flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center text-xl group-hover:bg-purple-600 group-hover:text-white transition-all">
+                                📁
+                            </div>
+                            <div>
+                                <div class="font-bold text-gray-900 group-hover:text-purple-600 transition-colors">Buat Folder</div>
+                                <div class="text-xs text-gray-500">Organisir materi dalam folder</div>
+                            </div>
+                        </button>
+                    </div>
+                    
+                    <!-- Materials Section -->
+                    <div>
+                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 px-2">Materi & Tugas</p>
+                        <div class="space-y-3">
+                            <button class="add-quiz w-full text-left px-5 py-4 rounded-2xl hover:bg-amber-50 border border-gray-100 transition-all group flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-xl group-hover:bg-amber-600 group-hover:text-white transition-all">
+                                    📊
+                                </div>
+                                <div>
+                                    <div class="font-bold text-gray-900 group-hover:text-amber-600 transition-colors">Kuis</div>
+                                    <div class="text-xs text-gray-500">Buat kuis interaktif</div>
+                                </div>
+                            </button>
+                            <button class="add-assignment w-full text-left px-5 py-4 rounded-2xl hover:bg-green-50 border border-gray-100 transition-all group flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-green-100 text-green-600 flex items-center justify-center text-xl group-hover:bg-green-600 group-hover:text-white transition-all">
+                                    📝
+                                </div>
+                                <div>
+                                    <div class="font-bold text-gray-900 group-hover:text-green-600 transition-colors">Tugas</div>
+                                    <div class="text-xs text-gray-500">Berikan tugas kepada siswa</div>
+                                </div>
+                            </button>
+                            <button class="add-file w-full text-left px-5 py-4 rounded-2xl hover:bg-blue-50 border border-gray-100 transition-all group flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center text-xl group-hover:bg-blue-600 group-hover:text-white transition-all">
+                                    📎
+                                </div>
+                                <div>
+                                    <div class="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">Berkas</div>
+                                    <div class="text-xs text-gray-500">Upload file materi</div>
+                                </div>
+                            </button>
+                            <button class="add-link w-full text-left px-5 py-4 rounded-2xl hover:bg-indigo-50 border border-gray-100 transition-all group flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-xl group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                                    🔗
+                                </div>
+                                <div>
+                                    <div class="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">Link</div>
+                                    <div class="text-xs text-gray-500">Tambahkan link eksternal</div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="px-6 pb-6">
+                    <button class="btn btn-secondary w-full px-5 py-3.5 bg-gray-100 text-gray-700 rounded-2xl font-bold hover:bg-gray-200 transition-all">Batal</button>
+                </div>
             </div>
         `;
 
         document.body.appendChild(modal);
 
-        modal.querySelector('.add-quiz').addEventListener('click', () => {
+        // Add folder button
+        modal.querySelector('.add-folder').addEventListener('click', (e) => {
+            e.preventDefault();
             modal.remove();
-            window.location.href = `/courses/${this.courseId}/quiz/new`;
+            this.showCreateFolderModal();
         });
 
-        modal.querySelector('.add-assignment').addEventListener('click', () => {
+        modal.querySelector('.add-quiz').addEventListener('click', (e) => {
+            e.preventDefault();
             modal.remove();
-            window.location.href = `/courses/${this.courseId}/assignment/new`;
+            document.getElementById('show-create-quiz-modal')?.click();
         });
 
-        modal.querySelector('.add-file').addEventListener('click', () => {
+        modal.querySelector('.add-assignment').addEventListener('click', (e) => {
+            e.preventDefault();
             modal.remove();
-            // Trigger file upload modal or navigate
+            document.getElementById('show-create-assignment-modal')?.click();
         });
 
-        modal.querySelector('.add-link').addEventListener('click', () => {
+        modal.querySelector('.add-file').addEventListener('click', (e) => {
+            e.preventDefault();
             modal.remove();
-            // Trigger link creation modal or navigate
+            document.getElementById('show-create-file-modal')?.click();
+        });
+
+        modal.querySelector('.add-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            modal.remove();
+            document.getElementById('show-create-link-modal')?.click();
         });
 
         modal.querySelector('.btn-secondary').addEventListener('click', () => modal.remove());
+    }
+
+    showCreateFolderModal() {
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50';
+        modal.innerHTML = `
+            <div class="modal-content bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden animate-slide-up">
+                <div class="bg-gradient-to-br from-purple-500 to-purple-700 px-8 py-6 text-white">
+                    <h3 class="text-xl font-black">Buat Folder Baru</h3>
+                    <p class="text-purple-100 text-sm mt-1">Organisir materi kelas Anda</p>
+                </div>
+                <div class="p-6">
+                    <div class="mb-4">
+                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Nama Folder</label>
+                        <input type="text" id="folder-name-input" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-purple-500 outline-none font-bold" placeholder="Contoh: Bab 1, UTS, Materi Ganjil..." autofocus>
+                    </div>
+                    <div id="folder-modal-error" class="hidden p-4 bg-red-50 text-red-600 rounded-2xl text-xs font-bold text-center mb-4"></div>
+                </div>
+                <div class="px-6 pb-6 flex space-x-3">
+                    <button class="folder-cancel-btn flex-1 px-6 py-4 text-gray-500 bg-gray-100 rounded-2xl font-bold hover:bg-gray-200 transition-all">Batal</button>
+                    <button class="folder-create-btn flex-[2] px-6 py-4 bg-purple-600 text-white rounded-2xl font-bold shadow-lg shadow-purple-200 hover:bg-purple-700 active:scale-95">Buat Folder</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        const input = modal.querySelector('#folder-name-input');
+        input.focus();
+
+        const createBtn = modal.querySelector('.folder-create-btn');
+        createBtn.addEventListener('click', async () => {
+            const name = input.value.trim();
+            const errorDiv = modal.querySelector('#folder-modal-error');
+            
+            if (!name) {
+                errorDiv.textContent = 'Nama folder wajib diisi';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/courses/${this.courseId}/folders`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    modal.remove();
+                    // Show success feedback
+                    alert('Folder berhasil dibuat!');
+                } else {
+                    errorDiv.textContent = data.message || 'Gagal membuat folder';
+                    errorDiv.classList.remove('hidden');
+                }
+            } catch (error) {
+                errorDiv.textContent = 'Terjadi kesalahan saat membuat folder';
+                errorDiv.classList.remove('hidden');
+                console.error('Error creating folder:', error);
+            }
+        });
+
+        modal.querySelector('.folder-cancel-btn').addEventListener('click', () => modal.remove());
+        
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') createBtn.click();
+        });
     }
 
     refresh() {

@@ -809,7 +809,7 @@ def api_create_folder(course_id):
     school_id = get_school_id_or_abort()
     verify_course_in_school(course, school_id)
 
-    # Only teacher can create folders
+    # Only teacher can create folders (not admin or super admin)
     if course.teacher_id != current_user.id:
         return jsonify({'success': False, 'message': 'Anda tidak memiliki izin untuk membuat folder'}), 403
 
