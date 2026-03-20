@@ -211,7 +211,7 @@
                                         {% endif %}
                                     </div>
                                     <div class="px-3 py-1 bg-gray-50 text-gray-400 rounded-lg text-[9px] font-black uppercase tracking-widest group-hover:bg-gray-100 transition-colors">
-                                        {{ topic.created_at.strftime('%d %b') }}
+                                        {{ topic.created_at.strftime('%d %b') if topic.created_at else '' }}
                                     </div>
                                 </div>
                                 <h3 class="text-xl font-bold text-gray-900 group-hover:text-primary-600 transition-colors leading-tight mb-2">{{ topic.name }}</h3>
@@ -860,7 +860,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <script>
 // Pass template data to JavaScript globals
-window.topicsData = {{ topics | tojson }};
+window.topicsData = {{ topics_json | tojson }};
 window.courseId = {{ course.id }};
 window.isTeacher = {{ 'true' if is_teacher else 'false' }};
 

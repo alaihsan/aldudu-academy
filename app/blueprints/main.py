@@ -51,7 +51,7 @@ def course_detail(course_id):
             'name': quiz.name,
             'type': 'Kuis',
             'url': url_for('main.quiz_detail', quiz_id=quiz.id),
-            'created_at': quiz.created_at.isoformat() if quiz.created_at else None,
+            'created_at': quiz.created_at,
             'folder_id': quiz.folder_id
         })
     for assignment in assignments:
@@ -60,7 +60,7 @@ def course_detail(course_id):
             'name': assignment.title,
             'type': 'Tugas',
             'url': url_for('assignment.detail', assignment_id=assignment.id),
-            'created_at': assignment.created_at.isoformat() if assignment.created_at else None,
+            'created_at': assignment.created_at,
             'folder_id': assignment.folder_id
         })
     for link in links:
@@ -69,7 +69,7 @@ def course_detail(course_id):
             'name': link.name,
             'type': 'Link',
             'url': link.url,
-            'created_at': link.created_at.isoformat() if link.created_at else None,
+            'created_at': link.created_at,
             'folder_id': getattr(link, 'folder_id', None)
         })
     for file in files:
@@ -78,17 +78,26 @@ def course_detail(course_id):
             'name': file.name,
             'type': 'Berkas',
             'url': url_for('main.serve_file', file_id=file.id),
-            'created_at': file.created_at.isoformat() if file.created_at else None,
+            'created_at': file.created_at,
             'folder_id': getattr(file, 'folder_id', None)
         })
     
-    topics.sort(key=lambda x: x['created_at'] or '', reverse=True)
-    
+    from datetime import datetime
+    epoch = datetime(1970, 1, 1)
+    topics.sort(key=lambda x: x['created_at'] or epoch, reverse=True)
+
+    # JSON-safe version for JavaScript (datetime → isoformat string)
+    topics_json = [
+        {**t, 'created_at': t['created_at'].isoformat() if t['created_at'] else None}
+        for t in topics
+    ]
+
     return render_template(
-        'course_detail.html', 
-        course=course, 
+        'course_detail.html',
+        course=course,
         is_teacher=is_teacher,
-        topics=topics
+        topics=topics,
+        topics_json=topics_json
     )
 
 @main_bp.route('/quiz/<int:quiz_id>')
