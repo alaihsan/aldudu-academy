@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="{{ current_user.preferred_language if current_user.is_authenticated and current_user.preferred_language else 'id' }}" data-user-lang="{{ current_user.preferred_language if current_user.is_authenticated and current_user.preferred_language else 'id' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -227,6 +227,75 @@
         .modal { transition: opacity 0.3s ease; }
         .modal.hidden { opacity: 0; pointer-events: none; }
         .modal:not(.hidden) { opacity: 1; pointer-events: auto; }
+
+        /* ── Language Loading Overlay ───────────────────────────────── */
+        #lang-loading-overlay {
+            position: fixed; inset: 0; z-index: 99999;
+            display: flex; align-items: center; justify-content: center;
+            background: linear-gradient(135deg, rgba(15,23,42,0.97) 0%, rgba(30,27,75,0.97) 100%);
+            backdrop-filter: blur(8px);
+            pointer-events: all;
+            opacity: 0; visibility: hidden; transition: opacity 0.35s ease, visibility 0.35s ease;
+        }
+        #lang-loading-overlay.lang-overlay-in  { opacity: 1; visibility: visible; }
+        #lang-loading-overlay.lang-overlay-out { opacity: 0; visibility: hidden; }
+
+        .lang-loader-card {
+            background: #fff; border-radius: 2rem; padding: 3rem 2.5rem 2rem;
+            max-width: 22rem; width: 90vw; text-align: center;
+            box-shadow: 0 40px 80px -20px rgba(0,0,0,0.6);
+            animation: langCardIn 0.5s cubic-bezier(0.16,1,0.3,1) both;
+        }
+        @keyframes langCardIn {
+            from { opacity:0; transform: translateY(24px) scale(0.95); }
+            to   { opacity:1; transform: translateY(0) scale(1); }
+        }
+
+        /* Ripple rings */
+        .lang-loader-rings {
+            position: relative; width: 90px; height: 90px; margin: 0 auto 1.5rem;
+        }
+        .lang-ring {
+            position: absolute; inset: 0; border-radius: 50%;
+            border: 2px solid #4f46e5; opacity: 0;
+            animation: langRipple 2s ease-out infinite;
+        }
+        .lang-ring-1 { animation-delay: 0s; }
+        .lang-ring-2 { animation-delay: 0.6s; }
+        .lang-ring-3 { animation-delay: 1.2s; }
+        @keyframes langRipple {
+            0%   { transform: scale(0.5); opacity: 0.8; }
+            100% { transform: scale(2);   opacity: 0; }
+        }
+        .lang-ring-icon {
+            position: absolute; inset: 14px; background: linear-gradient(135deg,#4f46e5,#7c3aed);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 8px 24px rgba(79,70,229,0.4);
+        }
+        .lang-ring-icon svg { width: 28px; height: 28px; color: #fff; }
+
+        .lang-loader-flag { font-size: 2.5rem; line-height: 1; margin-bottom: 0.75rem; }
+        .lang-loader-title {
+            font-size: 1.125rem; font-weight: 700; color: #1e1b4b;
+            margin-bottom: 0.25rem; letter-spacing: -0.01em;
+        }
+        .lang-loader-sub {
+            font-size: 0.8125rem; color: #6b7280; margin-bottom: 1.75rem;
+        }
+
+        .lang-progress-track {
+            height: 4px; background: #e5e7eb; border-radius: 9999px; overflow: hidden;
+        }
+        .lang-progress-bar {
+            height: 100%; width: 0%; border-radius: 9999px;
+            background: linear-gradient(90deg, #4f46e5, #7c3aed, #a855f7);
+            background-size: 200% 100%;
+            animation: langBarShimmer 1.5s linear infinite;
+        }
+        @keyframes langBarShimmer {
+            0%   { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
     </style>
     
     {% block extra_head %}{% endblock %}
@@ -379,10 +448,16 @@
     {% endif %}
 
     
+    <!-- Language Loading Overlay (populated by language.js) -->
+    <div id="lang-loading-overlay" aria-live="assertive" aria-label="Memuat bahasa..."></div>
+
     {% block extra_scripts %}{% endblock %}
-    
+
     <!-- Sidebar & Global Logic -->
     <script src="{{ url_for('static', filename='js/sidebar.js') }}?v={{ range(1, 9999) | random }}"></script>
+
+    <!-- Language Manager -->
+    <script src="{{ url_for('static', filename='js/language.js') }}?v={{ range(1, 9999) | random }}"></script>
     
     <script>
         // Global Elegant Modal Overrides
