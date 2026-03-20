@@ -92,6 +92,52 @@
                     </div>
                 </div>
 
+                <!-- Lainnya Section -->
+                <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+                    <div class="px-8 py-6 border-b border-gray-100">
+                        <h3 class="text-lg font-black text-gray-900">Lainnya</h3>
+                        <p class="text-sm text-gray-500 mt-1">Menu tambahan</p>
+                    </div>
+                    <div class="p-8 space-y-3">
+                        <a href="{{ url_for('main.history') }}" class="flex items-center space-x-4 p-4 rounded-2xl border-2 border-gray-100 hover:border-primary-200 hover:bg-primary-50 transition-all group">
+                            <div class="w-10 h-10 rounded-xl bg-primary-50 text-primary-600 flex items-center justify-center group-hover:bg-primary-100 transition-all">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="font-bold text-gray-900">Riwayat</p>
+                                <p class="text-xs text-gray-500">Lihat riwayat aktivitas Anda</p>
+                            </div>
+                            <svg class="w-5 h-5 text-gray-300 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </a>
+                        <a href="{{ url_for('main.sponsor') }}" class="flex items-center space-x-4 p-4 rounded-2xl border-2 border-gray-100 hover:border-pink-200 hover:bg-pink-50 transition-all group">
+                            <div class="w-10 h-10 rounded-xl bg-pink-50 text-pink-500 flex items-center justify-center group-hover:bg-pink-100 transition-all">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="font-bold text-gray-900">Sponsor</p>
+                                <p class="text-xs text-gray-500">Dukung pengembangan Aldudu Academy</p>
+                            </div>
+                            <svg class="w-5 h-5 text-gray-300 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Logout Section -->
+                <div class="bg-white rounded-3xl border border-red-100 shadow-sm overflow-hidden">
+                    <div class="p-8">
+                        <button id="user-dropdown-logout" class="w-full flex items-center justify-center space-x-3 py-4 bg-red-50 text-red-600 rounded-2xl font-bold hover:bg-red-100 transition-all active:scale-95 border-2 border-red-100">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                            </svg>
+                            <span>Keluar dari Akun</span>
+                        </button>
+                    </div>
+                </div>
+
             </div>
         </main>
     </div>
