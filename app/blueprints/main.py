@@ -243,3 +243,17 @@ def sponsor():
 @login_required
 def issues():
     return render_template('issues.html')
+
+
+@main_bp.route('/api/set-language', methods=['POST'])
+@login_required
+def set_language():
+    from flask import jsonify
+    data = request.get_json() or {}
+    lang = data.get('language', 'id')
+    supported = ['id', 'en', 'ar', 'jv', 'su', 'ban', 'min']
+    if lang not in supported:
+        return jsonify({'success': False, 'message': 'Bahasa tidak didukung'}), 400
+    current_user.preferred_language = lang
+    db.session.commit()
+    return jsonify({'success': True, 'language': lang})
