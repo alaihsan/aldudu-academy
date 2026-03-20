@@ -238,17 +238,43 @@ def set_language():
     from flask import jsonify
     data = request.get_json()
     lang_code = data.get('language', 'id')
-    
+
     # Validasi kode bahasa yang didukung
-    supported_languages = ['id', 'en', 'ar', 'jv', 'su', 'min', 'ban']
+    supported_languages = ['id', 'en', 'en-US', 'en-GB', 'ar', 'jv', 'jv-YO', 'jv-MA', 'su', 'min', 'ban']
     if lang_code not in supported_languages:
         return jsonify({'success': False, 'message': 'Bahasa tidak didukung'}), 400
-    
+
     current_user.preferred_language = lang_code
     db.session.commit()
-    
+
     return jsonify({
-        'success': True, 
+        'success': True,
         'message': 'Bahasa berhasil diubah',
         'language': lang_code
+    })
+
+
+@main_bp.route('/api/courses/<int:course_id>/students', methods=['GET'])
+@login_required
+def api_get_course_students(course_id):
+    """API endpoint untuk mendapatkan daftar siswa dalam course"""
+    from flask import jsonify
+    from app.models import Course, UserRole
+
+    course = Course.query.get(course_id)
+    if not course:
+        return jsonify({'success': False, 'message': 'Course not found'}), 404
+
+    # Check permission - only teacher or super admin can access
+    if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
+        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+
+    students = course.students.all()
+    return jsonify({
+        'success': True,
+        'students': [{
+            'id': s.id,
+            'name': s.name,
+            'email': s.email,
+        } for s in students]
     })
