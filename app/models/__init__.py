@@ -3,6 +3,7 @@ from app.extensions import db
 from .school import School, SchoolStatus
 from .user import User, UserRole
 from .course import Course, AcademicYear, Link, File, enrollments, UserCourseOrder, KbmNote, KbmActivityType
+from .content_folder import ContentFolder
 from .quiz import Quiz, Question, Option, QuizSubmission, Answer, QuestionType, GradeType, QuizStatus
 from .discussion import Discussion, Post, Like
 from .issue import Issue, IssueStatus, IssuePriority

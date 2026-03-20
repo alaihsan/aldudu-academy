@@ -56,11 +56,16 @@ class Quiz(db.Model):
 
     # Background opacity (0-100)
     bg_opacity: Mapped[int] = mapped_column(db.Integer, default=60, nullable=False)
-    
+
+    # Folder organization
+    folder_id: Mapped[Optional[int]] = mapped_column(db.Integer, db.ForeignKey('content_folders.id'), nullable=True, index=True)
+    order: Mapped[int] = mapped_column(db.Integer, default=0, nullable=False)
+
     created_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=get_jakarta_now, nullable=False)
     updated_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=get_jakarta_now, onupdate=get_jakarta_now, nullable=False)
 
     course: Mapped['Course'] = relationship('Course', back_populates='quizzes')
+    folder = relationship('ContentFolder', back_populates='quizzes', foreign_keys=[folder_id])
     questions: Mapped[List['Question']] = relationship('Question', back_populates='quiz', lazy='dynamic', cascade="all, delete-orphan")
     submissions: Mapped[List['QuizSubmission']] = relationship('QuizSubmission', back_populates='quiz', cascade='all, delete-orphan')
 

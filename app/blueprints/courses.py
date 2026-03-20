@@ -4,7 +4,7 @@ from flask import Blueprint, request, jsonify, abort
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 from sqlalchemy.orm import joinedload, selectinload
-from app.models import db, Course, AcademicYear, UserRole, Link, File, Discussion, Post, Like, UserCourseOrder, KbmNote, KbmActivityType, Quiz, GradeType, QuizStatus
+from app.models import db, Course, AcademicYear, UserRole, Link, File, Discussion, Post, Like, UserCourseOrder, KbmNote, KbmActivityType, Quiz, GradeType, QuizStatus, ContentFolder, Assignment
 from app.helpers import sanitize_text, is_valid_color, is_valid_class_code, generate_class_code, get_courses_for_user, format_course_data, log_activity
 from app.tenant import get_school_id_or_abort, verify_course_in_school, verify_academic_year_in_school
 
@@ -672,5 +672,210 @@ def api_delete_kbm_note(note_id):
     
     db.session.delete(note)
     db.session.commit()
-    
+
+    return jsonify({'success': True})
+
+
+# ===== Content Folder Management Endpoints =====
+
+@courses_bp.route('/courses/<int:course_id>/folders', methods=['GET'])
+@login_required
+def api_get_course_folders(course_id):
+    """Get all folders in a course with hierarchical structure"""
+    course = db.session.get(Course, course_id)
+    if not course:
+        abort(404)
+
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(course, school_id)
+
+    # Get all folders (sorted by order)
+    folders = ContentFolder.query.filter_by(course_id=course_id).order_by(ContentFolder.order).all()
+
+    # Build hierarchical structure
+    def build_folder_tree(parent_id=None):
+        items = []
+        for folder in folders:
+            if folder.parent_folder_id == parent_id:
+                item = folder.to_dict(include_children=False)
+                item['children'] = build_folder_tree(folder.id)
+                items.append(item)
+        return items
+
+    folder_tree = build_folder_tree()
+
+    return jsonify({
+        'success': True,
+        'folders': folder_tree
+    })
+
+
+@courses_bp.route('/courses/<int:course_id>/folders', methods=['POST'])
+@login_required
+def api_create_folder(course_id):
+    """Create a new folder in a course"""
+    course = db.session.get(Course, course_id)
+    if not course:
+        abort(404)
+
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(course, school_id)
+
+    # Only teacher can create folders
+    if course.teacher_id != current_user.id:
+        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin untuk membuat folder'}), 403
+
+    data = request.get_json() or {}
+    name = sanitize_text(data.get('name', ''), max_len=200).strip()
+    parent_folder_id = data.get('parent_folder_id')
+
+    if not name:
+        return jsonify({'success': False, 'message': 'Nama folder wajib diisi'}), 400
+
+    # Verify parent folder belongs to same course
+    if parent_folder_id:
+        parent_folder = ContentFolder.query.get(parent_folder_id)
+        if not parent_folder or parent_folder.course_id != course_id:
+            return jsonify({'success': False, 'message': 'Parent folder tidak valid'}), 400
+
+    # Get the next order number
+    max_order = db.session.query(db.func.max(ContentFolder.order)).filter(
+        ContentFolder.course_id == course_id,
+        ContentFolder.parent_folder_id == parent_folder_id
+    ).scalar() or 0
+
+    folder = ContentFolder(
+        name=name,
+        course_id=course_id,
+        parent_folder_id=parent_folder_id,
+        order=max_order + 1
+    )
+
+    db.session.add(folder)
+    db.session.commit()
+
+    log_activity(current_user.id, f"Created folder: {name} in course {course.name}")
+
+    return jsonify({
+        'success': True,
+        'folder': folder.to_dict(include_children=True)
+    }), 201
+
+
+@courses_bp.route('/folders/<int:folder_id>', methods=['PUT'])
+@login_required
+def api_update_folder(folder_id):
+    """Update folder (rename, reorder)"""
+    folder = ContentFolder.query.get_or_404(folder_id)
+    course = Course.query.get(folder.course_id)
+
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(course, school_id)
+
+    # Only teacher can update folder
+    if course.teacher_id != current_user.id:
+        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+
+    data = request.get_json() or {}
+
+    if 'name' in data:
+        name = sanitize_text(data['name'], max_len=200).strip()
+        if name:
+            folder.name = name
+
+    if 'order' in data:
+        try:
+            folder.order = int(data['order'])
+        except (ValueError, TypeError):
+            pass
+
+    db.session.commit()
+
+    return jsonify({
+        'success': True,
+        'folder': folder.to_dict(include_children=False)
+    })
+
+
+@courses_bp.route('/folders/<int:folder_id>', methods=['DELETE'])
+@login_required
+def api_delete_folder(folder_id):
+    """Delete a folder and move its contents to parent"""
+    folder = ContentFolder.query.get_or_404(folder_id)
+    course = Course.query.get(folder.course_id)
+
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(course, school_id)
+
+    # Only teacher can delete folder
+    if course.teacher_id != current_user.id:
+        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+
+    folder_id_val = folder.id
+    parent_id = folder.parent_folder_id
+
+    # Move all child folders to parent
+    child_folders = ContentFolder.query.filter_by(parent_folder_id=folder_id_val).all()
+    for child in child_folders:
+        child.parent_folder_id = parent_id
+
+    # Move all materials to parent folder
+    Quiz.query.filter_by(folder_id=folder_id_val).update({Quiz.folder_id: parent_id})
+    Assignment.query.filter_by(folder_id=folder_id_val).update({Assignment.folder_id: parent_id})
+    File.query.filter_by(folder_id=folder_id_val).update({File.folder_id: parent_id})
+    Link.query.filter_by(folder_id=folder_id_val).update({Link.folder_id: parent_id})
+
+    db.session.delete(folder)
+    db.session.commit()
+
+    log_activity(current_user.id, f"Deleted folder {folder_id_val}")
+
+    return jsonify({'success': True})
+
+
+@courses_bp.route('/materials/<material_type>/<int:material_id>/move', methods=['POST'])
+@login_required
+def api_move_material(material_type, material_id):
+    """Move a material (quiz, assignment, file, link) to a folder"""
+    data = request.get_json() or {}
+    folder_id = data.get('folder_id')
+    order = data.get('order', 0)
+
+    # Map material types
+    material_map = {
+        'quiz': Quiz,
+        'assignment': Assignment,
+        'file': File,
+        'link': Link
+    }
+
+    if material_type not in material_map:
+        return jsonify({'success': False, 'message': 'Tipe material tidak valid'}), 400
+
+    Material = material_map[material_type]
+    material = Material.query.get_or_404(material_id)
+
+    # Get course and verify permissions
+    course_id = material.course_id
+    course = Course.query.get(course_id)
+
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(course, school_id)
+
+    if course.teacher_id != current_user.id:
+        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+
+    # Verify folder belongs to same course
+    if folder_id:
+        target_folder = ContentFolder.query.get(folder_id)
+        if not target_folder or target_folder.course_id != course_id:
+            return jsonify({'success': False, 'message': 'Target folder tidak valid'}), 400
+
+    # Update material
+    material.folder_id = folder_id
+    if order >= 0:
+        material.order = order
+
+    db.session.commit()
+
     return jsonify({'success': True})

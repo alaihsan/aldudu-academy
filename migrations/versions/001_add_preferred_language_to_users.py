@@ -1,7 +1,7 @@
 """add preferred language to users
 
 Revision ID: 001
-Revises: fd913ce94f3f
+Revises: a4bfedd613ff
 Create Date: 2025-03-19
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = '001'
-down_revision = 'fd913ce94f3f'
+down_revision = 'a4bfedd613ff'
 branch_labels = None
 depends_on = None
 

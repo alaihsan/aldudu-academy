@@ -3,6 +3,7 @@
 {% block title %}{{ course.name }} - Aldudu Academy{% endblock %}
 
 {% block extra_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/folder-system.css') }}">
 <style>
     /* Override CSS variables with course color */
     :root {
@@ -71,8 +72,10 @@
         </header>
 
         <!-- Main Scrollable Area -->
-        <main class="flex-1 overflow-y-auto p-8" data-course-id="{{ course.id }}">
-            <div class="max-w-6xl mx-auto space-y-10 animate-fade-in">
+        <main class="flex-1 overflow-y-auto" data-course-id="{{ course.id }}">
+            <div class="course-detail-wrapper p-8" style="max-height: 100%;">
+                <!-- Hero Section -->
+                <div class="max-w-6xl mx-auto space-y-10 animate-fade-in mb-8">
                 
                 <!-- Hero Section -->
                 <div class="relative rounded-[3rem] overflow-hidden shadow-2xl shadow-primary-100 h-64 flex items-center px-12 group" style="background-color: {{ course.color }}">
@@ -174,8 +177,21 @@
                     {% endif %}
                 </div>
 
-                <!-- Materials Grid -->
-                <div id="topics-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- 2-Column Layout: Folder Sidebar + Materials List -->
+                <div class="course-detail-container">
+                    <!-- Sidebar: Folder Tree -->
+                    <div class="course-sidebar">
+                        <div id="folder-tree-container"></div>
+                    </div>
+
+                    <!-- Main: Materials List -->
+                    <div class="course-main-content">
+                        <div id="materials-list-container"></div>
+                    </div>
+                </div>
+
+                <!-- Old Materials Grid (hidden, kept for compatibility) -->
+                <div id="topics-container" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     {% if topics %}
                         {% for topic in topics %}
                         <div class="group bg-white rounded-[2.5rem] border border-gray-100 shadow-premium hover:shadow-2xl transition-all duration-500 overflow-hidden flex flex-col h-full transform hover:-translate-y-2">
@@ -837,6 +853,96 @@ document.addEventListener('DOMContentLoaded', function() {
 {% endblock %}
 
 {% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/folder-tree.js') }}?v={{ range(1, 9999) | random }}"></script>
+<script src="{{ url_for('static', filename='js/materials-list.js') }}?v={{ range(1, 9999) | random }}"></script>
 <script src="{{ url_for('static', filename='js/course_detail.js') }}?v={{ range(1, 9999) | random }}"></script>
 <script src="{{ url_for('static', filename='js/discussion.js') }}?v={{ range(1, 9999) | random }}"></script>
+
+<script>
+// Pass template data to JavaScript globals
+window.topicsData = {{ topics | tojson }};
+window.courseId = {{ course.id }};
+window.isTeacher = {{ 'true' if is_teacher else 'false' }};
+
+document.addEventListener('DOMContentLoaded', function() {
+    const courseId = window.courseId;
+    const isTeacher = window.isTeacher;
+
+    // Initialize Folder Tree
+    const folderTree = new FolderTree('folder-tree-container', courseId, {
+        onFolderSelect: (folderId) => {
+            materialsList.setFolder(folderId);
+        },
+        onFolderCreate: () => {
+            folderTree.refresh();
+            materialsList.refresh();
+        },
+        onFolderDelete: () => {
+            folderTree.refresh();
+            materialsList.refresh();
+        }
+    });
+
+    // Initialize Materials List
+    const materialsList = new MaterialsList('materials-list-container', courseId, {
+        onMaterialSelect: (type, id) => {
+            // Handle material selection (open/view)
+            const urls = {
+                'quiz': `/quizzes/${id}/preview`,
+                'assignment': `/assignments/${id}/view`,
+                'file': `/files/${id}/download`,
+                'link': null
+            };
+            if (urls[type]) {
+                window.open(urls[type], '_blank');
+            }
+        },
+        onMaterialDelete: () => {
+            folderTree.refresh();
+            materialsList.refresh();
+        }
+    });
+
+    // Handle drag and drop from materials to folders
+    const folderElements = document.querySelectorAll('.folder-item');
+    folderElements.forEach(folder => {
+        folder.addEventListener('drop', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            folder.classList.remove('drag-over');
+
+            const dragData = e.dataTransfer.getData('application/json');
+            if (dragData) {
+                try {
+                    const data = JSON.parse(dragData);
+                    if (data.type === 'material') {
+                        const targetFolderId = folder.dataset.folderId === 'all' ? null : parseInt(folder.dataset.folderId);
+                        moveMaterial(data.materialType, data.materialId, targetFolderId);
+                    }
+                } catch (error) {
+                    console.error('Error parsing drop data:', error);
+                }
+            }
+        });
+    });
+
+    // Move material function
+    async function moveMaterial(type, id, folderId) {
+        try {
+            const response = await fetch(`/api/materials/${type}/${id}/move`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ folder_id: folderId })
+            });
+            const data = await response.json();
+            if (data.success) {
+                folderTree.refresh();
+                materialsList.refresh();
+            }
+        } catch (error) {
+            console.error('Error moving material:', error);
+        }
+    }
+});
+</script>
 {% endblock %}

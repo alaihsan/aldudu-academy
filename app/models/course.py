@@ -106,6 +106,7 @@ class Course(db.Model):
     files: Mapped[List['File']] = relationship('File', back_populates='course', lazy='dynamic', cascade='all, delete-orphan')
     discussions: Mapped[List['Discussion']] = relationship('Discussion', back_populates='course', lazy='dynamic', cascade='all, delete-orphan')
     kbm_notes: Mapped[List['KbmNote']] = relationship('KbmNote', back_populates='course', lazy='dynamic', cascade='all, delete-orphan')
+    content_folders: Mapped[List['ContentFolder']] = relationship('ContentFolder', back_populates='course', lazy='dynamic', cascade='all, delete-orphan')
 
     # Gradebook relationships
     grade_categories: Mapped[List['GradeCategory']] = relationship('GradeCategory', back_populates='course', lazy='dynamic', cascade='all, delete-orphan')
@@ -134,9 +135,15 @@ class Link(db.Model):
     name: Mapped[str] = mapped_column(db.String(200), nullable=False)
     url: Mapped[str] = mapped_column(db.String(500), nullable=False)
     course_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('courses.id'), nullable=False, index=True)
+
+    # Folder organization
+    folder_id: Mapped[Optional[int]] = mapped_column(db.Integer, db.ForeignKey('content_folders.id'), nullable=True, index=True)
+    order: Mapped[int] = mapped_column(db.Integer, default=0, nullable=False)
+
     created_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=get_jakarta_now)
 
     course: Mapped[Course] = relationship('Course', back_populates='links')
+    folder = relationship('ContentFolder', back_populates='links', foreign_keys=[folder_id])
 
     def __repr__(self) -> str:
         return f'<Link {self.name}>'
@@ -152,9 +159,15 @@ class File(db.Model):
     course_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('courses.id'), nullable=False, index=True)
     start_date: Mapped[Optional[datetime.datetime]] = mapped_column(db.DateTime, nullable=True)
     end_date: Mapped[Optional[datetime.datetime]] = mapped_column(db.DateTime, nullable=True)
+
+    # Folder organization
+    folder_id: Mapped[Optional[int]] = mapped_column(db.Integer, db.ForeignKey('content_folders.id'), nullable=True, index=True)
+    order: Mapped[int] = mapped_column(db.Integer, default=0, nullable=False)
+
     created_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=get_jakarta_now)
 
     course: Mapped['Course'] = relationship('Course', back_populates='files')
+    folder = relationship('ContentFolder', back_populates='files', foreign_keys=[folder_id])
 
     def __repr__(self) -> str:
         return f'<File {self.name}>'
