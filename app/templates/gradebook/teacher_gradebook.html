@@ -43,6 +43,9 @@
                 </div>
             </div>
             <div class="flex items-center space-x-3">
+                <a href="{{ url_for('rasch_dashboard.teacher_dashboard', course_id=course.id) }}" class="px-4 py-2 text-sm font-medium text-indigo-700 bg-indigo-50 border border-indigo-200 rounded-lg hover:bg-indigo-100 transition-all">
+                    📊 Rasch Dashboard
+                </a>
                 <a href="{{ url_for('gradebook.course_setup', course_id=course.id) }}" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all">
                     ⚙️ Setup CP/TP
                 </a>

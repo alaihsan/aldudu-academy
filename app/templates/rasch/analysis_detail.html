@@ -1,0 +1,667 @@
+{% extends "_base.html" %}
+
+{% block title %}{{ analysis.name }} - Rasch Analysis{% endblock %}
+
+{% block head %}
+{{ super() }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+    .analysis-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+    }
+    
+    .tab-button {
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        border-bottom: 3px solid transparent;
+        transition: all 0.3s ease;
+    }
+    
+    .tab-button.active {
+        border-bottom-color: #667eea;
+        color: #667eea;
+    }
+    
+    .tab-content {
+        display: none;
+    }
+    
+    .tab-content.active {
+        display: block;
+    }
+    
+    .theta-scale {
+        background: linear-gradient(to right, #ef4444 0%, #f59e0b 25%, #10b981 50%, #3b82f6 75%, #7c3aed 100%);
+        height: 20px;
+        border-radius: 9999px;
+        margin: 1rem 0;
+        position: relative;
+    }
+    
+    .theta-marker {
+        position: absolute;
+        width: 3px;
+        height: 30px;
+        background: white;
+        border: 2px solid #1f2937;
+        top: -5px;
+    }
+    
+    .item-difficulty-bar {
+        height: 8px;
+        border-radius: 4px;
+        transition: width 0.5s ease;
+    }
+    
+    .difficulty-very-easy { background: #ef4444; }
+    .difficulty-easy { background: #f59e0b; }
+    .difficulty-moderate { background: #10b981; }
+    .difficulty-difficult { background: #3b82f6; }
+    .difficulty-very-difficult { background: #7c3aed; }
+    
+    .fit-good { background: #d1fae5; color: #065f46; }
+    .fit-marginal { background: #fef3c7; color: #92400e; }
+    .fit-poor { background: #fee2e2; color: #991b1b; }
+    
+    .wright-map {
+        font-family: 'Courier New', monospace;
+        font-size: 12px;
+        line-height: 1.8;
+        background: #f9fafb;
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        overflow-x: auto;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<!-- Header -->
+<div class="analysis-header">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold">📊 {{ analysis.name }}</h1>
+                <p class="text-white/80 mt-1">
+                    {{ analysis.analysis_type|title }} Analysis
+                    {% if analysis.completed_at %}
+                    • Completed: {{ analysis.completed_at.strftime('%d %b %Y, %H:%M') }}
+                    {% endif %}
+                </p>
+            </div>
+            <a href="{{ url_for('rasch_dashboard.teacher_dashboard', course_id=analysis.course_id) }}"
+               class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg font-semibold transition-all">
+                ← Kembali
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+    
+    <!-- Status Banner -->
+    {% if analysis.status == 'completed' %}
+    <div class="bg-green-50 border border-green-200 rounded-2xl p-4 mb-8 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                <span class="text-2xl">✅</span>
+            </div>
+            <div>
+                <p class="font-bold text-green-900">Analisis Selesai</p>
+                <p class="text-sm text-green-700">
+                    {{ analysis.num_persons }} siswa • {{ analysis.num_items }} soal • 
+                    Cronbach's α: {{ analysis.cronbach_alpha|round(3) if analysis.cronbach_alpha else 'N/A' }}
+                </p>
+            </div>
+        </div>
+        <button onclick="window.print()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold transition-all">
+            📄 Export PDF
+        </button>
+    </div>
+    {% elif analysis.status == 'processing' %}
+    <div class="bg-yellow-50 border border-yellow-200 rounded-2xl p-4 mb-8">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center">
+                <span class="text-2xl">⚙️</span>
+            </div>
+            <div class="flex-1">
+                <p class="font-bold text-yellow-900">Sedang Menganalisis...</p>
+                <p class="text-sm text-yellow-700">{{ analysis.status_message }}</p>
+            </div>
+            <div class="text-right">
+                <p class="text-2xl font-bold text-yellow-700">{{ analysis.progress_percentage|round(1) }}%</p>
+            </div>
+        </div>
+        <div class="mt-3 w-full bg-yellow-200 rounded-full h-2">
+            <div class="bg-yellow-600 h-2 rounded-full transition-all duration-500"
+                 style="width: {{ analysis.progress_percentage }}%"></div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Tabs -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 mb-8">
+        <div class="flex border-b border-gray-100">
+            <button class="tab-button active" onclick="switchTab('overview')">📊 Overview</button>
+            <button class="tab-button" onclick="switchTab('wright')">🗺️ Wright Map</button>
+            <button class="tab-button" onclick="switchTab('persons')">👥 Person Measures</button>
+            <button class="tab-button" onclick="switchTab('items')">📝 Item Measures</button>
+            <button class="tab-button" onclick="switchTab('bloom')">🌸 Bloom Taxonomy</button>
+        </div>
+        
+        <!-- Overview Tab -->
+        <div id="overview" class="tab-content active p-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-xl p-6">
+                    <p class="text-indigo-100 text-sm mb-1">Person Separation Index</p>
+                    <p class="text-3xl font-bold">{{ analysis.person_separation_index|round(2) if analysis.person_separation_index else 'N/A' }}</p>
+                    <p class="text-xs text-indigo-200 mt-2">
+                        {% if analysis.person_separation_index and analysis.person_separation_index >= 2 %}
+                        ✅ Good separation (≥2.0)
+                        {% else %}
+                        ⚠️ Needs improvement
+                        {% endif %}
+                    </p>
+                </div>
+                
+                <div class="bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-xl p-6">
+                    <p class="text-green-100 text-sm mb-1">Cronbach's Alpha</p>
+                    <p class="text-3xl font-bold">{{ analysis.cronbach_alpha|round(3) if analysis.cronbach_alpha else 'N/A' }}</p>
+                    <p class="text-xs text-green-200 mt-2">
+                        {% if analysis.cronbach_alpha and analysis.cronbach_alpha >= 0.8 %}
+                        ✅ Good reliability
+                        {% elif analysis.cronbach_alpha and analysis.cronbach_alpha >= 0.7 %}
+                        ⚠️ Acceptable
+                        {% else %}
+                        ❌ Poor reliability
+                        {% endif %}
+                    </p>
+                </div>
+                
+                <div class="bg-gradient-to-br from-orange-500 to-red-600 text-white rounded-xl p-6">
+                    <p class="text-orange-100 text-sm mb-1">Item Separation Index</p>
+                    <p class="text-3xl font-bold">{{ analysis.item_separation_index|round(2) if analysis.item_separation_index else 'N/A' }}</p>
+                    <p class="text-xs text-orange-200 mt-2">
+                        {% if analysis.item_separation_index and analysis.item_separation_index >= 2 %}
+                        ✅ Good item hierarchy
+                        {% else %}
+                        ⚠️ Needs more items
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Distribution Charts -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="border border-gray-100 rounded-xl p-4">
+                    <h3 class="font-bold text-gray-900 mb-4">Person Ability Distribution</h3>
+                    <canvas id="personChart"></canvas>
+                </div>
+                <div class="border border-gray-100 rounded-xl p-4">
+                    <h3 class="font-bold text-gray-900 mb-4">Item Difficulty Distribution</h3>
+                    <canvas id="itemChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Wright Map Tab -->
+        <div id="wright" class="tab-content p-6">
+            <h3 class="text-xl font-bold text-gray-900 mb-4">Wright Map (Person-Item Map)</h3>
+            <p class="text-gray-600 mb-6">
+                Wright Map menampilkan distribusi kemampuan siswa dan kesulitan soal dalam skala yang sama.
+            </p>
+            <div id="wrightMapContainer" class="wright-map">
+                Loading Wright Map...
+            </div>
+            <div class="mt-6 flex items-center gap-4 text-sm">
+                <div class="flex items-center gap-2">
+                    <span class="w-4 h-4 rounded-full bg-indigo-600"></span>
+                    <span>Student Ability</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="w-4 h-4 rounded bg-orange-500"></span>
+                    <span>Item Difficulty</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Person Measures Tab -->
+        <div id="persons" class="tab-content p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-bold text-gray-900">Person Measures (Ability θ)</h3>
+                <button onclick="exportPersonsCSV()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all">
+                    📥 Export CSV
+                </button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full" id="personsTable">
+                    <thead>
+                        <tr class="border-b border-gray-200">
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Rank</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Student</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Raw Score</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Percentage</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Theta (θ)</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Level</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Percentile</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Fit Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="personsTableBody">
+                        <tr>
+                            <td colspan="8" class="text-center py-8 text-gray-500">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Item Measures Tab -->
+        <div id="items" class="tab-content p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-bold text-gray-900">Item Measures (Difficulty δ)</h3>
+                <button onclick="exportItemsCSV()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all">
+                    📥 Export CSV
+                </button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full" id="itemsTable">
+                    <thead>
+                        <tr class="border-b border-gray-200">
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Question</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Delta (δ)</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Level</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">P-Value</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Point Biserial</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Bloom Level</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Fit Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="itemsTableBody">
+                        <tr>
+                            <td colspan="7" class="text-center py-8 text-gray-500">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Bloom Taxonomy Tab -->
+        <div id="bloom" class="tab-content p-6">
+            <h3 class="text-xl font-bold text-gray-900 mb-4">Bloom Taxonomy Distribution</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="border border-gray-100 rounded-xl p-4">
+                    <canvas id="bloomChart"></canvas>
+                </div>
+                <div id="bloomDetails" class="space-y-4">
+                    <!-- Bloom details will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const analysisId = {{ analysis.id }};
+const quizId = {{ analysis.quiz_id or 'null' }};
+
+// Tab switching
+function switchTab(tabName) {
+    document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+    
+    event.target.classList.add('active');
+    document.getElementById(tabName).classList.add('active');
+    
+    // Load data when tab is activated
+    if (tabName === 'persons') loadPersonMeasures();
+    if (tabName === 'items') loadItemMeasures();
+    if (tabName === 'bloom') loadBloomTaxonomy();
+    if (tabName === 'wright') loadWrightMap();
+}
+
+// Load Wright Map
+async function loadWrightMap() {
+    try {
+        const response = await fetch(`/api/rasch/analyses/${analysisId}/wright-map`);
+        const data = await response.json();
+        
+        if (data.success) {
+            renderWrightMap(data.map_data);
+        }
+    } catch (error) {
+        console.error('Error loading Wright Map:', error);
+    }
+}
+
+function renderWrightMap(mapData) {
+    const container = document.getElementById('wrightMapContainer');
+    
+    // Create logit scale from -3 to +3
+    let html = '<div class="grid grid-cols-3 gap-4" style="max-width: 600px;">';
+    html += '<div class="text-right text-gray-500 font-semibold">Person</div>';
+    html += '<div class="text-center font-bold">Logit</div>';
+    html += '<div class="text-left text-gray-500 font-semibold">Item</div>';
+    html += '<div class="col-span-3 border-t border-gray-300 my-2"></div>';
+    
+    // Generate rows for each logit level
+    for (let logit = 2.5; logit >= -2.5; logit -= 0.5) {
+        const personCount = mapData.person_distribution.filter(p => {
+            const range = p.range;
+            if (range === '> 2.0') return logit === 2.5;
+            if (range === '< -2.0') return logit === -2.5;
+            const [min, max] = range.split(' to ').map(Number);
+            return logit - 0.25 <= max && logit + 0.25 >= min;
+        }).reduce((sum, p) => sum + p.count, 0);
+        
+        const itemCount = mapData.item_distribution.filter(i => {
+            const range = i.range;
+            if (range === '> 2.0') return logit === 2.5;
+            if (range === '< -2.0') return logit === -2.5;
+            const [min, max] = range.split(' to ').map(Number);
+            return logit - 0.25 <= max && logit + 0.25 >= min;
+        }).reduce((sum, i) => sum + i.count, 0);
+        
+        html += `<div class="text-right text-indigo-600">${'●'.repeat(Math.min(personCount, 9))}</div>`;
+        html += `<div class="text-center font-mono">${logit.toFixed(1)}</div>`;
+        html += `<div class="text-left text-orange-600">${'■'.repeat(Math.min(itemCount, 9))}</div>`;
+    }
+    
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+// Load Person Measures
+async function loadPersonMeasures() {
+    try {
+        const response = await fetch(`/api/rasch/analyses/${analysisId}/persons`);
+        const data = await response.json();
+        
+        if (data.success) {
+            renderPersonTable(data.persons);
+        }
+    } catch (error) {
+        console.error('Error loading person measures:', error);
+    }
+}
+
+function renderPersonTable(persons) {
+    const tbody = document.getElementById('personsTableBody');
+    
+    if (persons.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center py-8 text-gray-500">No data</td></tr>';
+        return;
+    }
+    
+    let html = '';
+    persons.forEach((person, index) => {
+        const thetaClass = getThetaClass(person.theta);
+        const fitClass = getFitClass(person.fit_status);
+        
+        html += `
+        <tr class="border-b border-gray-50 hover:bg-gray-50">
+            <td class="py-3 px-4 text-sm font-semibold text-gray-700">${index + 1}</td>
+            <td class="py-3 px-4 text-sm text-gray-900">${person.student_name}</td>
+            <td class="py-3 px-4 text-sm text-gray-700">${person.raw_score}</td>
+            <td class="py-3 px-4 text-sm text-gray-700">${person.percentage?.toFixed(1) || '-'}%</td>
+            <td class="py-3 px-4 text-sm font-mono font-semibold ${person.theta > 0 ? 'text-indigo-600' : 'text-gray-600'}">
+                ${person.theta?.toFixed(2) || '-'}
+            </td>
+            <td class="py-3 px-4 text-sm">
+                <span class="theta-badge ${thetaClass}">${getAbilityLabel(person.ability_level)}</span>
+            </td>
+            <td class="py-3 px-4 text-sm text-gray-700">${person.ability_percentile?.toFixed(1) || '-'}%</td>
+            <td class="py-3 px-4 text-sm">
+                <span class="px-2 py-1 rounded text-xs font-semibold ${fitClass}">${person.fit_status || '-'}</span>
+            </td>
+        </tr>
+        `;
+    });
+    
+    tbody.innerHTML = html;
+}
+
+// Load Item Measures
+async function loadItemMeasures() {
+    try {
+        const response = await fetch(`/api/rasch/analyses/${analysisId}/items`);
+        const data = await response.json();
+        
+        if (data.success) {
+            renderItemTable(data.items);
+        }
+    } catch (error) {
+        console.error('Error loading item measures:', error);
+    }
+}
+
+function renderItemTable(items) {
+    const tbody = document.getElementById('itemsTableBody');
+    
+    if (items.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-8 text-gray-500">No data</td></tr>';
+        return;
+    }
+    
+    let html = '';
+    items.forEach((item, index) => {
+        const diffClass = getDifficultyClass(item.difficulty_level);
+        const fitClass = getFitClass(item.fit_status);
+        
+        html += `
+        <tr class="border-b border-gray-50 hover:bg-gray-50">
+            <td class="py-3 px-4 text-sm text-gray-900 max-w-xs truncate">${item.question_text || 'Question ' + (index + 1)}</td>
+            <td class="py-3 px-4 text-sm font-mono font-semibold ${item.delta > 0 ? 'text-orange-600' : 'text-gray-600'}">
+                ${item.delta?.toFixed(2) || '-'}
+            </td>
+            <td class="py-3 px-4 text-sm">
+                <span class="px-2 py-1 rounded text-xs font-semibold ${diffClass}">${item.difficulty_level || '-'}</span>
+            </td>
+            <td class="py-3 px-4 text-sm text-gray-700">${item.p_value?.toFixed(2) || '-'}</td>
+            <td class="py-3 px-4 text-sm text-gray-700">${item.point_biserial?.toFixed(2) || '-'}</td>
+            <td class="py-3 px-4 text-sm">
+                <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs font-semibold">${item.bloom_level || 'Unclassified'}</span>
+            </td>
+            <td class="py-3 px-4 text-sm">
+                <span class="px-2 py-1 rounded text-xs font-semibold ${fitClass}">${item.fit_status || '-'}</span>
+            </td>
+        </tr>
+        `;
+    });
+    
+    tbody.innerHTML = html;
+}
+
+// Helper functions
+function getThetaClass(theta) {
+    if (theta === null) return 'theta-average';
+    if (theta > 2) return 'theta-very-high';
+    if (theta > 0.5) return 'theta-high';
+    if (theta > -0.5) return 'theta-average';
+    if (theta > -2) return 'theta-low';
+    return 'theta-very-low';
+}
+
+function getAbilityLabel(level) {
+    const labels = {
+        'very_high': 'Very High',
+        'high': 'High',
+        'average': 'Average',
+        'low': 'Low',
+        'very_low': 'Very Low'
+    };
+    return labels[level] || 'Unknown';
+}
+
+function getDifficultyClass(level) {
+    const classes = {
+        'very_easy': 'difficulty-very-easy',
+        'easy': 'difficulty-easy',
+        'moderate': 'difficulty-moderate',
+        'difficult': 'difficulty-difficult',
+        'very_difficult': 'difficulty-very-difficult'
+    };
+    return classes[level] || 'difficulty-moderate';
+}
+
+function getFitClass(status) {
+    if (status === 'well_fitted') return 'fit-good';
+    if (status === 'marginal') return 'fit-marginal';
+    if (status === 'poor' || status === 'underfit' || status === 'overfit') return 'fit-poor';
+    return 'fit-good';
+}
+
+// Export functions
+function exportPersonsCSV() {
+    window.location.href = `/api/rasch/analyses/${analysisId}/persons?format=csv`;
+}
+
+function exportItemsCSV() {
+    window.location.href = `/api/rasch/analyses/${analysisId}/items?format=csv`;
+}
+
+// Load Bloom Taxonomy
+async function loadBloomTaxonomy() {
+    if (!quizId) {
+        document.getElementById('bloomDetails').innerHTML = '<p class="text-gray-500">No quiz associated</p>';
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/rasch/quizzes/${quizId}/bloom-summary`);
+        const data = await response.json();
+        
+        if (data.success) {
+            renderBloomChart(data.distribution);
+            renderBloomDetails(data);
+        }
+    } catch (error) {
+        console.error('Error loading Bloom taxonomy:', error);
+    }
+}
+
+function renderBloomChart(distribution) {
+    const ctx = document.getElementById('bloomChart').getContext('2d');
+    
+    const labels = Object.keys(distribution).map(k => k.charAt(0).toUpperCase() + k.slice(1));
+    const counts = Object.values(distribution).map(d => d.count);
+    const colors = ['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#7c3aed', '#ec4899', '#6b7280'];
+    
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: counts,
+                backgroundColor: colors
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+}
+
+function renderBloomDetails(data) {
+    const container = document.getElementById('bloomDetails');
+    const dist = data.distribution;
+    
+    let html = '';
+    for (const [level, info] of Object.entries(dist)) {
+        html += `
+        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+            <div>
+                <p class="font-semibold text-gray-900">${level.charAt(0).toUpperCase() + level.slice(1)}</p>
+                <p class="text-sm text-gray-600">${info.count} questions</p>
+            </div>
+            <div class="text-right">
+                <p class="text-2xl font-bold text-indigo-600">${info.percentage.toFixed(1)}%</p>
+            </div>
+        </div>
+        `;
+    }
+    
+    html += `
+    <div class="mt-4 p-4 bg-indigo-50 rounded-lg">
+        <p class="text-sm text-indigo-900">
+            <strong>Cognitive Depth:</strong> 
+            <span class="font-semibold">${data.cognitive_depth.charAt(0).toUpperCase() + data.cognitive_depth.slice(1)}</span>
+        </p>
+    </div>
+    `;
+    
+    container.innerHTML = html;
+}
+
+// Initialize charts on load
+document.addEventListener('DOMContentLoaded', function() {
+    // Load overview charts
+    fetch(`/api/rasch/analyses/${analysisId}/wright-map`)
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                renderOverviewCharts(data.map_data);
+            }
+        });
+});
+
+function renderOverviewCharts(mapData) {
+    // Person distribution chart
+    const personCtx = document.getElementById('personChart').getContext('2d');
+    const personLabels = mapData.person_distribution.map(d => d.level.replace('_', ' ').toUpperCase());
+    const personCounts = mapData.person_distribution.map(d => d.count);
+    
+    new Chart(personCtx, {
+        type: 'bar',
+        data: {
+            labels: personLabels,
+            datasets: [{
+                label: 'Students',
+                data: personCounts,
+                backgroundColor: ['#7c3aed', '#3b82f6', '#10b981', '#f59e0b', '#ef4444']
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+        }
+    });
+    
+    // Item distribution chart
+    const itemCtx = document.getElementById('itemChart').getContext('2d');
+    const itemLabels = mapData.item_distribution.map(d => d.level.replace('_', ' ').toUpperCase());
+    const itemCounts = mapData.item_distribution.map(d => d.count);
+    
+    new Chart(itemCtx, {
+        type: 'bar',
+        data: {
+            labels: itemLabels,
+            datasets: [{
+                label: 'Items',
+                data: itemCounts,
+                backgroundColor: ['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#7c3aed']
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+        }
+    });
+}
+
+// Auto-refresh if processing
+{% if analysis.status == 'processing' %}
+setInterval(() => {
+    location.reload();
+}, 10000);
+{% endif %}
+</script>
+{% endblock %}

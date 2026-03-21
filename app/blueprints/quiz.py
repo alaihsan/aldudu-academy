@@ -652,8 +652,26 @@ def api_submit_quiz(quiz_id):
         db.session.rollback()
         import traceback
         print(f"[WARN] Gradebook sync failed for quiz {quiz.id}: {e}\n{traceback.format_exc()}")
+    
+    # ── Auto-trigger Rasch analysis threshold check ───────────────────
+    try:
+        from app.services.rasch_threshold_service import RaschThresholdService
+        
+        threshold_service = RaschThresholdService()
+        threshold_met, message = threshold_service.check_and_trigger(
+            quiz_id=quiz.id,
+            submission_id=submission.id,
+            check_type='auto'
+        )
+        
+        if threshold_met:
+            print(f"[INFO] Rasch analysis triggered for quiz {quiz.id}: {message}")
+    except Exception as e:
+        # Don't fail submission if Rasch check fails
+        import traceback
+        print(f"[WARN] Rasch threshold check failed: {e}\n{traceback.format_exc()}")
     # ───────────────────────────────────────────────────────────────────
-
+    
     db.session.commit()
 
     return jsonify({'success': True, 'score': submission.score, 'message': 'Kuis berhasil dikirim.'})

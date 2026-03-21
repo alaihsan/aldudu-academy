@@ -39,6 +39,11 @@ def create_app(test_config: Optional[Dict] = None) -> Flask:
     cache.init_app(app)
     limiter.init_app(app)
 
+    # Initialize Celery
+    from .celery_app import init_celery
+    celery = init_celery(app)
+    app.extensions['celery'] = celery
+
     login_manager.login_view = 'main.index'
 
     @login_manager.user_loader

@@ -68,6 +68,7 @@ class Quiz(db.Model):
     folder = relationship('ContentFolder', back_populates='quizzes', foreign_keys=[folder_id])
     questions: Mapped[List['Question']] = relationship('Question', back_populates='quiz', lazy='dynamic', cascade="all, delete-orphan")
     submissions: Mapped[List['QuizSubmission']] = relationship('QuizSubmission', back_populates='quiz', cascade='all, delete-orphan')
+    rasch_analyses: Mapped[List['RaschAnalysis']] = relationship('RaschAnalysis', back_populates='quiz', lazy='dynamic', cascade='all, delete-orphan')
 
 class Question(db.Model):
     __tablename__ = 'questions'
@@ -85,6 +86,12 @@ class Question(db.Model):
 
     quiz: Mapped[Quiz] = relationship('Quiz', back_populates='questions')
     options: Mapped[List['Option']] = relationship('Option', back_populates='question', lazy='dynamic', cascade='all, delete-orphan')
+    bloom_taxonomy: Mapped[Optional['QuestionBloomTaxonomy']] = relationship(
+        'QuestionBloomTaxonomy', 
+        back_populates='question', 
+        uselist=False, 
+        cascade='all, delete-orphan'
+    )
 
 class Option(db.Model):
     __tablename__ = 'options'

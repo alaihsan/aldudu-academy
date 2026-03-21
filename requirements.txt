@@ -13,3 +13,7 @@ gunicorn==21.2.0
 requests==2.31.0
 pytest==7.4.2
 click==8.1.7
+
+# Rasch Model & Background Processing
+celery==5.6.2
+redis==7.3.0

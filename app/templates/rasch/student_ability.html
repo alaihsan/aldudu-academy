@@ -1,0 +1,377 @@
+{% extends "_base.html" %}
+
+{% block title %}Kemampuan Saya - {{ course.name }}{% endblock %}
+
+{% block head %}
+{{ super() }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+    .student-header {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+    }
+    
+    .ability-card {
+        background: white;
+        border-radius: 1.5rem;
+        padding: 2rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .ability-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    .theta-display {
+        font-size: 3.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .ability-meter {
+        height: 12px;
+        border-radius: 9999px;
+        background: linear-gradient(to right, 
+            #ef4444 0%, 
+            #f59e0b 25%, 
+            #10b981 50%, 
+            #3b82f6 75%, 
+            #7c3aed 100%
+        );
+        position: relative;
+        margin: 1.5rem 0;
+    }
+    
+    .ability-marker {
+        position: absolute;
+        width: 4px;
+        height: 24px;
+        background: white;
+        border: 3px solid #1f2937;
+        border-radius: 9999px;
+        top: -6px;
+        transform: translateX(-50%);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    
+    .percentile-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        border-radius: 9999px;
+        font-weight: 700;
+        font-size: 1.125rem;
+    }
+    
+    .percentile-high { background: linear-gradient(135deg, #d1fae5, #10b981); color: #065f46; }
+    .percentile-mid { background: linear-gradient(135deg, #dbeafe, #3b82f6); color: #1e40af; }
+    .percentile-low { background: linear-gradient(135deg, #fef3c7, #f59e0b); color: #92400e; }
+    
+    .recommendation-card {
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        border-left: 4px solid #f59e0b;
+        padding: 1.5rem;
+        border-radius: 1rem;
+        margin-top: 1.5rem;
+    }
+    
+    .strength-card {
+        background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+        border-left: 4px solid #10b981;
+        padding: 1.5rem;
+        border-radius: 1rem;
+        margin-top: 1.5rem;
+    }
+    
+    .bloom-tag {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin: 0.25rem;
+    }
+    
+    .bloom-remember { background: #fee2e2; color: #991b1b; }
+    .bloom-understand { background: #fef3c7; color: #92400e; }
+    .bloom-apply { background: #d1fae5; color: #065f46; }
+    .bloom-analyze { background: #dbeafe; color: #1e40af; }
+    .bloom-evaluate { background: #e0e7ff; color: #3730a3; }
+    .bloom-create { background: #ede9fe; color: #6b21a8; }
+</style>
+{% endblock %}
+
+{% block body %}
+<!-- Header -->
+<div class="student-header">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold">📊 Kemampuan Saya</h1>
+                <p class="text-white/80 mt-1">{{ course.name }}</p>
+            </div>
+            <a href="{{ url_for('gradebook.my_grades', course_id=course.id) }}"
+               class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg font-semibold transition-all">
+                ← Kembali ke Nilai
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+    
+    {% if student_measures %}
+    <!-- Latest Measure -->
+    {% set latest = student_measures|sort(attribute='created_at', reverse=true)|first %}
+    <div class="ability-card mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="md:col-span-2">
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">Kemampuan Terakhir Kamu</h2>
+                <p class="text-gray-600 mb-6">
+                    Berdasarkan analisis Rasch dari {{ latest.rasch_analysis.name }}
+                </p>
+                
+                <div class="flex items-end gap-4 mb-4">
+                    <div class="theta-display">{{ latest.theta|round(2) }}</div>
+                    <div class="pb-3">
+                        <span class="theta-badge theta-{{ latest.ability_level }}">
+                            {{ get_ability_label(latest.ability_level) }}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="ability-meter">
+                    {% set position = ((latest.theta + 3) / 6 * 100)|clamp(0, 100) %}
+                    <div class="ability-marker" style="left: {{ position }}%"></div>
+                </div>
+                
+                <div class="flex justify-between text-sm text-gray-600">
+                    <span>Very Low (-3)</span>
+                    <span>Average (0)</span>
+                    <span>Very High (+3)</span>
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <p class="text-gray-600 mb-2">Percentile Rank di Kelas</p>
+                <div class="percentile-badge percentile-{{ get_percentile_class(latest.ability_percentile) }}">
+                    <span>🏆</span>
+                    <span>{{ latest.ability_percentile|round(1) }}%</span>
+                </div>
+                <p class="text-sm text-gray-600 mt-3">
+                    Kamu lebih baik dari {{ latest.ability_percentile|round(0) }}% siswa di kelas
+                </p>
+            </div>
+        </div>
+        
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8 pt-8 border-t border-gray-100">
+            <div class="text-center">
+                <p class="text-gray-600 text-sm mb-1">Raw Score</p>
+                <p class="text-3xl font-bold text-gray-900">{{ latest.raw_score }}</p>
+                <p class="text-xs text-gray-500 mt-1">dari {{ latest.total_possible }} soal</p>
+            </div>
+            <div class="text-center">
+                <p class="text-gray-600 text-sm mb-1">Persentase</p>
+                <p class="text-3xl font-bold text-indigo-600">{{ latest.percentage|round(1) }}%</p>
+            </div>
+            <div class="text-center">
+                <p class="text-gray-600 text-sm mb-1">Standard Error</p>
+                <p class="text-3xl font-bold text-gray-700">{{ latest.theta_se|round(3) }}</p>
+                <p class="text-xs text-gray-500 mt-1">SEM</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Fit Statistics & Recommendations -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div class="ability-card">
+            <h3 class="text-xl font-bold text-gray-900 mb-4">📊 Kualitas Jawaban Kamu</h3>
+            
+            <div class="space-y-4">
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-semibold text-gray-700">Outfit MNSQ</span>
+                        <span class="text-sm font-bold {{ 'text-green-600' if latest.outfit_mnsq and 0.8 <= latest.outfit_mnsq <= 1.2 else 'text-yellow-600' }}">
+                            {{ latest.outfit_mnsq|round(2) if latest.outfit_mnsq else 'N/A' }}
+                        </span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-indigo-600 h-2 rounded-full" 
+                             style="width: {{ ([latest.outfit_mnsq, 2]|min / 2 * 100) if latest.outfit_mnsq else 0 }}%"></div>
+                    </div>
+                    <p class="text-xs text-gray-600 mt-2">
+                        {% if latest.outfit_mnsq and 0.8 <= latest.outfit_mnsq <= 1.2 %}
+                        ✅ Jawaban kamu konsisten dan predictable
+                        {% elif latest.outfit_mnsq and latest.outfit_mnsq > 1.2 %}
+                        ⚠️ Ada beberapa jawaban unexpected (mungkin tebak)
+                        {% else %}
+                        ⚠️ Jawaban terlalu predictable
+                        {% endif %}
+                    </p>
+                </div>
+                
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-semibold text-gray-700">Infit MNSQ</span>
+                        <span class="text-sm font-bold {{ 'text-green-600' if latest.infit_mnsq and 0.8 <= latest.infit_mnsq <= 1.2 else 'text-yellow-600' }}">
+                            {{ latest.infit_mnsq|round(2) if latest.infit_mnsq else 'N/A' }}
+                        </span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-green-600 h-2 rounded-full" 
+                             style="width: {{ ([latest.infit_mnsq, 2]|min / 2 * 100) if latest.infit_mnsq else 0 }}%"></div>
+                    </div>
+                    <p class="text-xs text-gray-600 mt-2">
+                        {% if latest.infit_mnsq and 0.8 <= latest.infit_mnsq <= 1.2 %}
+                        ✅ Pattern jawaban kamu sesuai expectation
+                        {% else %}
+                        ⚠️ Pattern jawaban agak tidak biasa
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="ability-card">
+            <h3 class="text-xl font-bold text-gray-900 mb-4">💡 Rekomendasi untuk Kamu</h3>
+            
+            {% if latest.ability_level in ['very_low', 'low'] %}
+            <div class="recommendation-card">
+                <p class="font-bold text-gray-900 mb-2">🎯 Fokus Belajar</p>
+                <p class="text-sm text-gray-700 mb-3">
+                    Kemampuan kamu masih di bawah rata-rata. Jangan khawatir, ini saat yang tepat untuk belajar lebih giat!
+                </p>
+                <ul class="text-sm text-gray-700 space-y-2">
+                    <li>✅ Review materi dasar terlebih dahulu</li>
+                    <li>✅ Kerjakan soal-soal level mudah dulu</li>
+                    <li>✅ Minta bantuan guru atau teman jika ada yang tidak paham</li>
+                    <li>✅ Belajar kelompok bisa membantu</li>
+                </ul>
+            </div>
+            {% elif latest.ability_level == 'average' %}
+            <div class="strength-card">
+                <p class="font-bold text-gray-900 mb-2">👍 Bagus! Kamu di Rata-rata</p>
+                <p class="text-sm text-gray-700 mb-3">
+                    Kemampuan kamu sudah cukup baik. Tingkatkan lagi untuk mencapai level berikutnya!
+                </p>
+                <ul class="text-sm text-gray-700 space-y-2">
+                    <li>✅ Pertahankan konsistensi belajar</li>
+                    <li>✅ Coba kerjakan soal level analyze & evaluate</li>
+                    <li>✅ Diskusikan materi dengan teman</li>
+                    <li>✅ Buat rangkuman materi</li>
+                </ul>
+            </div>
+            {% else %}
+            <div class="strength-card">
+                <p class="font-bold text-gray-900 mb-2">🌟 Excellent! Kamu Above Average</p>
+                <p class="text-sm text-gray-700 mb-3">
+                    Kemampuan kamu di atas rata-rata! Terus pertahankan dan bantu temanmu juga!
+                </p>
+                <ul class="text-sm text-gray-700 space-y-2">
+                    <li>✅ Coba kerjakan soal-soal challenge level create</li>
+                    <li>✅ Bantu teman yang masih kesulitan</li>
+                    <li>✅ Eksplor materi lebih dalam lagi</li>
+                    <li>✅ Ikuti kompetisi atau olimpiade</li>
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- History -->
+    <div class="ability-card">
+        <h3 class="text-xl font-bold text-gray-900 mb-6">📈 Riwayat Kemampuan</h3>
+        
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="border-b border-gray-200">
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Quiz</th>
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Tanggal</th>
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Raw Score</th>
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Percentage</th>
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Theta (θ)</th>
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Level</th>
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Percentile</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for measure in student_measures|sort(attribute='created_at', reverse=true) %}
+                    <tr class="border-b border-gray-50 hover:bg-gray-50">
+                        <td class="py-3 px-4 text-sm font-semibold text-gray-900">
+                            {{ measure.rasch_analysis.name }}
+                        </td>
+                        <td class="py-3 px-4 text-sm text-gray-600">
+                            {{ measure.created_at.strftime('%d %b %Y') }}
+                        </td>
+                        <td class="py-3 px-4 text-sm text-gray-700">
+                            {{ measure.raw_score }}/{{ measure.total_possible }}
+                        </td>
+                        <td class="py-3 px-4 text-sm text-gray-700">
+                            {{ measure.percentage|round(1) }}%
+                        </td>
+                        <td class="py-3 px-4 text-sm font-mono font-semibold {{ 'text-indigo-600' if measure.theta > 0 else 'text-gray-600' }}">
+                            {{ measure.theta|round(2) }}
+                        </td>
+                        <td class="py-3 px-4 text-sm">
+                            <span class="theta-badge theta-{{ measure.ability_level }}">
+                                {{ get_ability_label(measure.ability_level) }}
+                            </span>
+                        </td>
+                        <td class="py-3 px-4 text-sm">
+                            <span class="font-bold {{ 'text-green-600' if measure.ability_percentile > 75 else 'text-gray-600' }}">
+                                {{ measure.ability_percentile|round(1) }}%
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    {% else %}
+    <!-- No Data -->
+    <div class="ability-card text-center py-16">
+        <div class="text-6xl mb-4">📊</div>
+        <h3 class="text-2xl font-bold text-gray-900 mb-2">Belum Ada Data Analisis</h3>
+        <p class="text-gray-600 mb-6">
+            Kamu belum memiliki hasil analisis Rasch. Analisis akan tersedia setelah mengerjakan quiz dengan Rasch enabled.
+        </p>
+        <a href="{{ url_for('main.course_detail', course_id=course.id) }}"
+           class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold transition-all">
+            Lihat Quiz yang Tersedia
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+// Helper functions for Jinja
+function getAbilityLabel(level) {
+    const labels = {
+        'very_high': 'Very High',
+        'high': 'High',
+        'average': 'Average',
+        'low': 'Low',
+        'very_low': 'Very Low'
+    };
+    return labels[level] || 'Unknown';
+}
+
+function getPercentileClass(percentile) {
+    if (percentile >= 75) return 'high';
+    if (percentile >= 50) return 'mid';
+    return 'low';
+}
+</script>
+{% endblock %}

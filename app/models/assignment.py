@@ -36,6 +36,7 @@ class Assignment(db.Model):
     folder = relationship('ContentFolder', back_populates='assignments', foreign_keys=[folder_id])
     submissions: Mapped[List['AssignmentSubmission']] = relationship('AssignmentSubmission', back_populates='assignment', lazy='dynamic', cascade='all, delete-orphan')
     grade_item = relationship('GradeItem', back_populates='assignment', uselist=False, cascade='all, delete-orphan')
+    rasch_analyses: Mapped[List['RaschAnalysis']] = relationship('RaschAnalysis', back_populates='assignment', lazy='dynamic', cascade='all, delete-orphan')
 
     def __repr__(self) -> str:
         return f'<Assignment {self.title}>'

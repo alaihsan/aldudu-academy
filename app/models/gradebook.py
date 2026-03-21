@@ -118,26 +118,49 @@ class GradeItem(db.Model):
     id: Mapped[int] = mapped_column(db.Integer, primary_key=True)
     name: Mapped[str] = mapped_column(db.String(200), nullable=False)
     description: Mapped[Optional[str]] = mapped_column(db.Text, nullable=True)
-    
+
     # Category & Learning Objectives
     category_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('grade_categories.id'), nullable=False, index=True)
     learning_objective_id: Mapped[Optional[int]] = mapped_column(db.Integer, db.ForeignKey('learning_objectives.id'), nullable=True, index=True)
     learning_goal_id: Mapped[Optional[int]] = mapped_column(db.Integer, db.ForeignKey('learning_goals.id'), nullable=True, index=True)
-    
+
     # Scoring
     max_score: Mapped[float] = mapped_column(db.Float, nullable=False, default=100.0)
     weight: Mapped[float] = mapped_column(db.Float, nullable=False, default=0.0)  # Bobot dalam kategori (%)
-    
+
     # Timing
     due_date: Mapped[Optional[datetime]] = mapped_column(db.DateTime, nullable=True)
     course_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('courses.id'), nullable=False, index=True)
-    
+
     # Quiz Integration
     quiz_id: Mapped[Optional[int]] = mapped_column(db.Integer, db.ForeignKey('quizzes.id'), nullable=True, index=True)
 
     # Assignment Integration
     assignment_id: Mapped[Optional[int]] = mapped_column(db.Integer, db.ForeignKey('assignments.id'), nullable=True, index=True)
+
+    # Rasch Model Integration
+    enable_rasch_analysis: Mapped[bool] = mapped_column(
+        db.Boolean, 
+        default=False, 
+        nullable=False
+    )
+    # Flag untuk mengaktifkan Rasch analysis pada item ini
     
+    rasch_analysis_id: Mapped[Optional[int]] = mapped_column(
+        db.Integer, 
+        db.ForeignKey('rasch_analyses.id', ondelete='SET NULL'), 
+        nullable=True, 
+        index=True
+    )
+    # Link ke hasil Rasch analysis terbaru
+    
+    show_rasch_to_students: Mapped[bool] = mapped_column(
+        db.Boolean, 
+        default=False, 
+        nullable=False
+    )
+    # Kontrol visibilitas: apakah siswa bisa lihat Rasch measures?
+
     # Metadata
     created_at: Mapped[datetime] = mapped_column(db.DateTime, default=get_jakarta_now)
     updated_at: Mapped[datetime] = mapped_column(db.DateTime, default=get_jakarta_now, onupdate=get_jakarta_now)
@@ -150,6 +173,7 @@ class GradeItem(db.Model):
     quiz = relationship('Quiz', backref='grade_item')
     assignment = relationship('Assignment', back_populates='grade_item')
     grade_entries: Mapped[List['GradeEntry']] = relationship('GradeEntry', back_populates='grade_item', lazy='dynamic', cascade='all, delete-orphan')
+    rasch_analysis = relationship('RaschAnalysis', back_populates='grade_item')
 
     def to_dict(self):
         return {
@@ -165,6 +189,9 @@ class GradeItem(db.Model):
             'course_id': self.course_id,
             'quiz_id': self.quiz_id,
             'assignment_id': self.assignment_id,
+            'enable_rasch_analysis': self.enable_rasch_analysis,
+            'rasch_analysis_id': self.rasch_analysis_id,
+            'show_rasch_to_students': self.show_rasch_to_students,
             'entries_count': self.grade_entries.count(),
         }
 

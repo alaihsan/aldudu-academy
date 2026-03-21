@@ -49,4 +49,4 @@ htmlcov/
 
 # Migrations (if not already tracked)
 migrations/alembic_version
-```
+```".claude/worktrees/"  

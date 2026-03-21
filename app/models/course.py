@@ -112,6 +112,9 @@ class Course(db.Model):
     grade_categories: Mapped[List['GradeCategory']] = relationship('GradeCategory', back_populates='course', lazy='dynamic', cascade='all, delete-orphan')
     learning_objectives: Mapped[List['LearningObjective']] = relationship('LearningObjective', back_populates='course', lazy='dynamic', cascade='all, delete-orphan')
     grade_items: Mapped[List['GradeItem']] = relationship('GradeItem', back_populates='course', lazy='dynamic', cascade='all, delete-orphan')
+    
+    # Rasch Model relationship
+    rasch_analyses: Mapped[List['RaschAnalysis']] = relationship('RaschAnalysis', back_populates='course', lazy='dynamic', cascade='all, delete-orphan')
 
     def __repr__(self) -> str:
         return f'<Course {self.name}>'

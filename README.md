@@ -23,6 +23,14 @@ Aldudu Academy dilengkapi dengan serangkaian fitur inti yang esensial untuk sebu
 
     Peran Pengguna (Guru & Murid): Sistem membedakan antara peran Guru dan Murid, di mana setiap peran memiliki hak akses dan tampilan dasbor yang berbeda.
 
+    Gradebook & Penilaian:
+        
+        - Buku Nilai Terintegrasi: Sistem gradebook dengan kategori (Formatif, Sumatif, Sikap, Portfolio)
+        - Auto-Sync Quiz & Assignment: Nilai dari quiz dan tugas otomatis masuk ke gradebook
+        - Teori Klasik & Rasch Model: Dukungan untuk teori pengukuran klasik dan modern
+        - Taksonomi Bloom: Mapping level kognitif untuk setiap soal
+        - Analitik Lanjutan: Wright Map, fit statistics, reliability indices
+
     Antarmuka yang Bersih: Dibuat dengan CSS kustom (tanpa framework) untuk menghasilkan tampilan yang unik, ringan, dan fokus pada pengalaman pengguna.
 
 🛠️ Teknologi yang Digunakan
@@ -36,6 +44,10 @@ Proyek ini dibangun menggunakan tumpukan teknologi yang modern dan andal:
         Flask-SQLAlchemy: Ekstensi untuk integrasi dengan database menggunakan Object-Relational Mapper (ORM).
 
         Flask-Login: Mengelola sesi login pengguna dengan aman.
+
+        Celery: Distributed task queue untuk background processing (Rasch analysis).
+
+        Redis: Message broker untuk Celery.
 
     Frontend:
 
@@ -160,5 +172,74 @@ FLASK_APP=app .venv/bin/python -m flask run
 ```
 
 Jangan menyimpan `instance/config.py` atau variabel rahasia ke repositori publik.
+
+---
+
+## 📊 Rasch Model Integration
+
+Aldudu Academy sekarang dilengkapi dengan **Rasch Model** untuk analisis penilaian modern berdasarkan Item Response Theory.
+
+### Fitur Rasch Model
+
+- ✅ **JMLE Algorithm**: Joint Maximum Likelihood Estimation untuk ability (θ) dan difficulty (δ)
+- ✅ **Auto-Trigger**: Analisis otomatis saat threshold terpenuhi (≥30 siswa)
+- ✅ **Background Processing**: Celery worker untuk analisis async
+- ✅ **Fit Statistics**: Infit/Outfit MNSQ untuk validasi kualitas soal
+- ✅ **Wright Map**: Visualisasi distribusi ability dan difficulty
+- ✅ **Bloom Taxonomy**: Mapping level kognitif soal
+
+### Quick Start - Rasch Model
+
+**1. Install Dependencies:**
+```bash
+pip install -r requirements.txt
+```
+
+**2. Run Migration:**
+```bash
+python scripts\run_rasch_migration.py
+```
+
+**3. Start Redis & Celery:**
+```bash
+# Terminal 1: Redis
+redis-server
+
+# Terminal 2: Celery Worker
+python run_worker.py
+
+# Terminal 3: Flask App
+python run.py
+```
+
+**4. Enable Rasch untuk Quiz:**
+```sql
+UPDATE grade_items 
+SET enable_rasch_analysis = TRUE 
+WHERE quiz_id = 123;
+```
+
+**5. Monitor Progress:**
+```bash
+curl http://localhost:5000/api/rasch/quizzes/123/threshold-status
+```
+
+### Dokumentasi Lengkap
+
+Untuk panduan lengkap penggunaan Rasch Model, lihat:
+- 📖 **[Laporan/RASCH.md](laporan/README_RASCH.md)** - Panduan lengkap instalasi, konfigurasi, dan interpretasi hasil
+- 📖 **[RASCH_IMPLEMENTATION.md](RASCH_IMPLEMENTATION.md)** - Technical implementation details
+
+### API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/rasch/quizzes/:id/threshold-status` | GET | Check threshold progress |
+| `/api/rasch/quizzes/:id/analyze` | POST | Manual trigger analysis |
+| `/api/rasch/analyses/:id/persons` | GET | Get person measures (ability θ) |
+| `/api/rasch/analyses/:id/items` | GET | Get item measures (difficulty δ) |
+| `/api/rasch/analyses/:id/wright-map` | GET | Wright Map visualization |
+
+---
 
 Terima kasih telah melihat proyek ini!
