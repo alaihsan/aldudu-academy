@@ -163,6 +163,9 @@ class File(db.Model):
     start_date: Mapped[Optional[datetime.datetime]] = mapped_column(db.DateTime, nullable=True)
     end_date: Mapped[Optional[datetime.datetime]] = mapped_column(db.DateTime, nullable=True)
 
+    # Archive status
+    is_archived: Mapped[bool] = mapped_column(db.Boolean, default=False, nullable=False, index=True)
+
     # Folder organization
     folder_id: Mapped[Optional[int]] = mapped_column(db.Integer, db.ForeignKey('content_folders.id'), nullable=True, index=True)
     order: Mapped[int] = mapped_column(db.Integer, default=0, nullable=False)

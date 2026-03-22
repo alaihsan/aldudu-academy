@@ -69,6 +69,14 @@
                 </svg>
                 <span class="sidebar-hide ml-3 whitespace-nowrap">Buku Nilai</span>
             </a>
+
+            <a href="{{ url_for('main.course_archives', course_id=course.id) }}"
+               class="nav-link-archives flex items-center px-4 py-3 rounded-xl transition-all {% if 'course_archives' in request.endpoint|default('') %}active{% endif %}">
+                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                </svg>
+                <span class="sidebar-hide ml-3 whitespace-nowrap">Arsip Kelas</span>
+            </a>
             {% endif %}
 
             {% if current_user.role.value == 'murid' %}

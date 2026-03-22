@@ -36,7 +36,7 @@ def course_detail(course_id):
     is_teacher = (current_user.id == course.teacher_id)
 
     if is_teacher:
-        quizzes = Quiz.query.filter_by(course_id=course.id).all()
+        quizzes = Quiz.query.filter_by(course_id=course.id, is_archived=False).all()
         assignments = Assignment.query.filter_by(course_id=course.id).all()
     else:
         quizzes = Quiz.query.filter_by(course_id=course.id, status=QuizStatus.PUBLISHED).all()
@@ -129,6 +129,7 @@ def quiz_detail(quiz_id):
     if not is_teacher and quiz.status != QuizStatus.PUBLISHED:
         abort(403, description='Kuis ini belum tersedia.')
 
+    # For teachers: show editor by default, show preview only when preview=true
     if is_teacher and not is_preview:
         return render_template('quiz_editor.html', quiz=quiz, QuestionType=QuestionType, Question=Question, Option=Option)
     else:
@@ -277,6 +278,34 @@ def set_language():
     })
 
 
+@main_bp.route('/api/courses', methods=['GET'])
+@login_required
+def api_get_courses():
+    """API endpoint untuk mendapatkan daftar kelas user"""
+    from flask import jsonify
+    from app.models import Course
+
+    # Get all courses where user is teacher or student
+    if current_user.role.value == 'guru':
+        courses = Course.query.filter_by(teacher_id=current_user.id).all()
+    elif current_user.role.value == 'murid':
+        courses = Course.query.filter(Course.students.contains(current_user)).all()
+    else:
+        # Admin and super admin see all courses
+        courses = Course.query.all()
+
+    return jsonify({
+        'success': True,
+        'courses': [{
+            'id': c.id,
+            'name': c.name,
+            'color': c.color,
+            'teacher_name': c.teacher.name if c.teacher else '-',
+            'class_code': c.class_code
+        } for c in courses]
+    })
+
+
 @main_bp.route('/api/courses/<int:course_id>/students', methods=['GET'])
 @login_required
 def api_get_course_students(course_id):
@@ -301,3 +330,153 @@ def api_get_course_students(course_id):
             'email': s.email,
         } for s in students]
     })
+
+
+@main_bp.route('/api/quiz/<int:quiz_id>/archive', methods=['POST'])
+@login_required
+def api_archive_quiz(quiz_id):
+    """API endpoint untuk mengarsipkan kuis"""
+    from flask import jsonify
+    from app.models import Quiz
+
+    quiz = db.session.get(Quiz, quiz_id)
+    if not quiz:
+        return jsonify({'success': False, 'message': 'Kuis tidak ditemukan'}), 404
+
+    if quiz.course.teacher_id != current_user.id:
+        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
+
+    quiz.is_archived = True
+    db.session.commit()
+
+    return jsonify({'success': True, 'message': 'Kuis berhasil diarsipkan'})
+
+
+@main_bp.route('/api/assignment/<int:assignment_id>/archive', methods=['POST'])
+@login_required
+def api_archive_assignment(assignment_id):
+    """API endpoint untuk mengarsipkan tugas"""
+    from flask import jsonify
+    from app.models import Assignment, AssignmentStatus
+
+    assignment = db.session.get(Assignment, assignment_id)
+    if not assignment:
+        return jsonify({'success': False, 'message': 'Tugas tidak ditemukan'}), 404
+
+    if assignment.course.teacher_id != current_user.id:
+        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
+
+    assignment.status = AssignmentStatus.ARCHIVED
+    db.session.commit()
+
+    return jsonify({'success': True, 'message': 'Tugas berhasil diarsipkan'})
+
+
+@main_bp.route('/api/file/<int:file_id>/archive', methods=['POST'])
+@login_required
+def api_archive_file(file_id):
+    """API endpoint untuk mengarsipkan file"""
+    from flask import jsonify
+    from app.models import File
+
+    file = db.session.get(File, file_id)
+    if not file:
+        return jsonify({'success': False, 'message': 'File tidak ditemukan'}), 404
+
+    if file.course.teacher_id != current_user.id:
+        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
+
+    file.is_archived = True
+    db.session.commit()
+
+    return jsonify({'success': True, 'message': 'File berhasil diarsipkan'})
+
+
+@main_bp.route('/api/quiz/<int:quiz_id>/restore', methods=['POST'])
+@login_required
+def api_restore_quiz(quiz_id):
+    """API endpoint untuk memulihkan kuis dari arsip"""
+    from flask import jsonify
+    from app.models import Quiz
+
+    quiz = db.session.get(Quiz, quiz_id)
+    if not quiz:
+        return jsonify({'success': False, 'message': 'Kuis tidak ditemukan'}), 404
+
+    if quiz.course.teacher_id != current_user.id:
+        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
+
+    quiz.is_archived = False
+    db.session.commit()
+
+    return jsonify({'success': True, 'message': 'Kuis berhasil dipulihkan'})
+
+
+@main_bp.route('/api/assignment/<int:assignment_id>/restore', methods=['POST'])
+@login_required
+def api_restore_assignment(assignment_id):
+    """API endpoint untuk memulihkan tugas dari arsip"""
+    from flask import jsonify
+    from app.models import Assignment, AssignmentStatus
+
+    assignment = db.session.get(Assignment, assignment_id)
+    if not assignment:
+        return jsonify({'success': False, 'message': 'Tugas tidak ditemukan'}), 404
+
+    if assignment.course.teacher_id != current_user.id:
+        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
+
+    assignment.status = AssignmentStatus.PUBLISHED
+    db.session.commit()
+
+    return jsonify({'success': True, 'message': 'Tugas berhasil dipulihkan'})
+
+
+@main_bp.route('/api/file/<int:file_id>/restore', methods=['POST'])
+@login_required
+def api_restore_file(file_id):
+    """API endpoint untuk memulihkan file dari arsip"""
+    from flask import jsonify
+    from app.models import File
+
+    file = db.session.get(File, file_id)
+    if not file:
+        return jsonify({'success': False, 'message': 'File tidak ditemukan'}), 404
+
+    if file.course.teacher_id != current_user.id:
+        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
+
+    file.is_archived = False
+    db.session.commit()
+
+    return jsonify({'success': True, 'message': 'File berhasil dipulihkan'})
+
+
+@main_bp.route('/kelas/<int:course_id>/arsip')
+@login_required
+def course_archives(course_id):
+    """Halaman arsip untuk kelas - menampilkan kuis, tugas, dan file yang diarsipkan"""
+    from app.models import Course, Quiz, Assignment, File
+
+    course = db.session.get(Course, course_id)
+    if course is None:
+        abort(404)
+
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(course, school_id)
+
+    is_teacher = (current_user.id == course.teacher_id)
+    if not is_teacher:
+        abort(403)
+
+    # Get archived items
+    archived_quizzes = Quiz.query.filter_by(course_id=course.id, is_archived=True).order_by(Quiz.updated_at.desc()).all()
+    archived_assignments = Assignment.query.filter_by(course_id=course.id, status=AssignmentStatus.ARCHIVED).order_by(Assignment.updated_at.desc()).all()
+    archived_files = File.query.filter_by(course_id=course.id, is_archived=True).order_by(File.updated_at.desc()).all()
+
+    return render_template('course_archives.html', 
+                          course=course, 
+                          archived_quizzes=archived_quizzes, 
+                          archived_assignments=archived_assignments,
+                          archived_files=archived_files,
+                          is_teacher=is_teacher)

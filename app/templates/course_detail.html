@@ -730,8 +730,9 @@ document.addEventListener('DOMContentLoaded', function() {
         isTeacher: {{ 'true' if is_teacher else 'false' }},
         onMaterialSelect: (type, id) => {
             // Handle material selection (open/view)
+            // For teachers, quiz opens in editor mode by default; students see preview
             const urls = {
-                'quiz': `/quiz/${id}?preview=true`,
+                'quiz': `/quiz/${id}`,
                 'assignment': `/assignment/${id}`,
                 'file': `/files/${id}`,
                 'link': null

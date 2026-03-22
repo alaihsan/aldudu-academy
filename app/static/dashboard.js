@@ -139,6 +139,77 @@ const Dashboard = {
         });
         
         this.elements.deleteFinalBtn?.addEventListener('click', () => this.handleDeleteClass());
+
+        // Archive button handler - show modal with class selection for teachers
+        document.querySelectorAll('.archive-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.showArchiveClassModal();
+            });
+        });
+    },
+
+    async showArchiveClassModal() {
+        const modal = document.getElementById('archive-select-modal');
+        const classList = document.getElementById('archive-class-list');
+
+        if (!modal || !classList) return;
+
+        // Show loading state
+        classList.innerHTML = `
+            <div class="flex items-center justify-center py-8">
+                <svg class="animate-spin h-8 w-8 text-amber-600" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            </div>
+        `;
+
+        modal.classList.remove('hidden');
+
+        try {
+            const res = await fetch('/api/courses');
+            const data = await res.json();
+
+            if (data.success && data.courses && data.courses.length > 0) {
+                classList.innerHTML = data.courses.map(course => `
+                    <a href="/kelas/${course.id}/arsip" class="block px-5 py-4 bg-gray-50 hover:bg-amber-50 border border-gray-100 hover:border-amber-200 rounded-2xl transition-all group">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg" style="background-color: ${course.color}20; color: ${course.color}">
+                                📚
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-gray-900 group-hover:text-amber-700 transition-colors">${course.name}</h4>
+                                <p class="text-xs text-gray-500">${course.teacher_name || 'Guru'}</p>
+                            </div>
+                            <svg class="w-5 h-5 text-gray-400 group-hover:text-amber-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </div>
+                    </a>
+                `).join('');
+            } else {
+                classList.innerHTML = `
+                    <div class="text-center py-8">
+                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                            </svg>
+                        </div>
+                        <p class="text-gray-600 font-bold text-sm">Belum ada kelas</p>
+                        <p class="text-gray-400 text-xs mt-1">Buat kelas terlebih dahulu</p>
+                    </div>
+                `;
+            }
+        } catch (error) {
+            console.error('Error loading courses:', error);
+            classList.innerHTML = `
+                <div class="text-center py-8">
+                    <p class="text-red-600 font-bold text-sm">Gagal memuat daftar kelas</p>
+                    <p class="text-gray-400 text-xs mt-1">Silakan coba lagi</p>
+                </div>
+            `;
+        }
     },
 
     async checkAuth() {
@@ -830,13 +901,21 @@ window.toggleAuthMode = function(e, mode) {
     if (e) e.preventDefault();
     const loginCard = document.getElementById('login-card');
     const registerCard = document.getElementById('register-card');
-    
+
     if (mode === 'register') {
         loginCard.classList.add('hidden');
         registerCard.classList.remove('hidden');
     } else {
         registerCard.classList.add('hidden');
         loginCard.classList.remove('hidden');
+    }
+}
+
+// Close archive modal function (global)
+function closeArchiveModal() {
+    const modal = document.getElementById('archive-select-modal');
+    if (modal) {
+        modal.classList.add('hidden');
     }
 }
 

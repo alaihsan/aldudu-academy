@@ -312,9 +312,51 @@ class MaterialsList {
                         ` : ''}
 
                         <!-- Actions (Teacher Only) -->
-                        ${this.isTeacher ? `
-                        <div class="flex-shrink-0 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button class="btn-delete-material p-2 text-gray-400 hover:text-red-600 hover:bg-red-100 rounded-lg transition-all" title="Hapus">
+                        ${this.isTeacher && material.type === 'quiz' ? `
+                        <div class="flex-shrink-0 flex gap-1.5">
+                            <button class="btn-edit-material p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="Edit Kuis">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                </svg>
+                            </button>
+                            <button class="btn-preview-material p-2 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all" title="Pratinjau Kuis">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                </svg>
+                            </button>
+                            <button class="btn-archive-material p-2 text-gray-500 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all" title="Arsipkan Kuis">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                                </svg>
+                            </button>
+                            <button class="btn-delete-material p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" title="Hapus Permanen">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                </svg>
+                            </button>
+                        </div>
+                        ` : this.isTeacher && (material.type === 'assignment' || material.type === 'file') ? `
+                        <div class="flex-shrink-0 flex gap-1.5">
+                            <button class="btn-edit-material p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="Edit">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                </svg>
+                            </button>
+                            <button class="btn-archive-material p-2 text-gray-500 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all" title="Arsipkan">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                                </svg>
+                            </button>
+                            <button class="btn-delete-material p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" title="Hapus Permanen">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                </svg>
+                            </button>
+                        </div>
+                        ` : this.isTeacher ? `
+                        <div class="flex-shrink-0 flex gap-1.5">
+                            <button class="btn-delete-material p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" title="Hapus">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                 </svg>
@@ -392,7 +434,7 @@ class MaterialsList {
             });
         });
 
-        // Delete material (Teacher Only)
+        // Delete material (Teacher Only) - with themed confirmation modal for quizzes
         this.container.querySelectorAll('.btn-delete-material').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -400,8 +442,56 @@ class MaterialsList {
                 const item = btn.closest('.material-card, .material-list-item');
                 const materialType = item.dataset.materialType;
                 const materialId = item.dataset.materialId;
-                if (confirm('Hapus materi ini?')) {
-                    this.deleteMaterial(materialType, parseInt(materialId));
+                const materialTitle = item.querySelector('h3')?.textContent || 'materi ini';
+
+                if (materialType === 'quiz') {
+                    this.showDeleteQuizConfirmation(parseInt(materialId), materialTitle);
+                } else {
+                    if (confirm('Hapus materi ini?')) {
+                        this.deleteMaterial(materialType, parseInt(materialId));
+                    }
+                }
+            });
+        });
+
+        // Edit quiz (Teacher Only)
+        this.container.querySelectorAll('.btn-edit-material').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const item = btn.closest('.material-card, .material-list-item');
+                const materialId = item.dataset.materialId;
+                window.open(`/quiz/${materialId}`, '_blank');
+            });
+        });
+
+        // Preview quiz
+        this.container.querySelectorAll('.btn-preview-material').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const item = btn.closest('.material-card, .material-list-item');
+                const materialId = item.dataset.materialId;
+                window.open(`/quiz/${materialId}?preview=true`, '_blank');
+            });
+        });
+
+        // Archive quiz (Teacher Only)
+        this.container.querySelectorAll('.btn-archive-material').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const item = btn.closest('.material-list-item');
+                const materialType = item.dataset.materialType;
+                const materialId = item.dataset.materialId;
+                const materialTitle = item.querySelector('h3')?.textContent || 'item ini';
+                
+                if (materialType === 'quiz') {
+                    this.showArchiveQuizConfirmation(parseInt(materialId), materialTitle);
+                } else if (materialType === 'assignment') {
+                    this.showArchiveConfirmation(parseInt(materialId), materialTitle, 'Tugas');
+                } else if (materialType === 'file') {
+                    this.showArchiveConfirmation(parseInt(materialId), materialTitle, 'File');
                 }
             });
         });
@@ -413,6 +503,288 @@ class MaterialsList {
                 this.showAddMaterialModal();
             });
         }
+    }
+
+    showDeleteQuizConfirmation(quizId, quizTitle) {
+        // First, check if quiz has submissions/grades
+        this.checkQuizHasSubmissions(quizId).then(hasSubmissions => {
+            this.renderDeleteModal(quizId, quizTitle, hasSubmissions);
+        });
+    }
+
+    async checkQuizHasSubmissions(quizId) {
+        try {
+            const response = await fetch(`/api/quiz/${quizId}/stats`);
+            const data = await response.json();
+            return data.success && data.total_submissions > 0;
+        } catch (error) {
+            console.error('Error checking quiz submissions:', error);
+            return false;
+        }
+    }
+
+    renderDeleteModal(quizId, quizTitle, hasSubmissions) {
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in';
+        
+        const hasSubmissionsContent = hasSubmissions ? `
+            <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5 mb-6">
+                <div class="flex items-start gap-3">
+                    <svg class="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                    </svg>
+                    <div>
+                        <p class="text-sm font-bold text-amber-900 mb-3">💡 Saran: Kuis ini memiliki nilai siswa!</p>
+                        <p class="text-xs text-amber-700 mb-3">
+                            Kuis ini sudah dikerjakan oleh siswa. Daripada menghapus permanen, lebih baik 
+                            <strong>arsipkan saja</strong> untuk menjaga nilai tetap tersimpan.
+                        </p>
+                        <button class="btn-archive-instead w-full px-4 py-3 bg-amber-600 text-white rounded-xl font-bold text-sm hover:bg-amber-700 transition-all flex items-center justify-center gap-2 shadow-lg shadow-amber-200">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                            </svg>
+                            Arsipkan Saja (Nilai Tersimpan)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        ` : '';
+
+        modal.innerHTML = `
+            <div class="modal-content bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden animate-slide-up">
+                <div class="bg-gradient-to-br from-red-500 to-red-700 px-8 py-6 text-white">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-black">Hapus Kuis Permanen</h3>
+                            <p class="text-red-100 text-sm mt-0.5">Tindakan ini tidak dapat dibatalkan</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-8">
+                    <p class="text-gray-700 font-bold mb-4">
+                        Apakah Anda yakin ingin menghapus <span class="text-red-600">${quizTitle}</span>?
+                    </p>
+                    ${hasSubmissionsContent}
+                    <div class="bg-red-50 border border-red-200 rounded-2xl p-5 mb-6">
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <div>
+                                <p class="text-sm font-bold text-red-900 mb-2">Peringatan Penting:</p>
+                                <ul class="text-xs text-red-700 space-y-1.5">
+                                    <li>• Semua nilai siswa untuk kuis ini akan <strong>dihapus permanen</strong></li>
+                                    <li>• Semua soal dan jawaban akan <strong>dihapus</strong></li>
+                                    <li>• Data yang telah dihapus <strong>tidak dapat dipulihkan</strong></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex gap-3">
+                        <button class="cancel-delete flex-1 px-5 py-3.5 bg-gray-100 text-gray-700 rounded-2xl font-bold hover:bg-gray-200 transition-all">
+                            Batal
+                        </button>
+                        <button class="confirm-delete flex-1 px-5 py-3.5 bg-red-600 text-white rounded-2xl font-bold hover:bg-red-700 transition-all shadow-lg shadow-red-200">
+                            Ya, Hapus Kuis
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        modal.querySelector('.cancel-delete').addEventListener('click', () => {
+            modal.remove();
+        });
+
+        modal.querySelector('.confirm-delete').addEventListener('click', async () => {
+            await this.deleteMaterial('quiz', quizId);
+            modal.remove();
+        });
+
+        // Archive instead button
+        const archiveInsteadBtn = modal.querySelector('.btn-archive-instead');
+        if (archiveInsteadBtn) {
+            archiveInsteadBtn.addEventListener('click', async () => {
+                await this.archiveQuiz(quizId);
+                modal.remove();
+            });
+        }
+
+        // Close on overlay click
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        });
+    }
+
+    showArchiveQuizConfirmation(quizId, quizTitle) {
+        this.showArchiveConfirmation(quizId, quizTitle, 'Kuis');
+    }
+
+    showArchiveConfirmation(id, title, typeName) {
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in';
+        modal.innerHTML = `
+            <div class="modal-content bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden animate-slide-up">
+                <div class="bg-gradient-to-br from-amber-500 to-amber-700 px-8 py-6 text-white">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-black">Arsipkan ${typeName}</h3>
+                            <p class="text-amber-100 text-sm mt-0.5">Pindahkan ke arsip kelas</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-8">
+                    <p class="text-gray-700 font-bold mb-4">
+                        Arsipkan <span class="text-amber-600">${title}</span>?
+                    </p>
+                    <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5 mb-6">
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <div>
+                                <p class="text-sm font-bold text-amber-900 mb-2">${typeName} yang diarsipkan:</p>
+                                <ul class="text-xs text-amber-700 space-y-1.5">
+                                    <li>• Tetap tersimpan di menu <strong>Arsip</strong></li>
+                                    <li>• Tidak ditampilkan di daftar materi</li>
+                                    <li>• Data <strong>tetap tersimpan</strong></li>
+                                    <li>• Dapat dipulihkan kapan saja</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex gap-3">
+                        <button class="cancel-archive flex-1 px-5 py-3.5 bg-gray-100 text-gray-700 rounded-2xl font-bold hover:bg-gray-200 transition-all">
+                            Batal
+                        </button>
+                        <button class="confirm-archive flex-1 px-5 py-3.5 bg-amber-600 text-white rounded-2xl font-bold hover:bg-amber-700 transition-all shadow-lg shadow-amber-200">
+                            Arsipkan ${typeName}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        modal.querySelector('.cancel-archive').addEventListener('click', () => {
+            modal.remove();
+        });
+
+        modal.querySelector('.confirm-archive').addEventListener('click', async () => {
+            if (typeName === 'Kuis') {
+                await this.archiveQuiz(id);
+            } else if (typeName === 'Tugas') {
+                await this.archiveAssignment(id);
+            } else if (typeName === 'File') {
+                await this.archiveFile(id);
+            }
+            modal.remove();
+        });
+
+        // Close on overlay click
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        });
+    }
+
+    async archiveQuiz(quizId) {
+        try {
+            const response = await fetch(`/api/quiz/${quizId}/archive`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await response.json();
+            if (data.success) {
+                await this.loadMaterials();
+                this.render();
+                this.attachEventListeners();
+                // Show success notification
+                this.showNotification('Kuis berhasil diarsipkan', 'success');
+            } else {
+                this.showNotification(data.message || 'Gagal mengarsipkan kuis', 'error');
+            }
+        } catch (error) {
+            console.error('Error archiving quiz:', error);
+            this.showNotification('Terjadi kesalahan saat mengarsipkan kuis', 'error');
+        }
+    }
+
+    async archiveAssignment(assignmentId) {
+        try {
+            const response = await fetch(`/api/assignment/${assignmentId}/archive`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await response.json();
+            if (data.success) {
+                await this.loadMaterials();
+                this.render();
+                this.attachEventListeners();
+                this.showNotification('Tugas berhasil diarsipkan', 'success');
+            } else {
+                this.showNotification(data.message || 'Gagal mengarsipkan tugas', 'error');
+            }
+        } catch (error) {
+            console.error('Error archiving assignment:', error);
+            this.showNotification('Terjadi kesalahan saat mengarsipkan tugas', 'error');
+        }
+    }
+
+    async archiveFile(fileId) {
+        try {
+            const response = await fetch(`/api/file/${fileId}/archive`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await response.json();
+            if (data.success) {
+                await this.loadMaterials();
+                this.render();
+                this.attachEventListeners();
+                this.showNotification('File berhasil diarsipkan', 'success');
+            } else {
+                this.showNotification(data.message || 'Gagal mengarsipkan file', 'error');
+            }
+        } catch (error) {
+            console.error('Error archiving file:', error);
+            this.showNotification('Terjadi kesalahan saat mengarsipkan file', 'error');
+        }
+    }
+
+    showNotification(message, type = 'success') {
+        const notification = document.createElement('div');
+        notification.className = `fixed bottom-6 right-6 px-6 py-4 rounded-2xl shadow-2xl z-[100] animate-slide-up flex items-center gap-3 ${
+            type === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'
+        }`;
+        notification.innerHTML = `
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            <span class="font-bold text-sm">${message}</span>
+        `;
+        document.body.appendChild(notification);
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            notification.style.transition = 'opacity 0.3s';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
     }
 
     async deleteMaterial(type, id) {
