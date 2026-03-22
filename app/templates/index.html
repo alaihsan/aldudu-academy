@@ -148,7 +148,9 @@
                     <div class="md:col-span-2 bg-gradient-to-br from-primary-600 to-primary-800 rounded-3xl p-6 sm:p-8 text-white relative overflow-hidden shadow-xl shadow-primary-200">
                         <div class="relative z-10">
                             <h1 id="welcome-title" class="text-2xl sm:text-3xl font-bold mb-2">Selamat Datang!</h1>
-                            <p class="text-primary-100 opacity-90 max-w-md text-sm sm:text-base">Lanjutkan perjalanan belajarmu hari ini. Kamu memiliki beberapa aktivitas yang menunggu.</p>
+                            <p id="dynamic-quote" class="text-primary-100 opacity-90 max-w-md text-sm sm:text-base min-h-[3rem] flex items-center">
+                                <span class="typing-text">Lanjutkan perjalanan belajarmu hari ini. Kamu memiliki beberapa aktivitas yang menunggu.</span>
+                            </p>
                         </div>
                         <div class="absolute right-0 bottom-0 opacity-10 pointer-events-none transform translate-y-1/4 translate-x-1/4 hidden sm:block">
                             <svg class="w-64 h-64" fill="currentColor" viewBox="0 0 24 24">
@@ -536,4 +538,138 @@
 
 {% block extra_scripts %}
 <script src="{{ url_for('static', filename='dashboard.js') }}?v={{ range(1, 9999) | random }}"></script>
+
+<!-- Dynamic Quote with Typing Effect -->
+<style>
+    .typing-text {
+        display: inline-block;
+        overflow: hidden;
+        border-right: 2px solid rgba(255,255,255,0.7);
+        white-space: nowrap;
+        animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+        max-width: 100%;
+    }
+    
+    .quote-fade {
+        animation: fadeOut 0.5s ease-out forwards;
+    }
+    
+    @keyframes typing {
+        from { width: 0 }
+        to { width: 100% }
+    }
+    
+    @keyframes blink-caret {
+        from, to { border-color: transparent }
+        50% { border-color: rgba(255,255,255,0.7) }
+    }
+    
+    @keyframes fadeOut {
+        from { opacity: 1; transform: translateY(0); }
+        to { opacity: 0; transform: translateY(-10px); }
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<script>
+// Dynamic Educational Quotes with Typing Effect
+const educationalQuotes = [
+    "Lanjutkan perjalanan belajarmu hari ini. Kamu memiliki beberapa aktivitas yang menunggu.",
+    "Pendidikan adalah senjata paling mematikan di dunia, karena dengan pendidikan Anda dapat mengubah dunia.",
+    "Perjalanan ribuan mil dimulai dengan satu langkah. Mulailah belajar hari ini!",
+    "Investasi terbaik adalah investasi dalam pengetahuan dirimu sendiri.",
+    "Pendidikan bukan persiapan untuk hidup; pendidikan adalah kehidupan itu sendiri.",
+    "Akar pendidikan memang pahit, tapi buahnya manis.",
+    "Belajar tanpa berpikir itu sia-sia. Berpikir tanpa belajar itu berbahaya.",
+    "Pendidikan adalah tiket ke masa depan. Hari esok milik orang yang mempersiapkannya hari ini.",
+    "Jangan berhenti belajar, karena hidup tidak pernah berhenti mengajarkan.",
+    "Pendidikan adalah cahaya yang menerangi dunia.",
+    "Orang yang berhenti belajar adalah orang yang sudah tua, meskipun usianya masih muda.",
+    "Belajar adalah harta karun yang akan mengikuti pemiliknya ke mana saja.",
+    "Pendidikan membantu kita menjadi siapa kita sebenarnya.",
+    "Kegagalan adalah bumbu yang memberi rasa pada pendidikan.",
+    "Pendidikan adalah proses seumur hidup dari kelahiran hingga kematian.",
+    "Belajar tanpa batas adalah kunci untuk meraih impianmu.",
+    "Pendidikan bukan hanya mengisi ember, tapi menyalakan api.",
+    "Setiap buku adalah pintu ke dunia baru. Membacalah, belajarlah, tumbuhlah.",
+    "Pendidikan adalah kekuatan untuk mengubah dunia menjadi lebih baik.",
+    "Belajar hari ini, memimpin besok. Masa depanmu dimulai sekarang."
+];
+
+// localStorage keys
+const QUOTE_INDEX_KEY = 'aldudu_quote_index';
+const QUOTE_TIMESTAMP_KEY = 'aldudu_quote_timestamp';
+
+// Get current quote index from localStorage or start fresh
+function getCurrentQuoteIndex() {
+    const storedIndex = localStorage.getItem(QUOTE_INDEX_KEY);
+    const storedTime = localStorage.getItem(QUOTE_TIMESTAMP_KEY);
+    const now = Date.now();
+    
+    // If no stored data or it's been more than 10 seconds since last change
+    if (!storedIndex || !storedTime || (now - parseInt(storedTime)) >= 10000) {
+        let newIndex;
+        if (storedIndex !== null) {
+            // Get next quote, loop back to 0 if at end
+            newIndex = (parseInt(storedIndex) + 1) % educationalQuotes.length;
+        } else {
+            // First time - random start
+            newIndex = Math.floor(Math.random() * educationalQuotes.length);
+        }
+        
+        // Save new index and timestamp
+        localStorage.setItem(QUOTE_INDEX_KEY, newIndex.toString());
+        localStorage.setItem(QUOTE_TIMESTAMP_KEY, now.toString());
+        
+        return newIndex;
+    }
+    
+    // Still within 10 seconds, keep current quote
+    return parseInt(storedIndex);
+}
+
+// Update quote with typing effect
+function updateQuote() {
+    const quoteElement = document.getElementById('dynamic-quote');
+    if (!quoteElement) return;
+    
+    const index = getCurrentQuoteIndex();
+    const quote = educationalQuotes[index];
+    
+    // Fade out
+    quoteElement.classList.add('quote-fade');
+    
+    // After fade out, change text and fade in
+    setTimeout(() => {
+        quoteElement.innerHTML = `<span class="typing-text" style="animation: typing ${Math.min(3.5, quote.length / 15)}s steps(${quote.length}, end), blink-caret 0.75s step-end infinite;"></span>`;
+        
+        const textSpan = quoteElement.querySelector('.typing-text');
+        textSpan.textContent = quote;
+        
+        quoteElement.classList.remove('quote-fade');
+        quoteElement.style.animation = 'fadeIn 0.5s ease-out forwards';
+        
+        // Remove animation class after completion
+        setTimeout(() => {
+            quoteElement.style.animation = '';
+        }, 500);
+        
+        // Update timestamp
+        localStorage.setItem(QUOTE_TIMESTAMP_KEY, Date.now().toString());
+    }, 500);
+}
+
+// Initialize dynamic quotes
+document.addEventListener('DOMContentLoaded', function() {
+    // Initial quote
+    setTimeout(updateQuote, 100);
+    
+    // Change quote every 10 seconds
+    setInterval(updateQuote, 10000);
+});
+</script>
 {% endblock %}
