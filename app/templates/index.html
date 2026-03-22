@@ -541,22 +541,29 @@
 
 <!-- Dynamic Quote with Typing Effect -->
 <style>
+    #dynamic-quote {
+        position: relative;
+        min-height: 4.5rem; /* Space for 2 lines */
+    }
+    
     .typing-text {
-        display: inline-block;
+        display: inline;
         overflow: hidden;
         border-right: 2px solid rgba(255,255,255,0.7);
-        white-space: nowrap;
-        animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+        white-space: normal; /* Allow wrapping for multi-line */
+        word-wrap: break-word;
+        line-height: 1.6;
+        animation: blink-caret 0.75s step-end infinite;
         max-width: 100%;
+    }
+    
+    .typing-text.typing-complete {
+        border-right: none; /* Remove cursor when complete */
+        animation: none;
     }
     
     .quote-fade {
         animation: fadeOut 0.5s ease-out forwards;
-    }
-    
-    @keyframes typing {
-        from { width: 0 }
-        to { width: 100% }
     }
     
     @keyframes blink-caret {
@@ -632,6 +639,25 @@ function getCurrentQuoteIndex() {
     return parseInt(storedIndex);
 }
 
+// Typewriter effect for multi-line text
+function typeWriter(text, element, speed = 50) {
+    let i = 0;
+    element.textContent = '';
+    element.classList.remove('typing-complete');
+    
+    function type() {
+        if (i < text.length) {
+            element.textContent += text.charAt(i);
+            i++;
+            setTimeout(() => type(), speed);
+        } else {
+            element.classList.add('typing-complete');
+        }
+    }
+    
+    type();
+}
+
 // Update quote with typing effect
 function updateQuote() {
     const quoteElement = document.getElementById('dynamic-quote');
@@ -640,18 +666,22 @@ function updateQuote() {
     const index = getCurrentQuoteIndex();
     const quote = educationalQuotes[index];
     
+    // Calculate typing speed based on quote length (faster for longer quotes)
+    const typingSpeed = Math.max(30, Math.min(80, 4000 / quote.length));
+    
     // Fade out
     quoteElement.classList.add('quote-fade');
     
     // After fade out, change text and fade in
     setTimeout(() => {
-        quoteElement.innerHTML = `<span class="typing-text" style="animation: typing ${Math.min(3.5, quote.length / 15)}s steps(${quote.length}, end), blink-caret 0.75s step-end infinite;"></span>`;
+        quoteElement.innerHTML = '<span class="typing-text"></span>';
         
         const textSpan = quoteElement.querySelector('.typing-text');
-        textSpan.textContent = quote;
-        
         quoteElement.classList.remove('quote-fade');
         quoteElement.style.animation = 'fadeIn 0.5s ease-out forwards';
+        
+        // Start typing effect
+        typeWriter(quote, textSpan, typingSpeed);
         
         // Remove animation class after completion
         setTimeout(() => {
