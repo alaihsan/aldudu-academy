@@ -46,6 +46,77 @@ def create_app(test_config: Optional[Dict] = None) -> Flask:
             release=os.environ.get('SENTRY_RELEASE', 'aldudu-academy@1.0.0'),
         )
 
+    # Initialize Prometheus Metrics
+    prometheus_enabled = os.environ.get('PROMETHEUS_ENABLED', 'true').lower() == 'true'
+    if prometheus_enabled:
+        from prometheus_flask_exporter import PrometheusMetrics
+        from prometheus_client import CollectorRegistry, Gauge, Counter, Histogram
+        import time
+        
+        # Custom metrics registry
+        metrics_registry = CollectorRegistry()
+        
+        # Custom metrics
+        REQUEST_COUNT = Counter(
+            'aldudu_requests_total',
+            'Total requests',
+            ['method', 'endpoint', 'status'],
+            registry=metrics_registry
+        )
+        
+        REQUEST_LATENCY = Histogram(
+            'aldudu_request_latency_seconds',
+            'Request latency',
+            ['method', 'endpoint'],
+            buckets=(0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 0.75, 1.0, 2.5, 5.0, 7.5, 10.0),
+            registry=metrics_registry
+        )
+        
+        ACTIVE_USERS = Gauge(
+            'aldudu_active_users',
+            'Active users',
+            registry=metrics_registry
+        )
+        
+        # Business metrics
+        COURSES_CREATED = Counter(
+            'aldudu_courses_created_total',
+            'Total courses created',
+            registry=metrics_registry
+        )
+        
+        QUIZZIS_TAKEN = Counter(
+            'aldudu_quizzes_taken_total',
+            'Total quizzes taken',
+            registry=metrics_registry
+        )
+        
+        STUDENTS_ENROLLED = Gauge(
+            'aldudu_students_enrolled',
+            'Total students enrolled',
+            registry=metrics_registry
+        )
+        
+        # Initialize Flask exporter
+        metrics = PrometheusMetrics(
+            app,
+            registry=metrics_registry,
+            defaults_prefix='aldudu',
+            group_by='endpoint',
+            exclude_paths=['/healthz', '/metrics', '/static/']
+        )
+        
+        # Store metrics in app config for later use
+        app.config['PROMETHEUS_METRICS'] = {
+            'request_count': REQUEST_COUNT,
+            'request_latency': REQUEST_LATENCY,
+            'active_users': ACTIVE_USERS,
+            'courses_created': COURSES_CREATED,
+            'quizzes_taken': QUIZZIS_TAKEN,
+            'students_enrolled': STUDENTS_ENROLLED,
+            'registry': metrics_registry,
+        }
+
     # Initialize extensions
     db.init_app(app)
     migrate.init_app(app, db)
@@ -148,6 +219,11 @@ def create_app(test_config: Optional[Dict] = None) -> Flask:
             'suspended_schools': School.query.filter_by(status=SchoolStatus.SUSPENDED).count(),
         }
         return render_template('superadmin/health.html', stats=stats)
+
+    # Performance Metrics Dashboard Routes
+    @app.route('/superadmin/metrics')
+    def metrics_dashboard():
+        return render_template('superadmin/metrics.html')
 
     # Health Check APIs
     @app.route('/superadmin/api/health/checks', methods=['GET'])
@@ -377,6 +453,93 @@ def create_app(test_config: Optional[Dict] = None) -> Flask:
                 'success': False, 
                 'message': f'Gagal membersihkan cache: {str(e)}'
             }), 500
+
+    # Performance Metrics APIs
+    @app.route('/superadmin/api/metrics/data', methods=['GET'])
+    def api_metrics_data():
+        """Get comprehensive metrics data for dashboard."""
+        from .models import User, UserRole, School, SchoolStatus, Course
+        from sqlalchemy import func
+        import psutil
+        import os
+        
+        # Get Prometheus metrics if available
+        prom_metrics = app.config.get('PROMETHEUS_METRICS', {})
+        
+        # System metrics
+        cpu_percent = psutil.cpu_percent(interval=1)
+        memory = psutil.virtual_memory()
+        disk = psutil.disk_usage('/')
+        
+        # Application stats
+        users_by_role = db.session.query(
+            User.role, func.count(User.id)
+        ).group_by(User.role).all()
+        
+        schools_by_status = db.session.query(
+            School.status, func.count(School.id)
+        ).group_by(School.status).all()
+        
+        # Calculate active users (logged in last 24h - mock for now)
+        active_users = User.query.filter(User.is_active == True).count()
+        
+        # Update Prometheus gauges
+        if prom_metrics.get('active_users'):
+            prom_metrics['active_users'].set(active_users)
+        
+        # Students enrolled
+        students_enrolled = User.query.filter(User.role == UserRole.MURID).count()
+        if prom_metrics.get('students_enrolled'):
+            prom_metrics['students_enrolled'].set(students_enrolled)
+        
+        metrics = {
+            'system': {
+                'cpu_percent': cpu_percent,
+                'memory_percent': memory.percent,
+                'memory_used_gb': round(memory.used / (1024**3), 2),
+                'memory_total_gb': round(memory.total / (1024**3), 2),
+                'disk_percent': disk.percent,
+                'disk_used_gb': round(disk.used / (1024**3), 2),
+                'disk_total_gb': round(disk.total / (1024**3), 2),
+            },
+            'application': {
+                'total_requests': 0,  # Would come from Prometheus
+                'avg_latency_ms': 0,  # Would come from Prometheus
+                'error_rate': 0,  # Would come from Prometheus
+                'active_users': active_users,
+                'requests_per_second': 0,  # Would come from Prometheus
+            },
+            'users': {
+                'total': User.query.count(),
+                'by_role': {role.value: count for role, count in users_by_role},
+            },
+            'schools': {
+                'total': School.query.count(),
+                'by_status': {status.value: count for status, count in schools_by_status},
+            },
+            'business': {
+                'courses': Course.query.count() if 'Course' in str(db.Model.registry._class_registry) else 0,
+                'students_enrolled': students_enrolled,
+                'quizzes_taken': 0,  # Would increment on quiz submission
+            },
+            'prometheus': {
+                'enabled': prometheus_enabled,
+                'endpoint': '/metrics' if prometheus_enabled else None,
+            }
+        }
+        
+        return jsonify({'success': True, 'metrics': metrics})
+
+    @app.route('/superadmin/api/metrics/refresh', methods=['POST'])
+    def api_metrics_refresh():
+        """Force refresh metrics."""
+        import time
+        
+        return jsonify({
+            'success': True,
+            'message': 'Metrics refreshed',
+            'timestamp': time.strftime('%Y-%m-%d %H:%M:%S')
+        })
 
     # CLI commands
     @app.cli.command('init-db')

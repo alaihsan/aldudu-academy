@@ -1,0 +1,347 @@
+{% extends "superadmin/base.html" %}
+{% block title %}Performance Metrics — Super Admin{% endblock %}
+{% block page_title %}Performance Metrics{% endblock %}
+{% block page_subtitle %}Real-time monitoring dengan Prometheus & Grafana{% endblock %}
+
+{% block content %}
+<!-- Prometheus Status Banner -->
+<div class="mb-5 p-4 rounded-xl border-2 {% if prometheus_enabled %}bg-emerald-50 border-emerald-100{% else %}bg-amber-50 border-amber-100{% endif %}">
+    <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full {% if prometheus_enabled %}bg-emerald-100{% else %}bg-amber-100{% endif %} flex items-center justify-center">
+                <svg class="w-5 h-5 {% if prometheus_enabled %}text-emerald-600{% else %}text-amber-600{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+            </div>
+            <div>
+                <p class="text-sm font-bold {% if prometheus_enabled %}text-emerald-800{% else %}text-amber-800{% endif %}">
+                    {% if prometheus_enabled %}
+                        ✓ Prometheus Metrics Enabled
+                    {% else %}
+                        ⚠ Prometheus Metrics Disabled
+                    {% endif %}
+                </p>
+                <p class="text-xs {% if prometheus_enabled %}text-emerald-600{% else %}text-amber-600{% endif %}">
+                    {% if prometheus_enabled %}
+                        Metrics endpoint: /metrics
+                    {% else %}
+                        Set PROMETHEUS_ENABLED=true in .env to enable
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+        <button onclick="loadMetrics()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            Refresh
+        </button>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div class="sa-stat">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-2xl font-black text-slate-900" id="stat-cpu">-</p>
+                <p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold mt-0.5">CPU Usage</p>
+            </div>
+            <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center">
+                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            </div>
+        </div>
+    </div>
+
+    <div class="sa-stat">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-2xl font-black text-slate-900" id="stat-memory">-</p>
+                <p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold mt-0.5">Memory Usage</p>
+            </div>
+            <div class="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center">
+                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+            </div>
+        </div>
+    </div>
+
+    <div class="sa-stat">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-2xl font-black text-slate-900" id="stat-active-users">-</p>
+                <p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold mt-0.5">Active Users</p>
+            </div>
+            <div class="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center">
+                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            </div>
+        </div>
+    </div>
+
+    <div class="sa-stat">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-2xl font-black text-slate-900" id="stat-courses">-</p>
+                <p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold mt-0.5">Total Courses</p>
+            </div>
+            <div class="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center">
+                <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
+    <!-- CPU & Memory Chart -->
+    <div class="sa-card p-5">
+        <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">System Resources</h3>
+        <div class="space-y-4">
+            <div>
+                <div class="flex justify-between mb-1">
+                    <span class="text-xs font-bold text-slate-600">CPU</span>
+                    <span class="text-xs font-bold text-slate-400" id="cpu-text">0%</span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-3">
+                    <div id="cpu-bar" class="bg-blue-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+            </div>
+            <div>
+                <div class="flex justify-between mb-1">
+                    <span class="text-xs font-bold text-slate-600">Memory</span>
+                    <span class="text-xs font-bold text-slate-400" id="memory-text">0%</span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-3">
+                    <div id="memory-bar" class="bg-purple-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+            </div>
+            <div>
+                <div class="flex justify-between mb-1">
+                    <span class="text-xs font-bold text-slate-600">Disk</span>
+                    <span class="text-xs font-bold text-slate-400" id="disk-text">0%</span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-3">
+                    <div id="disk-bar" class="bg-indigo-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Users by Role -->
+    <div class="sa-card p-5">
+        <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Users by Role</h3>
+        <div id="users-by-role" class="space-y-3">
+            <!-- Populated by JS -->
+        </div>
+    </div>
+</div>
+
+<!-- Business Metrics -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-6">
+    <div class="sa-card p-5">
+        <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Schools</h3>
+        <div id="schools-stats" class="space-y-2">
+            <!-- Populated by JS -->
+        </div>
+    </div>
+
+    <div class="sa-card p-5">
+        <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Business Metrics</h3>
+        <div id="business-stats" class="space-y-2">
+            <!-- Populated by JS -->
+        </div>
+    </div>
+
+    <div class="sa-card p-5">
+        <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Prometheus Info</h3>
+        <div id="prometheus-info" class="space-y-2 text-sm">
+            <!-- Populated by JS -->
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="sa-card p-5">
+    <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Quick Actions</h3>
+    <div class="flex flex-wrap gap-3">
+        <a href="/metrics" target="_blank" class="px-4 py-2.5 bg-orange-600 hover:bg-orange-700 text-white text-sm font-bold rounded-lg transition-colors flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            Prometheus Metrics (/metrics)
+        </a>
+        
+        <a href="http://localhost:3000" target="_blank" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-lg transition-colors flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/></svg>
+            Grafana Dashboard
+        </a>
+        
+        <button onclick="refreshMetrics()" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-lg transition-colors flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            Refresh Metrics
+        </button>
+        
+        <button onclick="exportMetrics()" class="px-4 py-2.5 bg-slate-600 hover:bg-slate-700 text-white text-sm font-bold rounded-lg transition-colors flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            Export Data
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    let prometheusEnabled = false;
+
+    // Load metrics
+    async function loadMetrics() {
+        try {
+            const res = await fetch('/superadmin/api/metrics/data');
+            const data = await res.json();
+
+            if (data.success) {
+                const m = data.metrics;
+                
+                // Update stat cards
+                document.getElementById('stat-cpu').textContent = `${m.system.cpu_percent}%`;
+                document.getElementById('stat-memory').textContent = `${m.system.memory_percent}%`;
+                document.getElementById('stat-active-users').textContent = m.application.active_users;
+                document.getElementById('stat-courses').textContent = m.business.courses;
+
+                // Update progress bars
+                document.getElementById('cpu-bar').style.width = `${m.system.cpu_percent}%`;
+                document.getElementById('cpu-text').textContent = `${m.system.cpu_percent}%`;
+                
+                document.getElementById('memory-bar').style.width = `${m.system.memory_percent}%`;
+                document.getElementById('memory-text').textContent = `${m.system.memory_percent}% (${m.system.memory_used_gb}GB / ${m.system.memory_total_gb}GB)`;
+                
+                document.getElementById('disk-bar').style.width = `${m.system.disk_percent}%`;
+                document.getElementById('disk-text').textContent = `${m.system.disk_percent}% (${m.system.disk_used_gb}GB / ${m.system.disk_total_gb}GB)`;
+
+                // Users by role
+                const roleContainer = document.getElementById('users-by-role');
+                const roleColors = {
+                    'super_admin': 'bg-purple-100 text-purple-700',
+                    'admin': 'bg-slate-100 text-slate-700',
+                    'guru': 'bg-blue-100 text-blue-700',
+                    'murid': 'bg-green-100 text-green-700',
+                };
+                
+                roleContainer.innerHTML = Object.entries(m.users.by_role).map(([role, count]) => `
+                    <div class="flex items-center justify-between p-3 rounded-lg ${roleColors[role] || 'bg-gray-100 text-gray-700'}">
+                        <span class="text-xs font-bold uppercase tracking-wider">${role.replace('_', ' ')}</span>
+                        <span class="text-sm font-black">${count}</span>
+                    </div>
+                `).join('');
+
+                // Schools stats
+                const schoolsContainer = document.getElementById('schools-stats');
+                const schoolColors = {
+                    'active': 'bg-emerald-50 text-emerald-700 border-emerald-200',
+                    'pending': 'bg-amber-50 text-amber-700 border-amber-200',
+                    'suspended': 'bg-red-50 text-red-700 border-red-200',
+                };
+                
+                schoolsContainer.innerHTML = Object.entries(m.schools.by_status).map(([status, count]) => `
+                    <div class="flex items-center justify-between p-3 rounded-lg border ${schoolColors[status] || 'bg-gray-50 text-gray-700 border-gray-200'}">
+                        <span class="text-xs font-bold uppercase tracking-wider">${status}</span>
+                        <span class="text-sm font-black">${count}</span>
+                    </div>
+                `).join('');
+
+                // Business stats
+                const businessContainer = document.getElementById('business-stats');
+                businessContainer.innerHTML = `
+                    <div class="flex justify-between p-2 border-b border-slate-100">
+                        <span class="text-slate-500 text-sm">Students Enrolled</span>
+                        <span class="font-bold text-slate-700">${m.business.students_enrolled}</span>
+                    </div>
+                    <div class="flex justify-between p-2">
+                        <span class="text-slate-500 text-sm">Quizzes Taken</span>
+                        <span class="font-bold text-slate-700">${m.business.quizzes_taken}</span>
+                    </div>
+                `;
+
+                // Prometheus info
+                prometheusEnabled = m.prometheus.enabled;
+                const promContainer = document.getElementById('prometheus-info');
+                promContainer.innerHTML = `
+                    <div class="flex justify-between py-2 border-b border-slate-100">
+                        <span class="text-slate-500">Status</span>
+                        <span class="font-bold ${m.prometheus.enabled ? 'text-emerald-600' : 'text-amber-600'}">
+                            ${m.prometheus.enabled ? '✓ Enabled' : '✗ Disabled'}
+                        </span>
+                    </div>
+                    ${m.prometheus.endpoint ? `
+                    <div class="flex justify-between py-2">
+                        <span class="text-slate-500">Endpoint</span>
+                        <a href="${m.prometheus.endpoint}" target="_blank" class="font-bold text-indigo-600 hover:underline">
+                            ${m.prometheus.endpoint}
+                        </a>
+                    </div>
+                    ` : ''}
+                `;
+            }
+        } catch (err) {
+            console.error('Error loading metrics:', err);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to load metrics data',
+            });
+        }
+    }
+
+    // Refresh metrics
+    async function refreshMetrics() {
+        const res = await fetch('/superadmin/api/metrics/refresh', { method: 'POST' });
+        const data = await res.json();
+        
+        if (data.success) {
+            loadMetrics();
+            Swal.fire({
+                icon: 'success',
+                title: 'Refreshed',
+                text: 'Metrics refreshed successfully',
+                timer: 2000,
+                showConfirmButton: false,
+            });
+        }
+    }
+
+    // Export metrics
+    async function exportMetrics() {
+        try {
+            const res = await fetch('/superadmin/api/metrics/data');
+            const data = await res.json();
+            
+            if (data.success) {
+                const blob = new Blob([JSON.stringify(data.metrics, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `metrics-${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Exported',
+                    text: 'Metrics exported successfully',
+                    timer: 2000,
+                    showConfirmButton: false,
+                });
+            }
+        } catch (err) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to export metrics',
+            });
+        }
+    }
+
+    // Init
+    loadMetrics();
+
+    // Auto refresh every 10 seconds
+    setInterval(() => {
+        loadMetrics();
+    }, 10000);
+</script>
+{% endblock %}

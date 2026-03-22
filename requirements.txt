@@ -21,3 +21,7 @@ redis==7.3.0
 # Error Tracking & Monitoring
 sentry-sdk[flask]==2.20.0
 psutil==6.1.0
+
+# Prometheus Metrics & Monitoring
+prometheus-client==0.20.0
+prometheus-flask-exporter==0.23.1
