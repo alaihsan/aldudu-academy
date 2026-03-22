@@ -65,6 +65,52 @@
     .shadow-theme-lg {
         box-shadow: 0 10px 25px -5px var(--course-theme-light) !important;
     }
+
+    /* Drag and Drop Styles */
+    .material-item.dragging, .folder-item.dragging {
+        opacity: 0.5;
+        transform: scale(1.02);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        z-index: 100;
+    }
+
+    .material-item.drag-above {
+        border-top: 3px solid #22c55e !important;
+        transform: translateY(-2px);
+    }
+
+    .material-item.drag-below {
+        border-bottom: 3px solid #22c55e !important;
+        transform: translateY(2px);
+    }
+
+    .folder-item.drag-over {
+        background-color: rgba(168, 85, 247, 0.1) !important;
+        border-color: #a855f7 !important;
+    }
+
+    .drag-handle {
+        cursor: grab;
+    }
+
+    .drag-handle:active {
+        cursor: grabbing;
+    }
+
+    .folder-contents {
+        animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
 </style>
 {% endblock %}
 
@@ -772,7 +818,7 @@ document.addEventListener('DOMContentLoaded', function() {
 {% endblock %}
 
 {% block extra_scripts %}
-<script src="{{ url_for('static', filename='js/materials-list.js') }}?v={{ range(1, 9999) | random }}"></script>
+<script src="{{ url_for('static', filename='js/materials-list-v2.js') }}?v={{ range(1, 9999) | random }}"></script>
 <script src="{{ url_for('static', filename='js/course_detail.js') }}?v={{ range(1, 9999) | random }}"></script>
 <script src="{{ url_for('static', filename='js/discussion.js') }}?v={{ range(1, 9999) | random }}"></script>
 

@@ -967,3 +967,139 @@ def api_move_material(material_type, material_id):
     db.session.commit()
 
     return jsonify({'success': True})
+
+
+@courses_bp.route('/courses/<int:course_id>/materials/reorder', methods=['POST'])
+@login_required
+def api_reorder_materials(course_id):
+    """Reorder materials in a course"""
+    course = Course.query.get_or_404(course_id)
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(course, school_id)
+
+    if course.teacher_id != current_user.id:
+        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+
+    data = request.get_json() or {}
+    order_list = data.get('order', [])
+
+    for item in order_list:
+        material_id = item.get('id')
+        material_type = item.get('type')
+        order = item.get('order', 0)
+
+        if material_type == 'quiz':
+            quiz = Quiz.query.get(material_id)
+            if quiz and quiz.course_id == course_id:
+                quiz.order = order
+        elif material_type == 'assignment':
+            assignment = Assignment.query.get(material_id)
+            if assignment and assignment.course_id == course_id:
+                assignment.order = order
+        elif material_type == 'file':
+            file = File.query.get(material_id)
+            if file and file.course_id == course_id:
+                file.order = order
+        elif material_type == 'link':
+            link = Link.query.get(material_id)
+            if link and link.course_id == course_id:
+                link.order = order
+
+    db.session.commit()
+    return jsonify({'success': True})
+
+
+@courses_bp.route('/courses/<int:course_id>/folders/reorder', methods=['POST'])
+@login_required
+def api_reorder_folders(course_id):
+    """Reorder folders in a course"""
+    course = Course.query.get_or_404(course_id)
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(course, school_id)
+
+    if course.teacher_id != current_user.id:
+        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+
+    data = request.get_json() or {}
+    order_list = data.get('order', [])
+
+    for item in order_list:
+        folder_id = item.get('id')
+        order = item.get('order', 0)
+
+        folder = ContentFolder.query.get(folder_id)
+        if folder and folder.course_id == course_id:
+            folder.order = order
+
+    db.session.commit()
+    return jsonify({'success': True})
+
+
+@courses_bp.route('/materials/<int:material_id>/move', methods=['PUT'])
+@login_required
+def api_move_material_to_folder(material_id):
+    """Move a material to a folder"""
+    data = request.get_json() or {}
+    folder_id = data.get('folder_id')
+
+    # Try to find material in different tables
+    material = None
+    material_type = None
+
+    for model in [Quiz, Assignment, File, Link]:
+        material = model.query.get(material_id)
+        if material:
+            material_type = model.__tablename__
+            course_id = material.course_id
+            break
+
+    if not material:
+        return jsonify({'success': False, 'message': 'Material not found'}), 404
+
+    course = Course.query.get(course_id)
+    if not course:
+        return jsonify({'success': False, 'message': 'Course not found'}), 404
+
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(course, school_id)
+
+    if course.teacher_id != current_user.id:
+        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+
+    # Update folder_id
+    material.folder_id = folder_id
+    db.session.commit()
+
+    log_activity(current_user.id, f"Moved {material_type} {material_id} to folder {folder_id}")
+
+    return jsonify({'success': True})
+
+
+@courses_bp.route('/folders/<int:folder_id>/move', methods=['PUT'])
+@login_required
+def api_move_folder(folder_id):
+    """Move a folder to a parent folder"""
+    data = request.get_json() or {}
+    new_parent_id = data.get('parent_folder_id')
+
+    folder = ContentFolder.query.get_or_404(folder_id)
+    course = Course.query.get(folder.course_id)
+
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(course, school_id)
+
+    if course.teacher_id != current_user.id:
+        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+
+    # Prevent moving folder into itself or its descendants
+    if new_parent_id:
+        child_ids = [f.id for f in ContentFolder.query.filter_by(parent_folder_id=folder_id).all()]
+        if new_parent_id in child_ids or new_parent_id == folder_id:
+            return jsonify({'success': False, 'message': 'Invalid parent folder'}), 400
+
+    folder.parent_folder_id = new_parent_id
+    db.session.commit()
+
+    log_activity(current_user.id, f"Moved folder {folder_id} to parent {new_parent_id}")
+
+    return jsonify({'success': True})
