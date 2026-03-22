@@ -937,13 +937,437 @@ class MaterialsList {
         }, 3000);
     }
 
-    // Placeholder methods - implement based on your existing code
-    showAddMaterialModal() { /* ... */ }
-    showArchiveConfirmation(id, type) { /* ... */ }
-    showMoveToFolderModal(materialId) { /* ... */ }
-    showRenameFolderModal(folderId, currentName) { /* ... */ }
-    deleteMaterial(type, id) { /* ... */ }
-    deleteFolder(folderId) { /* ... */ }
+    showAddMaterialModal() {
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50';
+        modal.innerHTML = `
+            <div class="modal-content bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden animate-slide-up">
+                <div class="bg-gradient-to-br from-green-500 to-green-700 px-8 py-6 text-white">
+                    <h3 class="text-xl font-black">Tambah Konten Baru</h3>
+                    <p class="text-green-100 text-sm mt-1">Pilih jenis konten atau buat folder</p>
+                </div>
+                <div class="p-6">
+                    <!-- Folder Section -->
+                    <div class="mb-4">
+                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 px-2">Organisasi</p>
+                        <button class="add-folder w-full text-left px-5 py-4 rounded-2xl hover:bg-purple-50 border border-gray-100 transition-all group flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center text-xl group-hover:bg-purple-600 group-hover:text-white transition-all">
+                                📁
+                            </div>
+                            <div>
+                                <div class="font-bold text-gray-900 group-hover:text-purple-600 transition-colors">Buat Folder</div>
+                                <div class="text-xs text-gray-500">Organisir materi dalam folder</div>
+                            </div>
+                        </button>
+                    </div>
+
+                    <!-- Materials Section -->
+                    <div>
+                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 px-2">Materi & Tugas</p>
+                        <div class="space-y-3">
+                            <button class="add-quiz w-full text-left px-5 py-4 rounded-2xl hover:bg-amber-50 border border-gray-100 transition-all group flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-xl group-hover:bg-amber-600 group-hover:text-white transition-all">
+                                    📊
+                                </div>
+                                <div>
+                                    <div class="font-bold text-gray-900 group-hover:text-amber-600 transition-colors">Kuis</div>
+                                    <div class="text-xs text-gray-500">Buat kuis interaktif</div>
+                                </div>
+                            </button>
+                            <button class="add-assignment w-full text-left px-5 py-4 rounded-2xl hover:bg-green-50 border border-gray-100 transition-all group flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-green-100 text-green-600 flex items-center justify-center text-xl group-hover:bg-green-600 group-hover:text-white transition-all">
+                                    📝
+                                </div>
+                                <div>
+                                    <div class="font-bold text-gray-900 group-hover:text-green-600 transition-colors">Tugas</div>
+                                    <div class="text-xs text-gray-500">Berikan tugas kepada siswa</div>
+                                </div>
+                            </button>
+                            <button class="add-file w-full text-left px-5 py-4 rounded-2xl hover:bg-blue-50 border border-gray-100 transition-all group flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center text-xl group-hover:bg-blue-600 group-hover:text-white transition-all">
+                                    📎
+                                </div>
+                                <div>
+                                    <div class="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">Berkas</div>
+                                    <div class="text-xs text-gray-500">Upload file materi</div>
+                                </div>
+                            </button>
+                            <button class="add-link w-full text-left px-5 py-4 rounded-2xl hover:bg-indigo-50 border border-gray-100 transition-all group flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-xl group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                                    🔗
+                                </div>
+                                <div>
+                                    <div class="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">Link</div>
+                                    <div class="text-xs text-gray-500">Tambahkan link eksternal</div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="px-6 pb-6">
+                    <button class="btn btn-secondary w-full px-5 py-3.5 bg-gray-100 text-gray-700 rounded-2xl font-bold hover:bg-gray-200 transition-all cancel-add-material">Batal</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        // Cancel button
+        modal.querySelector('.cancel-add-material').addEventListener('click', (e) => {
+            e.stopPropagation();
+            modal.remove();
+        });
+
+        // Add folder button
+        modal.querySelector('.add-folder').addEventListener('click', (e) => {
+            e.stopPropagation();
+            modal.remove();
+            this.showCreateFolderModal();
+        });
+
+        // Add quiz button
+        modal.querySelector('.add-quiz').addEventListener('click', (e) => {
+            e.stopPropagation();
+            modal.remove();
+            this.createQuickQuiz();
+        });
+
+        // Add assignment button
+        modal.querySelector('.add-assignment').addEventListener('click', (e) => {
+            e.stopPropagation();
+            modal.remove();
+            const assignmentModal = document.getElementById('create-assignment-modal');
+            if (assignmentModal) {
+                assignmentModal.classList.remove('hidden');
+            }
+        });
+
+        // Add file button
+        modal.querySelector('.add-file').addEventListener('click', (e) => {
+            e.stopPropagation();
+            modal.remove();
+            const fileModal = document.getElementById('create-file-modal');
+            if (fileModal) {
+                fileModal.classList.remove('hidden');
+            }
+        });
+
+        // Add link button
+        modal.querySelector('.add-link').addEventListener('click', (e) => {
+            e.stopPropagation();
+            modal.remove();
+            const linkModal = document.getElementById('create-link-modal');
+            if (linkModal) {
+                linkModal.classList.remove('hidden');
+            }
+        });
+
+        // Close on overlay click
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        });
+    }
+
+    createQuickQuiz() {
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50';
+        modal.innerHTML = `
+            <div class="modal-content bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden animate-slide-up">
+                <div class="bg-gradient-to-br from-amber-500 to-amber-700 px-8 py-6 text-white">
+                    <h3 class="text-xl font-black">Buat Kuis Baru</h3>
+                    <p class="text-amber-100 text-sm mt-1">Buat kuis interaktif untuk siswa</p>
+                </div>
+                <div class="p-6">
+                    <div class="mb-4">
+                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Nama Kuis</label>
+                        <input type="text" id="quiz-name-input" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-amber-500 outline-none font-bold" placeholder="Contoh: Kuis Bab 1, UTS, ..." autofocus>
+                    </div>
+                    <div id="quiz-modal-error" class="hidden p-4 bg-red-50 text-red-600 rounded-2xl text-xs font-bold text-center mb-4"></div>
+                </div>
+                <div class="px-6 pb-6 flex space-x-3">
+                    <button class="quiz-cancel-btn flex-1 px-6 py-4 text-gray-500 bg-gray-100 rounded-2xl font-bold hover:bg-gray-200 transition-all">Batal</button>
+                    <button class="quiz-create-btn flex-[2] px-6 py-4 bg-amber-600 text-white rounded-2xl font-bold shadow-lg shadow-amber-200 hover:bg-amber-700 active:scale-95">Buat Kuis</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        const input = modal.querySelector('#quiz-name-input');
+        input.focus();
+
+        const createBtn = modal.querySelector('.quiz-create-btn');
+        createBtn.addEventListener('click', async () => {
+            const name = input.value.trim();
+            const errorDiv = modal.querySelector('#quiz-modal-error');
+
+            if (!name) {
+                errorDiv.textContent = 'Nama kuis wajib diisi';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/courses/${this.courseId}/quizzes`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: name, is_quiz: true })
+                });
+                const data = await response.json();
+
+                if (data.success && data.quiz && data.quiz.id) {
+                    modal.remove();
+                    this.showNotification('Kuis berhasil dibuat! Membuka editor...', 'success');
+                    setTimeout(() => {
+                        window.location.href = `/quiz/${data.quiz.id}`;
+                    }, 500);
+                } else {
+                    errorDiv.textContent = data.message || 'Gagal membuat kuis';
+                    errorDiv.classList.remove('hidden');
+                }
+            } catch (error) {
+                errorDiv.textContent = 'Terjadi kesalahan saat membuat kuis';
+                errorDiv.classList.remove('hidden');
+                console.error('Error creating quiz:', error);
+            }
+        });
+
+        modal.querySelector('.quiz-cancel-btn').addEventListener('click', () => modal.remove());
+
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') createBtn.click();
+        });
+    }
+
+    showCreateFolderModal() {
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50';
+        modal.innerHTML = `
+            <div class="modal-content bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden animate-slide-up">
+                <div class="bg-gradient-to-br from-purple-500 to-purple-700 px-8 py-6 text-white">
+                    <h3 class="text-xl font-black">Buat Folder Baru</h3>
+                    <p class="text-purple-100 text-sm mt-1">Organisir materi kelas Anda</p>
+                </div>
+                <div class="p-6">
+                    <div class="mb-4">
+                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Nama Folder</label>
+                        <input type="text" id="folder-name-input" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-purple-500 outline-none font-bold" placeholder="Contoh: Bab 1, UTS, Materi Ganjil..." autofocus>
+                    </div>
+                    <div id="folder-modal-error" class="hidden p-4 bg-red-50 text-red-600 rounded-2xl text-xs font-bold text-center mb-4"></div>
+                </div>
+                <div class="px-6 pb-6 flex space-x-3">
+                    <button class="folder-cancel-btn flex-1 px-6 py-4 text-gray-500 bg-gray-100 rounded-2xl font-bold hover:bg-gray-200 transition-all">Batal</button>
+                    <button class="folder-create-btn flex-[2] px-6 py-4 bg-purple-600 text-white rounded-2xl font-bold shadow-lg shadow-purple-200 hover:bg-purple-700 active:scale-95">Buat Folder</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        const input = modal.querySelector('#folder-name-input');
+        input.focus();
+
+        const createBtn = modal.querySelector('.folder-create-btn');
+        createBtn.addEventListener('click', async () => {
+            const name = input.value.trim();
+            const errorDiv = modal.querySelector('#folder-modal-error');
+
+            if (!name) {
+                errorDiv.textContent = 'Nama folder wajib diisi';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/courses/${this.courseId}/folders`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    modal.remove();
+                    this.loadAllData().then(() => {
+                        this.render();
+                        this.attachEventListeners();
+                    });
+                    this.showNotification('Folder berhasil dibuat!', 'success');
+                } else {
+                    errorDiv.textContent = data.message || 'Gagal membuat folder';
+                    errorDiv.classList.remove('hidden');
+                }
+            } catch (error) {
+                errorDiv.textContent = 'Terjadi kesalahan saat membuat folder';
+                errorDiv.classList.remove('hidden');
+                console.error('Error creating folder:', error);
+            }
+        });
+
+        modal.querySelector('.folder-cancel-btn').addEventListener('click', () => modal.remove());
+
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') createBtn.click();
+        });
+    }
+
+    showArchiveConfirmation(id, type) {
+        alert(`Archive ${type} ${id} - To be implemented`);
+    }
+
+    showMoveToFolderModal(materialId) {
+        if (this.folders.length === 0) {
+            this.showNotification('Belum ada folder. Buat folder terlebih dahulu.', 'error');
+            return;
+        }
+
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50';
+        
+        const folderOptions = this.folders.map(f => 
+            `<option value="${f.id}">${f.name}</option>`
+        ).join('');
+
+        modal.innerHTML = `
+            <div class="modal-content bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden animate-slide-up">
+                <div class="bg-gradient-to-br from-purple-500 to-purple-700 px-8 py-6 text-white">
+                    <h3 class="text-xl font-black">Pindah ke Folder</h3>
+                    <p class="text-purple-100 text-sm mt-1">Pilih folder tujuan</p>
+                </div>
+                <div class="p-6">
+                    <select id="folder-select" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-purple-500 outline-none font-bold bg-white">
+                        <option value="">-- Pilih Folder --</option>
+                        ${folderOptions}
+                    </select>
+                    <div id="move-modal-error" class="hidden p-4 bg-red-50 text-red-600 rounded-2xl text-xs font-bold text-center mt-4"></div>
+                </div>
+                <div class="px-6 pb-6 flex space-x-3">
+                    <button class="move-cancel-btn flex-1 px-6 py-4 text-gray-500 bg-gray-100 rounded-2xl font-bold hover:bg-gray-200 transition-all">Batal</button>
+                    <button class="move-confirm-btn flex-[2] px-6 py-4 bg-purple-600 text-white rounded-2xl font-bold shadow-lg shadow-purple-200 hover:bg-purple-700 active:scale-95">Pindah</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        const confirmBtn = modal.querySelector('.move-confirm-btn');
+        confirmBtn.addEventListener('click', async () => {
+            const folderId = modal.querySelector('#folder-select').value;
+            const errorDiv = modal.querySelector('#move-modal-error');
+
+            if (!folderId) {
+                errorDiv.textContent = 'Pilih folder tujuan';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            await this.moveMaterialToFolder(materialId, parseInt(folderId));
+            modal.remove();
+        });
+
+        modal.querySelector('.move-cancel-btn').addEventListener('click', () => modal.remove());
+    }
+
+    showRenameFolderModal(folderId, currentName) {
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50';
+        modal.innerHTML = `
+            <div class="modal-content bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden animate-slide-up">
+                <div class="bg-gradient-to-br from-purple-500 to-purple-700 px-8 py-6 text-white">
+                    <h3 class="text-xl font-black">Ganti Nama Folder</h3>
+                    <p class="text-purple-100 text-sm mt-1">Masukkan nama baru</p>
+                </div>
+                <div class="p-6">
+                    <input type="text" id="folder-rename-input" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-purple-500 outline-none font-bold" value="${currentName}" autofocus>
+                    <div id="rename-modal-error" class="hidden p-4 bg-red-50 text-red-600 rounded-2xl text-xs font-bold text-center mt-4"></div>
+                </div>
+                <div class="px-6 pb-6 flex space-x-3">
+                    <button class="rename-cancel-btn flex-1 px-6 py-4 text-gray-500 bg-gray-100 rounded-2xl font-bold hover:bg-gray-200 transition-all">Batal</button>
+                    <button class="rename-confirm-btn flex-[2] px-6 py-4 bg-purple-600 text-white rounded-2xl font-bold shadow-lg shadow-purple-200 hover:bg-purple-700 active:scale-95">Simpan</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        const confirmBtn = modal.querySelector('.rename-confirm-btn');
+        confirmBtn.addEventListener('click', async () => {
+            const newName = modal.querySelector('#folder-rename-input').value.trim();
+            const errorDiv = modal.querySelector('#rename-modal-error');
+
+            if (!newName) {
+                errorDiv.textContent = 'Nama folder tidak boleh kosong';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/folders/${folderId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: newName })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    modal.remove();
+                    const folder = this.folders.find(f => f.id === folderId);
+                    if (folder) folder.name = newName;
+                    this.render();
+                    this.attachEventListeners();
+                    this.showNotification('Nama folder berhasil diubah', 'success');
+                } else {
+                    errorDiv.textContent = data.message || 'Gagal mengubah nama folder';
+                    errorDiv.classList.remove('hidden');
+                }
+            } catch (error) {
+                errorDiv.textContent = 'Terjadi kesalahan';
+                errorDiv.classList.remove('hidden');
+                console.error('Error renaming folder:', error);
+            }
+        });
+
+        modal.querySelector('.rename-cancel-btn').addEventListener('click', () => modal.remove());
+    }
+
+    async deleteMaterial(type, id) {
+        try {
+            const response = await fetch(`/${type}s/${id}`, { method: 'DELETE' });
+            const data = await response.json();
+
+            if (data.success) {
+                this.refresh();
+                this.showNotification('Materi berhasil dihapus', 'success');
+            } else {
+                this.showNotification(data.message || 'Gagal menghapus materi', 'error');
+            }
+        } catch (error) {
+            console.error('Error deleting material:', error);
+            this.showNotification('Terjadi kesalahan', 'error');
+        }
+    }
+
+    async deleteFolder(folderId) {
+        try {
+            const response = await fetch(`/api/folders/${folderId}`, { method: 'DELETE' });
+            const data = await response.json();
+
+            if (data.success) {
+                this.folders = this.folders.filter(f => f.id !== folderId);
+                this.expandedFolders.delete(folderId);
+                this.render();
+                this.attachEventListeners();
+                this.showNotification('Folder berhasil dihapus', 'success');
+            } else {
+                this.showNotification(data.message || 'Gagal menghapus folder', 'error');
+            }
+        } catch (error) {
+            console.error('Error deleting folder:', error);
+            this.showNotification('Terjadi kesalahan', 'error');
+        }
+    }
 
     refresh() {
         this.loadAllData().then(() => {
