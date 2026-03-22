@@ -826,7 +826,7 @@ class MaterialsList {
                             </div>
                         </button>
                     </div>
-                    
+
                     <!-- Materials Section -->
                     <div>
                         <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 px-2">Materi & Tugas</p>
@@ -871,45 +871,79 @@ class MaterialsList {
                     </div>
                 </div>
                 <div class="px-6 pb-6">
-                    <button class="btn btn-secondary w-full px-5 py-3.5 bg-gray-100 text-gray-700 rounded-2xl font-bold hover:bg-gray-200 transition-all">Batal</button>
+                    <button class="btn btn-secondary w-full px-5 py-3.5 bg-gray-100 text-gray-700 rounded-2xl font-bold hover:bg-gray-200 transition-all cancel-add-material">Batal</button>
                 </div>
             </div>
         `;
 
         document.body.appendChild(modal);
 
+        // Cancel button
+        modal.querySelector('.cancel-add-material').addEventListener('click', (e) => {
+            e.stopPropagation();
+            modal.remove();
+        });
+
         // Add folder button
         modal.querySelector('.add-folder').addEventListener('click', (e) => {
-            e.preventDefault();
+            e.stopPropagation();
             modal.remove();
             this.showCreateFolderModal();
         });
 
+        // Add quiz button - trigger the quiz creation from course_detail.html
         modal.querySelector('.add-quiz').addEventListener('click', (e) => {
-            e.preventDefault();
+            e.stopPropagation();
             modal.remove();
-            document.getElementById('show-create-quiz-modal')?.click();
+            // Create quiz via API
+            this.createQuickQuiz();
         });
 
+        // Add assignment button
         modal.querySelector('.add-assignment').addEventListener('click', (e) => {
-            e.preventDefault();
+            e.stopPropagation();
             modal.remove();
-            document.getElementById('show-create-assignment-modal')?.click();
+            // Show assignment modal
+            const assignmentModal = document.getElementById('create-assignment-modal');
+            if (assignmentModal) {
+                assignmentModal.classList.remove('hidden');
+            }
         });
 
+        // Add file button
         modal.querySelector('.add-file').addEventListener('click', (e) => {
-            e.preventDefault();
+            e.stopPropagation();
             modal.remove();
-            document.getElementById('show-create-file-modal')?.click();
+            // Show file modal
+            const fileModal = document.getElementById('create-file-modal');
+            if (fileModal) {
+                fileModal.classList.remove('hidden');
+            }
         });
 
+        // Add link button
         modal.querySelector('.add-link').addEventListener('click', (e) => {
-            e.preventDefault();
+            e.stopPropagation();
             modal.remove();
-            document.getElementById('show-create-link-modal')?.click();
+            // Show link modal
+            const linkModal = document.getElementById('create-link-modal');
+            if (linkModal) {
+                linkModal.classList.remove('hidden');
+            }
         });
 
-        modal.querySelector('.btn-secondary').addEventListener('click', () => modal.remove());
+        // Close on overlay click
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        });
+    }
+
+    createQuickQuiz() {
+        // Navigate to quiz creation or trigger existing quiz modal
+        const courseId = this.courseId;
+        window.location.href = `/course/${courseId}/quiz/new`;
     }
 
     showCreateFolderModal() {
