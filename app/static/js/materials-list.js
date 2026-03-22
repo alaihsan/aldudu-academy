@@ -941,9 +941,81 @@ class MaterialsList {
     }
 
     createQuickQuiz() {
-        // Navigate to quiz creation or trigger existing quiz modal
-        const courseId = this.courseId;
-        window.location.href = `/course/${courseId}/quiz/new`;
+        // Create a simple quiz creation modal
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50';
+        modal.innerHTML = `
+            <div class="modal-content bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden animate-slide-up">
+                <div class="bg-gradient-to-br from-amber-500 to-amber-700 px-8 py-6 text-white">
+                    <h3 class="text-xl font-black">Buat Kuis Baru</h3>
+                    <p class="text-amber-100 text-sm mt-1">Buat kuis interaktif untuk siswa</p>
+                </div>
+                <div class="p-6">
+                    <div class="mb-4">
+                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Nama Kuis</label>
+                        <input type="text" id="quiz-name-input" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-amber-500 outline-none font-bold" placeholder="Contoh: Kuis Bab 1, UTS, ..." autofocus>
+                    </div>
+                    <div id="quiz-modal-error" class="hidden p-4 bg-red-50 text-red-600 rounded-2xl text-xs font-bold text-center mb-4"></div>
+                </div>
+                <div class="px-6 pb-6 flex space-x-3">
+                    <button class="quiz-cancel-btn flex-1 px-6 py-4 text-gray-500 bg-gray-100 rounded-2xl font-bold hover:bg-gray-200 transition-all">Batal</button>
+                    <button class="quiz-create-btn flex-[2] px-6 py-4 bg-amber-600 text-white rounded-2xl font-bold shadow-lg shadow-amber-200 hover:bg-amber-700 active:scale-95">Buat Kuis</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        const input = modal.querySelector('#quiz-name-input');
+        input.focus();
+
+        const createBtn = modal.querySelector('.quiz-create-btn');
+        createBtn.addEventListener('click', async () => {
+            const name = input.value.trim();
+            const errorDiv = modal.querySelector('#quiz-modal-error');
+
+            if (!name) {
+                errorDiv.textContent = 'Nama kuis wajib diisi';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                // Create quiz via API
+                const response = await fetch(`/api/courses/${this.courseId}/quizzes`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        name: name,
+                        is_quiz: true
+                    })
+                });
+                const data = await response.json();
+
+                if (data.success && data.quiz_id) {
+                    modal.remove();
+                    // Redirect to quiz editor
+                    window.open(`/quiz/${data.quiz_id}`, '_blank');
+                    // Refresh materials list
+                    this.refresh();
+                    // Show success notification
+                    this.showNotification('Kuis berhasil dibuat!', 'success');
+                } else {
+                    errorDiv.textContent = data.message || 'Gagal membuat kuis';
+                    errorDiv.classList.remove('hidden');
+                }
+            } catch (error) {
+                errorDiv.textContent = 'Terjadi kesalahan saat membuat kuis';
+                errorDiv.classList.remove('hidden');
+                console.error('Error creating quiz:', error);
+            }
+        });
+
+        modal.querySelector('.quiz-cancel-btn').addEventListener('click', () => modal.remove());
+
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') createBtn.click();
+        });
     }
 
     showCreateFolderModal() {
@@ -978,7 +1050,7 @@ class MaterialsList {
         createBtn.addEventListener('click', async () => {
             const name = input.value.trim();
             const errorDiv = modal.querySelector('#folder-modal-error');
-            
+
             if (!name) {
                 errorDiv.textContent = 'Nama folder wajib diisi';
                 errorDiv.classList.remove('hidden');
@@ -986,17 +1058,19 @@ class MaterialsList {
             }
 
             try {
-                const response = await fetch(`/courses/${this.courseId}/folders`, {
+                const response = await fetch(`/api/courses/${this.courseId}/folders`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name })
                 });
                 const data = await response.json();
-                
+
                 if (data.success) {
                     modal.remove();
-                    // Show success feedback
-                    alert('Folder berhasil dibuat!');
+                    // Refresh materials list to show new folder
+                    this.refresh();
+                    // Show success notification
+                    this.showNotification('Folder berhasil dibuat!', 'success');
                 } else {
                     errorDiv.textContent = data.message || 'Gagal membuat folder';
                     errorDiv.classList.remove('hidden');
