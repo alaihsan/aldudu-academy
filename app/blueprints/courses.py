@@ -1103,3 +1103,41 @@ def api_move_folder(folder_id):
     log_activity(current_user.id, f"Moved folder {folder_id} to parent {new_parent_id}")
 
     return jsonify({'success': True})
+
+
+@courses_bp.route('/api/link/<int:link_id>/archive', methods=['POST'])
+@login_required
+def api_archive_link(link_id):
+    """Archive a link"""
+    link = Link.query.get_or_404(link_id)
+    course = Course.query.get(link.course_id)
+    
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(course, school_id)
+    
+    if course.teacher_id != current_user.id:
+        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+    
+    link.is_archived = True
+    db.session.commit()
+    
+    return jsonify({'success': True, 'message': 'Link berhasil diarsipkan'})
+
+
+@courses_bp.route('/api/link/<int:link_id>/restore', methods=['POST'])
+@login_required
+def api_restore_link(link_id):
+    """Restore an archived link"""
+    link = Link.query.get_or_404(link_id)
+    course = Course.query.get(link.course_id)
+    
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(course, school_id)
+    
+    if course.teacher_id != current_user.id:
+        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+    
+    link.is_archived = False
+    db.session.commit()
+    
+    return jsonify({'success': True, 'message': 'Link berhasil dipulihkan'})

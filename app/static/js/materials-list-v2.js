@@ -469,7 +469,7 @@ class MaterialsList {
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                             </svg>
                         </button>
-                        ${material.type === 'quiz' ? `
+                        ${['quiz', 'assignment', 'file', 'link'].includes(material.type) ? `
                         <button class="btn-archive-material p-2 text-gray-500 hover:text-amber-600 hover:bg-amber-50 rounded-lg" title="Arsipkan">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
@@ -874,7 +874,16 @@ class MaterialsList {
                 e.stopPropagation();
                 const item = btn.closest('.material-item');
                 const id = item.dataset.materialId;
-                this.showArchiveConfirmation(parseInt(id), 'Kuis');
+                const type = item.dataset.materialType;
+                
+                const typeNames = {
+                    quiz: 'Kuis',
+                    assignment: 'Tugas',
+                    file: 'Berkas',
+                    link: 'Link'
+                };
+                
+                this.showArchiveConfirmation(parseInt(id), typeNames[type] || type);
             });
         });
 
@@ -1213,8 +1222,163 @@ class MaterialsList {
         });
     }
 
-    showArchiveConfirmation(id, type) {
-        alert(`Archive ${type} ${id} - To be implemented`);
+    showArchiveConfirmation(id, typeName) {
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50';
+        modal.innerHTML = `
+            <div class="modal-content bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden animate-slide-up">
+                <div class="bg-gradient-to-br from-amber-500 to-amber-700 px-8 py-6 text-white">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-black">Arsipkan ${typeName}</h3>
+                            <p class="text-amber-100 text-sm mt-0.5">Pindahkan ke arsip kelas</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-8">
+                    <p class="text-gray-700 font-bold mb-4">
+                        Arsipkan ${typeName} ini?
+                    </p>
+                    <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5 mb-6">
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <div>
+                                <p class="text-sm font-bold text-amber-900 mb-2">${typeName} yang diarsipkan:</p>
+                                <ul class="text-xs text-amber-700 space-y-1.5">
+                                    <li>• Tetap tersimpan di menu <strong>Arsip</strong></li>
+                                    <li>• Tidak ditampilkan di daftar materi</li>
+                                    <li>• Data <strong>tetap tersimpan</strong></li>
+                                    <li>• Dapat dipulihkan kapan saja</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex gap-3">
+                        <button class="cancel-archive flex-1 px-5 py-3.5 bg-gray-100 text-gray-700 rounded-2xl font-bold hover:bg-gray-200 transition-all">
+                            Batal
+                        </button>
+                        <button class="confirm-archive flex-1 px-5 py-3.5 bg-amber-600 text-white rounded-2xl font-bold hover:bg-amber-700 transition-all shadow-lg shadow-amber-200">
+                            Arsipkan
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        const item = this.container.querySelector(`[data-material-id="${id}"]`);
+        const type = item?.dataset.materialType;
+
+        modal.querySelector('.cancel-archive').addEventListener('click', () => {
+            modal.remove();
+        });
+
+        modal.querySelector('.confirm-archive').addEventListener('click', async () => {
+            if (type === 'quiz') {
+                await this.archiveQuiz(id);
+            } else if (type === 'assignment') {
+                await this.archiveAssignment(id);
+            } else if (type === 'file') {
+                await this.archiveFile(id);
+            } else if (type === 'link') {
+                await this.archiveLink(id);
+            }
+            modal.remove();
+        });
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        });
+    }
+
+    async archiveQuiz(quizId) {
+        try {
+            const response = await fetch(`/api/quiz/${quizId}/archive`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await response.json();
+            
+            if (data.success) {
+                this.refresh();
+                this.showNotification('Kuis berhasil diarsipkan', 'success');
+            } else {
+                this.showNotification(data.message || 'Gagal mengarsipkan kuis', 'error');
+            }
+        } catch (error) {
+            console.error('Error archiving quiz:', error);
+            this.showNotification('Terjadi kesalahan', 'error');
+        }
+    }
+
+    async archiveAssignment(assignmentId) {
+        try {
+            const response = await fetch(`/api/assignment/${assignmentId}/archive`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await response.json();
+            
+            if (data.success) {
+                this.refresh();
+                this.showNotification('Tugas berhasil diarsipkan', 'success');
+            } else {
+                this.showNotification(data.message || 'Gagal mengarsipkan tugas', 'error');
+            }
+        } catch (error) {
+            console.error('Error archiving assignment:', error);
+            this.showNotification('Terjadi kesalahan', 'error');
+        }
+    }
+
+    async archiveFile(fileId) {
+        try {
+            const response = await fetch(`/api/file/${fileId}/archive`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await response.json();
+            
+            if (data.success) {
+                this.refresh();
+                this.showNotification('Berkas berhasil diarsipkan', 'success');
+            } else {
+                this.showNotification(data.message || 'Gagal mengarsipkan berkas', 'error');
+            }
+        } catch (error) {
+            console.error('Error archiving file:', error);
+            this.showNotification('Terjadi kesalahan', 'error');
+        }
+    }
+
+    async archiveLink(linkId) {
+        try {
+            const response = await fetch(`/api/link/${linkId}/archive`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await response.json();
+            
+            if (data.success) {
+                this.refresh();
+                this.showNotification('Link berhasil diarsipkan', 'success');
+            } else {
+                this.showNotification(data.message || 'Gagal mengarsipkan link', 'error');
+            }
+        } catch (error) {
+            console.error('Error archiving link:', error);
+            this.showNotification('Terjadi kesalahan', 'error');
+        }
     }
 
     showMoveToFolderModal(materialId) {

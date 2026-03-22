@@ -143,6 +143,9 @@ class Link(db.Model):
     folder_id: Mapped[Optional[int]] = mapped_column(db.Integer, db.ForeignKey('content_folders.id'), nullable=True, index=True)
     order: Mapped[int] = mapped_column(db.Integer, default=0, nullable=False)
 
+    # Archive status
+    is_archived: Mapped[bool] = mapped_column(db.Boolean, default=False, nullable=False, index=True)
+
     created_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=get_jakarta_now)
 
     course: Mapped[Course] = relationship('Course', back_populates='links')
