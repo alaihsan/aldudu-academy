@@ -452,6 +452,37 @@ def api_restore_file(file_id):
     return jsonify({'success': True, 'message': 'File berhasil dipulihkan'})
 
 
+@main_bp.route('/api/course/<int:course_id>/theme', methods=['PUT'])
+@login_required
+def api_update_course_theme(course_id):
+    """API endpoint untuk update warna tema kelas"""
+    from flask import jsonify, request
+    from app.models import Course
+
+    course = db.session.get(Course, course_id)
+    if not course:
+        return jsonify({'success': False, 'message': 'Kelas tidak ditemukan'}), 404
+
+    if course.teacher_id != current_user.id:
+        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
+
+    data = request.get_json()
+    color = data.get('color')
+
+    if not color:
+        return jsonify({'success': False, 'message': 'Warna tidak valid'}), 400
+
+    # Validate hex color format
+    import re
+    if not re.match(r'^#[0-9A-Fa-f]{6}$', color):
+        return jsonify({'success': False, 'message': 'Format warna tidak valid'}), 400
+
+    course.color = color
+    db.session.commit()
+
+    return jsonify({'success': True, 'message': 'Warna tema berhasil diubah'})
+
+
 @main_bp.route('/kelas/<int:course_id>/arsip')
 @login_required
 def course_archives(course_id):

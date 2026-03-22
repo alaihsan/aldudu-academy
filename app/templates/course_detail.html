@@ -12,6 +12,59 @@
         --course-theme-dark: {{ course.color }}cc;
         --course-theme-gradient: linear-gradient(135deg, {{ course.color }}, {{ course.color }}cc);
     }
+    
+    /* Apply theme color to buttons and links */
+    .btn-theme, button.bg-primary-600, a.bg-primary-600 {
+        background-color: var(--course-theme) !important;
+    }
+    .btn-theme:hover, button.bg-primary-600:hover, a.bg-primary-600:hover {
+        background-color: var(--course-theme-dark) !important;
+    }
+    
+    /* Theme color for text and icons */
+    .text-theme, .text-primary-600 {
+        color: var(--course-theme) !important;
+    }
+    
+    /* Theme color for backgrounds */
+    .bg-theme, .bg-primary-50 {
+        background-color: var(--course-theme-light) !important;
+    }
+    
+    /* Theme color for borders */
+    .border-theme, .border-primary-200 {
+        border-color: var(--course-theme) !important;
+    }
+    
+    /* Theme color for ring/focus states */
+    .focus\:ring-primary-500:focus, .focus\:border-primary-500:focus {
+        --tw-ring-color: var(--course-theme);
+        border-color: var(--course-theme);
+    }
+    
+    /* Gradient backgrounds */
+    .bg-gradient-theme {
+        background: var(--course-theme-gradient) !important;
+    }
+    
+    /* Hover states with theme */
+    .hover\:bg-primary-50:hover {
+        background-color: var(--course-theme-light) !important;
+    }
+    .hover\:text-primary-600:hover {
+        color: var(--course-theme) !important;
+    }
+    .hover\:bg-primary-600:hover {
+        background-color: var(--course-theme-dark) !important;
+    }
+    
+    /* Shadow with theme */
+    .shadow-theme {
+        box-shadow: 0 4px 14px -2px var(--course-theme-light) !important;
+    }
+    .shadow-theme-lg {
+        box-shadow: 0 10px 25px -5px var(--course-theme-light) !important;
+    }
 </style>
 {% endblock %}
 
@@ -60,6 +113,14 @@
             </div>
 
             <div class="flex items-center space-x-3">
+                {% if is_teacher %}
+                <!-- Theme Color Picker Button -->
+                <button onclick="openColorPicker()" class="p-2 text-gray-500 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-all" title="Ganti Warna Tema">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
+                    </svg>
+                </button>
+                {% endif %}
                 <a href="{{ url_for('main.issues') }}" class="p-2 text-primary-600 hover:bg-primary-50 rounded-lg transition-colors" title="Manajemen Masalah">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
@@ -78,7 +139,7 @@
                 <div class="max-w-6xl mx-auto space-y-10 animate-fade-in mb-8">
                 
                 <!-- Hero Section -->
-                <div class="relative rounded-[3rem] overflow-hidden shadow-2xl shadow-primary-100 h-64 flex items-center px-12 group" style="background-color: {{ course.color }}">
+                <div class="hero-section relative rounded-[3rem] overflow-hidden shadow-2xl shadow-primary-100 h-64 flex items-center px-12 group" style="background-color: {{ course.color }}">
                     <!-- Decor -->
                     <div class="absolute inset-0 opacity-20 group-hover:scale-110 transition-transform duration-1000">
                         <svg class="w-full h-full" fill="currentColor" viewBox="0 0 100 100" preserveAspectRatio="none">
@@ -746,5 +807,114 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+// Color Picker Functions
+function openColorPicker() {
+    document.getElementById('color-picker-modal').classList.remove('hidden');
+}
+
+function closeColorPicker() {
+    document.getElementById('color-picker-modal').classList.add('hidden');
+}
+
+function selectColor(color) {
+    const courseId = {{ course.id }};
+    
+    // Update CSS variables immediately for preview
+    document.documentElement.style.setProperty('--course-theme', color);
+    document.documentElement.style.setProperty('--course-theme-light', color + '15');
+    document.documentElement.style.setProperty('--course-theme-dark', color + 'cc');
+    document.documentElement.style.setProperty('--course-theme-gradient', `linear-gradient(135deg, ${color}, ${color}cc)`);
+    
+    // Update hero section background
+    const heroSection = document.querySelector('.hero-section');
+    if (heroSection) {
+        heroSection.style.backgroundColor = color;
+    }
+    
+    // Save to database
+    fetch(`/api/course/${courseId}/theme`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ color: color })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            // Show success notification
+            const notification = document.createElement('div');
+            notification.className = 'fixed bottom-6 right-6 px-6 py-4 bg-green-600 text-white rounded-2xl shadow-2xl z-[100] animate-slide-up flex items-center gap-3';
+            notification.innerHTML = `
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                <span class="font-bold text-sm">Warna tema berhasil diubah!</span>
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transition = 'opacity 0.3s';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+            
+            closeColorPicker();
+        } else {
+            alert('Gagal mengubah warna tema');
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert('Terjadi kesalahan');
+    });
+}
 </script>
+
+<!-- Color Picker Modal -->
+<div id="color-picker-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden animate-slide-up">
+        <div class="bg-gradient-to-br from-primary-500 to-primary-700 px-8 py-6 text-white">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-black">Ganti Warna Tema</h3>
+                        <p class="text-primary-100 text-sm mt-0.5">Pilih warna untuk kelas Anda</p>
+                    </div>
+                </div>
+                <button onclick="closeColorPicker()" class="text-white/80 hover:text-white transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div class="p-8">
+            <p class="text-gray-700 font-bold mb-6">Pilih warna favoritmu:</p>
+            
+            <!-- Color Grid -->
+            <div class="grid grid-cols-5 gap-3 mb-6">
+                <button onclick="selectColor('#2563eb')" class="color-btn w-14 h-14 rounded-2xl shadow-lg hover:scale-110 transition-transform ring-2 ring-offset-2 hover:ring-blue-500" style="background-color: #2563eb;" title="Biru"></button>
+                <button onclick="selectColor('#059669')" class="color-btn w-14 h-14 rounded-2xl shadow-lg hover:scale-110 transition-transform ring-2 ring-offset-2 hover:ring-green-500" style="background-color: #059669;" title="Hijau"></button>
+                <button onclick="selectColor('#0282c6')" class="color-btn w-14 h-14 rounded-2xl shadow-lg hover:scale-110 transition-transform ring-2 ring-offset-2 hover:ring-cyan-500" style="background-color: #0282c6;" title="Cyan"></button>
+                <button onclick="selectColor('#7c3aed')" class="color-btn w-14 h-14 rounded-2xl shadow-lg hover:scale-110 transition-transform ring-2 ring-offset-2 hover:ring-purple-500" style="background-color: #7c3aed;" title="Ungu"></button>
+                <button onclick="selectColor('#db2777')" class="color-btn w-14 h-14 rounded-2xl shadow-lg hover:scale-110 transition-transform ring-2 ring-offset-2 hover:ring-pink-500" style="background-color: #db2777;" title="Pink"></button>
+                <button onclick="selectColor('#dc2626')" class="color-btn w-14 h-14 rounded-2xl shadow-lg hover:scale-110 transition-transform ring-2 ring-offset-2 hover:ring-red-500" style="background-color: #dc2626;" title="Merah"></button>
+                <button onclick="selectColor('#ea580c')" class="color-btn w-14 h-14 rounded-2xl shadow-lg hover:scale-110 transition-transform ring-2 ring-offset-2 hover:ring-orange-500" style="background-color: #ea580c;" title="Orange"></button>
+                <button onclick="selectColor('#65a30d')" class="color-btn w-14 h-14 rounded-2xl shadow-lg hover:scale-110 transition-transform ring-2 ring-offset-2 hover:ring-lime-500" style="background-color: #65a30d;" title="Lime"></button>
+                <button onclick="selectColor('#0891b2')" class="color-btn w-14 h-14 rounded-2xl shadow-lg hover:scale-110 transition-transform ring-2 ring-offset-2 hover:ring-teal-500" style="background-color: #0891b2;" title="Teal"></button>
+                <button onclick="selectColor('#4f46e5')" class="color-btn w-14 h-14 rounded-2xl shadow-lg hover:scale-110 transition-transform ring-2 ring-offset-2 hover:ring-indigo-500" style="background-color: #4f46e5;" title="Indigo"></button>
+            </div>
+            
+            <div class="flex gap-3">
+                <button onclick="closeColorPicker()" class="flex-1 px-5 py-3.5 bg-gray-100 text-gray-700 rounded-2xl font-bold hover:bg-gray-200 transition-all">
+                    Batal
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
