@@ -70,12 +70,15 @@
                         <button onclick="switchTab('file')" class="archive-tab px-5 py-3 text-sm font-bold border-b-2 border-transparent text-gray-500 hover:text-gray-700" data-tab="file">
                             📎 File
                         </button>
+                        <button onclick="switchTab('link')" class="archive-tab px-5 py-3 text-sm font-bold border-b-2 border-transparent text-gray-500 hover:text-gray-700" data-tab="link">
+                            🔗 Link
+                        </button>
                     </div>
                 </div>
 
                 <!-- Archives List -->
                 <div class="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
-                    {% set has_archives = archived_quizzes or archived_assignments or archived_files %}
+                    {% set has_archives = archived_quizzes or archived_assignments or archived_files or archived_links %}
                     
                     {% if has_archives %}
                     <div class="divide-y divide-gray-100">
@@ -241,6 +244,53 @@
                             </div>
                         </div>
                         {% endfor %}
+                        
+                        <!-- Links -->
+                        {% for link in archived_links %}
+                        <div class="group p-6 hover:bg-amber-50/50 transition-all archive-item" data-type="link">
+                            <div class="flex items-center gap-4">
+                                <!-- Icon -->
+                                <div class="w-14 h-14 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0">
+                                    🔗
+                                </div>
+
+                                <!-- Info -->
+                                <div class="flex-1 min-w-0">
+                                    <h3 class="text-lg font-bold text-gray-900 truncate">{{ link.name }}</h3>
+                                    <div class="flex items-center gap-4 mt-2 text-sm text-gray-500 flex-wrap">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 bg-indigo-100 text-indigo-700 rounded-full text-[10px] font-black uppercase tracking-wider">
+                                            🔗 Link
+                                        </span>
+                                        <span class="flex items-center gap-1.5">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            Diarsipkan: {{ link.updated_at.strftime('%d %B %Y, %H:%M') }}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Actions -->
+                                <div class="flex items-center gap-2">
+                                    <a href="{{ link.url }}" target="_blank" class="p-2.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all" title="Buka Link">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                                        </svg>
+                                    </a>
+                                    <button onclick="restoreLink('{{ link.id }}', '{{ link.name }}')" class="p-2.5 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-xl transition-all" title="Pulihkan">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                        </svg>
+                                    </button>
+                                    <button onclick="deleteArchivedLink('{{ link.id }}', '{{ link.name }}')" class="p-2.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all" title="Hapus Permanen">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
                     </div>
                     {% else %}
                     <div class="py-16 text-center">
@@ -250,7 +300,7 @@
                             </svg>
                         </div>
                         <h3 class="text-xl font-bold text-gray-900 mb-2">Belum ada arsip</h3>
-                        <p class="text-gray-500 mb-6 max-w-md mx-auto">Kuis, tugas, atau file yang diarsipkan akan muncul di sini.</p>
+                        <p class="text-gray-500 mb-6 max-w-md mx-auto">Kuis, tugas, berkas, atau link yang diarsipkan akan muncul di sini.</p>
                         <a href="{{ url_for('main.course_detail', course_id=course.id) }}" class="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 text-white rounded-xl font-bold hover:bg-primary-700 transition-all">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
@@ -360,7 +410,8 @@ function performRestore() {
                     icon: 'success',
                     title: 'Berhasil!',
                     text: itemToRestore.type === 'quiz' ? 'Kuis berhasil dipulihkan.' : 
-                          itemToRestore.type === 'assignment' ? 'Tugas berhasil dipulihkan.' : 'File berhasil dipulihkan.',
+                          itemToRestore.type === 'assignment' ? 'Tugas berhasil dipulihkan.' :
+                          itemToRestore.type === 'file' ? 'Berkas berhasil dipulihkan.' : 'Link berhasil dipulihkan.',
                     confirmButtonColor: '#22c55e',
                     customClass: { popup: 'rounded-3xl' }
                 }).then(() => {
@@ -398,6 +449,14 @@ function deleteArchivedAssignment(assignmentId, assignmentName) {
 
 function deleteArchivedFile(fileId, fileName) {
     showDeleteModal(fileId, fileName, 'file');
+}
+
+function restoreLink(linkId, linkName) {
+    showRestoreModal(linkId, linkName, 'link');
+}
+
+function deleteArchivedLink(linkId, linkName) {
+    showDeleteModal(linkId, linkName, 'link');
 }
 
 let itemToDelete = null;

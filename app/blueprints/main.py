@@ -487,7 +487,7 @@ def api_update_course_theme(course_id):
 @login_required
 def course_archives(course_id):
     """Halaman arsip untuk kelas - menampilkan kuis, tugas, dan file yang diarsipkan"""
-    from app.models import Course, Quiz, Assignment, File
+    from app.models import Course, Quiz, Assignment, File, Link
 
     course = db.session.get(Course, course_id)
     if course is None:
@@ -504,10 +504,12 @@ def course_archives(course_id):
     archived_quizzes = Quiz.query.filter_by(course_id=course.id, is_archived=True).order_by(Quiz.updated_at.desc()).all()
     archived_assignments = Assignment.query.filter_by(course_id=course.id, status=AssignmentStatus.ARCHIVED).order_by(Assignment.updated_at.desc()).all()
     archived_files = File.query.filter_by(course_id=course.id, is_archived=True).order_by(File.updated_at.desc()).all()
+    archived_links = Link.query.filter_by(course_id=course.id, is_archived=True).order_by(Link.updated_at.desc()).all()
 
-    return render_template('course_archives.html', 
-                          course=course, 
-                          archived_quizzes=archived_quizzes, 
+    return render_template('course_archives.html',
+                          course=course,
+                          archived_quizzes=archived_quizzes,
                           archived_assignments=archived_assignments,
                           archived_files=archived_files,
+                          archived_links=archived_links,
                           is_teacher=is_teacher)
