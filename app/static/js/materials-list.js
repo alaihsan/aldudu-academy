@@ -992,14 +992,14 @@ class MaterialsList {
                 });
                 const data = await response.json();
 
-                if (data.success && data.quiz_id) {
+                if (data.success && data.quiz && data.quiz.id) {
                     modal.remove();
-                    // Redirect to quiz editor
-                    window.open(`/quiz/${data.quiz_id}`, '_blank');
-                    // Refresh materials list
-                    this.refresh();
                     // Show success notification
-                    this.showNotification('Kuis berhasil dibuat!', 'success');
+                    this.showNotification('Kuis berhasil dibuat! Membuka editor...', 'success');
+                    // Redirect to quiz editor in same tab
+                    setTimeout(() => {
+                        window.location.href = `/quiz/${data.quiz.id}`;
+                    }, 500);
                 } else {
                     errorDiv.textContent = data.message || 'Gagal membuat kuis';
                     errorDiv.classList.remove('hidden');
@@ -1067,8 +1067,11 @@ class MaterialsList {
 
                 if (data.success) {
                     modal.remove();
-                    // Refresh materials list to show new folder
-                    this.refresh();
+                    // Refresh materials list to show new folder immediately
+                    this.loadMaterials().then(() => {
+                        this.render();
+                        this.attachEventListeners();
+                    });
                     // Show success notification
                     this.showNotification('Folder berhasil dibuat!', 'success');
                 } else {
