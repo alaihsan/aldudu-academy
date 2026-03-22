@@ -1,0 +1,315 @@
+{% extends "superadmin/base.html" %}
+{% block title %}Kelola Admin — Super Admin{% endblock %}
+{% block page_title %}Kelola Admin{% endblock %}
+{% block page_subtitle %}Daftar Admin & Super Admin{% endblock %}
+
+{% block content %}
+<!-- Filter Tabs -->
+<div class="flex items-center gap-2 mb-5">
+    <button class="sa-tab active" data-role="all">Semua</button>
+    <button class="sa-tab" data-role="super_admin">Super Admin</button>
+    <button class="sa-tab" data-role="admin">Admin Sekolah</button>
+</div>
+
+<!-- Admin List -->
+<div class="sa-card">
+    <div class="p-5 border-b border-slate-100">
+        <div class="flex items-center justify-between">
+            <div>
+                <h3 class="text-sm font-black text-slate-900">Daftar Admin</h3>
+                <p class="text-xs text-slate-400 mt-0.5">Kelola akses admin dan super admin</p>
+            </div>
+            <div class="text-right">
+                <p class="text-2xl font-black text-indigo-600" id="total-admins">0</p>
+                <p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Total Admin</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="w-full">
+            <thead class="bg-slate-50">
+                <tr>
+                    <th class="text-left text-[10px] font-black text-slate-400 uppercase tracking-widest px-5 py-3">Admin</th>
+                    <th class="text-left text-[10px] font-black text-slate-400 uppercase tracking-widest px-5 py-3">Role</th>
+                    <th class="text-left text-[10px] font-black text-slate-400 uppercase tracking-widest px-5 py-3">Sekolah</th>
+                    <th class="text-left text-[10px] font-black text-slate-400 uppercase tracking-widest px-5 py-3">Status</th>
+                    <th class="text-left text-[10px] font-black text-slate-400 uppercase tracking-widest px-5 py-3">Dibuat</th>
+                    <th class="text-center text-[10px] font-black text-slate-400 uppercase tracking-widest px-5 py-3">Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="admin-table-body" class="divide-y divide-slate-100">
+                <!-- Populated by JS -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Empty state -->
+    <div id="empty-state" class="hidden py-12 text-center">
+        <svg class="w-12 h-12 text-slate-200 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+        <p class="text-sm text-slate-400 font-semibold">Tidak ada admin ditemukan</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    let currentRoleFilter = 'all';
+    let allAdmins = [];
+
+    // Load admins
+    async function loadAdmins() {
+        try {
+            const url = currentRoleFilter === 'all' 
+                ? '/superadmin/api/admins' 
+                : `/superadmin/api/admins?role=${currentRoleFilter}`;
+            
+            const res = await fetch(url);
+            const data = await res.json();
+            
+            if (data.success) {
+                allAdmins = data.admins;
+                renderAdmins();
+            }
+        } catch (err) {
+            console.error('Error loading admins:', err);
+        }
+    }
+
+    // Render table
+    function renderAdmins() {
+        const tbody = document.getElementById('admin-table-body');
+        const emptyState = document.getElementById('empty-state');
+        const totalEl = document.getElementById('total-admins');
+        
+        totalEl.textContent = allAdmins.length;
+        
+        if (allAdmins.length === 0) {
+            tbody.innerHTML = '';
+            emptyState.classList.remove('hidden');
+            return;
+        }
+        
+        emptyState.classList.add('hidden');
+        
+        tbody.innerHTML = allAdmins.map(admin => {
+            const isSuperAdmin = admin.role === 'super_admin';
+            const schoolInfo = admin.school 
+                ? `<div class="flex flex-col">
+                    <span class="text-xs font-bold text-slate-700">${escapeHtml(admin.school.name)}</span>
+                    <span class="text-[10px] text-slate-400">${escapeHtml(admin.school.slug)}</span>
+                   </div>`
+                : '<span class="text-xs text-slate-400">—</span>';
+            
+            const statusBadge = admin.is_active
+                ? `<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-700 text-[10px] font-bold uppercase tracking-wider">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Aktif
+                   </span>`
+                : `<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-red-50 border border-red-100 text-red-700 text-[10px] font-bold uppercase tracking-wider">
+                    <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Nonaktif
+                   </span>`;
+            
+            const roleBadge = isSuperAdmin
+                ? `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-[10px] font-bold uppercase tracking-wider">
+                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                    Super Admin
+                   </span>`
+                : `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-50 border border-slate-100 text-slate-700 text-[10px] font-bold uppercase tracking-wider">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    Admin Sekolah
+                   </span>`;
+            
+            return `
+            <tr class="hover:bg-slate-50 transition-colors">
+                <td class="px-5 py-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-100 to-indigo-200 flex items-center justify-center flex-shrink-0">
+                            <span class="text-xs font-black text-indigo-600">${escapeHtml(admin.name[0].toUpperCase())}</span>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-sm font-bold text-slate-900 truncate">${escapeHtml(admin.name)}</p>
+                            <p class="text-xs text-slate-400 truncate">${escapeHtml(admin.email)}</p>
+                        </div>
+                    </div>
+                </td>
+                <td class="px-5 py-4">${roleBadge}</td>
+                <td class="px-5 py-4">${schoolInfo}</td>
+                <td class="px-5 py-4">${statusBadge}</td>
+                <td class="px-5 py-4">
+                    <span class="text-xs text-slate-500 font-medium">${admin.created_at || '—'}</span>
+                </td>
+                <td class="px-5 py-4">
+                    <div class="flex items-center justify-center gap-1.5">
+                        <button onclick="editName(${admin.id}, '${escapeJs(admin.name)}')" 
+                                class="p-2 rounded-lg hover:bg-blue-50 text-blue-600 transition-colors" 
+                                title="Edit Nama">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                        </button>
+                        <button onclick="resetPassword(${admin.id}, '${escapeJs(admin.name)}')" 
+                                class="p-2 rounded-lg hover:bg-amber-50 text-amber-600 transition-colors" 
+                                title="Reset Password">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+                        </button>
+                        <button onclick="toggleActive(${admin.id}, ${admin.is_active}, '${escapeJs(admin.name)}')" 
+                                class="p-2 rounded-lg hover:bg-${admin.is_active ? 'red' : 'emerald'}-50 text-${admin.is_active ? 'red' : 'emerald'}-600 transition-colors" 
+                                title="${admin.is_active ? 'Nonaktifkan' : 'Aktifkan'}">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${admin.is_active ? 'M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728-12.728A9 9 0 015.636 18.364' : 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'}"/>
+                            </svg>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            `;
+        }).join('');
+    }
+
+    // Edit name
+    async function editName(id, currentName) {
+        const { value: newName } = await Swal.fire({
+            title: 'Edit Nama',
+            input: 'text',
+            inputLabel: 'Nama lengkap',
+            inputValue: currentName,
+            inputAttributes: { maxlength: '100' },
+            showCancelButton: true,
+            confirmButtonText: 'Simpan',
+            cancelButtonText: 'Batal',
+            confirmButtonColor: '#4f46e5',
+        });
+
+        if (!newName || newName === currentName) return;
+
+        const res = await fetch(`/superadmin/api/admins/${id}/update-name`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: newName }),
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            Swal.fire({ icon: 'success', title: 'Berhasil', text: data.message, confirmButtonColor: '#4f46e5' });
+            loadAdmins();
+        } else {
+            Swal.fire({ icon: 'error', title: 'Gagal', text: data.message, confirmButtonColor: '#ef4444' });
+        }
+    }
+
+    // Reset password
+    async function resetPassword(id, adminName) {
+        const { value: formValues } = await Swal.fire({
+            title: `Reset Password: ${adminName}`,
+            html: `
+                <div style="text-align: left;">
+                    <p style="margin-bottom: 12px; font-size: 13px; color: #64748b;">Masukkan password baru (min. 6 karakter)</p>
+                    <input id="swal-password" type="password" class="swal2-input" placeholder="Password baru" style="margin-bottom: 8px;">
+                    <input id="swal-password-confirm" type="password" class="swal2-input" placeholder="Konfirmasi password">
+                </div>
+            `,
+            focusConfirm: false,
+            showCancelButton: true,
+            confirmButtonText: 'Reset Password',
+            cancelButtonText: 'Batal',
+            confirmButtonColor: '#f59e0b',
+            preConfirm: () => {
+                const password = document.getElementById('swal-password').value;
+                const confirmPassword = document.getElementById('swal-password-confirm').value;
+                
+                if (!password) {
+                    Swal.showValidationMessage('Password tidak boleh kosong');
+                    return false;
+                }
+                if (password.length < 6) {
+                    Swal.showValidationMessage('Password minimal 6 karakter');
+                    return false;
+                }
+                if (password !== confirmPassword) {
+                    Swal.showValidationMessage('Password tidak cocok');
+                    return false;
+                }
+                return password;
+            },
+        });
+
+        if (!formValues) return;
+
+        const res = await fetch(`/superadmin/api/admins/${id}/reset-password`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password: formValues }),
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            Swal.fire({ 
+                icon: 'success', 
+                title: 'Password Direset', 
+                html: `<p style="margin-bottom: 8px;">${data.message}</p>
+                       <div style="background: #fef3c7; padding: 10px; border-radius: 8px; font-size: 13px;">
+                        <strong>Password baru:</strong> <code style="background: #fff; padding: 4px 8px; border-radius: 4px;">${formValues}</code>
+                       </div>
+                       <p style="margin-top: 8px; font-size: 12px; color: #64748b;">Simpan password ini dan berikan ke admin yang bersangkutan.</p>`,
+                confirmButtonColor: '#4f46e5',
+                confirmButtonText: 'OK',
+            });
+        } else {
+            Swal.fire({ icon: 'error', title: 'Gagal', text: data.message, confirmButtonColor: '#ef4444' });
+        }
+    }
+
+    // Toggle active
+    async function toggleActive(id, isActive, adminName) {
+        const action = isActive ? 'nonaktifkan' : 'aktifkan';
+        const confirm = await Swal.fire({
+            title: `${isActive ? 'Nonaktifkan' : 'Aktifkan'} Akun?`,
+            text: `Akun ${adminName} akan ${isActive ? 'dinonaktifkan' : 'diaktifkan'}.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya',
+            cancelButtonText: 'Batal',
+            confirmButtonColor: isActive ? '#ef4444' : '#10b981',
+            reverseButtons: true,
+        });
+
+        if (!confirm.isConfirmed) return;
+
+        const res = await fetch(`/superadmin/api/admins/${id}/toggle-active`, {
+            method: 'POST',
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            Swal.fire({ icon: 'success', title: 'Berhasil', text: data.message, confirmButtonColor: '#4f46e5' });
+            loadAdmins();
+        } else {
+            Swal.fire({ icon: 'error', title: 'Gagal', text: data.message, confirmButtonColor: '#ef4444' });
+        }
+    }
+
+    // Utility
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function escapeJs(text) {
+        return text.replace(/'/g, "\\'").replace(/"/g, '\\"');
+    }
+
+    // Tab filter
+    document.querySelectorAll('.sa-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.sa-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            currentRoleFilter = tab.dataset.role;
+            loadAdmins();
+        });
+    });
+
+    // Init
+    loadAdmins();
+</script>
+{% endblock %}

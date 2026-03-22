@@ -22,7 +22,8 @@ def create_admin():
             name="Super Admin",
             email=admin_email,
             role=UserRole.ADMIN,
-            is_active=True
+            is_active=True,
+            email_verified=True
         )
         admin.set_password("admin123")
         

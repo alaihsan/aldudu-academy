@@ -1,9 +1,17 @@
 from flask import abort
 from flask_login import current_user
+from app.models import UserRole
 
 
 def get_school_id_or_abort():
-    """Get the current user's school_id, or abort 403 if not set."""
+    """Get the current user's school_id, or abort 403 if not set.
+    
+    Superadmin users are exempt and can access all resources.
+    """
+    # Superadmin can access everything without school_id
+    if current_user.role == UserRole.SUPER_ADMIN:
+        return None
+    
     school_id = current_user.school_id
     if not school_id:
         abort(403, description='Akun tidak terhubung ke sekolah manapun')

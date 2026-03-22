@@ -243,6 +243,154 @@ def issues():
     return render_template('superadmin/issues.html')
 
 
+@superadmin_bp.route('/admins')
+def admins():
+    """Page untuk melihat daftar admin dan superadmin."""
+    return render_template('superadmin/admins.html')
+
+
+# ─── API Routes ─────────────────────────────────────
+
+@superadmin_bp.route('/api/admins', methods=['GET'])
+def api_get_admins():
+    """Get list semua admin dan superadmin."""
+    role_filter = request.args.get('role')  # 'admin', 'super_admin', or None for all
+    
+    query = User.query.filter(User.role.in_([UserRole.ADMIN, UserRole.SUPER_ADMIN]))
+    
+    if role_filter:
+        try:
+            role = UserRole(role_filter)
+            query = query.filter_by(role=role)
+        except ValueError:
+            pass
+    
+    # Order by role (super_admin first) then by id (newest first)
+    admins = query.order_by(User.role.desc(), User.id.desc()).all()
+    
+    result = []
+    for admin in admins:
+        data = {
+            'id': admin.id,
+            'name': admin.name,
+            'email': admin.email,
+            'role': admin.role.value,
+            'is_active': admin.is_active,
+            'email_verified': admin.email_verified,
+            'created_at': None,  # User model doesn't have created_at
+            'school': None,
+        }
+        if admin.school:
+            data['school'] = {
+                'id': admin.school.id,
+                'name': admin.school.name,
+                'slug': admin.school.slug,
+                'status': admin.school.status.value,
+            }
+        result.append(data)
+    
+    return jsonify({'success': True, 'admins': result})
+
+
+@superadmin_bp.route('/api/admins/<int:admin_id>/reset-password', methods=['POST'])
+def api_reset_password(admin_id):
+    """Reset password untuk admin."""
+    admin = db.session.get(User, admin_id)
+    if not admin:
+        return jsonify({'success': False, 'message': 'User tidak ditemukan'}), 404
+    
+    # Hanya bisa reset password admin/superadmin lain, bukan diri sendiri
+    if admin.id == current_user.id:
+        return jsonify({'success': False, 'message': 'Tidak bisa reset password sendiri'}), 400
+    
+    if admin.role not in [UserRole.ADMIN, UserRole.SUPER_ADMIN]:
+        return jsonify({'success': False, 'message': 'User bukan admin'}), 400
+    
+    data = request.get_json() or {}
+    new_password = data.get('password', '').strip()
+    
+    if not new_password:
+        return jsonify({'success': False, 'message': 'Password tidak boleh kosong'}), 400
+    
+    if len(new_password) < 6:
+        return jsonify({'success': False, 'message': 'Password minimal 6 karakter'}), 400
+    
+    admin.set_password(new_password)
+    db.session.commit()
+    
+    return jsonify({
+        'success': True, 
+        'message': f'Password {admin.name} berhasil direset',
+        'admin': {
+            'id': admin.id,
+            'name': admin.name,
+            'email': admin.email,
+            'role': admin.role.value,
+        }
+    })
+
+
+@superadmin_bp.route('/api/admins/<int:admin_id>/update-name', methods=['POST'])
+def api_update_name(admin_id):
+    """Update nama admin."""
+    admin = db.session.get(User, admin_id)
+    if not admin:
+        return jsonify({'success': False, 'message': 'User tidak ditemukan'}), 404
+    
+    if admin.role not in [UserRole.ADMIN, UserRole.SUPER_ADMIN]:
+        return jsonify({'success': False, 'message': 'User bukan admin'}), 400
+    
+    data = request.get_json() or {}
+    new_name = sanitize_text(data.get('name', ''), max_len=100)
+    
+    if not new_name:
+        return jsonify({'success': False, 'message': 'Nama tidak boleh kosong'}), 400
+    
+    admin.name = new_name
+    db.session.commit()
+    
+    return jsonify({
+        'success': True, 
+        'message': 'Nama berhasil diperbarui',
+        'admin': {
+            'id': admin.id,
+            'name': admin.name,
+            'email': admin.email,
+            'role': admin.role.value,
+        }
+    })
+
+
+@superadmin_bp.route('/api/admins/<int:admin_id>/toggle-active', methods=['POST'])
+def api_toggle_active(admin_id):
+    """Toggle status active admin."""
+    admin = db.session.get(User, admin_id)
+    if not admin:
+        return jsonify({'success': False, 'message': 'User tidak ditemukan'}), 404
+    
+    if admin.id == current_user.id:
+        return jsonify({'success': False, 'message': 'Tidak bisa menonaktifkan diri sendiri'}), 400
+    
+    if admin.role not in [UserRole.ADMIN, UserRole.SUPER_ADMIN]:
+        return jsonify({'success': False, 'message': 'User bukan admin'}), 400
+    
+    admin.is_active = not admin.is_active
+    db.session.commit()
+    
+    status_text = 'diaktifkan' if admin.is_active else 'dinonaktifkan'
+    return jsonify({
+        'success': True, 
+        'message': f'Akun {admin.name} berhasil {status_text}',
+        'admin': {
+            'id': admin.id,
+            'name': admin.name,
+            'email': admin.email,
+            'role': admin.role.value,
+            'is_active': admin.is_active,
+        }
+    })
+
+
 @superadmin_bp.route('/api/issues', methods=['GET'])
 def api_get_issues():
     status_filter = request.args.get('status')
