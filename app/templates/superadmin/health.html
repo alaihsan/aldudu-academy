@@ -1,0 +1,327 @@
+{% extends "superadmin/base.html" %}
+{% block title %}Health Status — Super Admin{% endblock %}
+{% block page_title %}Health Status{% endblock %}
+{% block page_subtitle %}Monitor kondisi aplikasi & layanan{% endblock %}
+
+{% block content %}
+<!-- System Health Checks -->
+<div class="mb-6">
+    <div class="flex items-center justify-between mb-4">
+        <h3 class="text-sm font-black text-slate-700 uppercase tracking-wider">System Health</h3>
+        <button onclick="runHealthChecks()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            Refresh Checks
+        </button>
+    </div>
+    
+    <div id="health-checks" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Populated by JS -->
+    </div>
+</div>
+
+<!-- Stats Grid -->
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div class="sa-stat">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-2xl font-black text-slate-900" id="stat-total-users">-</p>
+                <p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold mt-0.5">Total Users</p>
+            </div>
+            <div class="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center">
+                <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            </div>
+        </div>
+    </div>
+
+    <div class="sa-stat">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-2xl font-black text-emerald-600" id="stat-active-schools">-</p>
+                <p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold mt-0.5">Sekolah Aktif</p>
+            </div>
+            <div class="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center">
+                <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+            </div>
+        </div>
+    </div>
+
+    <div class="sa-stat">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-2xl font-black text-amber-600" id="stat-pending-schools">-</p>
+                <p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold mt-0.5">Pending</p>
+            </div>
+            <div class="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center">
+                <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+        </div>
+    </div>
+
+    <div class="sa-stat">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-2xl font-black text-red-600" id="stat-suspended-schools">-</p>
+                <p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold mt-0.5">Suspended</p>
+            </div>
+            <div class="w-12 h-12 rounded-xl bg-red-50 flex items-center justify-center">
+                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728-12.728A9 9 0 015.636 18.364"/></svg>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Two Column Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
+    <!-- Users by Role -->
+    <div class="sa-card p-5">
+        <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Users by Role</h3>
+        <div id="users-by-role" class="space-y-3">
+            <!-- Populated by JS -->
+        </div>
+    </div>
+
+    <!-- Environment Info -->
+    <div class="sa-card p-5">
+        <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Environment Info</h3>
+        <div id="env-info" class="space-y-2 text-sm">
+            <!-- Populated by JS -->
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="sa-card p-5">
+    <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Quick Actions</h3>
+    <div class="flex flex-wrap gap-3">
+        <button onclick="testEmail()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-lg transition-colors flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            Test Email
+        </button>
+        
+        <button onclick="clearCache()" class="px-4 py-2.5 bg-amber-600 hover:bg-amber-700 text-white text-sm font-bold rounded-lg transition-colors flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            Clear Cache
+        </button>
+        
+        <button onclick="viewSentry()" class="px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white text-sm font-bold rounded-lg transition-colors flex items-center gap-2">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+            Sentry Dashboard
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Health status icons
+    const statusIcons = {
+        healthy: '<svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+        warning: '<svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>',
+        unhealthy: '<svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+    };
+
+    const statusColors = {
+        healthy: 'bg-emerald-50 border-emerald-100 text-emerald-700',
+        warning: 'bg-amber-50 border-amber-100 text-amber-700',
+        unhealthy: 'bg-red-50 border-red-100 text-red-700',
+    };
+
+    const statusLabels = {
+        healthy: 'Healthy',
+        warning: 'Warning',
+        unhealthy: 'Down',
+    };
+
+    // Run health checks
+    async function runHealthChecks() {
+        const container = document.getElementById('health-checks');
+        container.innerHTML = '<div class="col-span-full text-center py-8"><svg class="animate-spin w-6 h-6 text-indigo-600 mx-auto" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/></svg></div>';
+
+        try {
+            const res = await fetch('/superadmin/api/health/checks');
+            const data = await res.json();
+
+            if (data.success) {
+                container.innerHTML = Object.entries(data.checks).map(([key, check]) => `
+                    <div class="sa-card p-4 border-2 ${statusColors[check.status]}">
+                        <div class="flex items-start justify-between mb-2">
+                            <div class="flex items-center gap-2">
+                                ${statusIcons[check.status]}
+                                <span class="text-xs font-black uppercase tracking-wider">${key}</span>
+                            </div>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${statusColors[check.status]}">${statusLabels[check.status]}</span>
+                        </div>
+                        <p class="text-sm font-medium mb-1">${check.message}</p>
+                        ${check.response_time ? `<p class="text-[10px] text-slate-400">Response: ${check.response_time}</p>` : ''}
+                    </div>
+                `).join('');
+            }
+        } catch (err) {
+            container.innerHTML = '<div class="col-span-full text-center py-8 text-red-600">Failed to load health checks</div>';
+        }
+    }
+
+    // Load stats
+    async function loadStats() {
+        try {
+            const res = await fetch('/superadmin/api/health/stats');
+            const data = await res.json();
+
+            if (data.success) {
+                const stats = data.stats;
+                
+                // Update stat cards
+                document.getElementById('stat-total-users').textContent = stats.users.total;
+                document.getElementById('stat-active-schools').textContent = stats.schools.active;
+                document.getElementById('stat-pending-schools').textContent = stats.schools.pending;
+                document.getElementById('stat-suspended-schools').textContent = stats.schools.suspended;
+
+                // Users by role
+                const roleContainer = document.getElementById('users-by-role');
+                const roleColors = {
+                    'super_admin': 'bg-purple-100 text-purple-700',
+                    'admin': 'bg-slate-100 text-slate-700',
+                    'guru': 'bg-blue-100 text-blue-700',
+                    'murid': 'bg-green-100 text-green-700',
+                };
+                
+                roleContainer.innerHTML = Object.entries(stats.users.by_role).map(([role, count]) => `
+                    <div class="flex items-center justify-between p-3 rounded-lg ${roleColors[role] || 'bg-gray-100 text-gray-700'}">
+                        <span class="text-xs font-bold uppercase tracking-wider">${role.replace('_', ' ')}</span>
+                        <span class="text-sm font-black">${count}</span>
+                    </div>
+                `).join('');
+
+                // Environment info
+                const envContainer = document.getElementById('env-info');
+                envContainer.innerHTML = `
+                    <div class="flex justify-between py-2 border-b border-slate-100">
+                        <span class="text-slate-500">Python Version</span>
+                        <span class="font-mono text-slate-700 font-bold">${stats.system.python_version}</span>
+                    </div>
+                    <div class="flex justify-between py-2 border-b border-slate-100">
+                        <span class="text-slate-500">Platform</span>
+                        <span class="font-mono text-slate-700 font-bold">${stats.system.platform}</span>
+                    </div>
+                    <div class="flex justify-between py-2 border-b border-slate-100">
+                        <span class="text-slate-500">Total Schools</span>
+                        <span class="font-bold text-slate-700">${stats.schools.total}</span>
+                    </div>
+                    <div class="flex justify-between py-2">
+                        <span class="text-slate-500">Environment</span>
+                        <span class="font-bold text-slate-700">${window.location.hostname}</span>
+                    </div>
+                `;
+            }
+        } catch (err) {
+            console.error('Error loading stats:', err);
+        }
+    }
+
+    // Test email
+    async function testEmail() {
+        const { value: email } = await Swal.fire({
+            title: 'Test Email',
+            input: 'email',
+            inputLabel: 'Recipient email',
+            inputPlaceholder: 'test@example.com',
+            showCancelButton: true,
+            confirmButtonText: 'Send',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#4f46e5',
+        });
+
+        if (!email) return;
+
+        Swal.showLoading();
+        const res = await fetch('/superadmin/api/health/test-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email }),
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            Swal.fire({ icon: 'success', title: 'Sent!', text: data.message, confirmButtonColor: '#4f46e5' });
+        } else {
+            Swal.fire({ icon: 'error', title: 'Failed', text: data.message, confirmButtonColor: '#ef4444' });
+        }
+    }
+
+    // Clear cache
+    async function clearCache() {
+        const confirm = await Swal.fire({
+            title: 'Clear Cache?',
+            html: '<p style="color: #64748b; margin: 12px 0;">Ini akan membersihkan semua data cache termasuk:</p>' +
+                  '<ul style="text-align: left; color: #475569; margin: 0 0 12px 20px;">' +
+                  '<li>School slug cache</li>' +
+                  '<li>Rate limit data</li>' +
+                  '<li>Session cache</li>' +
+                  '</ul>' +
+                  '<p style="color: #dc2626; font-size: 12px; margin: 0;">⚠️ Aplikasi mungkin lebih lambat sebentar saat cache dibangun ulang.</p>',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Clear Cache',
+            cancelButtonText: 'Batal',
+            confirmButtonColor: '#f59e0b',
+            reverseButtons: true,
+        });
+
+        if (!confirm.isConfirmed) return;
+
+        Swal.fire({
+            title: 'Clearing Cache...',
+            text: 'Mohon tunggu',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        try {
+            const res = await fetch('/superadmin/api/health/clear-cache', {
+                method: 'POST',
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Cache Dibersihkan',
+                    text: data.message,
+                    confirmButtonColor: '#4f46e5',
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: data.message,
+                    confirmButtonColor: '#ef4444',
+                });
+            }
+        } catch (err) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Terjadi kesalahan saat membersihkan cache',
+                confirmButtonColor: '#ef4444',
+            });
+        }
+    }
+
+    // View Sentry
+    function viewSentry() {
+        window.open('https://sentry.io', '_blank');
+    }
+
+    // Init
+    runHealthChecks();
+    loadStats();
+
+    // Auto refresh every 30 seconds
+    setInterval(() => {
+        runHealthChecks();
+        loadStats();
+    }, 30000);
+</script>
+{% endblock %}

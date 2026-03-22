@@ -17,3 +17,7 @@ click==8.1.7
 # Rasch Model & Background Processing
 celery==5.6.2
 redis==7.3.0
+
+# Error Tracking & Monitoring
+sentry-sdk[flask]==2.20.0
+psutil==6.1.0

@@ -10,3 +10,14 @@ MAIL_PASSWORD=your-mailtrap-password
 MAIL_SENDER_NAME=Aldudu Academy
 MAIL_SENDER_EMAIL=noreply@aldudu.academy
 APP_URL=http://localhost:5000
+
+# Sentry Error Tracking (Get DSN from https://sentry.io)
+# Create a new Flask project in Sentry and copy the DSN
+SENTRY_DSN=https://your-sentry-dsn@sentry.io/your-project-id
+SENTRY_TRACES_SAMPLE_RATE=0.1
+SENTRY_PROFILES_SAMPLE_RATE=0.1
+SENTRY_RELEASE=aldudu-academy@1.0.0
+
+# Celery/Redis
+CELERY_BROKER_URL=redis://localhost:6379/0
+CELERY_RESULT_BACKEND=redis://localhost:6379/0
