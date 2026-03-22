@@ -549,17 +549,18 @@
     .typing-text {
         display: inline;
         overflow: hidden;
-        border-right: 2px solid rgba(255,255,255,0.7);
+        border-right: 2px solid rgba(255,255,255,0.5);
         white-space: normal; /* Allow wrapping for multi-line */
         word-wrap: break-word;
         line-height: 1.6;
+    }
+    
+    .typing-text.typing-active {
         animation: blink-caret 0.75s step-end infinite;
-        max-width: 100%;
     }
     
     .typing-text.typing-complete {
         border-right: none; /* Remove cursor when complete */
-        animation: none;
     }
     
     .quote-fade {
@@ -568,7 +569,7 @@
     
     @keyframes blink-caret {
         from, to { border-color: transparent }
-        50% { border-color: rgba(255,255,255,0.7) }
+        50% { border-color: rgba(255,255,255,0.5) }
     }
     
     @keyframes fadeOut {
@@ -610,6 +611,7 @@ const educationalQuotes = [
 // localStorage keys
 const QUOTE_INDEX_KEY = 'aldudu_quote_index';
 const QUOTE_TIMESTAMP_KEY = 'aldudu_quote_timestamp';
+const QUOTE_INTERVAL = 10000; // 10 seconds
 
 // Get current quote index from localStorage or start fresh
 function getCurrentQuoteIndex() {
@@ -618,7 +620,7 @@ function getCurrentQuoteIndex() {
     const now = Date.now();
     
     // If no stored data or it's been more than 10 seconds since last change
-    if (!storedIndex || !storedTime || (now - parseInt(storedTime)) >= 10000) {
+    if (!storedIndex || !storedTime || (now - parseInt(storedTime)) >= QUOTE_INTERVAL) {
         let newIndex;
         if (storedIndex !== null) {
             // Get next quote, loop back to 0 if at end
@@ -644,6 +646,7 @@ function typeWriter(text, element, speed = 50) {
     let i = 0;
     element.textContent = '';
     element.classList.remove('typing-complete');
+    element.classList.add('typing-active');
     
     function type() {
         if (i < text.length) {
@@ -651,6 +654,7 @@ function typeWriter(text, element, speed = 50) {
             i++;
             setTimeout(() => type(), speed);
         } else {
+            element.classList.remove('typing-active');
             element.classList.add('typing-complete');
         }
     }
@@ -693,13 +697,38 @@ function updateQuote() {
     }, 500);
 }
 
+// Check for quote update - handles background tab scenario
+function checkQuoteUpdate() {
+    const storedTime = localStorage.getItem(QUOTE_TIMESTAMP_KEY);
+    const now = Date.now();
+    
+    // If more than 10 seconds since last update, refresh quote
+    if (!storedTime || (now - parseInt(storedTime)) >= QUOTE_INTERVAL) {
+        updateQuote();
+    }
+}
+
 // Initialize dynamic quotes
+let quoteCheckInterval;
+
 document.addEventListener('DOMContentLoaded', function() {
     // Initial quote
     setTimeout(updateQuote, 100);
     
-    // Change quote every 10 seconds
-    setInterval(updateQuote, 10000);
+    // Check every 2 seconds if quote needs updating (handles background tabs)
+    quoteCheckInterval = setInterval(checkQuoteUpdate, 2000);
+    
+    // Also update when page becomes visible again
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+            checkQuoteUpdate();
+        }
+    });
+    
+    // Clean up on page unload
+    window.addEventListener('beforeunload', function() {
+        clearInterval(quoteCheckInterval);
+    });
 });
 </script>
 {% endblock %}
