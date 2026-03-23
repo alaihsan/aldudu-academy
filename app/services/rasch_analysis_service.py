@@ -158,8 +158,12 @@ class RaschAnalysisService:
     
     def _load_assignment_data(self) -> bool:
         """Load data dari assignment submissions (rubric-based)"""
-        # TODO: Implement untuk assignment dengan rubric
-        raise NotImplementedError("Assignment analysis not yet implemented")
+        logger.warning("Assignment-based Rasch analysis is not yet implemented")
+        if self.analysis:
+            self.analysis.status = RaschAnalysisStatus.COMPLETED
+            self.analysis.error_message = "Analisis Rasch untuk tugas belum tersedia. Saat ini hanya tersedia untuk kuis."
+            db.session.commit()
+        return False
     
     def _is_answer_correct(self, answer: Answer) -> bool:
         """Check apakah jawaban benar"""
@@ -403,54 +407,56 @@ class RaschAnalysisService:
     def _calculate_person_fit(self, student_id: int) -> dict:
         """Calculate fit statistics untuk person"""
         theta = self.abilities[student_id]
-        
+
         sum_squared_residual = 0
         sum_variance = 0
-        weighted_sum_squared_residual = 0
-        weighted_sum_variance = 0
-        
+        sum_standardized_sq = 0  # Σ(z²) for outfit
+
         n_items = 0
-        
+        sum_information = 0  # Σ(P*Q) for model-based SE
+
         for question_id in self.questions:
             if (student_id, question_id) not in self.response_matrix:
                 continue
-            
+
             observed = self.response_matrix[(student_id, question_id)]
             delta = self.difficulties[question_id]
             p = self._probability(theta, delta)
-            
+
             residual = observed - p
             variance = p * (1 - p)
-            
+            sum_information += variance
+
             if variance > 0.0001:
                 sum_squared_residual += residual ** 2
                 sum_variance += variance
-                
-                weighted_sum_squared_residual += (residual ** 2) / variance
-                weighted_sum_variance += 1 / variance
-            
+                sum_standardized_sq += (residual ** 2) / variance
+
             n_items += 1
-        
-        # Outfit MNSQ (unweighted)
-        outfit_mnsq = sum_squared_residual / sum_variance if sum_variance > 0 else 1.0
-        
-        # Infit MNSQ (weighted)
-        infit_mnsq = weighted_sum_squared_residual / weighted_sum_variance if weighted_sum_variance > 0 else 1.0
-        
-        # Z-standardized (approximate)
-        outfit_zstd = (outfit_mnsq - 1) * math.sqrt(2 * n_items) if n_items > 0 else 0
-        infit_zstd = (infit_mnsq - 1) * math.sqrt(2 * n_items) if n_items > 0 else 0
-        
+
+        # Infit MNSQ (information-weighted): Σ(residual²) / Σ(variance)
+        infit_mnsq = sum_squared_residual / sum_variance if sum_variance > 0 else 1.0
+
+        # Outfit MNSQ (unweighted mean of standardized residuals): (1/N) × Σ(z²)
+        outfit_mnsq = sum_standardized_sq / n_items if n_items > 0 else 1.0
+
+        # Z-standardized using Wilson-Hilferty cube root transformation
+        infit_zstd = self._wilson_hilferty_zstd(infit_mnsq, n_items)
+        outfit_zstd = self._wilson_hilferty_zstd(outfit_mnsq, n_items)
+
         # Fit interpretation
         fit_status = self._interpret_fit_status(outfit_mnsq)
         fit_category = self._interpret_fit_category(outfit_mnsq)
-        
+
         # Ability level interpretation
         ability_level = self._interpret_ability_level(theta)
-        
+
+        # Model-based SE: 1/√(Σ P*Q)
+        theta_se = 1 / math.sqrt(sum_information) if sum_information > 0 else 1.0
+
         return {
             'theta': theta,
-            'theta_se': 1 / math.sqrt(n_items) if n_items > 0 else 1.0,  # Approximate SE
+            'theta_se': theta_se,
             'outfit_mnsq': outfit_mnsq,
             'outfit_zstd': outfit_zstd,
             'infit_mnsq': infit_mnsq,
@@ -463,60 +469,62 @@ class RaschAnalysisService:
     def _calculate_item_fit(self, question_id: int) -> dict:
         """Calculate fit statistics untuk item"""
         delta = self.difficulties[question_id]
-        
+
         sum_squared_residual = 0
         sum_variance = 0
-        weighted_sum_squared_residual = 0
-        weighted_sum_variance = 0
-        
+        sum_standardized_sq = 0  # Σ(z²) for outfit
+
         n_persons = 0
-        
+        sum_information = 0  # Σ(P*Q) for model-based SE
+
         for student_id in self.students:
             if (student_id, question_id) not in self.response_matrix:
                 continue
-            
+
             observed = self.response_matrix[(student_id, question_id)]
             theta = self.abilities[student_id]
             p = self._probability(theta, delta)
-            
+
             residual = observed - p
             variance = p * (1 - p)
-            
+            sum_information += variance
+
             if variance > 0.0001:
                 sum_squared_residual += residual ** 2
                 sum_variance += variance
-                
-                weighted_sum_squared_residual += (residual ** 2) / variance
-                weighted_sum_variance += 1 / variance
-            
+                sum_standardized_sq += (residual ** 2) / variance
+
             n_persons += 1
-        
-        # Outfit MNSQ
-        outfit_mnsq = sum_squared_residual / sum_variance if sum_variance > 0 else 1.0
-        
-        # Infit MNSQ
-        infit_mnsq = weighted_sum_squared_residual / weighted_sum_variance if weighted_sum_variance > 0 else 1.0
-        
-        # Z-standardized
-        outfit_zstd = (outfit_mnsq - 1) * math.sqrt(2 * n_persons) if n_persons > 0 else 0
-        infit_zstd = (infit_mnsq - 1) * math.sqrt(2 * n_persons) if n_persons > 0 else 0
-        
+
+        # Infit MNSQ (information-weighted): Σ(residual²) / Σ(variance)
+        infit_mnsq = sum_squared_residual / sum_variance if sum_variance > 0 else 1.0
+
+        # Outfit MNSQ (unweighted mean of standardized residuals): (1/N) × Σ(z²)
+        outfit_mnsq = sum_standardized_sq / n_persons if n_persons > 0 else 1.0
+
+        # Z-standardized using Wilson-Hilferty cube root transformation
+        infit_zstd = self._wilson_hilferty_zstd(infit_mnsq, n_persons)
+        outfit_zstd = self._wilson_hilferty_zstd(outfit_mnsq, n_persons)
+
         # Fit interpretation
         fit_status = self._interpret_fit_status(outfit_mnsq)
         fit_category = self._interpret_fit_category(outfit_mnsq)
-        
+
         # Difficulty interpretation
         difficulty_level = self._interpret_difficulty_level(delta)
-        
+
         # Classical p-value
         p_value = self._calculate_p_value(question_id)
-        
+
         # Point-biserial (simplified)
         point_biserial = self._calculate_point_biserial(question_id)
-        
+
+        # Model-based SE: 1/√(Σ P*Q)
+        delta_se = 1 / math.sqrt(sum_information) if sum_information > 0 else 1.0
+
         return {
             'delta': delta,
-            'delta_se': 1 / math.sqrt(n_persons) if n_persons > 0 else 1.0,
+            'delta_se': delta_se,
             'p_value': p_value,
             'point_biserial': point_biserial,
             'outfit_mnsq': outfit_mnsq,
@@ -528,6 +536,20 @@ class RaschAnalysisService:
             'difficulty_level': difficulty_level,
         }
     
+    def _wilson_hilferty_zstd(self, mnsq: float, n: int) -> float:
+        """
+        Wilson-Hilferty cube root transformation for MNSQ to Z-standardized.
+        Standard formula used by Winsteps and other Rasch software.
+        """
+        if n <= 0 or mnsq <= 0:
+            return 0.0
+        q = 6.0 / n
+        try:
+            zstd = (mnsq ** (1.0 / 3) - 1) * (3 / math.sqrt(q)) + math.sqrt(q) / 3
+        except (ValueError, ZeroDivisionError):
+            zstd = 0.0
+        return zstd
+
     def _interpret_fit_status(self, mnsq: float) -> str:
         """Interpret fit status berdasarkan MNSQ"""
         if 0.5 <= mnsq <= 1.5:

@@ -80,34 +80,9 @@ def my_grades(course_id):
     if not is_student and not is_teacher and current_user.role != UserRole.SUPER_ADMIN:
         return render_template('error/403.html'), 403
     
-    # Get all grade items and entries for this student
-    categories = GradeCategory.query.filter_by(course_id=course.id).all()
-    grade_data = []
-    
-    for category in categories:
-        items = []
-        cat_total_score = 0
-        cat_max_score = 0
-        
-        for item in category.grade_items:
-            entry = GradeEntry.query.filter_by(grade_item_id=item.id, student_id=current_user.id).first()
-            items.append({
-                'item': item,
-                'entry': entry
-            })
-            if entry and entry.score is not None:
-                cat_total_score += entry.score
-            cat_max_score += item.max_score
-            
-        grade_data.append({
-            'category': category,
-            'items': items,
-            'total_score': cat_total_score,
-            'max_score': cat_max_score,
-            'percentage': (cat_total_score / cat_max_score * 100) if cat_max_score > 0 else 0
-        })
-
-    return render_template('gradebook/student_grades.html', course=course, grade_data=grade_data)
+    # Template loads grades via JS API call to get_student_grades_summary()
+    # which uses the unified calculate_final_grade() function
+    return render_template('gradebook/student_grades.html', course=course)
 
 
 # ─── API Routes - Categories ────────────────────────────────────────────────────
@@ -829,69 +804,165 @@ def api_get_ctt_analysis(quiz_id):
             'summary': {}
         })
     
-    # Calculate CTT metrics for each question
-    items_analysis = []
-    all_p_values = []
-    all_point_biserials = []
-    
+    # Build response matrix: item scores per student and total scores
+    total_scores = [s.score for s in submissions]
+    item_scores_matrix = {}  # question_id -> list of 0/1 per student
+    item_selected_options = {}  # question_id -> list of selected_option_id per student
+
     for question in questions:
-        # Count correct answers
-        correct_count = 0
-        student_scores = []
-        
+        scores = []
+        selected_opts = []
         for submission in submissions:
-            # Get student's answer for this question
             answer = Answer.query.filter_by(
                 submission_id=submission.id,
                 question_id=question.id
             ).first()
-            
-            is_correct = False
-            if answer and answer.is_correct:
-                correct_count += 1
-                is_correct = True
-            
-            student_scores.append(1 if is_correct else 0)
-        
-        # Calculate p-value (difficulty index)
+
+            is_correct = bool(answer and answer.is_correct)
+            scores.append(1 if is_correct else 0)
+            selected_opts.append(answer.selected_option_id if answer else None)
+
+        item_scores_matrix[question.id] = scores
+        item_selected_options[question.id] = selected_opts
+
+    # Upper-Lower 27% groups for discrimination analysis
+    n_group = max(1, int(len(submissions) * 0.27))
+    sorted_indices = sorted(range(len(total_scores)), key=lambda i: total_scores[i], reverse=True)
+    upper_indices = set(sorted_indices[:n_group])
+    lower_indices = set(sorted_indices[-n_group:])
+
+    # Total score statistics
+    mean_total = sum(total_scores) / len(total_scores) if total_scores else 0
+    variance_total = sum((s - mean_total) ** 2 for s in total_scores) / len(total_scores) if total_scores else 0
+
+    # Calculate CTT metrics for each question
+    items_analysis = []
+    all_p_values = []
+    all_point_biserials = []
+    sum_pq = 0.0
+
+    for question in questions:
+        student_scores = item_scores_matrix[question.id]
+        correct_count = sum(student_scores)
+
+        # P-value (difficulty index)
         p_value = correct_count / total_students if total_students > 0 else 0
+        q_value = 1 - p_value
+        item_variance = p_value * q_value
+        sum_pq += item_variance
         all_p_values.append(p_value)
-        
-        # Calculate point-biserial (discrimination index)
-        # Correlation between question score (0/1) and total quiz score
-        total_scores = [s.score for s in submissions]
-        
+
+        # Point-biserial correlation (discrimination)
         if len(student_scores) > 1 and len(total_scores) > 1:
-            # Calculate correlation
             mean_x = sum(student_scores) / len(student_scores)
-            mean_y = sum(total_scores) / len(total_scores)
-            
+            mean_y = mean_total
+
             numerator = sum((x - mean_x) * (y - mean_y) for x, y in zip(student_scores, total_scores))
-            
             std_x = (sum((x - mean_x) ** 2 for x in student_scores)) ** 0.5
-            std_y = (sum((y - mean_y) ** 2 for y in total_scores)) ** 0.5
-            
-            if std_x > 0 and std_y > 0:
-                point_biserial = numerator / (std_x * std_y)
+            std_y = variance_total ** 0.5 * (len(total_scores) ** 0.5)
+
+            # Use population std for consistency
+            pop_std_x = (sum((x - mean_x) ** 2 for x in student_scores) / len(student_scores)) ** 0.5
+            pop_std_y = variance_total ** 0.5
+
+            if pop_std_x > 0 and pop_std_y > 0:
+                point_biserial = (sum((x - mean_x) * (y - mean_y) for x, y in zip(student_scores, total_scores)) / len(student_scores)) / (pop_std_x * pop_std_y)
             else:
                 point_biserial = 0
         else:
             point_biserial = 0
-        
+
+        # Corrected point-biserial (remove item's own score from total)
+        corrected_total_scores = [total_scores[i] - student_scores[i] for i in range(len(total_scores))]
+        corrected_mean_y = sum(corrected_total_scores) / len(corrected_total_scores) if corrected_total_scores else 0
+        corrected_var_y = sum((s - corrected_mean_y) ** 2 for s in corrected_total_scores) / len(corrected_total_scores) if corrected_total_scores else 0
+
+        if len(student_scores) > 1 and corrected_var_y > 0:
+            mean_x = sum(student_scores) / len(student_scores)
+            pop_std_x = (sum((x - mean_x) ** 2 for x in student_scores) / len(student_scores)) ** 0.5
+            pop_std_cy = corrected_var_y ** 0.5
+
+            if pop_std_x > 0 and pop_std_cy > 0:
+                corrected_rpbis = (sum((x - mean_x) * (y - corrected_mean_y) for x, y in zip(student_scores, corrected_total_scores)) / len(student_scores)) / (pop_std_x * pop_std_cy)
+            else:
+                corrected_rpbis = 0
+        else:
+            corrected_rpbis = 0
+
         all_point_biserials.append(point_biserial)
-        
+
+        # Upper-Lower discrimination (27% groups)
+        upper_correct = sum(1 for i in upper_indices if student_scores[i] == 1)
+        lower_correct = sum(1 for i in lower_indices if student_scores[i] == 1)
+        discrimination_index = (upper_correct - lower_correct) / n_group if n_group > 0 else 0
+
+        # Difficulty interpretation
+        if p_value < 0.3:
+            difficulty_label = 'Sukar'
+        elif p_value > 0.7:
+            difficulty_label = 'Mudah'
+        else:
+            difficulty_label = 'Sedang'
+
+        # Discrimination interpretation
+        if discrimination_index >= 0.4:
+            discrimination_label = 'Sangat Baik'
+        elif discrimination_index >= 0.3:
+            discrimination_label = 'Baik'
+        elif discrimination_index >= 0.2:
+            discrimination_label = 'Cukup'
+        else:
+            discrimination_label = 'Perlu Perbaikan'
+
+        # Distractor analysis for multiple choice questions
+        distractor_analysis = None
+        if question.question_type in ['multiple_choice', 'true_false', 'dropdown']:
+            from app.models.quiz import Option
+            options = Option.query.filter_by(question_id=question.id).all()
+            distractor_analysis = []
+
+            selected_opts = item_selected_options[question.id]
+            for option in options:
+                opt_count = sum(1 for opt_id in selected_opts if opt_id == option.id)
+                upper_count = sum(1 for i in upper_indices if selected_opts[i] == option.id)
+                lower_count = sum(1 for i in lower_indices if selected_opts[i] == option.id)
+
+                distractor_analysis.append({
+                    'option_id': option.id,
+                    'option_text': option.text[:100] if option.text else '',
+                    'is_correct': option.is_correct,
+                    'total_selected': opt_count,
+                    'percentage': round(opt_count / total_students * 100, 1) if total_students > 0 else 0,
+                    'upper_group': upper_count,
+                    'lower_group': lower_count,
+                })
+
         items_analysis.append({
             'question_id': question.id,
-            'p_value': p_value,
+            'p_value': round(p_value, 4),
+            'item_variance': round(item_variance, 4),
             'correct_count': correct_count,
             'total_students': total_students,
-            'point_biserial': point_biserial,
+            'point_biserial': round(point_biserial, 4),
+            'corrected_point_biserial': round(corrected_rpbis, 4),
+            'discrimination_index': round(discrimination_index, 4),
+            'difficulty_label': difficulty_label,
+            'discrimination_label': discrimination_label,
+            'distractor_analysis': distractor_analysis,
         })
-    
-    # Calculate summary statistics
+
+    # Summary statistics
+    k = len(questions)
     avg_p_value = sum(all_p_values) / len(all_p_values) if all_p_values else 0
     avg_point_biserial = sum(all_point_biserials) / len(all_point_biserials) if all_point_biserials else 0
-    
+
+    # KR-20 Reliability: KR-20 = (k/(k-1)) * (1 - Σpq / σ²_total)
+    if k > 1 and variance_total > 0:
+        kr20 = (k / (k - 1)) * (1 - sum_pq / variance_total)
+        reliability = max(0.0, min(1.0, kr20))
+    else:
+        reliability = 0.0
+
     # Interpret difficulty level
     if avg_p_value < 0.3:
         difficulty_level = 'Sukar'
@@ -899,7 +970,7 @@ def api_get_ctt_analysis(quiz_id):
         difficulty_level = 'Mudah'
     else:
         difficulty_level = 'Sedang'
-    
+
     # Interpret discrimination level
     if avg_point_biserial >= 0.4:
         discrimination_level = 'Baik'
@@ -907,11 +978,7 @@ def api_get_ctt_analysis(quiz_id):
         discrimination_level = 'Cukup'
     else:
         discrimination_level = 'Perlu Perbaikan'
-    
-    # Estimate reliability (simplified KR-20 approximation)
-    # This is a rough estimate; proper KR-20 requires more calculation
-    reliability = min(1.0, max(0.0, avg_point_biserial + 0.3))
-    
+
     if reliability >= 0.9:
         reliability_label = 'Sangat Baik'
     elif reliability >= 0.7:
@@ -920,19 +987,24 @@ def api_get_ctt_analysis(quiz_id):
         reliability_label = 'Cukup'
     else:
         reliability_label = 'Kurang'
-    
+
     return jsonify({
         'success': True,
         'quiz_id': quiz_id,
         'total_students': total_students,
+        'group_size_27pct': n_group,
         'items': items_analysis,
         'summary': {
-            'avg_p_value': avg_p_value,
+            'avg_p_value': round(avg_p_value, 4),
             'difficulty_level': difficulty_level,
-            'avg_point_biserial': avg_point_biserial,
+            'avg_point_biserial': round(avg_point_biserial, 4),
             'discrimination_level': discrimination_level,
-            'reliability': reliability,
+            'reliability_kr20': round(reliability, 4),
             'reliability_label': reliability_label,
+            'total_score_mean': round(mean_total, 2),
+            'total_score_variance': round(variance_total, 4),
+            'sum_pq': round(sum_pq, 4),
+            'num_items': k,
         }
     })
 
