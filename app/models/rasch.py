@@ -13,8 +13,7 @@ Rasch Model: Batch processing (setelah threshold ≥30 siswa)
 from datetime import datetime
 from typing import List, Optional, Dict, Any
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import CheckConstraint, UniqueConstraint, Index
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import CheckConstraint, UniqueConstraint, Index, JSON
 from enum import Enum
 
 from app.extensions import db
@@ -653,21 +652,21 @@ class RaschRatingScale(db.Model):
     
     # Scale structure
     num_categories: Mapped[int] = mapped_column(
-        db.Integer, 
+        db.Integer,
         nullable=False
     )
     thresholds: Mapped[Optional[List[float]]] = mapped_column(
-        JSONB, 
+        JSON,
         nullable=True
     )
-    
+
     # Scale statistics
     category_observations: Mapped[Optional[Dict[str, int]]] = mapped_column(
-        JSONB, 
+        JSON,
         nullable=True
     )
     category_averages: Mapped[Optional[Dict[str, float]]] = mapped_column(
-        JSONB, 
+        JSON,
         nullable=True
     )
     

@@ -137,6 +137,29 @@
                         </div>
                     </div>
 
+                    <!-- Rasch Ability Card (jika tersedia) -->
+                    <div class="lg:col-span-1">
+                        <div id="rasch-ability-card" class="hidden bg-white rounded-[2.5rem] border border-gray-100 shadow-premium p-8">
+                            <h3 class="text-lg font-black text-gray-900 mb-4">
+                                <span class="mr-2">📊</span> Posisi Kemampuanmu
+                            </h3>
+                            <div class="text-center mb-4">
+                                <div id="rasch-level-badge" class="inline-block px-4 py-2 rounded-full text-sm font-bold mb-3"></div>
+                                <div class="w-full bg-gray-200 rounded-full h-3 mb-2">
+                                    <div id="rasch-position-bar" class="h-3 rounded-full bg-gradient-to-r from-red-400 via-green-400 to-purple-600" style="width: 50%"></div>
+                                </div>
+                                <div class="flex justify-between text-xs text-gray-500 mb-3">
+                                    <span>Perlu Bimbingan</span>
+                                    <span>Sangat Baik</span>
+                                </div>
+                                <p id="rasch-percentile" class="text-sm font-bold text-gray-700"></p>
+                            </div>
+                            <a id="rasch-view-link" href="#" class="block w-full py-3 px-4 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-xl text-sm font-bold text-center transition-colors">
+                                Lihat Detail Kemampuan →
+                            </a>
+                        </div>
+                    </div>
+
                     <!-- Right: Detailed Table -->
                     <div class="lg:col-span-2">
                         <div class="bg-white rounded-[2.5rem] border border-gray-100 shadow-premium overflow-hidden">
@@ -324,17 +347,26 @@ async function loadMyGrades() {
                     const cpPredicate = cp.predicate || getPredicate(avgScore);
                     const cpMastery = cp.mastery_status || getMasteryStatus(avgScore);
                     const cpColors = getMasteryColor(avgScore);
+                    const needsRemedial = cp.needs_remedial || false;
+                    const remedialLabel = cp.remedial_label || 'Tuntas';
 
                     const div = document.createElement('div');
-                    div.className = 'mastery-badge p-4 rounded-2xl border border-gray-100 bg-gray-50';
+                    div.className = `mastery-badge p-4 rounded-2xl border flex items-start space-x-3 ${needsRemedial ? 'border-rose-200 bg-rose-50' : 'border-gray-100 bg-gray-50'}`;
                     div.innerHTML = `
-                        <div class="flex items-start space-x-3 mb-3">
-                            <div class="w-10 h-10 rounded-xl ${cpColors.bg} text-white flex-shrink-0 flex items-center justify-center text-xs font-black shadow-sm">
+                        <div class="flex-shrink-0">
+                            <div class="w-10 h-10 rounded-xl ${cpColors.bg} text-white flex items-center justify-center text-xs font-black shadow-sm">
                                 ${cpPredicate.letter}
                             </div>
-                            <div class="flex-1 min-w-0">
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2 mb-1">
                                 <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">${cp.code}</p>
-                                <p class="text-xs text-gray-700 font-bold leading-relaxed line-clamp-2 mt-0.5">${cp.description}</p>
+                                ${needsRemedial 
+                                    ? '<span class="px-2 py-0.5 bg-rose-500 text-white text-[9px] font-bold rounded-full">Perlu Remedial</span>'
+                                    : '<span class="px-2 py-0.5 bg-emerald-500 text-white text-[9px] font-bold rounded-full">Tuntas</span>'
+                                }
+                            </div>
+                            <p class="text-xs text-gray-700 font-bold leading-relaxed line-clamp-2 mt-0.5">${cp.description}</p>
                             </div>
                         </div>
                         <div class="w-full bg-gray-200 rounded-full h-1.5 mb-2">
@@ -351,10 +383,66 @@ async function loadMyGrades() {
                 cpContainer.innerHTML = '<div class="text-center py-6 text-gray-400 text-sm italic">Belum ada target pembelajaran yang ditetapkan oleh guru</div>';
             }
         }
+        
+        // Load Rasch ability data if available
+        loadRaschAbility();
     } catch (err) {
         console.error('Failed to load grades:', err);
         noGradesMsg.classList.remove('hidden');
     }
+}
+
+// Load Rasch ability data
+async function loadRaschAbility() {
+    try {
+        const res = await fetch(`/api/rasch/course/${COURSE_ID}/my-ability`);
+        if (!res.ok) throw new Error('No ability data');
+        
+        const data = await res.json();
+        if (!data.success || !data.ability) return;
+        
+        const ability = data.ability;
+        const theta = ability.theta || 0;
+        const abilityLevel = ability.ability_level || 'average';
+        const percentile = ability.ability_percentile || 50;
+        
+        // Show card
+        const card = document.getElementById('rasch-ability-card');
+        card.classList.remove('hidden');
+        
+        // Set level badge
+        const badge = document.getElementById('rasch-level-badge');
+        const levelConfig = getAbilityLevelConfig(abilityLevel);
+        badge.className = `inline-block px-4 py-2 rounded-full text-sm font-bold mb-3 ${levelConfig.class}`;
+        badge.textContent = levelConfig.label;
+        
+        // Set position bar (theta ranges from -3 to +3)
+        const position = Math.max(0, Math.min(100, ((theta + 3) / 6) * 100));
+        const bar = document.getElementById('rasch-position-bar');
+        bar.style.width = `${position}%`;
+        
+        // Set percentile text
+        document.getElementById('rasch-percentile').textContent = 
+            `Kamu lebih baik dari ${Math.round(percentile)}% siswa di kelas`;
+        
+        // Set link
+        document.getElementById('rasch-view-link').href = `/rasch/course/${COURSE_ID}/my-ability`;
+        
+    } catch (err) {
+        // No ability data available - keep card hidden
+        console.log('No Rasch ability data available');
+    }
+}
+
+function getAbilityLevelConfig(level) {
+    const configs = {
+        'very_low': { label: '🌱 Perlu Bimbingan Intensif', class: 'bg-rose-100 text-rose-700' },
+        'low': { label: '🌿 Perlu Perhatian', class: 'bg-amber-100 text-amber-700' },
+        'average': { label: '⭐ Kemampuan Rata-rata', class: 'bg-blue-100 text-blue-700' },
+        'high': { label: '🚀 Di Atas Rata-rata', class: 'bg-emerald-100 text-emerald-700' },
+        'very_high': { label: '🏆 Kemampuan Unggul', class: 'bg-purple-100 text-purple-700' }
+    };
+    return configs[level] || configs['average'];
 }
 </script>
 {% endblock %}

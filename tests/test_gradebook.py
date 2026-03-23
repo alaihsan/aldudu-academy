@@ -312,133 +312,178 @@ class TestGradebookIntegration:
             assert 'lowest_grade' in data['stats']
 
 
-@pytest.fixture
-def teacher_user(app):
-    """Create a teacher user for testing"""
-    user = User(
-        name='Test Teacher',
-        email='teacher@test.com',
-        role=UserRole.GURU
-    )
-    user.set_password('password123')
-    db.session.add(user)
-    db.session.commit()
-    return user
+class TestGradebookBugFixes:
+    """Test cases for BUG-1, BUG-2, BUG-3 fixes"""
+    
+    def test_bug1_mixed_weight_items(self, app, course, grade_category, student_user):
+        """Test BUG-1 fix: Mixed weight items (some 0, some >0) should all be included"""
+        from app.services.gradebook_service import calculate_category_grade
+        
+        # Create quiz item with weight=100 (imported)
+        quiz_item = GradeItem(
+            name='Quiz: Test',
+            category_id=grade_category.id,
+            max_score=100.0,
+            weight=100.0,
+            course_id=course.id,
+        )
+        
+        # Create manual item with weight=0
+        manual_item = GradeItem(
+            name='Tugas Manual',
+            category_id=grade_category.id,
+            max_score=100.0,
+            weight=0.0,
+            course_id=course.id,
+        )
+        
+        db.session.add_all([quiz_item, manual_item])
+        db.session.commit()
+        
+        # Create entries for both items
+        quiz_entry = GradeEntry(
+            grade_item_id=quiz_item.id,
+            student_id=student_user.id,
+            score=80.0,
+            percentage=80.0,
+        )
+        
+        manual_entry = GradeEntry(
+            grade_item_id=manual_item.id,
+            student_id=student_user.id,
+            score=90.0,
+            percentage=90.0,
+        )
+        
+        db.session.add_all([quiz_entry, manual_entry])
+        db.session.commit()
+        
+        # Calculate category grade - both items should be included
+        with app.app_context():
+            category_data = calculate_category_grade(student_user.id, grade_category.id)
+        
+        # Both items should contribute to the score
+        # Quiz (80% × 100 weight) + Manual (90% × 100 weight) = 170 / 200 = 85%
+        assert category_data['score'] == 85.0, f"Expected 85.0, got {category_data['score']}"
 
+    def test_bug2_unified_final_grade(self, app, course, grade_category, student_user):
+        """Test BUG-2 fix: Unified final grade calculation"""
+        from app.services.gradebook_service import calculate_final_grade, calculate_category_grade
+        
+        # Create grade item
+        item = GradeItem(
+            name='Test Item',
+            category_id=grade_category.id,
+            max_score=100.0,
+            weight=100.0,
+            course_id=course.id,
+        )
+        db.session.add(item)
+        db.session.flush()
+        
+        # Create entry
+        entry = GradeEntry(
+            grade_item_id=item.id,
+            student_id=student_user.id,
+            score=85.0,
+            percentage=85.0,
+        )
+        db.session.add(entry)
+        db.session.commit()
+        
+        with app.app_context():
+            # Test unified function directly with simple average (student view)
+            final_grade_simple = calculate_final_grade(student_user.id, course.id, use_category_weighting=False)
+            assert final_grade_simple == 85.0, f"Simple average should be 85.0, got {final_grade_simple}"
+            
+            # Test with category weighting (teacher view) - category has weight 30%
+            # Category score = 85, weight = 30
+            # weighted_score = 85 * 30 / 100 = 25.5
+            # Final = (25.5 / 30) * 100 = 85.0
+            final_grade_weighted = calculate_final_grade(student_user.id, course.id, use_category_weighting=True)
+            assert final_grade_weighted == 85.0, f"Weighted average should be 85.0, got {final_grade_weighted}"
 
-@pytest.fixture
-def student_user(app):
-    """Create a student user for testing"""
-    user = User(
-        name='Test Student',
-        email='student@test.com',
-        role=UserRole.MURID
-    )
-    user.set_password('password123')
-    db.session.add(user)
-    db.session.commit()
-    return user
+    def test_bug3_manual_override_protects_from_sync(self, app, course, quiz, grade_category, student_user):
+        """Test BUG-3 fix: Manual override protects grade from auto-sync"""
+        from app.services.gradebook_service import sync_quiz_grades
+        
+        # Create grade item for quiz
+        grade_item = GradeItem(
+            name=f"Quiz: {quiz.name}",
+            category_id=grade_category.id,
+            max_score=quiz.points,
+            course_id=course.id,
+            quiz_id=quiz.id,
+        )
+        db.session.add(grade_item)
+        db.session.flush()  # Get the ID before creating entry
+        
+        # Create entry with manual override
+        original_score = 95.0
+        entry = GradeEntry(
+            grade_item_id=grade_item.id,
+            student_id=student_user.id,
+            score=original_score,
+            percentage=95.0,
+            manual_override=True,  # Teacher manually adjusted this
+        )
+        db.session.add(entry)
+        
+        # Create quiz submission with different score
+        submission = QuizSubmission(
+            quiz_id=quiz.id,
+            user_id=student_user.id,
+            score=70.0,  # Different from manual override
+            total_points=100
+        )
+        db.session.add(submission)
+        db.session.commit()
+        
+        with app.app_context():
+            # Sync quiz grades
+            updated_count = sync_quiz_grades(quiz.id)
+        
+        # Entry should NOT be updated because of manual_override
+        db.session.refresh(entry)
+        assert entry.score == original_score, \
+            f"Manual override failed: expected {original_score}, got {entry.score}"
+        assert entry.manual_override == True
 
-
-@pytest.fixture
-def course(app, teacher_user):
-    """Create a course for testing"""
-    course = Course(
-        name='Test Course',
-        description='Test Description',
-        teacher_id=teacher_user.id,
-        class_code='TEST123'
-    )
-    db.session.add(course)
-    db.session.commit()
-    # Enroll student
-    course.students.append(User.query.filter_by(email='student@test.com').first())
-    db.session.commit()
-    return course
-
-
-@pytest.fixture
-def grade_category(app, course):
-    """Create a grade category for testing"""
-    category = GradeCategory(
-        name='Penilaian Harian',
-        category_type=GradeCategoryType.FORMATIF,
-        weight=30.0,
-        course_id=course.id
-    )
-    db.session.add(category)
-    db.session.commit()
-    return category
-
-
-@pytest.fixture
-def learning_objective(app, course):
-    """Create a learning objective for testing"""
-    lo = LearningObjective(
-        code='CP-1',
-        description='Test Learning Objective',
-        course_id=course.id
-    )
-    db.session.add(lo)
-    db.session.commit()
-    return lo
-
-
-@pytest.fixture
-def grade_item(app, course, grade_category):
-    """Create a grade item for testing"""
-    item = GradeItem(
-        name='Test Grade Item',
-        category_id=grade_category.id,
-        max_score=100.0,
-        weight=10.0,
-        course_id=course.id
-    )
-    db.session.add(item)
-    db.session.commit()
-    return item
-
-
-@pytest.fixture
-def grade_entry(app, grade_item, student_user):
-    """Create a grade entry for testing"""
-    entry = GradeEntry(
-        grade_item_id=grade_item.id,
-        student_id=student_user.id,
-        score=85.0,
-        percentage=85.0,
-        feedback='Good job!'
-    )
-    db.session.add(entry)
-    db.session.commit()
-    return entry
-
-
-@pytest.fixture
-def quiz(app, course):
-    """Create a quiz for testing"""
-    quiz = Quiz(
-        name='Test Quiz',
-        description='Test Description',
-        course_id=course.id,
-        points=100,
-        status=QuizStatus.DRAFT
-    )
-    db.session.add(quiz)
-    db.session.commit()
-    return quiz
-
-
-@pytest.fixture
-def assignment(app, course):
-    """Create an assignment for testing"""
-    assignment = Assignment(
-        title='Test Assignment',
-        description='Test Description',
-        course_id=course.id,
-        max_score=100.0,
-        status=AssignmentStatus.PUBLISHED
-    )
-    db.session.add(assignment)
-    db.session.commit()
-    return assignment
+    def test_bulk_save_grades_sets_manual_override(self, app, course, grade_category, student_user, teacher_user):
+        """Test that bulk_save_grades sets manual_override flag"""
+        from app.services.gradebook_service import bulk_save_grades
+        
+        # Create grade item
+        item = GradeItem(
+            name='Test Item',
+            category_id=grade_category.id,
+            max_score=100.0,
+            weight=100.0,
+            course_id=course.id,
+        )
+        db.session.add(item)
+        db.session.flush()  # Get ID
+        item_id = item.id
+        
+        # Bulk save with manual override - DON'T use app.app_context() here
+        # because we're already in the app context from fixture
+        entries_data = [{
+            'grade_item_id': item_id,
+            'student_id': student_user.id,
+            'score': 88.0,
+            'feedback': 'Good work!'
+        }]
+        
+        saved_count = bulk_save_grades(entries_data, graded_by=teacher_user.id)
+        
+        assert saved_count == 1
+        
+        # Verify manual_override is set
+        entry = GradeEntry.query.filter_by(
+            grade_item_id=item_id,
+            student_id=student_user.id
+        ).first()
+        
+        assert entry is not None
+        assert entry.score == 88.0
+        assert entry.manual_override == True, "Manual override should be True for bulk saved grades"

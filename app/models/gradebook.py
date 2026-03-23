@@ -211,6 +211,11 @@ class GradeEntry(db.Model):
     feedback: Mapped[Optional[str]] = mapped_column(db.Text, nullable=True)
     graded_at: Mapped[Optional[datetime]] = mapped_column(db.DateTime, nullable=True)
     graded_by: Mapped[Optional[int]] = mapped_column(db.Integer, db.ForeignKey('users.id'), nullable=True, index=True)
+    
+    # Manual override flag - protects grade from automatic sync
+    manual_override: Mapped[bool] = mapped_column(db.Boolean, default=False, nullable=False)
+    # If True, this grade was manually adjusted by teacher and should not be overwritten by auto-sync
+    
     created_at: Mapped[datetime] = mapped_column(db.DateTime, default=get_jakarta_now)
     updated_at: Mapped[datetime] = mapped_column(db.DateTime, default=get_jakarta_now, onupdate=get_jakarta_now)
 
@@ -233,6 +238,7 @@ class GradeEntry(db.Model):
             'feedback': self.feedback,
             'graded_at': self.graded_at.strftime('%Y-%m-%d %H:%M:%S') if self.graded_at else None,
             'graded_by': self.graded_by,
+            'manual_override': self.manual_override,
         }
 
     def __repr__(self):

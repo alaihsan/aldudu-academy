@@ -154,6 +154,22 @@
                             <p id="stat-lowest" class="text-4xl font-bold text-orange-600 mt-2">-</p>
                         </div>
                     </div>
+                    
+                    <!-- CTT Item Analysis Section -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-bold text-gray-900">📊 Analisis Butir Soal (CTT)</h3>
+                            <select id="ctt-quiz-select" onchange="loadCTTAnalysis()" class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-semibold focus:ring-2 focus-theme focus:border-theme outline-none">
+                                <option value="">Pilih Quiz/Tugas</option>
+                            </select>
+                        </div>
+                        <div id="ctt-analysis-content" class="space-y-4">
+                            <div class="text-center py-12 text-gray-400">
+                                <p class="text-sm">Pilih quiz atau tugas untuk melihat analisis butir soal</p>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                         <h3 class="text-lg font-bold text-gray-900 mb-6">Distribusi Nilai</h3>
                         <div id="grade-distribution" class="space-y-4"></div>
@@ -740,12 +756,12 @@ async function confirmImportQuiz() {
     const quizId = document.getElementById('import-quiz-id').value;
     const categoryId = document.getElementById('import-category').value;
     const tpId = document.getElementById('import-tp').value;
-    
+
     if (!categoryId) {
         alert('Pilih kategori terlebih dahulu');
         return;
     }
-    
+
     try {
         const res = await fetch(`/gradebook/api/quizzes/${quizId}/import`, {
             method: 'POST',
@@ -756,7 +772,7 @@ async function confirmImportQuiz() {
             }),
         });
         const result = await res.json();
-        
+
         if (result.success) {
             alert('Quiz berhasil diimpor!');
             closeImportQuizModal();
@@ -768,5 +784,169 @@ async function confirmImportQuiz() {
         alert('Gagal mengimpor quiz');
     }
 }
+
+// CTT Item Analysis Functions
+async function loadCTTQuizList() {
+    const select = document.getElementById('ctt-quiz-select');
+    
+    try {
+        const res = await fetch(`/gradebook/api/course/${COURSE_ID}/quizzes-with-analysis`);
+        const data = await res.json();
+        
+        if (data.success && data.quizzes) {
+            select.innerHTML = '<option value="">Pilih Quiz/Tugas</option>';
+            data.quizzes.forEach(quiz => {
+                const option = document.createElement('option');
+                option.value = quiz.id;
+                option.textContent = `${quiz.name} (${quiz.submission_count} submissions)`;
+                select.appendChild(option);
+            });
+        }
+    } catch (err) {
+        console.error('Failed to load quiz list:', err);
+    }
+}
+
+async function loadCTTAnalysis() {
+    const quizId = document.getElementById('ctt-quiz-select').value;
+    const content = document.getElementById('ctt-analysis-content');
+    
+    if (!quizId) {
+        content.innerHTML = `
+            <div class="text-center py-12 text-gray-400">
+                <p class="text-sm">Pilih quiz atau tugas untuk melihat analisis butir soal</p>
+            </div>
+        `;
+        return;
+    }
+    
+    try {
+        const res = await fetch(`/gradebook/api/quiz/${quizId}/ctt-analysis`);
+        const data = await res.json();
+        
+        if (!data.success || !data.items || data.items.length === 0) {
+            content.innerHTML = `
+                <div class="text-center py-12 text-gray-400">
+                    <p class="text-sm">Tidak ada data untuk dianalisis</p>
+                </div>
+            `;
+            return;
+        }
+        
+        const items = data.items;
+        
+        let html = `
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b border-gray-200">
+                            <th class="text-left py-3 px-4 font-bold text-gray-700">Soal</th>
+                            <th class="text-center py-3 px-4 font-bold text-gray-700">p-value<br><span class="text-xs font-normal">(Kesukaran)</span></th>
+                            <th class="text-center py-3 px-4 font-bold text-gray-700">Daya Beda</th>
+                            <th class="text-center py-3 px-4 font-bold text-gray-700">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+        
+        items.forEach((item, index) => {
+            const pValue = item.p_value || 0;
+            const pointBiserial = item.point_biserial || 0;
+            
+            // Interpret p-value
+            let difficulty = 'Sedang';
+            let difficultyColor = 'text-blue-600';
+            if (pValue < 0.3) {
+                difficulty = 'Sukar';
+                difficultyColor = 'text-red-600';
+            } else if (pValue > 0.7) {
+                difficulty = 'Mudah';
+                difficultyColor = 'text-green-600';
+            }
+            
+            // Interpret point-biserial
+            let discrimination = 'Cukup';
+            let discriminationColor = 'text-yellow-600';
+            let status = '⚠️ Perlu Review';
+            let statusBg = 'bg-yellow-50';
+            
+            if (pointBiserial >= 0.4) {
+                discrimination = 'Baik';
+                discriminationColor = 'text-green-600';
+                status = '✅ Baik';
+                statusBg = 'bg-green-50';
+            } else if (pointBiserial >= 0.2) {
+                discrimination = 'Cukup';
+                discriminationColor = 'text-blue-600';
+                status = '👍 Cukup';
+                statusBg = 'bg-blue-50';
+            } else if (pointBiserial < 0) {
+                discrimination = 'Buruk';
+                discriminationColor = 'text-red-600';
+                status = '❌ Buruk';
+                statusBg = 'bg-red-50';
+            }
+            
+            html += `
+                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                    <td class="py-3 px-4">
+                        <p class="font-semibold text-gray-900">Soal ${index + 1}</p>
+                        <p class="text-xs text-gray-500">Benar: ${item.correct_count}/${item.total_students}</p>
+                    </td>
+                    <td class="text-center py-3 px-4">
+                        <span class="text-lg font-bold ${difficultyColor}">${pValue.toFixed(2)}</span>
+                        <p class="text-xs text-gray-500">${difficulty}</p>
+                    </td>
+                    <td class="text-center py-3 px-4">
+                        <span class="text-lg font-bold ${discriminationColor}">${pointBiserial.toFixed(2)}</span>
+                    </td>
+                    <td class="text-center py-3 px-4">
+                        <span class="px-3 py-1 rounded-full text-xs font-bold ${statusBg}">${status}</span>
+                    </td>
+                </tr>
+            `;
+        });
+        
+        html += `
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Summary Stats -->
+            <div class="grid grid-cols-3 gap-4 mt-6">
+                <div class="bg-blue-50 rounded-lg p-4 text-center">
+                    <p class="text-xs text-blue-600 font-bold uppercase">Rata-rata p-value</p>
+                    <p class="text-2xl font-bold text-blue-700 mt-1">${data.summary.avg_p_value.toFixed(2)}</p>
+                    <p class="text-xs text-blue-600 mt-1">${data.summary.difficulty_level}</p>
+                </div>
+                <div class="bg-green-50 rounded-lg p-4 text-center">
+                    <p class="text-xs text-green-600 font-bold uppercase">Rata-rata Daya Beda</p>
+                    <p class="text-2xl font-bold text-green-700 mt-1">${data.summary.avg_point_biserial.toFixed(2)}</p>
+                    <p class="text-xs text-green-600 mt-1">${data.summary.discrimination_level}</p>
+                </div>
+                <div class="bg-purple-50 rounded-lg p-4 text-center">
+                    <p class="text-xs text-purple-600 font-bold uppercase">Reliabilitas</p>
+                    <p class="text-2xl font-bold text-purple-700 mt-1">${data.summary.reliability.toFixed(2)}</p>
+                    <p class="text-xs text-purple-600 mt-1">${data.summary.reliability_label}</p>
+                </div>
+            </div>
+        `;
+        
+        content.innerHTML = html;
+        
+    } catch (err) {
+        console.error('Failed to load CTT analysis:', err);
+        content.innerHTML = `
+            <div class="text-center py-12 text-red-400">
+                <p class="text-sm">Gagal memuat analisis</p>
+            </div>
+        `;
+    }
+}
+
+// Load quiz list on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadCTTQuizList();
+});
 </script>
 {% endblock %}

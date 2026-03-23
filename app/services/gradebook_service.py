@@ -13,6 +13,57 @@ from app.models import (
 from app.helpers import get_jakarta_now
 
 
+def calculate_final_grade(student_id: int, course_id: int, use_category_weighting: bool = True) -> float:
+    """
+    Calculate final grade for a student in a course.
+    
+    This is the unified function used by both teacher and student views.
+    
+    Args:
+        student_id: Student user ID
+        course_id: Course ID
+        use_category_weighting: If True, use category weighting. If False, use simple average.
+    
+    Returns:
+        Final grade as a percentage (0-100)
+    """
+    if use_category_weighting:
+        # Use category weighting (teacher view)
+        categories = GradeCategory.query.filter_by(course_id=course_id).all()
+        
+        if not categories:
+            # No categories defined, fall back to simple average
+            use_category_weighting = False
+    
+    if not use_category_weighting:
+        # Simple average of all graded items (student view fallback)
+        all_items = GradeItem.query.filter_by(course_id=course_id).all()
+        all_percentages = []
+        
+        for item in all_items:
+            entry = GradeEntry.query.filter_by(
+                grade_item_id=item.id,
+                student_id=student_id
+            ).first()
+            if entry and entry.percentage is not None:
+                all_percentages.append(entry.percentage)
+        
+        return round(sum(all_percentages) / len(all_percentages), 2) if all_percentages else 0.0
+    
+    # Category-weighted calculation
+    total_weighted_score = 0.0
+    total_weight = 0.0
+
+    for category in categories:
+        category_data = calculate_category_grade(student_id, category.id)
+        if category_data['weight'] > 0:
+            total_weighted_score += category_data['weighted_score']
+            total_weight += category_data['weight']
+
+    # Return as percentage (0-100), not ratio (0-1)
+    return round((total_weighted_score / total_weight) * 100, 2) if total_weight > 0 else 0.0
+
+
 def calculate_student_grade(student_id: int, course_id: int) -> Dict:
     """
     Calculate final grade for a student in a course
@@ -20,7 +71,7 @@ def calculate_student_grade(student_id: int, course_id: int) -> Dict:
     """
     # Get all grade categories for the course
     categories = GradeCategory.query.filter_by(course_id=course_id).all()
-    
+
     result = {
         'student_id': student_id,
         'course_id': course_id,
@@ -28,41 +79,48 @@ def calculate_student_grade(student_id: int, course_id: int) -> Dict:
         'final_grade': 0.0,
         'total_weight': 0.0,
     }
-    
+
     total_weighted_score = 0.0
     total_weight = 0.0
-    
+
     for category in categories:
         category_data = calculate_category_grade(student_id, category.id)
         if category_data['weight'] > 0:
             result['categories'][category.category_type.value] = category_data
             total_weighted_score += category_data['weighted_score']
             total_weight += category_data['weight']
-    
+
     if total_weight > 0:
         result['final_grade'] = total_weighted_score / total_weight
         result['total_weight'] = total_weight
-    
+
     return result
 
 
 def calculate_category_grade(student_id: int, category_id: int) -> Dict:
     """
     Calculate grade for a specific category
+    
+    Handles 3 scenarios:
+    1. All items weight=0 → simple average (all items count equally)
+    2. All items weight>0 → weighted average (items count by their weight)
+    3. Mixed (some 0, some >0) → hybrid: items with weight use weight, items without weight use simple average
     """
     category = GradeCategory.query.get(category_id)
     if not category:
         return {'score': 0, 'weight': 0, 'weighted_score': 0}
-    
+
     # Get all grade items in this category
     grade_items = GradeItem.query.filter_by(category_id=category_id).all()
-    
+
     total_score = 0.0
     total_max_score = 0.0
     items_count = 0
 
-    # Use simple average when ALL items have weight=0 (default auto-created items)
+    # Check weight distribution
     all_zero_weight = all(item.weight == 0 for item in grade_items)
+    all_nonzero_weight = all(item.weight > 0 for item in grade_items)
+    has_mixed_weights = not all_zero_weight and not all_nonzero_weight
 
     for item in grade_items:
         entry = GradeEntry.query.filter_by(
@@ -73,19 +131,34 @@ def calculate_category_grade(student_id: int, category_id: int) -> Dict:
         if entry and entry.score is not None:
             # Normalize to percentage
             percentage = entry.percentage if entry.percentage else (entry.score / item.max_score * 100) if item.max_score > 0 else 0
+            
             if all_zero_weight:
-                # Simple average: all items count equally
+                # Scenario 1: Simple average - all items count equally
                 total_score += percentage
                 total_max_score += 100
-            elif item.weight > 0:
-                # Weighted average: only include items with explicit weight
+            elif all_nonzero_weight:
+                # Scenario 2: Weighted average - items count by their weight
                 total_score += percentage * (item.weight / 100)
                 total_max_score += item.weight
+            else:
+                # Scenario 3: Mixed - hybrid approach
+                # Items with explicit weight use their weight
+                # Items without weight (weight=0) are treated as equal-weight items
+                if item.weight > 0:
+                    total_score += percentage * (item.weight / 100)
+                    total_max_score += item.weight
+                else:
+                    # For mixed scenario, items without weight get equal share of remaining weight
+                    # Example: if quiz has weight=100, manual items share the remaining 0
+                    # We treat weight=0 items as having equal weight among themselves
+                    total_score += percentage
+                    total_max_score += 100
+            
             items_count += 1
 
     # Calculate category average
     category_score = (total_score / total_max_score * 100) if total_max_score > 0 else 0
-    
+
     return {
         'category_id': category_id,
         'category_name': category.name,
@@ -194,27 +267,33 @@ def import_quiz_to_gradebook(quiz_id: int, category_id: int, learning_goal_id: O
 
 def sync_quiz_grades(quiz_id: int) -> int:
     """
-    Sync quiz submission scores with gradebook
-    Returns number of entries updated
+    Sync quiz submission scores with gradebook.
+    Respects manual_override flag - will not overwrite manually adjusted grades.
+    
+    Returns number of entries updated.
     """
     grade_item = GradeItem.query.filter_by(quiz_id=quiz_id).first()
     if not grade_item:
         return 0
-    
+
     quiz = Quiz.query.get(quiz_id)
     if not quiz:
         return 0
-    
+
     updated_count = 0
     submissions = QuizSubmission.query.filter_by(quiz_id=quiz_id).all()
-    
+
     for submission in submissions:
         entry = GradeEntry.query.filter_by(
             grade_item_id=grade_item.id,
             student_id=submission.user_id
         ).first()
-        
+
         if entry:
+            # Skip if this grade was manually overridden by teacher
+            if entry.manual_override:
+                continue
+            
             percentage = (submission.score / submission.total_points * 100) if submission.total_points > 0 else 0
             entry.score = submission.score
             entry.percentage = percentage
@@ -230,10 +309,11 @@ def sync_quiz_grades(quiz_id: int) -> int:
                 percentage=percentage,
                 graded_at=submission.submitted_at,
                 graded_by=quiz.course.teacher_id,
+                manual_override=False,  # New entries from sync are not overridden
             )
             db.session.add(entry)
             updated_count += 1
-    
+
     db.session.commit()
     return updated_count
 
@@ -270,10 +350,41 @@ def get_mastery_status(grade: float) -> str:
         return 'Kamu belum menguasai materi ini'
 
 
+def needs_remedial(grade: float, kkm: float = 70.0) -> bool:
+    """
+    Check if student needs remedial based on KKM threshold.
+    
+    Args:
+        grade: Student's grade (0-100)
+        kkm: Minimum passing grade (default: 70)
+    
+    Returns:
+        True if grade < KKM (needs remedial)
+    """
+    return grade < kkm
+
+
+def get_remedial_label(grade: float, kkm: float = 70.0) -> str:
+    """
+    Get remedial status label.
+    
+    Args:
+        grade: Student's grade (0-100)
+        kkm: Minimum passing grade (default: 70)
+    
+    Returns:
+        Label indicating remedial status
+    """
+    if grade >= kkm:
+        return 'Tuntas'
+    else:
+        return 'Perlu Remedial'
+
+
 def get_student_grades_summary(student_id: int, course_id: int) -> Dict:
     """
     Get comprehensive grade summary for a student.
-    Uses simple average (no category weighting) for final grade.
+    Uses unified calculate_final_grade() for consistent calculation.
     Includes predicate (A/B/C/D) and mastery status for each learning objective.
     """
     course = Course.query.get(course_id)
@@ -281,7 +392,8 @@ def get_student_grades_summary(student_id: int, course_id: int) -> Dict:
         return {}
 
     # Check if student is enrolled
-    if course.teacher_id != student_id and student_id not in [s.id for s in course.students.all()]:
+    students_list = course.students.all() if hasattr(course.students, 'all') else course.students
+    if course.teacher_id != student_id and student_id not in [s.id for s in students_list]:
         return {}
 
     # ── Collect ALL grade items for this course ──────────────────────
@@ -313,8 +425,9 @@ def get_student_grades_summary(student_id: int, course_id: int) -> Dict:
         if entry and entry.percentage is not None:
             all_percentages.append(entry.percentage)
 
-    # ── Calculate simple average final grade (no weighting) ──────────
-    final_grade = round(sum(all_percentages) / len(all_percentages), 2) if all_percentages else 0.0
+    # ── Calculate final grade using unified function ─────────────────
+    # Student view uses simple average (no category weighting)
+    final_grade = calculate_final_grade(student_id, course_id, use_category_weighting=False)
     predicate = get_predicate(final_grade)
 
     # ── Learning objectives (Capaian Materi) with mastery status ─────
@@ -374,6 +487,8 @@ def get_student_grades_summary(student_id: int, course_id: int) -> Dict:
         lo_data['avg_score'] = avg_score
         lo_data['predicate'] = get_predicate(avg_score)
         lo_data['mastery_status'] = get_mastery_status(avg_score)
+        lo_data['needs_remedial'] = needs_remedial(avg_score)
+        lo_data['remedial_label'] = get_remedial_label(avg_score)
 
         lo_list.append(lo_data)
 
@@ -408,43 +523,52 @@ def get_student_grades_summary(student_id: int, course_id: int) -> Dict:
     return summary
 
 
-def bulk_save_grades(entries_data: List[Dict], graded_by: int) -> int:
+def bulk_save_grades(entries_data: List[Dict], graded_by: int, set_manual_override: bool = True) -> int:
     """
-    Bulk save grade entries
-    entries_data: List of dicts with keys: grade_item_id, student_id, score, feedback
-    Returns number of entries saved
+    Bulk save grade entries.
+    
+    Args:
+        entries_data: List of dicts with keys: grade_item_id, student_id, score, feedback, manual_override (optional)
+        graded_by: Teacher user ID who is grading
+        set_manual_override: If True, mark manually entered grades as overridden (protected from auto-sync)
+    
+    Returns:
+        Number of entries saved
     """
     saved_count = 0
     now = get_jakarta_now()
-    
+
     for entry_data in entries_data:
         grade_item_id = entry_data.get('grade_item_id')
         student_id = entry_data.get('student_id')
         score = entry_data.get('score')
         feedback = entry_data.get('feedback')
-        
+        manual_override = entry_data.get('manual_override', set_manual_override)
+
         if not all([grade_item_id, student_id, score is not None]):
             continue
-        
+
         # Get grade item to calculate percentage
         grade_item = GradeItem.query.get(grade_item_id)
         if not grade_item:
             continue
-        
+
         percentage = (score / grade_item.max_score * 100) if grade_item.max_score > 0 else 0
-        
+
         # Find or create entry
         entry = GradeEntry.query.filter_by(
             grade_item_id=grade_item_id,
             student_id=student_id
         ).first()
-        
+
         if entry:
             entry.score = score
             entry.percentage = percentage
             entry.feedback = feedback
             entry.graded_at = now
             entry.graded_by = graded_by
+            if manual_override:
+                entry.manual_override = True
         else:
             entry = GradeEntry(
                 grade_item_id=grade_item_id,
@@ -454,10 +578,11 @@ def bulk_save_grades(entries_data: List[Dict], graded_by: int) -> int:
                 feedback=feedback,
                 graded_at=now,
                 graded_by=graded_by,
+                manual_override=manual_override,
             )
             db.session.add(entry)
-        
+
         saved_count += 1
-    
+
     db.session.commit()
     return saved_count

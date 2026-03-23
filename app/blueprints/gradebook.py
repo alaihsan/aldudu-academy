@@ -749,3 +749,181 @@ def api_get_available_quizzes():
             'submissions_count': q.submissions.count(),
         } for q in quizzes]
     })
+
+
+@gradebook_bp.route('/api/course/<int:course_id>/quizzes-with-analysis', methods=['GET'])
+@login_required
+def api_get_quizzes_with_analysis(course_id):
+    """Get quizzes with submissions for CTT analysis"""
+    course = Course.query.get_or_404(course_id)
+    
+    if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
+        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+    
+    # Get all quizzes with at least 1 submission
+    quizzes = Quiz.query.filter(
+        Quiz.course_id == course_id
+    ).all()
+    
+    quiz_list = []
+    for q in quizzes:
+        submission_count = q.submissions.count()
+        if submission_count > 0:
+            quiz_list.append({
+                'id': q.id,
+                'name': q.name,
+                'submissions_count': submission_count,
+            })
+    
+    return jsonify({
+        'success': True,
+        'quizzes': quiz_list
+    })
+
+
+@gradebook_bp.route('/api/quiz/<int:quiz_id>/ctt-analysis', methods=['GET'])
+@login_required
+def api_get_ctt_analysis(quiz_id):
+    """
+    Get Classical Test Theory (CTT) analysis for a quiz.
+    
+    Returns:
+    - p_value (difficulty index) for each question
+    - point_biserial (discrimination index) for each question
+    - Summary statistics
+    """
+    from app.models.quiz import Question, QuizSubmission, Answer
+    
+    quiz = Quiz.query.get_or_404(quiz_id)
+    course = Course.query.get(quiz.course_id)
+    
+    if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
+        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+    
+    # Get all questions in the quiz
+    questions = Question.query.filter_by(quiz_id=quiz_id).all()
+    
+    if not questions:
+        return jsonify({
+            'success': True,
+            'items': [],
+            'summary': {}
+        })
+    
+    # Get all submissions
+    submissions = QuizSubmission.query.filter_by(quiz_id=quiz_id).all()
+    total_students = len(submissions)
+    
+    if total_students == 0:
+        return jsonify({
+            'success': True,
+            'items': [],
+            'summary': {}
+        })
+    
+    # Calculate CTT metrics for each question
+    items_analysis = []
+    all_p_values = []
+    all_point_biserials = []
+    
+    for question in questions:
+        # Count correct answers
+        correct_count = 0
+        student_scores = []
+        
+        for submission in submissions:
+            # Get student's answer for this question
+            answer = Answer.query.filter_by(
+                submission_id=submission.id,
+                question_id=question.id
+            ).first()
+            
+            is_correct = False
+            if answer and answer.is_correct:
+                correct_count += 1
+                is_correct = True
+            
+            student_scores.append(1 if is_correct else 0)
+        
+        # Calculate p-value (difficulty index)
+        p_value = correct_count / total_students if total_students > 0 else 0
+        all_p_values.append(p_value)
+        
+        # Calculate point-biserial (discrimination index)
+        # Correlation between question score (0/1) and total quiz score
+        total_scores = [s.score for s in submissions]
+        
+        if len(student_scores) > 1 and len(total_scores) > 1:
+            # Calculate correlation
+            mean_x = sum(student_scores) / len(student_scores)
+            mean_y = sum(total_scores) / len(total_scores)
+            
+            numerator = sum((x - mean_x) * (y - mean_y) for x, y in zip(student_scores, total_scores))
+            
+            std_x = (sum((x - mean_x) ** 2 for x in student_scores)) ** 0.5
+            std_y = (sum((y - mean_y) ** 2 for y in total_scores)) ** 0.5
+            
+            if std_x > 0 and std_y > 0:
+                point_biserial = numerator / (std_x * std_y)
+            else:
+                point_biserial = 0
+        else:
+            point_biserial = 0
+        
+        all_point_biserials.append(point_biserial)
+        
+        items_analysis.append({
+            'question_id': question.id,
+            'p_value': p_value,
+            'correct_count': correct_count,
+            'total_students': total_students,
+            'point_biserial': point_biserial,
+        })
+    
+    # Calculate summary statistics
+    avg_p_value = sum(all_p_values) / len(all_p_values) if all_p_values else 0
+    avg_point_biserial = sum(all_point_biserials) / len(all_point_biserials) if all_point_biserials else 0
+    
+    # Interpret difficulty level
+    if avg_p_value < 0.3:
+        difficulty_level = 'Sukar'
+    elif avg_p_value > 0.7:
+        difficulty_level = 'Mudah'
+    else:
+        difficulty_level = 'Sedang'
+    
+    # Interpret discrimination level
+    if avg_point_biserial >= 0.4:
+        discrimination_level = 'Baik'
+    elif avg_point_biserial >= 0.2:
+        discrimination_level = 'Cukup'
+    else:
+        discrimination_level = 'Perlu Perbaikan'
+    
+    # Estimate reliability (simplified KR-20 approximation)
+    # This is a rough estimate; proper KR-20 requires more calculation
+    reliability = min(1.0, max(0.0, avg_point_biserial + 0.3))
+    
+    if reliability >= 0.9:
+        reliability_label = 'Sangat Baik'
+    elif reliability >= 0.7:
+        reliability_label = 'Baik'
+    elif reliability >= 0.5:
+        reliability_label = 'Cukup'
+    else:
+        reliability_label = 'Kurang'
+    
+    return jsonify({
+        'success': True,
+        'quiz_id': quiz_id,
+        'total_students': total_students,
+        'items': items_analysis,
+        'summary': {
+            'avg_p_value': avg_p_value,
+            'difficulty_level': difficulty_level,
+            'avg_point_biserial': avg_point_biserial,
+            'discrimination_level': discrimination_level,
+            'reliability': reliability,
+            'reliability_label': reliability_label,
+        }
+    })

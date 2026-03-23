@@ -650,3 +650,87 @@ def api_get_bloom_summary(quiz_id):
         'distribution': distribution_with_pct,
         'cognitive_depth': cognitive_depth,
     })
+
+
+@rasch_bp.route('/course/<int:course_id>/my-ability', methods=['GET'])
+@login_required
+def api_get_my_ability(course_id):
+    """
+    Get Rasch ability data untuk siswa yang sedang login.
+    
+    Response:
+    {
+        "success": true,
+        "ability": {
+            "theta": 0.85,
+            "ability_level": "high",
+            "ability_percentile": 75.5,
+            "raw_score": 25,
+            "total_items": 30,
+            "created_at": "2026-03-23"
+        }
+    }
+    """
+    from sqlalchemy import func
+    
+    # Check if student is enrolled
+    course = Course.query.get(course_id)
+    if not course:
+        return jsonify({'success': False, 'message': 'Kursus tidak ditemukan'}), 404
+    
+    # Verify student is enrolled
+    if current_user.role == UserRole.MURID:
+        if current_user.id not in [s.id for s in course.students.all()]:
+            return jsonify({'success': False, 'message': 'Anda tidak terdaftar di kursus ini'}), 403
+    elif current_user.role == UserRole.GURU:
+        # Teachers can view but this endpoint is primarily for students
+        pass
+    else:
+        return jsonify({'success': False, 'message': 'Akses ditolak'}), 403
+    
+    # Get latest Rasch analysis for this course
+    latest_analysis = RaschAnalysis.query.filter_by(
+        course_id=course_id
+    ).order_by(RaschAnalysis.created_at.desc()).first()
+    
+    if not latest_analysis:
+        return jsonify({
+            'success': False,
+            'message': 'Belum ada analisis Rasch untuk kursus ini'
+        }), 404
+    
+    # Get student's ability measure
+    student_measure = RaschPersonMeasure.query.filter_by(
+        analysis_id=latest_analysis.id,
+        user_id=current_user.id
+    ).first()
+    
+    if not student_measure:
+        return jsonify({
+            'success': False,
+            'message': 'Anda belum memiliki hasil analisis Rasch'
+        }), 404
+    
+    # Calculate percentile (percentage of students with lower ability)
+    lower_students = RaschPersonMeasure.query.filter(
+        RaschPersonMeasure.analysis_id == latest_analysis.id,
+        RaschPersonMeasure.theta < student_measure.theta
+    ).count()
+    
+    total_students = RaschPersonMeasure.query.filter_by(
+        analysis_id=latest_analysis.id
+    ).count()
+    
+    percentile = (lower_students / total_students * 100) if total_students > 0 else 50
+    
+    return jsonify({
+        'success': True,
+        'ability': {
+            'theta': float(student_measure.theta) if student_measure.theta else 0,
+            'ability_level': student_measure.ability_level,
+            'ability_percentile': round(percentile, 1),
+            'raw_score': student_measure.raw_score,
+            'total_items': student_measure.total_items,
+            'created_at': student_measure.created_at.strftime('%Y-%m-%d') if student_measure.created_at else None
+        }
+    })

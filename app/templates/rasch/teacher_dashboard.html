@@ -1,4 +1,4 @@
-{% extends "_base.html" %}
+{% extends "base.html" %}
 
 {% block title %}Rasch Model Dashboard - {{ course.name }}{% endblock %}
 
@@ -153,19 +153,18 @@
                         <div class="flex items-center gap-4">
                             <div class="text-right">
                                 <span class="status-badge status-{{ analysis.status }}">
-                                    {% if analysis.status == 'pending' %}⏳
-                                    {% elif analysis.status == 'waiting' %}🕐
-                                    {% elif analysis.status == 'queued' %}📬
-                                    {% elif analysis.status == 'processing' %}⚙️
-                                    {% elif analysis.status == 'completed' %}✅
-                                    {% elif analysis.status == 'failed' %}❌
-                                    {% else %}⚠️
+                                    {% if analysis.status == 'pending' %}⏳ Menunggu
+                                    {% elif analysis.status == 'waiting' %}🕐 Menunggu Pengumpulan
+                                    {% elif analysis.status == 'queued' %}📬 Dalam Antrian
+                                    {% elif analysis.status == 'processing' %}⚙️ Sedang Dianalisis
+                                    {% elif analysis.status == 'completed' %}✅ Selesai
+                                    {% elif analysis.status == 'failed' %}❌ Analisis Gagal
+                                    {% else %}⚠️ Tidak Dikenal
                                     {% endif %}
-                                    {{ analysis.status|title }}
                                 </span>
                                 {% if analysis.status == 'waiting' %}
                                 <p class="text-xs text-gray-600 mt-1">
-                                    {{ analysis.num_persons or 0 }}/{{ analysis.min_persons }} submissions
+                                    {{ analysis.num_persons or 0 }}/{{ analysis.min_persons }} pengumpulan
                                 </p>
                                 {% endif %}
                             </div>
@@ -178,7 +177,7 @@
                     {% else %}
                     <button onclick="enableRaschAnalysis({{ item.id }})"
                             class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-semibold transition-all">
-                        Enable Rasch
+                        Aktifkan Analisis Mendalam
                     </button>
                     {% endif %}
                 </div>
@@ -188,7 +187,7 @@
                     {% if analysis and analysis.status == 'waiting' %}
                     <div class="mt-4">
                         <div class="flex items-center justify-between text-sm mb-2">
-                            <span class="text-gray-600">Progress towards threshold</span>
+                            <span class="text-gray-600">Progres menuju ambang batas</span>
                             <span class="font-semibold text-indigo-600">{{ ((analysis.num_persons or 0) / analysis.min_persons * 100)|round(1) }}%</span>
                         </div>
                         <div class="w-full bg-gray-200 rounded-full h-2">

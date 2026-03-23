@@ -1,4 +1,4 @@
-{% extends "_base.html" %}
+{% extends "base.html" %}
 
 {% block title %}Kemampuan Saya - {{ course.name }}{% endblock %}
 
@@ -139,24 +139,24 @@
                     Berdasarkan analisis Rasch dari {{ latest.rasch_analysis.name }}
                 </p>
                 
-                <div class="flex items-end gap-4 mb-4">
-                    <div class="theta-display">{{ latest.theta|round(2) }}</div>
-                    <div class="pb-3">
-                        <span class="theta-badge theta-{{ latest.ability_level }}">
+                <div class="mb-4">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-2">Tingkat Kemampuan Kamu</h3>
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="theta-badge theta-{{ latest.ability_level }} text-lg px-4 py-2">
                             {{ get_ability_label(latest.ability_level) }}
-                        </span>
+                        </div>
                     </div>
-                </div>
-                
-                <div class="ability-meter">
-                    {% set position = ((latest.theta + 3) / 6 * 100)|clamp(0, 100) %}
-                    <div class="ability-marker" style="left: {{ position }}%"></div>
-                </div>
-                
-                <div class="flex justify-between text-sm text-gray-600">
-                    <span>Very Low (-3)</span>
-                    <span>Average (0)</span>
-                    <span>Very High (+3)</span>
+
+                    <div class="ability-meter">
+                        {% set position = ((latest.theta + 3) / 6 * 100)|clamp(0, 100) %}
+                        <div class="ability-marker" style="left: {{ position }}%"></div>
+                    </div>
+
+                    <div class="flex justify-between text-sm text-gray-600">
+                        <span>Perlu Bimbingan</span>
+                        <span>Rata-rata</span>
+                        <span>Sangat Baik</span>
+                    </div>
                 </div>
             </div>
             
