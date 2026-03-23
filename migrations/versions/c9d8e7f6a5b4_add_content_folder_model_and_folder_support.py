@@ -1,7 +1,7 @@
 """Add ContentFolder model and folder support for materials
 
 Revision ID: c9d8e7f6a5b4
-Revises: 001
+Revises: 21972951625e
 Create Date: 2026-03-20 16:02:56.000000
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = 'c9d8e7f6a5b4'
-down_revision = '001'
+down_revision = '21972951625e'
 branch_labels = None
 depends_on = None
 

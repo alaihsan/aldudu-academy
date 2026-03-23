@@ -381,6 +381,120 @@ def get_remedial_label(grade: float, kkm: float = 70.0) -> str:
         return 'Perlu Remedial'
 
 
+def generate_report_description(student_name: str, course_name: str, final_grade: float, 
+                                category_breakdown: Dict = None, strengths: list = None, 
+                                improvements: list = None) -> str:
+    """
+    Generate smart report card description based on student performance.
+    
+    Args:
+        student_name: Student name
+        course_name: Course name
+        final_grade: Final grade (0-100)
+        category_breakdown: Dict with category scores {'formatif': 85, 'sumatif': 90, ...}
+        strengths: List of strong areas
+        improvements: List of areas needing improvement
+    
+    Returns:
+        Generated description text (Indonesian)
+    """
+    # Determine performance level
+    if final_grade >= 90:
+        level = 'excellent'
+    elif final_grade >= 80:
+        level = 'good'
+    elif final_grade >= 70:
+        level = 'satisfactory'
+    elif final_grade >= 60:
+        level = 'developing'
+    else:
+        level = 'needs_support'
+    
+    # Templates for each performance level
+    templates = {
+        'excellent': [
+            f"{student_name} menunjukkan performa yang sangat baik dalam {course_name}. "
+            "Siswa ini konsisten mencapai hasil terbaik dan memahami konsep dengan mendalam.",
+            
+            f"Ananda {student_name} meraih pencapaian luar biasa di mata pelajaran {course_name}. "
+            "Kemampuan analisis dan pemahaman konsep sangat mengesankan.",
+            
+            f"{student_name} adalah siswa berprestasi tinggi dalam {course_name}. "
+            "Konsistensi dan dedikasi yang ditunjukkan patut menjadi contoh."
+        ],
+        'good': [
+            f"{student_name} menunjukkan performa yang baik dalam {course_name}. "
+            "Dengan terus meningkatkan konsistensi, potensi untuk mencapai hasil lebih baik sangat besar.",
+            
+            f"Ananda {student_name} telah menunjukkan kemajuan yang baik di {course_name}. "
+            "Pertahankan semangat belajar dan tingkatkan latihan untuk hasil yang lebih optimal.",
+            
+            f"{student_name} memiliki pemahaman yang baik terhadap materi {course_name}. "
+            "Teruslah berlatih dan jangan ragu untuk bertanya ketika ada kesulitan."
+        ],
+        'satisfactory': [
+            f"{student_name} mencapai hasil yang cukup dalam {course_name}. "
+            "Diperlukan peningkatan konsistensi belajar dan lebih banyak latihan untuk memperbaiki pemahaman.",
+            
+            f"Ananda {student_name} sudah memahami konsep dasar {course_name} dengan cukup baik. "
+            "Tingkatkan frekuensi belajar dan manfaatkan waktu untuk latihan tambahan.",
+            
+            f"{student_name} menunjukkan pemahaman yang memadai dalam {course_name}. "
+            "Fokus pada area yang masih sulit dan perbanyak latihan soal akan membantu peningkatan."
+        ],
+        'developing': [
+            f"{student_name} masih dalam tahap pengembangan pemahaman {course_name}. "
+            "Diperlukan bimbingan tambahan dan latihan lebih intensif untuk menguasai konsep dasar.",
+            
+            f"Ananda {student_name} perlu meningkatkan usaha belajar di {course_name}. "
+            "Disarankan mengikuti sesi bimbingan dan memperbanyak latihan untuk memperkuat pemahaman.",
+            
+            f"{student_name} menunjukkan perkembangan yang masih perlu ditingkatkan dalam {course_name}. "
+            "Konsistensi belajar dan perhatian lebih pada materi dasar sangat penting."
+        ],
+        'needs_support': [
+            f"{student_name} memerlukan dukungan tambahan dalam {course_name}. "
+            "Sangat disarankan untuk mengikuti program remedial dan bimbingan intensif.",
+            
+            f"Ananda {student_name} perlu perhatian khusus di mata pelajaran {course_name}. "
+            "Kolaborasi antara guru, siswa, dan orang tua diperlukan untuk meningkatkan hasil belajar.",
+            
+            f"{student_name} menghadapi tantangan dalam {course_name}. "
+            "Pendekatan belajar yang berbeda dan bimbingan individual akan sangat membantu."
+        ]
+    }
+    
+    # Select template based on level
+    import random
+    base_description = random.choice(templates[level])
+    
+    # Add specific feedback if category breakdown provided
+    specific_feedback = ""
+    if category_breakdown:
+        formatif = category_breakdown.get('formatif', 0)
+        sumatif = category_breakdown.get('sumatif', 0)
+        sikap = category_breakdown.get('sikap', 0)
+        
+        if formatif > 0 and formatif < 70:
+            specific_feedback += " Perlu peningkatan pada penilaian formatif."
+        if sumatif > 0 and sumatif < 70:
+            specific_feedback += " Perlu penguatan pada penilaian sumatif."
+        if sikap > 0 and sikap < 70:
+            specific_feedback += " Perlu perhatian pada aspek sikap."
+    
+    # Add strengths if provided
+    if strengths:
+        strength_text = " Kelebihan: " + ", ".join(strengths[:3]) + "."
+        base_description += strength_text
+    
+    # Add improvements if provided
+    if improvements:
+        improvement_text = " Area perbaikan: " + ", ".join(improvements[:3]) + "."
+        base_description += improvement_text
+    
+    return base_description + specific_feedback
+
+
 def get_student_grades_summary(student_id: int, course_id: int) -> Dict:
     """
     Get comprehensive grade summary for a student.

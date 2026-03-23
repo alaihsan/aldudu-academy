@@ -441,9 +441,17 @@ def api_get_grade_items():
         return jsonify({'success': False, 'message': 'Unauthorized'}), 403
     
     items = GradeItem.query.filter_by(course_id=course_id).all()
+    
+    items_data = []
+    for item in items:
+        item_dict = item.to_dict()
+        item_dict['is_assignment'] = item.assignment_id is not None
+        item_dict['assignment_id'] = item.assignment_id
+        items_data.append(item_dict)
+    
     return jsonify({
         'success': True,
-        'items': [item.to_dict() for item in items]
+        'items': items_data
     })
 
 
@@ -926,4 +934,202 @@ def api_get_ctt_analysis(quiz_id):
             'reliability': reliability,
             'reliability_label': reliability_label,
         }
+    })
+
+
+@gradebook_bp.route('/api/assignments/<int:assignment_id>/submissions', methods=['GET'])
+@login_required
+def api_get_assignment_submissions(assignment_id):
+    """Get assignment submissions with attachments for preview"""
+    from app.models.assignment import Assignment, AssignmentSubmission
+    
+    assignment = Assignment.query.get_or_404(assignment_id)
+    course = Course.query.get(assignment.course_id)
+    
+    if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
+        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+    
+    # Get all submissions
+    submissions = AssignmentSubmission.query.filter_by(
+        assignment_id=assignment_id
+    ).all()
+    
+    submission_list = []
+    for sub in submissions:
+        student = User.query.get(sub.student_id)
+        submission_list.append({
+            'id': sub.id,
+            'student_id': sub.student_id,
+            'student_name': student.name if student else 'Unknown',
+            'content': sub.content,
+            'file_path': sub.file_path,
+            'status': sub.status.value,
+            'submitted_at': sub.submitted_at.strftime('%Y-%m-%d %H:%M') if sub.submitted_at else None,
+        })
+    
+    return jsonify({
+        'success': True,
+        'assignment_id': assignment_id,
+        'total_submissions': len(submission_list),
+        'submissions': submission_list
+    })
+
+
+@gradebook_bp.route('/api/course/<int:course_id>/wizard-setup', methods=['POST'])
+@login_required
+def api_wizard_setup(course_id):
+    """
+    Wizard setup for new semester.
+    Creates default categories and learning objectives.
+    
+    Request JSON:
+    {
+        "step": 1|2|3,
+        "categories": [{"name": "...", "type": "formatif", "weight": 30}],
+        "learning_objectives": [{"code": "CP-1", "description": "..."}]
+    }
+    """
+    from app.models.gradebook import GradeCategory, GradeCategoryType, LearningObjective
+    
+    course = Course.query.get_or_404(course_id)
+    
+    if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
+        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+    
+    data = request.get_json() or {}
+    step = data.get('step', 1)
+    
+    if step == 1:
+        # Create categories
+        categories_data = data.get('categories', [])
+        created_categories = []
+        
+        for cat_data in categories_data:
+            name = cat_data.get('name')
+            cat_type = cat_data.get('type')
+            weight = cat_data.get('weight', 0)
+            
+            if not name or not cat_type:
+                continue
+            
+            try:
+                category_type = GradeCategoryType(cat_type)
+            except ValueError:
+                continue
+            
+            category = GradeCategory(
+                name=name,
+                category_type=category_type,
+                weight=weight,
+                course_id=course_id
+            )
+            db.session.add(category)
+            created_categories.append({
+                'id': category.id,
+                'name': category.name,
+                'type': category_type.value,
+                'weight': weight
+            })
+        
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'step': 1,
+            'message': 'Kategori berhasil dibuat',
+            'categories': created_categories
+        })
+    
+    elif step == 2:
+        # Create learning objectives (CP)
+        cp_data = data.get('learning_objectives', [])
+        created_cps = []
+        
+        for cp in cp_data:
+            code = cp.get('code')
+            description = cp.get('description')
+            
+            if not code or not description:
+                continue
+            
+            lo = LearningObjective(
+                code=code,
+                description=description,
+                course_id=course_id,
+                order=len(created_cps)
+            )
+            db.session.add(lo)
+            created_cps.append({
+                'id': lo.id,
+                'code': lo.code,
+                'description': lo.description
+            })
+        
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'step': 2,
+            'message': 'Capaian Pembelajaran berhasil dibuat',
+            'learning_objectives': created_cps
+        })
+    
+    elif step == 3:
+        # Finalize setup
+        categories_count = GradeCategory.query.filter_by(course_id=course_id).count()
+        cp_count = LearningObjective.query.filter_by(course_id=course_id).count()
+        
+        return jsonify({
+            'success': True,
+            'step': 3,
+            'message': 'Setup semester selesai',
+            'summary': {
+                'categories_count': categories_count,
+                'learning_objectives_count': cp_count
+            }
+        })
+    
+    return jsonify({'success': False, 'message': 'Invalid step'}), 400
+
+
+@gradebook_bp.route('/api/course/<int:course_id>/wizard-status', methods=['GET'])
+@login_required
+def api_wizard_status(course_id):
+    """Get wizard setup status for a course"""
+    course = Course.query.get_or_404(course_id)
+    
+    if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
+        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+    
+    categories_count = GradeCategory.query.filter_by(course_id=course_id).count()
+    cp_count = LearningObjective.query.filter_by(course_id=course_id).count()
+    
+    # Determine setup progress
+    progress = 0
+    next_step = 1
+    message = "Mulai setup semester"
+    
+    if categories_count > 0:
+        progress = 33
+        next_step = 2
+        message = "Lanjutkan dengan menambah CP"
+    
+    if cp_count > 0:
+        progress = 66
+        next_step = 3
+        message = "Finalisasi setup"
+    
+    if categories_count > 0 and cp_count > 0:
+        progress = 100
+        next_step = 0
+        message = "Setup selesai"
+    
+    return jsonify({
+        'success': True,
+        'setup_complete': progress == 100,
+        'progress': progress,
+        'next_step': next_step,
+        'message': message,
+        'categories_count': categories_count,
+        'learning_objectives_count': cp_count
     })

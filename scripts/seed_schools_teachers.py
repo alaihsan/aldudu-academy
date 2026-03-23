@@ -26,7 +26,7 @@ SCHOOLS_DATA = [
     {"name": "SMA Negeri 10 Balikpapan", "slug": "sman10-balikpapan", "email": "info@sman10balikpapan.sch.id"},
 ]
 
-# Teacher name templates
+# Teacher name templates (expanded to 100 names)
 TEACHER_NAMES = [
     "Ahmad Fauzi", "Budi Santoso", "Citra Dewi", "Dewi Lestari", "Eko Prasetyo",
     "Fitri Handayani", "Gunawan Wijaya", "Hana Pertiwi", "Indra Kusuma", "Joko Widodo",
@@ -34,6 +34,24 @@ TEACHER_NAMES = [
     "Putri Anggraini", "Qori Azzahra", "Rudi Hartono", "Siti Nurhaliza", "Taufik Hidayat",
     "Umar Faruq", "Vina Amelia", "Wawan Setiawan", "Xena Patricia", "Yusuf Ibrahim",
     "Zainab Alatas", "Andi Saputra", "Bella Saphira", "Candra Wijaya", "Diana Kusuma",
+    "Eka Putri", "Farhan Maulana", "Gita Permata", "Hendra Gunawan", "Ika Sari",
+    "Joko Susilo", "Kirana Putri", "Leo Pratama", "Mega Dewi", "Nanda Putra",
+    "Olivia Tan", "Putra Sejati", "Qamaruddin", "Rina Susanti", "Syahrul Ramadhan",
+    "Tari Kusuma", "Usman Harun", "Vina Panduwinata", "Wahyu Hidayat", "Yulia Rachman",
+    "Zainal Abidin", "Arif Rahman", "Bambang Pamungkas", "Citra Lestari", "Doni Pratama",
+    "Erna Sari", "Fajar Nugroho", "Gita Gutawa", "Harris Alatas", "Indah Permata",
+    "Joko Anwar", "Kiki Fatmawati", "Lukman Sardi", "Maya Hasan", "Nizar Kurniawan",
+    "Opick Ramadhan", "Putri Titian", "Qory Sandioriva", "Raffi Ahmad", "Sherina Munaf",
+    "Titi Kamal", "Umar Syihab", "Vicky Prasetyo", "Wulan Guritno", "Xabiru Sandora",
+    "Yovie Widianto", "Zaskia Gotik", "Arie Untung", "Bunga Citra", "Dewa Budjana",
+    "Ebiet Gade", "Fiersa Besari", "Glenn Fredly", "Iwan Fals", "Judika Sihite",
+    "Kahitna Band", "Letto Band", "Mahalini Raharja", "Noah Band", "Oddie Agam",
+    "Peterpan", "Queen Band", "Radja Band", "Sheila On 7", "Tulus",
+    "Ungu Band", "Virgoun Band", "Wali Band", "Yovie Nuno", "Zivilia Band",
+    "Adi Bing Slamet", "Bella Saphira", "Coki Pardede", "Dinda Hauw", "Edo Kondologit",
+    "Fani Rahmawati", "Gading Marten", "Hanna Alatas", "Iqbal Ali", "Jessica Iskandar",
+    "Kenzo Wijaya", "Luna Maya", "Miko Lee", "Nayla Denny", "Oscar Mahendra",
+    "Putri Uno", "Qalbi Qolbu", "Rizky Billar", "Salsa Billa", "Teuku Ryan",
 ]
 
 DEFAULT_PASSWORD = "123456"

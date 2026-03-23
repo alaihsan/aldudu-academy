@@ -169,7 +169,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                         <h3 class="text-lg font-bold text-gray-900 mb-6">Distribusi Nilai</h3>
                         <div id="grade-distribution" class="space-y-4"></div>
@@ -177,6 +177,31 @@
                 </div>
             </div>
         </main>
+    </div>
+</div>
+
+<!-- ASSIGNMENT PREVIEW MODAL -->
+<div id="assignment-preview-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl animate-slide-up max-h-[90vh] flex flex-col">
+        <div class="modal-header-theme px-6 py-4 flex items-center justify-between">
+            <div>
+                <h3 id="assignment-preview-title" class="text-xl font-bold text-white">Preview Submissions</h3>
+                <p class="text-white/80 text-sm mt-1">Lihat lampiran dan submissions siswa</p>
+            </div>
+            <button onclick="closeAssignmentPreview()" class="text-white/80 hover:text-white transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <div id="assignment-preview-content" class="p-6 overflow-y-auto flex-1">
+            <!-- Populated by JS -->
+        </div>
+        <div class="bg-gray-50 px-6 py-4 flex justify-end rounded-b-2xl">
+            <button type="button" onclick="closeAssignmentPreview()" class="px-6 py-2 bg-theme text-white rounded-lg hover:opacity-90 transition-all font-semibold">
+                Tutup
+            </button>
+        </div>
     </div>
 </div>
 
@@ -412,11 +437,19 @@ async function loadGradeItems() {
 function createGradeItemCard(item) {
     const div = document.createElement('div');
     div.className = 'bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-lg transition-all';
+    
+    const isAssignment = item.is_assignment && item.assignment_id;
+    const previewButton = isAssignment 
+        ? `<button onclick="openAssignmentPreview(${item.assignment_id}, '${escapeHtml(item.name)}')" class="px-4 py-2.5 bg-indigo-50 text-indigo-700 rounded-lg font-semibold hover:bg-indigo-100 transition-all">
+            📎 Lampiran
+        </button>`
+        : '';
+    
     div.innerHTML = `
         <div class="flex items-start justify-between mb-4">
             <div class="flex-1">
                 <div class="flex items-center space-x-2 mb-2">
-                    <span class="px-2 py-1 bg-theme-light text-theme rounded text-xs font-bold">📝</span>
+                    <span class="px-2 py-1 bg-theme-light text-theme rounded text-xs font-bold">${item.quiz_id ? '🎯' : isAssignment ? '📝' : '📊'}</span>
                     <h4 class="font-bold text-gray-900">${item.name}</h4>
                 </div>
                 <p class="text-sm text-gray-500">Max: ${item.max_score} | Bobot: ${item.weight}%</p>
@@ -432,6 +465,7 @@ function createGradeItemCard(item) {
             <button onclick="editGradeItem(${item.id})" class="px-4 py-2.5 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition-all">
                 Edit
             </button>
+            ${previewButton}
         </div>
     `;
     return div;
@@ -480,6 +514,12 @@ function getPredikatClass(predikat) {
     if (predikat.startsWith('C')) return 'bg-yellow-100 text-yellow-700';
     if (predikat.startsWith('D')) return 'bg-orange-100 text-orange-700';
     return 'bg-red-100 text-red-700';
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
 }
 
 async function loadAvailableQuizzes() {
@@ -948,5 +988,69 @@ async function loadCTTAnalysis() {
 document.addEventListener('DOMContentLoaded', function() {
     loadCTTQuizList();
 });
+
+// Assignment Attachments Preview
+async function openAssignmentPreview(assignmentId, assignmentName) {
+    const modal = document.getElementById('assignment-preview-modal');
+    const title = document.getElementById('assignment-preview-title');
+    const content = document.getElementById('assignment-preview-content');
+    
+    title.textContent = assignmentName;
+    modal.classList.remove('hidden');
+    content.innerHTML = '<div class="text-center py-12"><div class="animate-spin rounded-full h-12 w-12 border-b-2 border-theme mx-auto"></div><p class="text-gray-500 mt-4">Memuat submissions...</p></div>';
+    
+    try {
+        const res = await fetch(`/gradebook/api/assignments/${assignmentId}/submissions`);
+        const data = await res.json();
+        
+        if (!data.success || data.submissions.length === 0) {
+            content.innerHTML = '<div class="text-center py-12 text-gray-400"><p>Belum ada submissions</p></div>';
+            return;
+        }
+        
+        let html = '<div class="grid grid-cols-1 md:grid-cols-2 gap-4">';
+        
+        data.submissions.forEach(sub => {
+            const hasAttachment = sub.file_path && sub.file_path.trim() !== '';
+            const statusColor = sub.status === 'graded' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700';
+            const statusLabel = sub.status === 'graded' ? 'Dinilai' : 'Disubmit';
+            
+            html += `
+                <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                    <div class="flex items-start justify-between mb-2">
+                        <div>
+                            <p class="font-bold text-gray-900">${sub.student_name}</p>
+                            <p class="text-xs text-gray-500">${sub.submitted_at || '-'}</p>
+                        </div>
+                        <span class="px-2 py-1 rounded-full text-xs font-bold ${statusColor}">${statusLabel}</span>
+                    </div>
+                    
+                    ${sub.content ? `<p class="text-sm text-gray-700 mb-2 line-clamp-2">${sub.content}</p>` : ''}
+                    
+                    ${hasAttachment ? `
+                        <a href="/uploads/${sub.file_path}" target="_blank" class="inline-flex items-center gap-2 px-3 py-2 bg-indigo-50 text-indigo-700 rounded-lg text-sm font-semibold hover:bg-indigo-100 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                            Lihat Lampiran
+                        </a>
+                    ` : '<p class="text-sm text-gray-400 italic">Tidak ada lampiran</p>'}
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+        content.innerHTML = html;
+        
+    } catch (err) {
+        console.error('Failed to load submissions:', err);
+        content.innerHTML = '<div class="text-center py-12 text-red-400"><p>Gagal memuat submissions</p></div>';
+    }
+}
+
+function closeAssignmentPreview() {
+    document.getElementById('assignment-preview-modal').classList.add('hidden');
+}
 </script>
 {% endblock %}

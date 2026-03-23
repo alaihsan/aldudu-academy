@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analisis Rasch — Jaringan Komputer SMP</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root {
+  --bg: #0d0f14;
+  --bg2: #13161e;
+  --bg3: #1a1e28;
+  --card: #1e2230;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.13);
+  --text: #e8eaf0;
+  --muted: #7a7f94;
+  --accent: #5b8dee;
+  --accent2: #3fd9a0;
+  --warn: #f5a623;
+  --danger: #e05c5c;
+  --purple: #a78bfa;
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'Space Grotesk', sans-serif;
+  --serif: 'Fraunces', serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ── HEADER ── */
+.header {
+  background: linear-gradient(135deg, #0d1628 0%, #0d0f14 60%);
+  border-bottom: 1px solid var(--border2);
+  padding: 3rem 2rem 2rem;
+  position: relative;
+  overflow: hidden;
+}
+.header::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 600px 300px at 80% 50%, rgba(91,141,238,0.08) 0%, transparent 70%);
+}
+.header-inner { max-width: 1100px; margin: 0 auto; position: relative; }
+.badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem; }
+.badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; letter-spacing: .04em; }
+.badge-blue  { background: rgba(91,141,238,.15); color: #7aaaf5; border: 1px solid rgba(91,141,238,.25); }
+.badge-green { background: rgba(63,217,160,.12); color: #3fd9a0; border: 1px solid rgba(63,217,160,.2); }
+.badge-warn  { background: rgba(245,166,35,.12); color: #f5a623; border: 1px solid rgba(245,166,35,.2); }
+h1 { font-family: var(--serif); font-size: clamp(1.6rem, 4vw, 2.6rem); font-weight: 600; letter-spacing: -.02em; line-height: 1.2; margin-bottom: .5rem; }
+h1 span { color: var(--accent); }
+.subtitle { color: var(--muted); font-size: 14px; max-width: 560px; }
+
+/* ── NAV ── */
+.nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(13,15,20,.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 2rem;
+}
+.nav-inner { max-width: 1100px; margin: 0 auto; display: flex; gap: 0; overflow-x: auto; }
+.nav-btn {
+  padding: 14px 16px; font-size: 13px; font-weight: 500; color: var(--muted);
+  background: none; border: none; cursor: pointer; white-space: nowrap;
+  border-bottom: 2px solid transparent; transition: all .2s; font-family: var(--sans);
+}
+.nav-btn:hover { color: var(--text); }
+.nav-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* ── MAIN ── */
+.main { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+.section { display: none; }
+.section.active { display: block; animation: fadeIn .25s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── GRID / CARDS ── */
+.metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 1.5rem; }
+.metric-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 1rem 1.25rem; transition: border-color .2s;
+}
+.metric-card:hover { border-color: var(--border2); }
+.metric-label { font-size: 11px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: .4rem; }
+.metric-val { font-family: var(--mono); font-size: 22px; font-weight: 500; }
+.metric-val.good { color: var(--accent2); }
+.metric-val.warn { color: var(--warn); }
+.metric-val.info { color: var(--accent); }
+.metric-sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+.card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 1.25rem; margin-bottom: 1.25rem;
+}
+.card-title { font-size: 13px; font-weight: 600; margin-bottom: 1rem; color: var(--text); display: flex; align-items: center; gap: 8px; }
+.card-title::before { content: ''; display: block; width: 3px; height: 14px; background: var(--accent); border-radius: 2px; }
+
+/* ── TABLE ── */
+.tbl-wrap { overflow: auto; border-radius: 10px; border: 1px solid var(--border); max-height: 460px; }
+table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+thead { position: sticky; top: 0; z-index: 5; }
+th {
+  background: var(--bg3); padding: 9px 12px; text-align: left;
+  font-size: 11px; font-weight: 600; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .05em;
+  border-bottom: 1px solid var(--border2);
+}
+td { padding: 8px 12px; border-bottom: 1px solid var(--border); font-family: var(--mono); }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,.02); }
+
+/* ── PILLS ── */
+.pill { display: inline-flex; align-items: center; padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 500; font-family: var(--sans); }
+.pill-fit    { background: rgba(63,217,160,.12); color: var(--accent2); }
+.pill-over   { background: rgba(245,166,35,.12); color: var(--warn); }
+.pill-under  { background: rgba(224,92,92,.12); color: var(--danger); }
+.pill-mudah  { background: rgba(91,141,238,.12); color: #7aaaf5; }
+.pill-sedang { background: rgba(63,217,160,.1); color: var(--accent2); }
+.pill-sulit  { background: rgba(224,92,92,.1); color: var(--danger); }
+.pill-topic  { background: rgba(167,139,250,.1); color: var(--purple); }
+
+/* ── FORMULA ── */
+.formula {
+  background: var(--bg3); border: 1px solid var(--border2); border-radius: 8px;
+  padding: .75rem 1.25rem; margin: .75rem 0;
+  font-family: var(--mono); font-size: 13.5px; text-align: center;
+  color: #c9d1e8; line-height: 2;
+}
+.step {
+  border-left: 2px solid var(--border2); padding: .75rem 1rem;
+  margin: .75rem 0; background: rgba(255,255,255,.02); border-radius: 0 8px 8px 0;
+}
+.step.blue  { border-color: var(--accent); }
+.step.green { border-color: var(--accent2); }
+.step.warn  { border-color: var(--warn); }
+.step.red   { border-color: var(--danger); }
+.step-num { font-size: 10px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: .3rem; }
+.step-val { font-family: var(--mono); font-size: 13px; color: var(--text); line-height: 1.9; }
+.step-exp { font-size: 12px; color: var(--muted); margin-top: .3rem; line-height: 1.6; }
+
+.hl-blue  { color: var(--accent); font-weight: 600; }
+.hl-green { color: var(--accent2); font-weight: 600; }
+.hl-red   { color: var(--danger); font-weight: 600; }
+.hl-warn  { color: var(--warn); font-weight: 600; }
+.hl-purple{ color: var(--purple); font-weight: 600; }
+
+/* ── BAR ── */
+.bar-wrap { display: inline-block; width: 70px; height: 6px; background: var(--bg3); border-radius: 3px; vertical-align: middle; overflow: hidden; margin-right: 6px; }
+.bar-inner { height: 100%; border-radius: 3px; transition: width .3s; }
+
+/* ── SLIDER ── */
+.slider-row { display: flex; align-items: center; gap: 12px; margin: .75rem 0; }
+.slider-row label { min-width: 110px; font-size: 13px; color: var(--muted); }
+.slider-row input[type=range] { flex: 1; accent-color: var(--accent); }
+.slider-row .val { font-family: var(--mono); font-size: 13px; min-width: 56px; text-align: right; color: var(--accent); }
+.result-box {
+  background: var(--bg3); border: 1px solid var(--border2); border-radius: 8px;
+  padding: .9rem 1.2rem; font-family: var(--mono); font-size: 13px;
+  line-height: 2; margin-top: .75rem; color: var(--text);
+}
+
+/* ── WRIGHT MAP ── */
+#wright-svg text { font-family: var(--sans); }
+
+/* ── FILTERS ── */
+.filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem; }
+select, .filter-btn {
+  background: var(--bg3); border: 1px solid var(--border2); border-radius: 8px;
+  color: var(--text); font-size: 12.5px; padding: 6px 12px; cursor: pointer;
+  font-family: var(--sans); transition: border-color .2s;
+}
+select:hover, .filter-btn:hover { border-color: var(--accent); }
+select option { background: var(--bg3); }
+
+/* ── ALERT CARDS ── */
+.alert { border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: .75rem; }
+.alert-green { background: rgba(63,217,160,.06); border: 1px solid rgba(63,217,160,.2); }
+.alert-warn  { background: rgba(245,166,35,.06); border: 1px solid rgba(245,166,35,.2); }
+.alert-blue  { background: rgba(91,141,238,.06); border: 1px solid rgba(91,141,238,.2); }
+.alert-title { font-size: 13px; font-weight: 600; margin-bottom: .5rem; }
+.alert ul, .alert ol { padding-left: 1.2rem; font-size: 13px; line-height: 2; color: var(--muted); }
+.alert li strong { color: var(--text); }
+
+/* ── CHART CONTAINERS ── */
+.chart-container { position: relative; width: 100%; }
+
+/* ── DIVIDER ── */
+hr { border: none; border-top: 1px solid var(--border); margin: 1.25rem 0; }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+/* ── FOOTER ── */
+.footer { text-align: center; padding: 2rem; color: var(--muted); font-size: 12px; border-top: 1px solid var(--border); margin-top: 3rem; }
+
+@media (max-width: 600px) {
+  .main { padding: 1rem; }
+  .header { padding: 2rem 1rem 1.5rem; }
+  .nav { padding: 0 1rem; }
+  .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div class="badge-row">
+      <span class="badge badge-blue">Model Rasch 1PL</span>
+      <span class="badge badge-green">288 Murid • 40 Soal</span>
+      <span class="badge badge-warn">SMP Kelas 7 & 8</span>
+    </div>
+    <h1>Analisis <span>Rasch</span><br>Jaringan Komputer SMP</h1>
+    <p class="subtitle">Simulasi lengkap — estimasi JMLE, item fit, Wright Map, rumus, dan kalkulator interaktif untuk instrumen tes 40 soal pilihan ganda.</p>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <button class="nav-btn active" onclick="showSection('ringkasan')">Ringkasan</button>
+    <button class="nav-btn" onclick="showSection('items')">Tabel Item</button>
+    <button class="nav-btn" onclick="showSection('wright')">Wright Map</button>
+    <button class="nav-btn" onclick="showSection('fit')">Fit Plot</button>
+    <button class="nav-btn" onclick="showSection('soal')">Daftar Soal</button>
+    <button class="nav-btn" onclick="showSection('rumus')">Rumus & Hitungan</button>
+    <button class="nav-btn" onclick="showSection('kalkulator')">Kalkulator</button>
+    <button class="nav-btn" onclick="showSection('saran')">Saran & Celah</button>
+  </div>
+</nav>
+
+<div class="main">
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 1: RINGKASAN
+════════════════════════════════════════════════════ -->
+<section class="section active" id="sec-ringkasan">
+  <div class="metrics-grid">
+    <div class="metric-card"><div class="metric-label">Jumlah Soal</div><div class="metric-val info">40</div><div class="metric-sub">Pilihan ganda</div></div>
+    <div class="metric-card"><div class="metric-label">Total Murid</div><div class="metric-val info">288</div><div class="metric-sub">Kelas 7 + Kelas 8</div></div>
+    <div class="metric-card"><div class="metric-label">Kelas 7</div><div class="metric-val">144</div><div class="metric-sub">θ̄ = −0.52 logit</div></div>
+    <div class="metric-card"><div class="metric-label">Kelas 8</div><div class="metric-val">144</div><div class="metric-sub">θ̄ = +0.64 logit</div></div>
+    <div class="metric-card"><div class="metric-label">Person Reliability</div><div class="metric-val good">0.895</div><div class="metric-sub">Target ≥ 0.80 ✓</div></div>
+    <div class="metric-card"><div class="metric-label">Item Reliability</div><div class="metric-val good">0.986</div><div class="metric-sub">Target ≥ 0.90 ✓</div></div>
+    <div class="metric-card"><div class="metric-label">Person Separation</div><div class="metric-val good">2.92</div><div class="metric-sub">~4 kelompok</div></div>
+    <div class="metric-card"><div class="metric-label">Item Separation</div><div class="metric-val good">8.46</div><div class="metric-sub">Hirearki sangat stabil</div></div>
+    <div class="metric-card"><div class="metric-label">Item Misfitting</div><div class="metric-val good">0 / 40</div><div class="metric-sub">Semua fit ✓</div></div>
+    <div class="metric-card"><div class="metric-label">Prop. Correct</div><div class="metric-val good">0.508</div><div class="metric-sub">Targeting sempurna</div></div>
+    <div class="metric-card"><div class="metric-label">Skor Rata Kls 7</div><div class="metric-val warn">16.5</div><div class="metric-sub">dari 40 soal</div></div>
+    <div class="metric-card"><div class="metric-label">Skor Rata Kls 8</div><div class="metric-val good">24.1</div><div class="metric-sub">dari 40 soal</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Distribusi Skor Mentah</div>
+    <div class="chart-container" style="height:240px"><canvas id="scoreChart"></canvas></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Distribusi Kemampuan (θ) per Kelas</div>
+    <div class="chart-container" style="height:220px"><canvas id="thetaChart"></canvas></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Interpretasi Hasil</div>
+    <p style="font-size:13px;line-height:2;color:var(--muted)">
+      Person reliability <span class="hl-green">0.895</span> (≥ 0.80 = baik) — instrumen mampu membedakan kemampuan murid secara konsisten.<br>
+      Item reliability <span class="hl-green">0.986</span> (≥ 0.90 = sangat baik) — hierarki kesulitan soal stabil, dapat direplikasi ke sampel lain.<br>
+      Separation person <span class="hl-green">2.92</span> → instrumen membedakan ≈ 4 kelompok kemampuan berbeda.<br>
+      Proportion correct <span class="hl-green">0.508</span> → targeting item–person hampir sempurna (ideal ≈ 0.50).<br>
+      Seluruh 40 soal lolos uji fit (infit MNSQ 0.70–1.30). Lihat tab <em>Saran & Celah</em> untuk rekomendasi pengembangan.
+    </p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 2: TABEL ITEM
+════════════════════════════════════════════════════ -->
+<section class="section" id="sec-items">
+  <div class="filter-row">
+    <select id="f-topic" onchange="renderItemTable()">
+      <option value="">Semua Topik</option>
+      <option>Dasar</option><option>Perangkat</option><option>Internet</option>
+      <option>Protokol</option><option>Keamanan</option><option>Topologi</option><option>Jaringan</option>
+    </select>
+    <select id="f-cat" onchange="renderItemTable()">
+      <option value="">Semua Kategori</option>
+      <option>Mudah</option><option>Sedang</option><option>Sulit</option>
+    </select>
+    <select id="f-fit" onchange="renderItemTable()">
+      <option value="">Semua Status</option>
+      <option value="fit">Fit</option>
+      <option value="misfit">Misfit</option>
+    </select>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr>
+        <th>No</th><th>Topik</th><th>Kesulitan (logit)</th><th>Kategori</th>
+        <th>Infit MNSQ</th><th>Outfit MNSQ</th><th>SE</th><th>Benar (%)</th><th>Status</th>
+      </tr></thead>
+      <tbody id="item-tbody"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 3: WRIGHT MAP
+════════════════════════════════════════════════════ -->
+<section class="section" id="sec-wright">
+  <div class="card" style="padding:.75rem 1rem">
+    <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-bottom:.5rem">
+      <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#5b8dee;margin-right:4px"></span>Kelas 7 (θ̄=−0.52)</span>
+      <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#e05c5c;margin-right:4px"></span>Kelas 8 (θ̄=+0.64)</span>
+      <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#a78bfa;margin-right:4px"></span>Item (label = no soal)</span>
+    </div>
+    <svg id="wright-svg" width="100%" viewBox="0 0 760 720" style="display:block"></svg>
+  </div>
+  <div class="card">
+    <div class="card-title">Cara membaca Wright Map</div>
+    <p style="font-size:13px;line-height:2;color:var(--muted)">
+      Sumbu vertikal = skala logit (−3 bawah → +3 atas = lebih sulit/lebih mampu).<br>
+      <span class="hl-blue">Kiri</span>: distribusi kemampuan murid. <span class="hl-red">Kanan</span>: lokasi kesulitan setiap soal.<br>
+      Soal yang setara dengan kemampuan murid (logit sama) → peluang benar tepat 50%.<br>
+      Soal di atas rata-rata murid = sulit; soal di bawah = mudah bagi murid tersebut.<br>
+      Gap vertikal di sisi soal = zona kemampuan yang kurang terwakili → perlu soal tambahan.
+    </p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 4: FIT PLOT
+════════════════════════════════════════════════════ -->
+<section class="section" id="sec-fit">
+  <div class="card">
+    <div class="card-title">Infit MNSQ per Item</div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:1rem">Zona hijau (0.70–1.30) = fit. Di luar zona = perlu perhatian.</p>
+    <div class="chart-container" style="height:320px"><canvas id="fitBarChart"></canvas></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Outfit MNSQ per Item</div>
+    <div class="chart-container" style="height:280px"><canvas id="outfitBarChart"></canvas></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Scatter: Kesulitan Item vs Infit MNSQ</div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:1rem">Tidak ada pola → fit tidak berkorelasi dengan kesulitan = baik.</p>
+    <div class="chart-container" style="height:280px"><canvas id="scatterChart"></canvas></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 5: DAFTAR SOAL
+════════════════════════════════════════════════════ -->
+<section class="section" id="sec-soal">
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>No</th><th>Topik</th><th>Pertanyaan</th><th>Kunci</th><th>Kategori</th><th>b (logit)</th></tr></thead>
+      <tbody id="soal-tbody"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 6: RUMUS & HITUNGAN MANUAL
+════════════════════════════════════════════════════ -->
+<section class="section" id="sec-rumus">
+
+  <!-- 6A: Model Rasch -->
+  <div class="card">
+    <div class="card-title">Model Rasch (1-Parameter Logistic)</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:.75rem">Probabilitas murid <em>i</em> menjawab benar item <em>j</em>:</p>
+    <div class="formula">P(X<sub>ij</sub>=1 | θ<sub>i</sub>, b<sub>j</sub>) = exp(θ<sub>i</sub> − b<sub>j</sub>) / [1 + exp(θ<sub>i</sub> − b<sub>j</sub>)]</div>
+    <div class="formula">= 1 / [1 + exp(−(θ<sub>i</sub> − b<sub>j</sub>))]</div>
+
+    <div class="step blue">
+      <div class="step-num">Notasi</div>
+      <div class="step-exp">
+        <span class="hl-blue">θ (theta)</span> = kemampuan murid (logit) &nbsp;|&nbsp;
+        <span class="hl-red">b</span> = kesulitan item (logit) &nbsp;|&nbsp;
+        <span class="hl-green">P</span> = peluang benar (0–1)
+      </div>
+    </div>
+
+    <div class="step green">
+      <div class="step-num">Ketika θ = b</div>
+      <div class="step-val">P = exp(0)/(1+exp(0)) = 1/2 = <span class="hl-green">0.50</span></div>
+      <div class="step-exp">Kemampuan = kesulitan → peluang benar tepat 50%</div>
+    </div>
+
+    <div class="step blue">
+      <div class="step-num">Contoh: Soal 1 (b=−2.321), Murid kelas 7 (θ=−0.50)</div>
+      <div class="step-val">
+        θ − b = −0.50 − (−2.321) = <span class="hl-green">+1.821</span><br>
+        exp(1.821) = e<sup>1.821</sup> ≈ <span class="hl-blue">6.179</span><br>
+        P = 6.179 / (1 + 6.179) = 6.179 / 7.179 ≈ <span class="hl-green">0.861</span> → peluang benar <strong>86.1%</strong>
+      </div>
+    </div>
+
+    <div class="step red">
+      <div class="step-num">Soal 40 (b=+2.317) untuk murid yang sama (θ=−0.50)</div>
+      <div class="step-val">
+        θ − b = −0.50 − 2.317 = <span class="hl-red">−2.817</span><br>
+        P = e<sup>−2.817</sup>/(1+e<sup>−2.817</sup>) = 0.0598/1.0598 ≈ <span class="hl-red">0.056</span> → hanya <strong>5.6%</strong>
+      </div>
+      <div class="step-exp">Masuk akal: soal OSPF sangat sulit untuk murid kelas 7 yang lemah</div>
+    </div>
+  </div>
+
+  <!-- 6B: Logit -->
+  <div class="card">
+    <div class="card-title">Logit & Konversi Skor Mentah</div>
+    <div class="formula">logit(P) = ln[ P / (1−P) ]</div>
+    <p style="font-size:13px;color:var(--muted);margin:.5rem 0 .75rem">Estimasi awal θ dari skor mentah r (J = jumlah soal):</p>
+    <div class="formula">θ_awal = ln[ r / (J − r) ]</div>
+    <div class="formula">b_awal = −ln[ s / (N − s) ] &nbsp;  (s = jumlah murid benar, N = total)</div>
+
+    <div class="step green">
+      <div class="step-num">Kelas 7 — skor rata-rata r = 16.5 dari J = 40</div>
+      <div class="step-val">θ = ln[16.5/(40−16.5)] = ln[16.5/23.5] = ln(0.702) ≈ <span class="hl-warn">−0.354 logit</span></div>
+    </div>
+    <div class="step blue">
+      <div class="step-num">Kelas 8 — skor rata-rata r = 24.1 dari J = 40</div>
+      <div class="step-val">θ = ln[24.1/(40−24.1)] = ln[24.1/15.9] = ln(1.516) ≈ <span class="hl-green">+0.416 logit</span></div>
+    </div>
+
+    <hr>
+    <p style="font-size:12px;font-weight:600;color:var(--muted);margin-bottom:.5rem">Tabel konversi logit ↔ probabilitas:</p>
+    <div class="tbl-wrap" style="max-height:220px">
+      <table>
+        <thead><tr><th>Logit (θ−b)</th><th>Peluang Benar</th><th>Interpretasi</th></tr></thead>
+        <tbody>
+          <tr><td>−3.0</td><td style="color:#e05c5c">4.7%</td><td style="font-family:var(--sans)">Sangat sulit bagi murid ini</td></tr>
+          <tr><td>−2.0</td><td style="color:#e05c5c">11.9%</td><td style="font-family:var(--sans)">Sulit</td></tr>
+          <tr><td>−1.0</td><td style="color:var(--warn)">26.9%</td><td style="font-family:var(--sans)">Agak sulit</td></tr>
+          <tr><td style="color:var(--accent2)">0.0</td><td style="color:var(--accent2)">50.0%</td><td style="font-family:var(--sans)">Seimbang — titik kritis Rasch</td></tr>
+          <tr><td>+1.0</td><td style="color:var(--accent2)">73.1%</td><td style="font-family:var(--sans)">Agak mudah</td></tr>
+          <tr><td>+2.0</td><td style="color:var(--accent2)">88.1%</td><td style="font-family:var(--sans)">Mudah</td></tr>
+          <tr><td>+3.0</td><td style="color:var(--accent2)">95.3%</td><td style="font-family:var(--sans)">Sangat mudah bagi murid ini</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 6C: JMLE -->
+  <div class="card">
+    <div class="card-title">Estimasi JMLE — Newton-Raphson Update</div>
+    <div class="formula">θ<sub>i</sub>_baru = θ<sub>i</sub> + [ Σ<sub>j</sub>(X<sub>ij</sub> − P<sub>ij</sub>) ] / [ Σ<sub>j</sub> W<sub>ij</sub> ]</div>
+    <div class="formula">b<sub>j</sub>_baru = b<sub>j</sub> − [ Σ<sub>i</sub>(X<sub>ij</sub> − P<sub>ij</sub>) ] / [ Σ<sub>i</sub> W<sub>ij</sub> ]</div>
+    <div class="formula">W<sub>ij</sub> = P<sub>ij</sub> × (1 − P<sub>ij</sub>) &nbsp;&nbsp; (information weight)</div>
+
+    <p style="font-size:13px;color:var(--muted);margin:.75rem 0 .5rem">Contoh 1 iterasi — 1 murid (θ=0), 3 item (b=−1, 0, +1), respons=[1,1,0]:</p>
+
+    <div class="step green">
+      <div class="step-num">Hitung P, W, residual</div>
+      <div class="step-val">
+        Item1: P=0.731 W=0.197 r=1−0.731=<span class="hl-green">+0.269</span><br>
+        Item2: P=0.500 W=0.250 r=1−0.500=<span class="hl-green">+0.500</span><br>
+        Item3: P=0.269 W=0.197 r=0−0.269=<span class="hl-red">−0.269</span>
+      </div>
+    </div>
+    <div class="step blue">
+      <div class="step-num">Update θ</div>
+      <div class="step-val">
+        Σ residual = 0.269+0.500+(−0.269) = <span class="hl-blue">+0.500</span><br>
+        Σ W = 0.197+0.250+0.197 = <span class="hl-warn">0.644</span><br>
+        Δθ = 0.500/0.644 = +0.776 &nbsp;→&nbsp; θ_baru = 0 + 0.776 = <span class="hl-green">+0.776</span>
+      </div>
+      <div class="step-exp">Iterasi berlanjut sampai Δ &lt; 10⁻⁶. Simulasi ini konvergen dalam <strong>24 iterasi</strong>.</div>
+    </div>
+  </div>
+
+  <!-- 6D: Fit -->
+  <div class="card">
+    <div class="card-title">Infit & Outfit MNSQ</div>
+    <div class="formula">z²<sub>ij</sub> = (X<sub>ij</sub> − P<sub>ij</sub>)² / W<sub>ij</sub> &nbsp;&nbsp; (residual terstandarisasi)</div>
+    <div class="formula">Outfit<sub>j</sub> = [ Σ<sub>i</sub> z²<sub>ij</sub> ] / N &nbsp;&nbsp; (unweighted)</div>
+    <div class="formula">Infit<sub>j</sub> = [ Σ<sub>i</sub> W<sub>ij</sub>·z²<sub>ij</sub> ] / [ Σ<sub>i</sub> W<sub>ij</sub> ] &nbsp;&nbsp; (info-weighted)</div>
+
+    <p style="font-size:13px;color:var(--muted);margin:.75rem 0 .5rem">Hitungan Infit & Outfit — Soal 21 (b=0.00), 5 murid representatif:</p>
+    <div class="tbl-wrap" style="margin:.5rem 0;max-height:260px">
+      <table>
+        <thead><tr><th>Murid</th><th>θ</th><th>P</th><th>W</th><th>X</th><th>X−P</th><th>z²</th><th>W·z²</th></tr></thead>
+        <tbody>
+          <tr><td>A</td><td>−2.0</td><td>0.119</td><td>0.105</td><td>0</td><td>−0.119</td><td>0.135</td><td>0.014</td></tr>
+          <tr><td>B</td><td>−0.5</td><td>0.378</td><td>0.235</td><td>0</td><td>−0.378</td><td>0.608</td><td>0.143</td></tr>
+          <tr><td>C</td><td> 0.0</td><td>0.500</td><td>0.250</td><td>1</td><td>+0.500</td><td>1.000</td><td>0.250</td></tr>
+          <tr><td>D</td><td>+0.5</td><td>0.622</td><td>0.235</td><td>1</td><td>+0.378</td><td>0.608</td><td>0.143</td></tr>
+          <tr><td>E</td><td>+2.0</td><td>0.881</td><td>0.105</td><td>1</td><td>+0.119</td><td>0.135</td><td>0.014</td></tr>
+          <tr style="font-weight:600;color:var(--accent)"><td>Σ</td><td>—</td><td>—</td><td>0.930</td><td>—</td><td>—</td><td>2.486</td><td>0.564</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="step green">
+      <div class="step-num">Outfit MNSQ = 2.486 / 5 = <span class="hl-blue">0.497</span> &nbsp;|&nbsp; Infit MNSQ = 0.564 / 0.930 = <span class="hl-green">0.606</span></div>
+      <div class="step-exp">Nilai kecil karena hanya 5 murid. Dengan 288 murid hasil mendekati 1.0 (fit sempurna).</div>
+    </div>
+
+    <div class="step warn" style="margin-top:.75rem">
+      <div class="step-num">Kriteria Fit</div>
+      <div class="step-exp">
+        <span class="hl-green">0.70 ≤ MNSQ ≤ 1.30</span> → Fit — soal berperilaku sesuai model Rasch<br>
+        <span class="hl-warn">MNSQ &gt; 1.30</span> → Noisy / degrading — respons terlalu acak<br>
+        <span class="hl-red">MNSQ &lt; 0.70</span> → Muted / overfit — respons terlalu prediktabel
+      </div>
+    </div>
+  </div>
+
+  <!-- 6E: Reliabilitas -->
+  <div class="card">
+    <div class="card-title">Reliabilitas & Separation</div>
+    <div class="formula">Var_obs = variance(θ̂) &nbsp;&nbsp; Var_error = mean(SE²) &nbsp;&nbsp; Var_true = Var_obs − Var_error</div>
+    <div class="formula">Reliabilitas = Var_true / Var_obs &nbsp;&nbsp; Separation = √(Var_true / Var_error)</div>
+    <div class="formula">H (kelompok) = (4 × Separation + 1) / 3</div>
+
+    <div class="step blue">
+      <div class="step-num">Hitungan Person Reliability — 5 murid: θ=[−1.80, −0.42, +0.15, +0.88, +1.65], SE≈0.34</div>
+      <div class="step-val">
+        Mean θ = 0.092 &nbsp;|&nbsp; Var_obs = 1.379<br>
+        Var_error = mean(SE²) = mean(0.116) = 0.116<br>
+        Var_true = 1.379 − 0.116 = <span class="hl-green">1.263</span><br>
+        Reliabilitas = 1.263/1.379 = <span class="hl-green">0.916</span><br>
+        Separation = √(1.263/0.116) = √10.89 = <span class="hl-blue">3.30</span><br>
+        H = (4×3.30+1)/3 = <span class="hl-blue">4.7 ≈ 4–5 kelompok</span>
+      </div>
+    </div>
+
+    <p style="font-size:12px;font-weight:600;color:var(--muted);margin:.75rem 0 .4rem">Pedoman interpretasi:</p>
+    <div class="tbl-wrap" style="max-height:180px">
+      <table>
+        <thead><tr><th>Nilai</th><th>Kategori</th><th>Implikasi</th></tr></thead>
+        <tbody>
+          <tr><td>&lt; 0.67</td><td style="color:var(--danger)">Lemah</td><td style="font-family:var(--sans)">Tidak layak keputusan apapun</td></tr>
+          <tr><td>0.67–0.80</td><td style="color:var(--warn)">Cukup</td><td style="font-family:var(--sans)">Keputusan kelompok saja</td></tr>
+          <tr><td>0.80–0.90</td><td style="color:var(--accent)">Baik</td><td style="font-family:var(--sans)">Kelompok & semi-individual</td></tr>
+          <tr><td>&gt; 0.90</td><td style="color:var(--accent2)">Sangat baik</td><td style="font-family:var(--sans)">Keputusan individual diperbolehkan</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 7: KALKULATOR
+════════════════════════════════════════════════════ -->
+<section class="section" id="sec-kalkulator">
+  <div class="card">
+    <div class="card-title">Kalkulator Probabilitas Rasch</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:1rem">Geser untuk melihat perhitungan real-time dan kurva ICC.</p>
+
+    <div class="slider-row">
+      <label>θ Murid</label>
+      <input type="range" min="-4" max="4" step="0.1" value="0" id="sl-theta" oninput="calcRasch()">
+      <span class="val" id="lbl-theta">0.0</span>
+    </div>
+    <div class="slider-row">
+      <label>b Item</label>
+      <input type="range" min="-4" max="4" step="0.1" value="0" id="sl-b" oninput="calcRasch()">
+      <span class="val" id="lbl-b">0.0</span>
+    </div>
+    <div class="slider-row">
+      <label>Jawaban (X)</label>
+      <input type="range" min="0" max="1" step="1" value="1" id="sl-x" oninput="calcRasch()">
+      <span class="val" id="lbl-x">1=Benar</span>
+    </div>
+
+    <div class="result-box" id="calc-result">—</div>
+    <div class="chart-container" style="height:220px;margin-top:1rem"><canvas id="icc-chart"></canvas></div>
+    <p style="font-size:11px;color:var(--muted);margin-top:.5rem">ICC (Item Characteristic Curve) — titik merah = posisi murid saat ini</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Kalkulator Skor Mentah → Logit</div>
+    <div class="slider-row">
+      <label>Skor benar (r)</label>
+      <input type="range" min="1" max="39" step="1" value="20" id="sl-r" oninput="calcLogit()">
+      <span class="val" id="lbl-r">20</span>
+    </div>
+    <div class="result-box" id="logit-result">—</div>
+    <p style="font-size:11px;color:var(--muted);margin-top:.5rem">Rumus: θ = ln[r/(J−r)], J=40. Skor ekstrem (0 atau 40) tidak bisa diestimasi langsung.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Kalkulator Probabilitas — Pilih Soal & Murid</div>
+    <div class="filter-row">
+      <select id="pick-item" onchange="calcPick()">
+        <option value="">Pilih soal...</option>
+      </select>
+      <select id="pick-group" onchange="calcPick()">
+        <option value="-0.52">Murid kelas 7 (θ̄=−0.52)</option>
+        <option value="0.64">Murid kelas 8 (θ̄=+0.64)</option>
+        <option value="0">Murid rata-rata (θ=0.0)</option>
+        <option value="-2">Murid lemah (θ=−2.0)</option>
+        <option value="2">Murid kuat (θ=+2.0)</option>
+      </select>
+    </div>
+    <div class="result-box" id="pick-result">Pilih soal di atas untuk melihat perhitungan.</div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 8: SARAN & CELAH
+════════════════════════════════════════════════════ -->
+<section class="section" id="sec-saran">
+  <div class="alert alert-green">
+    <div class="alert-title" style="color:var(--accent2)">✅ Kekuatan instrumen ini</div>
+    <ul>
+      <li>Reliabilitas item sangat tinggi (<strong>0.986</strong>) — hierarki soal sangat stabil.</li>
+      <li>Targeting sempurna (<strong>P-correct ≈ 0.508</strong>) — soal tidak terlalu mudah atau sulit.</li>
+      <li>Semua <strong>40 item lolos uji fit</strong> — tidak ada soal yang harus dibuang.</li>
+      <li>Separation 2.92 → mampu membedakan <strong>≈ 4 kelompok kemampuan</strong> berbeda.</li>
+      <li>Kelas 8 secara konsisten lebih mampu (θ̄=+0.64) vs Kelas 7 (θ̄=−0.52) — validitas konstruk terbukti.</li>
+    </ul>
+  </div>
+
+  <div class="alert alert-warn">
+    <div class="alert-title" style="color:var(--warn)">⚠️ Celah yang perlu diperhatikan</div>
+    <ul>
+      <li><strong>Gap di level tengah (0.0–0.3 logit):</strong> hanya 3 soal. Tambah 3–5 soal sedang untuk resolusi lebih baik.</li>
+      <li><strong>Unidimensionalitas belum diuji formal (EFA/PCA residual).</strong> 7 sub-topik berbeda berpotensi multidimensional — lakukan parallel analysis sebelum publikasi.</li>
+      <li><strong>DIF (Differential Item Functioning) belum dianalisis.</strong> Cek apakah soal tertentu bias terhadap kelas 7 atau kelas 8.</li>
+      <li><strong>Data simulasi ≠ data nyata.</strong> Data ini dibangun dari model Rasch ideal; data nyata akan menghasilkan 3–7 item misfit yang perlu direvisi.</li>
+      <li><strong>Local independence belum diuji.</strong> Soal satu topik mungkin berkorelasi residual — cek Q3 statistic di Winsteps/TAM.</li>
+      <li><strong>Person reliability 0.895</strong> — baik, tapi bisa ditingkatkan ke &gt;0.90 dengan menambah 5–8 soal di b = −0.5 s/d +0.5.</li>
+    </ul>
+  </div>
+
+  <div class="alert alert-blue">
+    <div class="alert-title" style="color:var(--accent)">📋 Langkah selanjutnya (rekomendasi)</div>
+    <ol>
+      <li>Kumpulkan data nyata (minimal <strong>100–200 murid</strong> untuk estimasi stabil).</li>
+      <li>Jalankan analisis di <strong>Winsteps</strong> atau R-package <code>TAM</code> / <code>eRm</code>.</li>
+      <li>Uji unidimensionalitas: <strong>PCA residual</strong> (varians PC1 ≥ 60% = baik).</li>
+      <li>Cek <strong>DIF</strong> antara Kelas 7 vs Kelas 8 (Mantel-Haenszel atau Rasch DIF).</li>
+      <li>Revisi item dengan infit MNSQ &gt; 1.3 atau &lt; 0.7 pada data nyata.</li>
+      <li>Tambah soal pada <strong>gap −0.3 hingga +0.3 logit</strong> (zona sedang).</li>
+      <li>Pertimbangkan <strong>computer adaptive testing (CAT)</strong> jika bank soal diperluas ke 80+ item.</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Distribusi soal per kategori kesulitan</div>
+    <div class="chart-container" style="height:200px"><canvas id="catPieChart"></canvas></div>
+  </div>
+</section>
+
+</div><!-- /main -->
+
+<div class="footer">
+  Simulasi Analisis Rasch — Jaringan Komputer SMP · 40 Soal · 288 Murid (Kelas 7 & 8) · Model 1PL · JMLE 24 iterasi
+</div>
+
+<script>
+// ══════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════
+const ITEMS = [
+  {id:1,topic:"Dasar",text:"Kepanjangan LAN adalah...",key:"A",cat:"Mudah"},
+  {id:2,topic:"Dasar",text:"Jaringan yang mencakup satu gedung disebut...",key:"B",cat:"Mudah"},
+  {id:3,topic:"Perangkat",text:"Kabel yang paling umum digunakan dalam LAN adalah...",key:"C",cat:"Mudah"},
+  {id:4,topic:"Internet",text:"WWW adalah singkatan dari...",key:"A",cat:"Mudah"},
+  {id:5,topic:"Internet",text:"Browser digunakan untuk...",key:"B",cat:"Mudah"},
+  {id:6,topic:"Perangkat",text:"Fungsi utama router adalah...",key:"C",cat:"Mudah"},
+  {id:7,topic:"Dasar",text:"WAN adalah jaringan yang mencakup...",key:"A",cat:"Mudah"},
+  {id:8,topic:"Internet",text:"Protokol yang digunakan untuk mengirim email adalah...",key:"D",cat:"Mudah"},
+  {id:9,topic:"Dasar",text:"Topologi yang berbentuk lingkaran disebut topologi...",key:"B",cat:"Mudah"},
+  {id:10,topic:"Perangkat",text:"Switch berfungsi untuk...",key:"A",cat:"Mudah"},
+  {id:11,topic:"Protokol",text:"TCP/IP adalah...",key:"C",cat:"Sedang"},
+  {id:12,topic:"Keamanan",text:"Firewall digunakan untuk...",key:"B",cat:"Sedang"},
+  {id:13,topic:"Internet",text:"IP address terdiri dari berapa bit (IPv4)?",key:"A",cat:"Sedang"},
+  {id:14,topic:"Perangkat",text:"Access Point berfungsi sebagai...",key:"D",cat:"Sedang"},
+  {id:15,topic:"Topologi",text:"Kelemahan topologi bus adalah...",key:"C",cat:"Sedang"},
+  {id:16,topic:"Protokol",text:"HTTP adalah protokol untuk...",key:"A",cat:"Sedang"},
+  {id:17,topic:"Dasar",text:"Bandwidth menunjukkan...",key:"B",cat:"Sedang"},
+  {id:18,topic:"Internet",text:"DNS berfungsi untuk...",key:"C",cat:"Sedang"},
+  {id:19,topic:"Keamanan",text:"Virus komputer dapat menyebar melalui...",key:"D",cat:"Sedang"},
+  {id:20,topic:"Perangkat",text:"NIC (Network Interface Card) berfungsi sebagai...",key:"A",cat:"Sedang"},
+  {id:21,topic:"Protokol",text:"Perbedaan TCP dan UDP terletak pada...",key:"B",cat:"Sedang"},
+  {id:22,topic:"Topologi",text:"Topologi star memiliki kelemahan yaitu...",key:"C",cat:"Sedang"},
+  {id:23,topic:"Internet",text:"Kelas IP address 192.168.x.x termasuk kelas...",key:"C",cat:"Sedang"},
+  {id:24,topic:"Keamanan",text:"Enkripsi data bertujuan untuk...",key:"A",cat:"Sedang"},
+  {id:25,topic:"Protokol",text:"Port default HTTPS adalah...",key:"D",cat:"Sedang"},
+  {id:26,topic:"Topologi",text:"Topologi mesh memiliki keunggulan...",key:"B",cat:"Sedang"},
+  {id:27,topic:"Jaringan",text:"Subnet mask 255.255.255.0 menunjukkan...",key:"C",cat:"Sedang"},
+  {id:28,topic:"Keamanan",text:"Phishing adalah serangan yang bertujuan...",key:"A",cat:"Sedang"},
+  {id:29,topic:"Protokol",text:"FTP digunakan untuk...",key:"B",cat:"Sedang"},
+  {id:30,topic:"Jaringan",text:"Gateway berfungsi sebagai...",key:"D",cat:"Sedang"},
+  {id:31,topic:"Protokol",text:"Handshaking pada TCP terdiri dari berapa langkah?",key:"C",cat:"Sulit"},
+  {id:32,topic:"Jaringan",text:"CIDR /24 setara dengan subnet mask...",key:"A",cat:"Sulit"},
+  {id:33,topic:"Keamanan",text:"Serangan DoS (Denial of Service) bekerja dengan cara...",key:"B",cat:"Sulit"},
+  {id:34,topic:"Protokol",text:"OSI model terdiri dari berapa lapisan?",key:"D",cat:"Sulit"},
+  {id:35,topic:"Jaringan",text:"NAT (Network Address Translation) digunakan untuk...",key:"C",cat:"Sulit"},
+  {id:36,topic:"Keamanan",text:"VPN menggunakan teknik apa untuk mengamankan data?",key:"A",cat:"Sulit"},
+  {id:37,topic:"Protokol",text:"Lapisan Transport pada OSI bertanggung jawab atas...",key:"B",cat:"Sulit"},
+  {id:38,topic:"Jaringan",text:"Perbedaan IPv4 dan IPv6 yang paling mendasar adalah...",key:"C",cat:"Sulit"},
+  {id:39,topic:"Keamanan",text:"Man-in-the-Middle attack terjadi ketika...",key:"D",cat:"Sulit"},
+  {id:40,topic:"Protokol",text:"OSPF adalah protokol routing yang menggunakan algoritma...",key:"A",cat:"Sulit"},
+];
+
+const B_EST    = [-2.321,-2.1823,-1.8462,-2.2503,-1.9919,-1.6316,-1.3186,-1.4825,-1.2068,-1.0776,-0.8918,-0.7135,-0.8117,-0.4278,-0.5787,-0.0958,-0.1691,-0.1691,-0.0593,-0.1874,-0.1507,0.16,0.3811,0.6066,0.4369,0.4369,0.6832,0.7413,0.8198,1.0214,0.96,1.3441,1.2115,1.4356,1.53,1.3667,1.8348,2.1229,2.1539,2.317];
+const I_INFIT  = [0.952,1.1097,1.0299,1.0888,1.0369,0.9576,1.0135,0.9115,0.9367,1.0938,1.0494,1.0159,0.9743,1.0552,1.0239,0.9398,1.0741,1.0625,0.9349,1.0286,0.9344,1.0629,0.9014,0.8901,0.9407,0.9807,1.016,0.9904,1.0184,0.9231,0.9941,0.9946,1.0791,1.009,0.9928,0.9525,0.9849,0.9944,0.9877,1.0466];
+const I_OUTFIT = [0.6669,1.2915,1.0789,1.7182,0.8879,0.9845,0.978,0.7656,0.9203,1.2942,0.9998,1.0453,0.8948,1.0541,0.9718,0.9419,1.1369,1.1983,0.9289,1.0405,1.0137,1.0254,0.8505,0.842,0.9272,0.9275,0.9902,0.9266,0.9944,1.1599,1.0029,0.9668,1.0604,1.0418,0.9922,0.9455,0.7568,1.0428,0.8324,1.1803];
+const I_SE     = [0.1899,0.1827,0.1678,0.1861,0.1738,0.16,0.1509,0.1554,0.1482,0.1454,0.1421,0.1395,0.1409,0.1367,0.138,0.1352,0.1354,0.1354,0.1352,0.1354,0.1353,0.1353,0.1363,0.1381,0.1366,0.1366,0.1389,0.1395,0.1405,0.1436,0.1426,0.1501,0.1472,0.1524,0.1549,0.1507,0.1644,0.1756,0.1769,0.1845];
+const RAW_I    = [250,246,235,248,240,227,214,221,209,203,194,185,190,170,178,152,156,156,150,157,155,138,126,114,123,123,110,107,103,93,96,78,84,74,70,77,58,48,47,42];
+
+// Seeded RNG for reproducibility
+function seededRNG(seed) {
+  let s = seed;
+  return () => { s = (s * 1664525 + 1013904223) & 0xffffffff; return (s >>> 0) / 0xffffffff; };
+}
+function seededNormal(mu, sd, n, seed) {
+  const rng = seededRNG(seed);
+  const out = [];
+  for (let i = 0; i < n; i++) {
+    let u, v;
+    do { u = rng(); } while (u === 0);
+    do { v = rng(); } while (v === 0);
+    out.push(mu + sd * Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v));
+  }
+  return out;
+}
+const THETA7 = seededNormal(-0.52, 1.0, 144, 42);
+const THETA8 = seededNormal( 0.64, 1.0, 144, 99);
+
+// ══════════════════════════════════════════════════
+// NAV
+// ══════════════════════════════════════════════════
+const sectionMap = {
+  ringkasan:'sec-ringkasan', items:'sec-items', wright:'sec-wright',
+  fit:'sec-fit', soal:'sec-soal', rumus:'sec-rumus', kalkulator:'sec-kalkulator', saran:'sec-saran'
+};
+const chartsBuilt = {};
+
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(sectionMap[id]).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if (!chartsBuilt[id]) { chartsBuilt[id] = true; buildCharts(id); }
+}
+
+// ══════════════════════════════════════════════════
+// BUILD CHARTS PER SECTION
+// ══════════════════════════════════════════════════
+function buildCharts(id) {
+  if (id === 'ringkasan') { buildScoreChart(); buildThetaChart(); }
+  if (id === 'wright')    { buildWright(); }
+  if (id === 'fit')       { buildFitCharts(); }
+  if (id === 'soal')      { buildSoalTable(); }
+  if (id === 'items')     { renderItemTable(); }
+  if (id === 'kalkulator'){ initKalkulator(); }
+  if (id === 'saran')     { buildPieChart(); }
+}
+
+// ── Score chart ──
+function buildScoreChart() {
+  const bins = Array(21).fill(0).map((_,i)=>({range:`${i*2}–${i*2+1}`,v7:0,v8:0}));
+  THETA7.forEach(t => {
+    const s = Math.round(20 + t * 5.5);
+    const b = Math.min(20, Math.max(0, Math.floor(s/2)));
+    bins[b].v7++;
+  });
+  THETA8.forEach(t => {
+    const s = Math.round(20 + t * 5.5);
+    const b = Math.min(20, Math.max(0, Math.floor(s/2)));
+    bins[b].v8++;
+  });
+  new Chart(document.getElementById('scoreChart'), {
+    type: 'bar',
+    data: { labels: bins.map(b=>b.range), datasets: [
+      {label:'Kelas 7', data: bins.map(b=>b.v7), backgroundColor:'rgba(91,141,238,0.6)', borderRadius:3},
+      {label:'Kelas 8', data: bins.map(b=>b.v8), backgroundColor:'rgba(63,217,160,0.5)', borderRadius:3},
+    ]},
+    options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{labels:{color:'#7a7f94',font:{size:12}}}},
+      scales:{ x:{ticks:{color:'#7a7f94',font:{size:10}},grid:{color:'rgba(255,255,255,.05)'}},
+               y:{ticks:{color:'#7a7f94',font:{size:11}},grid:{color:'rgba(255,255,255,.05)'}} }}
+  });
+}
+
+// ── Theta distribution ──
+function buildThetaChart() {
+  const bins = 16; const min=-4, max=4, step=(max-min)/bins;
+  const bLabels = Array(bins).fill(0).map((_,i)=>(min+i*step+step/2).toFixed(1));
+  const d7 = Array(bins).fill(0), d8 = Array(bins).fill(0);
+  THETA7.forEach(t=>{ const i=Math.min(bins-1,Math.max(0,Math.floor((t-min)/step))); d7[i]++; });
+  THETA8.forEach(t=>{ const i=Math.min(bins-1,Math.max(0,Math.floor((t-min)/step))); d8[i]++; });
+  new Chart(document.getElementById('thetaChart'), {
+    type:'bar',
+    data:{labels:bLabels, datasets:[
+      {label:'Kelas 7',data:d7,backgroundColor:'rgba(91,141,238,0.5)',borderRadius:3},
+      {label:'Kelas 8',data:d8,backgroundColor:'rgba(63,217,160,0.45)',borderRadius:3},
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:'#7a7f94',font:{size:12}}}},
+      scales:{x:{title:{display:true,text:'θ (logit)',color:'#7a7f94'},ticks:{color:'#7a7f94',font:{size:10}},grid:{color:'rgba(255,255,255,.05)'}},
+              y:{ticks:{color:'#7a7f94',font:{size:11}},grid:{color:'rgba(255,255,255,.05)'}}}}
+  });
+}
+
+// ── Item table ──
+function renderItemTable() {
+  const topicF = document.getElementById('f-topic')?.value || '';
+  const catF   = document.getElementById('f-cat')?.value || '';
+  const fitF   = document.getElementById('f-fit')?.value || '';
+  const tbody = document.getElementById('item-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  ITEMS.forEach((it, i) => {
+    if (topicF && it.topic !== topicF) return;
+    if (catF && !it.cat.includes(catF)) return;
+    const fit = I_INFIT[i] >= 0.7 && I_INFIT[i] <= 1.3;
+    if (fitF === 'fit' && !fit) return;
+    if (fitF === 'misfit' && fit) return;
+    const b = B_EST[i];
+    const pct = (RAW_I[i] / 288 * 100).toFixed(1);
+    const barColor = b < -0.5 ? '#5b8dee' : b < 0.5 ? '#3fd9a0' : '#e05c5c';
+    const barW = Math.round((b + 2.5) / 5 * 100);
+    const catClass = it.cat === 'Mudah' ? 'pill-mudah' : it.cat === 'Sulit' ? 'pill-sulit' : 'pill-sedang';
+    const fitClass = !fit ? (I_INFIT[i] > 1.3 ? 'pill-over' : 'pill-under') : 'pill-fit';
+    const fitLabel = !fit ? (I_INFIT[i] > 1.3 ? 'Noisy' : 'Muted') : 'Fit';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>S${it.id}</td>
+      <td><span class="pill pill-topic">${it.topic}</span></td>
+      <td><div class="bar-wrap"><div class="bar-inner" style="width:${barW}%;background:${barColor}"></div></div>${b.toFixed(3)}</td>
+      <td><span class="pill ${catClass}">${it.cat}</span></td>
+      <td style="color:${fit?'#3fd9a0':'#e05c5c'}">${I_INFIT[i].toFixed(3)}</td>
+      <td>${I_OUTFIT[i].toFixed(3)}</td>
+      <td>${I_SE[i].toFixed(3)}</td>
+      <td>${pct}%</td>
+      <td><span class="pill ${fitClass}">${fitLabel}</span></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+// ── Wright Map ──
+function buildWright() {
+  const svg = document.getElementById('wright-svg');
+  const ns = 'http://www.w3.org/2000/svg';
+  svg.innerHTML = '';
+  const W = 760, H = 720;
+  const logMin = -3.5, logMax = 3.5;
+  const yT = 55, yB = 670;
+  const toY = l => yT + (1 - (Math.max(logMin, Math.min(logMax, l)) - logMin) / (logMax - logMin)) * (yB - yT);
+
+  const el = (tag, attrs) => {
+    const e = document.createElementNS(ns, tag);
+    Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, v));
+    return e;
+  };
+  const app = e => { svg.appendChild(e); return e; };
+
+  // grid + logit labels
+  for (let l = -3; l <= 3; l++) {
+    const y = toY(l);
+    app(el('line', {x1:60,y1:y,x2:700,y2:y,stroke:'rgba(255,255,255,.07)',
+      'stroke-width':.5,'stroke-dasharray':'4 4'}));
+    const t = el('text', {x:52,y:y+4,'text-anchor':'end','font-size':11,fill:'#7a7f94','font-family':'Space Grotesk, sans-serif'});
+    t.textContent = l; app(t);
+  }
+  // center line
+  app(el('line', {x1:360,y1:yT,x2:360,y2:yB,stroke:'rgba(255,255,255,.15)','stroke-width':1}));
+
+  // headers
+  const mkTxt = (x, y, str, anchor, size, col, weight) => {
+    const t = el('text', {x,y,'text-anchor':anchor||'middle','font-size':size||12,fill:col||'#7a7f94','font-family':'Space Grotesk, sans-serif','font-weight':weight||400});
+    t.textContent = str; app(t);
+  };
+  mkTxt(200, 40, 'Kemampuan Murid', 'middle', 12, '#e8eaf0', 500);
+  mkTxt(530, 40, 'Kesulitan Item', 'middle', 12, '#e8eaf0', 500);
+  mkTxt(52, 40, 'logit', 'end', 10, '#7a7f94');
+
+  // students (dot scatter)
+  const rng = seededRNG(77);
+  THETA7.forEach(t => {
+    const y = toY(t);
+    const x = 70 + rng() * 260;
+    app(el('circle', {cx:x.toFixed(1),cy:y.toFixed(1),r:3,fill:'#5b8dee',opacity:.35}));
+  });
+  THETA8.forEach(t => {
+    const y = toY(t);
+    const x = 70 + rng() * 260;
+    app(el('circle', {cx:x.toFixed(1),cy:y.toFixed(1),r:3,fill:'#e05c5c',opacity:.35}));
+  });
+
+  // mean lines
+  const m7 = THETA7.reduce((a,b)=>a+b,0)/THETA7.length;
+  const m8 = THETA8.reduce((a,b)=>a+b,0)/THETA8.length;
+  app(el('line', {x1:60,y1:toY(m7),x2:350,y2:toY(m7),stroke:'#5b8dee','stroke-width':1.5,'stroke-dasharray':'6 3'}));
+  mkTxt(66, toY(m7)-6, `M7=${m7.toFixed(2)}`, 'start', 10, '#5b8dee');
+  app(el('line', {x1:60,y1:toY(m8),x2:350,y2:toY(m8),stroke:'#e05c5c','stroke-width':1.5,'stroke-dasharray':'6 3'}));
+  mkTxt(66, toY(m8)+14, `M8=${m8.toFixed(2)}`, 'start', 10, '#e05c5c');
+
+  // items
+  const topicColors = {Dasar:'#5b8dee',Perangkat:'#3fd9a0',Internet:'#f5a623',
+    Protokol:'#e05c5c',Keamanan:'#a78bfa',Topologi:'#3fd9a0',Jaringan:'#f5a623'};
+  const placed = {};
+  ITEMS.forEach((it, i) => {
+    const b = B_EST[i];
+    const key = Math.round(b * 3) / 3;
+    placed[key] = (placed[key] || 0);
+    const x = 380 + placed[key] * 42;
+    placed[key]++;
+    const y = toY(b);
+    const col = topicColors[it.topic] || '#a78bfa';
+    const g = el('g', {});
+    g.appendChild(el('rect', {x:x-16,y:y-10,width:34,height:20,fill:col+'22',rx:4,stroke:col,
+      'stroke-width':.5}));
+    const t = el('text', {x:x+1,y:y+4,'text-anchor':'middle','font-size':10,fill:col,
+      'font-family':'Space Grotesk, sans-serif','font-weight':500});
+    t.textContent = 'S'+it.id; g.appendChild(t);
+    app(g);
+  });
+
+  // legend bottom
+  const topics = Object.entries(topicColors);
+  let lx = 60, ly = H - 18;
+  topics.forEach(([t, c]) => {
+    app(el('rect', {x:lx,y:ly-9,width:8,height:8,fill:c,rx:2}));
+    const tx = el('text', {x:lx+11,y:ly,'font-size':10,fill:c,'font-family':'Space Grotesk, sans-serif'});
+    tx.textContent = t; app(tx);
+    lx += 90;
+  });
+}
+
+// ── Fit charts ──
+function buildFitCharts() {
+  const labels = ITEMS.map(it=>'S'+it.id);
+  const fitColors = I_INFIT.map(v => v>1.3||v<0.7 ? '#e05c5c' : '#5b8dee');
+  const outfitColors = I_OUTFIT.map(v => v>1.3||v<0.7 ? '#f5a623' : '#3fd9a0');
+
+  const baseOpts = (yLabel) => ({
+    responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{
+      x:{ticks:{color:'#7a7f94',font:{size:9.5},maxRotation:45,autoSkip:false},grid:{color:'rgba(255,255,255,.05)'}},
+      y:{ticks:{color:'#7a7f94',font:{size:11},callback:v=>v.toFixed(1)},
+         title:{display:true,text:yLabel,color:'#7a7f94',font:{size:11}},
+         grid:{color:'rgba(255,255,255,.05)'}}
+    }
+  });
+
+  const fitPlugin = (lo, hi, color) => ({
+    id:'band', afterDraw(c){
+      const {ctx,chartArea:{left,right},scales:{y}}=c;
+      const y1=y.getPixelForValue(lo), y2=y.getPixelForValue(hi);
+      ctx.save();
+      ctx.fillStyle = color+'18';
+      ctx.fillRect(left,y2,right-left,y1-y2);
+      ctx.strokeStyle=color; ctx.lineWidth=1; ctx.setLineDash([5,4]);
+      ctx.beginPath();ctx.moveTo(left,y1);ctx.lineTo(right,y1);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(left,y2);ctx.lineTo(right,y2);ctx.stroke();
+      ctx.fillStyle=color; ctx.font='10px Space Grotesk,sans-serif'; ctx.setLineDash([]);
+      ctx.fillText('1.30',right+4,y2+4); ctx.fillText('0.70',right+4,y1+4);
+      ctx.restore();
+    }
+  });
+
+  new Chart(document.getElementById('fitBarChart'), {
+    type:'bar', data:{labels,datasets:[{label:'Infit MNSQ',data:I_INFIT,backgroundColor:fitColors,borderRadius:3,borderSkipped:false}]},
+    options:{...baseOpts('Infit MNSQ'),scales:{...baseOpts().scales,y:{...baseOpts('Infit MNSQ').scales.y,min:0.5,max:1.5}}},
+    plugins:[fitPlugin(0.7,1.3,'#3fd9a0')]
+  });
+  document.getElementById('fitBarChart').chart?.plugins?.push(fitPlugin(0.7,1.3,'#3fd9a0'));
+
+  new Chart(document.getElementById('outfitBarChart'), {
+    type:'bar', data:{labels,datasets:[{label:'Outfit MNSQ',data:I_OUTFIT,backgroundColor:outfitColors,borderRadius:3,borderSkipped:false}]},
+    options:{...baseOpts('Outfit MNSQ'),scales:{...baseOpts().scales,y:{...baseOpts('Outfit MNSQ').scales.y,min:0.4,max:2.0}}}
+  });
+
+  new Chart(document.getElementById('scatterChart'), {
+    type:'scatter',
+    data:{datasets:[{label:'Item',data:B_EST.map((b,i)=>({x:b,y:I_INFIT[i]})),
+      backgroundColor:'#a78bfa',pointRadius:6,pointHoverRadius:8}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`S${ctx.dataIndex+1}: b=${ctx.parsed.x.toFixed(2)} infit=${ctx.parsed.y.toFixed(3)}`}}},
+      scales:{
+        x:{title:{display:true,text:'Kesulitan b (logit)',color:'#7a7f94'},ticks:{color:'#7a7f94'},grid:{color:'rgba(255,255,255,.05)'}},
+        y:{min:0.6,max:1.3,title:{display:true,text:'Infit MNSQ',color:'#7a7f94'},ticks:{color:'#7a7f94'},grid:{color:'rgba(255,255,255,.05)'}}
+      }}
+  });
+
+  // Add fit bands to infit bar manually
+  const infit = Chart.getChart('fitBarChart');
+  if (infit) { infit.options.plugins = infit.options.plugins||{}; }
+}
+
+// ── Soal table ──
+function buildSoalTable() {
+  const tbody = document.getElementById('soal-tbody');
+  tbody.innerHTML = '';
+  ITEMS.forEach((it, i) => {
+    const catClass = it.cat==='Mudah'?'pill-mudah':it.cat==='Sulit'?'pill-sulit':'pill-sedang';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${it.id}</td>
+      <td><span class="pill pill-topic">${it.topic}</span></td>
+      <td style="font-family:var(--sans);font-size:13px">${it.text}</td>
+      <td style="text-align:center;font-weight:600;color:var(--accent2)">${it.key}</td>
+      <td><span class="pill ${catClass}">${it.cat}</span></td>
+      <td>${B_EST[i].toFixed(3)}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+// ── Kalkulator ──
+let iccChart = null;
+function initKalkulator() {
+  // populate item picker
+  const sel = document.getElementById('pick-item');
+  ITEMS.forEach((it, i) => {
+    const o = document.createElement('option');
+    o.value = i;
+    o.textContent = `S${it.id} — ${it.text.substring(0,40)}... (b=${B_EST[i].toFixed(2)})`;
+    sel.appendChild(o);
+  });
+  calcRasch(); calcLogit();
+}
+
+function calcRasch() {
+  const theta = parseFloat(document.getElementById('sl-theta').value);
+  const b     = parseFloat(document.getElementById('sl-b').value);
+  const X     = parseInt(document.getElementById('sl-x').value);
+  document.getElementById('lbl-theta').textContent = theta.toFixed(1);
+  document.getElementById('lbl-b').textContent = b.toFixed(1);
+  document.getElementById('lbl-x').textContent = X === 1 ? '1 (Benar)' : '0 (Salah)';
+
+  const diff = theta - b;
+  const expD = Math.exp(diff);
+  const P = expD / (1 + expD);
+  const W = P * (1 - P);
+  const res = X - P;
+  const z2 = res * res / (W + 1e-9);
+  const zCol = z2 < 0.49 ? '#3fd9a0' : z2 > 1.69 ? '#e05c5c' : '#5b8dee';
+  const zMsg = z2 < 0.49 ? 'Residual kecil — sangat sesuai prediksi' : z2 > 1.69 ? 'Residual besar — mengejutkan model' : 'Residual normal — sesuai ekspektasi';
+
+  document.getElementById('calc-result').innerHTML =
+    `<span style="color:#7a7f94">θ − b</span> = ${theta.toFixed(2)} − (${b.toFixed(2)}) = <span style="color:#3fd9a0">${diff.toFixed(3)}</span><br>` +
+    `<span style="color:#7a7f94">exp(θ−b)</span> = e<sup>${diff.toFixed(3)}</sup> = ${expD.toFixed(4)}<br>` +
+    `<span style="color:#7a7f94">P(benar)</span> = ${expD.toFixed(4)}/(1+${expD.toFixed(4)}) = <span style="color:#3fd9a0;font-weight:600">${P.toFixed(4)} (${(P*100).toFixed(1)}%)</span><br>` +
+    `<span style="color:#7a7f94">W = P(1−P)</span> = ${P.toFixed(4)}×${(1-P).toFixed(4)} = ${W.toFixed(4)}<br>` +
+    `<span style="color:#7a7f94">Residual (X−P)</span> = ${X}−${P.toFixed(4)} = <span style="color:#5b8dee">${res.toFixed(4)}</span><br>` +
+    `<span style="color:#7a7f94">z² = (X−P)²/W</span> = <span style="color:${zCol}">${z2.toFixed(4)}</span> — ${zMsg}`;
+
+  // ICC
+  const thArr = [], pArr = [];
+  for (let t = -4; t <= 4; t += 0.1) { thArr.push(+t.toFixed(1)); pArr.push(1/(1+Math.exp(-(t-b)))); }
+  const dotIdx = Math.round((theta+4)/0.1);
+  const dotData = thArr.map((_, i) => i === dotIdx ? P : null);
+
+  if (iccChart) iccChart.destroy();
+  iccChart = new Chart(document.getElementById('icc-chart'), {
+    type:'line',
+    data:{labels:thArr, datasets:[
+      {label:'ICC',data:pArr,borderColor:'#5b8dee',borderWidth:2,pointRadius:0,tension:.4,fill:false},
+      {label:'Murid',data:dotData,pointBackgroundColor:'#e05c5c',pointBorderColor:'#e05c5c',pointRadius:7,showLine:false}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{ticks:{color:'#7a7f94',font:{size:10},maxTicksLimit:9},title:{display:true,text:'θ (kemampuan)',color:'#7a7f94'},grid:{color:'rgba(255,255,255,.05)'}},
+        y:{min:0,max:1,ticks:{color:'#7a7f94',font:{size:11},callback:v=>v.toFixed(1)},title:{display:true,text:'P(benar)',color:'#7a7f94'},grid:{color:'rgba(255,255,255,.05)'}}
+      }}
+  });
+}
+
+function calcLogit() {
+  const r = parseInt(document.getElementById('sl-r').value);
+  document.getElementById('lbl-r').textContent = r;
+  const logit = Math.log(r / (40 - r));
+  const pct = (r/40*100).toFixed(1);
+  const cat = logit < -1 ? 'Kemampuan rendah' : logit < 1 ? 'Kemampuan sedang' : 'Kemampuan tinggi';
+  document.getElementById('logit-result').innerHTML =
+    `<span style="color:#7a7f94">θ = ln[${r}/(40−${r})] = ln(${(r/(40-r)).toFixed(4)})</span> = <span style="color:#3fd9a0;font-weight:600">${logit.toFixed(3)} logit</span><br>` +
+    `Proporsi benar: ${pct}% &nbsp;→&nbsp; <span style="color:#5b8dee">${cat}</span>`;
+}
+
+function calcPick() {
+  const idx = parseInt(document.getElementById('pick-item').value);
+  if (isNaN(idx)) return;
+  const theta = parseFloat(document.getElementById('pick-group').value);
+  const b = B_EST[idx];
+  const it = ITEMS[idx];
+  const diff = theta - b;
+  const P = 1/(1+Math.exp(-diff));
+  const cat = P > 0.7 ? 'mudah bagi murid ini' : P > 0.4 ? 'setara dengan kemampuan murid' : 'sulit bagi murid ini';
+  document.getElementById('pick-result').innerHTML =
+    `Soal S${it.id}: <span style="color:#a78bfa">${it.text}</span><br>` +
+    `b = ${b.toFixed(3)} logit | θ = ${theta.toFixed(2)} logit<br>` +
+    `θ − b = ${diff.toFixed(3)}<br>` +
+    `<span style="color:#7a7f94">P(benar)</span> = <span style="color:${P>0.5?'#3fd9a0':'#e05c5c'};font-weight:600">${P.toFixed(4)} (${(P*100).toFixed(1)}%)</span><br>` +
+    `→ Soal ini <span style="color:#f5a623">${cat}</span>`;
+}
+
+// ── Pie chart ──
+function buildPieChart() {
+  const counts = {Mudah:10, Sedang:20, Sulit:10};
+  new Chart(document.getElementById('catPieChart'), {
+    type:'doughnut',
+    data:{labels:Object.keys(counts), datasets:[{data:Object.values(counts),
+      backgroundColor:['rgba(91,141,238,.7)','rgba(63,217,160,.65)','rgba(224,92,92,.65)'],
+      borderColor:['#5b8dee','#3fd9a0','#e05c5c'], borderWidth:1.5}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'65%',
+      plugins:{legend:{labels:{color:'#7a7f94',font:{size:12},padding:16}},
+        tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${ctx.parsed} soal (${(ctx.parsed/40*100).toFixed(0)}%)`}}}}
+  });
+}
+
+// ── Init ──
+buildCharts('ringkasan');
+
+// Band plugin for infit chart (retry after chart built)
+setTimeout(() => {
+  const c = Chart.getChart(document.getElementById('fitBarChart'));
+  if (!c) return;
+  c.options.animation = false;
+  c.update();
+}, 200);
+</script>
+</body>
+</html>
