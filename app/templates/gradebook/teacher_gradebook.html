@@ -966,8 +966,8 @@ async function loadCTTAnalysis() {
                 </div>
                 <div class="bg-purple-50 rounded-lg p-4 text-center">
                     <p class="text-xs text-purple-600 font-bold uppercase">Reliabilitas</p>
-                    <p class="text-2xl font-bold text-purple-700 mt-1">${data.summary.reliability.toFixed(2)}</p>
-                    <p class="text-xs text-purple-600 mt-1">${data.summary.reliability_label}</p>
+                    <p class="text-2xl font-bold text-purple-700 mt-1">${(data.summary.reliability_kr20 || 0).toFixed(2)}</p>
+                    <p class="text-xs text-purple-600 mt-1">${data.summary.reliability_label || '-'}</p>
                 </div>
             </div>
         `;

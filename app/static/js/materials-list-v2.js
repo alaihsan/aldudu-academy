@@ -424,7 +424,7 @@ class MaterialsList {
         };
 
         return `
-            <div class="group bg-white rounded-2xl border border-gray-200 hover:border-green-300 hover:bg-green-50/50 transition-all duration-200 overflow-hidden material-item"
+            <div class="group bg-white rounded-2xl border border-gray-200 hover:border-green-300 hover:bg-green-50/50 transition-all duration-200 overflow-hidden material-item cursor-pointer"
                 data-material-id="${material.id}"
                 data-material-type="${material.type}"
                 draggable="${this.isTeacher && this.sortMode === 'manual'}"
@@ -894,6 +894,17 @@ class MaterialsList {
                 const item = btn.closest('.material-item');
                 const id = item.dataset.materialId;
                 this.showMoveToFolderModal(parseInt(id));
+            });
+        });
+
+        // Material item click (for all users, especially students)
+        this.container.querySelectorAll('.material-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                // Don't fire when clicking action buttons
+                if (e.target.closest('button')) return;
+                const materialType = item.dataset.materialType;
+                const materialId = item.dataset.materialId;
+                this.onMaterialSelect(materialType, parseInt(materialId));
             });
         });
     }

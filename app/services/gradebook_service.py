@@ -91,7 +91,7 @@ def calculate_student_grade(student_id: int, course_id: int) -> Dict:
             total_weight += category_data['weight']
 
     if total_weight > 0:
-        result['final_grade'] = total_weighted_score / total_weight
+        result['final_grade'] = round((total_weighted_score / total_weight) * 100, 2)
         result['total_weight'] = total_weight
 
     return result
@@ -194,13 +194,13 @@ def calculate_course_statistics(course_id: int) -> Dict:
     all_grades = []
     
     for student in students:
-        grade_data = calculate_student_grade(student.id, course_id)
-        if grade_data['final_grade'] > 0:
-            all_grades.append(grade_data['final_grade'])
+        final_grade = calculate_final_grade(student.id, course_id, use_category_weighting=True)
+        if final_grade > 0:
+            all_grades.append(final_grade)
             stats['grades'].append({
                 'student_id': student.id,
                 'student_name': student.name,
-                'final_grade': round(grade_data['final_grade'], 2),
+                'final_grade': round(final_grade, 2),
             })
     
     if all_grades:
