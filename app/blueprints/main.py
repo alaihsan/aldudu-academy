@@ -487,7 +487,7 @@ def api_update_course_theme(course_id):
 @login_required
 def course_archives(course_id):
     """Halaman arsip untuk kelas - menampilkan kuis, tugas, dan file yang diarsipkan"""
-    from app.models import Course, Quiz, Assignment, File, Link
+    from app.models import Course, Quiz, Assignment, AssignmentStatus, File, Link
 
     course = db.session.get(Course, course_id)
     if course is None:
