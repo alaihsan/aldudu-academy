@@ -80,6 +80,13 @@
             {% endif %}
 
             {% if current_user.role.value == 'murid' %}
+            <a href="{{ url_for('main.course_archives', course_id=course.id) }}"
+               class="nav-link-archives flex items-center px-4 py-3 rounded-xl transition-all {% if 'course_archives' in request.endpoint|default('') %}active{% endif %}">
+                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                </svg>
+                <span class="sidebar-hide ml-3 whitespace-nowrap">Arsip Kelas</span>
+            </a>
             <a href="{{ url_for('gradebook.my_grades_index') }}"
                class="nav-link-grades flex items-center px-4 py-3 rounded-xl transition-all {% if request.endpoint == 'gradebook.my_grades_index' or request.endpoint == 'gradebook.my_grades' %}active bg-primary-50 text-primary-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %}">
                 <svg class="w-5 h-5 flex-shrink-0 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
