@@ -46,52 +46,6 @@ const translations = {
             issues: "Masalah"
         }
     },
-    en: {
-        meta: { language: "English", code: "en", flag: "🇬🇧" },
-        common: {
-            home: "Home",
-            dashboard: "Dashboard",
-            courses: "Courses",
-            quizzes: "Quizzes",
-            assignments: "Assignments",
-            grades: "Grades",
-            discussions: "Discussions",
-            settings: "Settings",
-            profile: "Profile",
-            logout: "Logout",
-            login: "Login",
-            register: "Register",
-            save: "Save",
-            cancel: "Cancel",
-            delete: "Delete",
-            edit: "Edit",
-            add: "Add",
-            back: "Back",
-            next: "Next",
-            submit: "Submit",
-            loading: "Loading...",
-            search: "Search",
-            filter: "Filter",
-            close: "Close",
-            yes: "Yes",
-            no: "No",
-            ok: "OK",
-            language: "Language"
-        },
-        nav: {
-            my_courses: "My Courses",
-            teaching: "Teaching",
-            gradebook: "Gradebook",
-            students: "Students",
-            teachers: "Teachers",
-            admin_panel: "Admin Panel",
-            reports: "Reports",
-            help: "Help",
-            report_issue: "Report Issue",
-            tickets: "Tickets",
-            issues: "Issues"
-        }
-    },
     'en-US': {
         meta: { language: "English (US)", code: "en-US", flag: "🇺🇸" },
         common: {
@@ -136,164 +90,6 @@ const translations = {
             report_issue: "Report Issue",
             tickets: "Tickets",
             issues: "Issues"
-        }
-    },
-    'en-GB': {
-        meta: { language: "English (UK)", code: "en-GB", flag: "🇬🇧" },
-        common: {
-            home: "Home",
-            dashboard: "Dashboard",
-            courses: "Courses",
-            quizzes: "Quizzes",
-            assignments: "Assignments",
-            grades: "Grades",
-            discussions: "Discussions",
-            settings: "Settings",
-            profile: "Profile",
-            logout: "Log Out",
-            login: "Log In",
-            register: "Register",
-            save: "Save",
-            cancel: "Cancel",
-            delete: "Delete",
-            edit: "Edit",
-            add: "Add",
-            back: "Back",
-            next: "Next",
-            submit: "Submit",
-            loading: "Loading...",
-            search: "Search",
-            filter: "Filter",
-            close: "Close",
-            yes: "Yes",
-            no: "No",
-            ok: "OK",
-            language: "Language"
-        },
-        nav: {
-            my_courses: "My Courses",
-            teaching: "Teaching",
-            gradebook: "Gradebook",
-            students: "Students",
-            teachers: "Teachers",
-            admin_panel: "Admin Panel",
-            reports: "Reports",
-            help: "Help",
-            report_issue: "Report Issue",
-            tickets: "Tickets",
-            issues: "Issues"
-        }
-    },
-    ar: {
-        meta: { language: "Arabic", code: "ar", flag: "🇸🇦", rtl: true, font: "'Noto Sans Arabic', sans-serif" },
-        common: {
-            home: "الرئيسية",
-            dashboard: "لوحة التحكم",
-            courses: "الدورات",
-            quizzes: "الاختبارات",
-            assignments: "الواجبات",
-            grades: "الدرجات",
-            discussions: "المناقشات",
-            settings: "الإعدادات",
-            profile: "الملف الشخصي",
-            logout: "تسجيل خروج",
-            login: "تسجيل دخول",
-            register: "تسجيل",
-            save: "حفظ",
-            cancel: "إلغاء",
-            delete: "حذف",
-            edit: "تعديل",
-            add: "إضافة",
-            back: "رجوع",
-            next: "التالي",
-            submit: "إرسال",
-            loading: "جاري التحميل...",
-            search: "بحث",
-            filter: "تصفية",
-            close: "إغلاق",
-            yes: "نعم",
-            no: "لا",
-            ok: "موافق",
-            language: "اللغة"
-        },
-        nav: {
-            my_courses: "دوراتي",
-            teaching: "التدريس",
-            gradebook: "سجل الدرجات",
-            students: "الطلاب",
-            teachers: "المعلمون",
-            admin_panel: "لوحة الإدارة",
-            reports: "التقارير",
-            help: "مساعدة",
-            report_issue: "الإبلاغ عن مشكلة",
-            tickets: "التذاكر",
-            issues: "المشاكل"
-        }
-    },
-    jv: {
-        meta: { language: "Javanese", code: "jv", flag: "🇮🇩" },
-        common: {
-            home: "Omah",
-            dashboard: "Papan Kontrol",
-            courses: "Kelas",
-            quizzes: "Kuis",
-            assignments: "Tugas",
-            grades: "Nilai",
-            discussions: "Diskusi",
-            settings: "Setelan",
-            profile: "Profil",
-            logout: "Metu",
-            login: "Mlebu",
-            register: "Daftar",
-            save: "Simpen",
-            cancel: "Batal",
-            delete: "Busak",
-            edit: "Edit",
-            add: "Tambah",
-            back: "Mbalik",
-            next: "Terus",
-            submit: "Kirim",
-            loading: "Ngemu...",
-            search: "Goleki",
-            filter: "Saring",
-            close: "Tutup",
-            yes: "Ya",
-            no: "Ora",
-            ok: "Oke",
-            language: "Basa"
-        }
-    },
-    'jv-YO': {
-        meta: { language: "Jawa (Yogyakarta)", code: "jv-YO", flag: "🇮🇩" },
-        common: {
-            home: "Griya",
-            dashboard: "Papan Kontrol",
-            courses: "Kelas",
-            quizzes: "Kuis",
-            assignments: "Tugas",
-            grades: "Nilai",
-            discussions: "Diskusi",
-            settings: "Setelan",
-            profile: "Profil",
-            logout: "Medhal",
-            login: "Mlebet",
-            register: "Daftar",
-            save: "Simpen",
-            cancel: "Batal",
-            delete: "Busak",
-            edit: "Edit",
-            add: "Tambah",
-            back: "Mbalik",
-            next: "Lajeng",
-            submit: "Kirim",
-            loading: "Ngemu...",
-            search: "Padosi",
-            filter: "Saring",
-            close: "Tutup",
-            yes: "Inggih",
-            no: "Mboten",
-            ok: "Oke",
-            language: "Basa"
         }
     },
     'jv-MA': {
@@ -361,72 +157,6 @@ const translations = {
             ok: "Oke",
             language: "Basa"
         }
-    },
-    min: {
-        meta: { language: "Minangkabau", code: "min", flag: "🇮🇩" },
-        common: {
-            home: "Rumah",
-            dashboard: "Papan Kontrol",
-            courses: "Kelas",
-            quizzes: "Kuis",
-            assignments: "Tugas",
-            grades: "Nilai",
-            discussions: "Diskusi",
-            settings: "Setelan",
-            profile: "Profil",
-            logout: "Kalua",
-            login: "Masuak",
-            register: "Daftar",
-            save: "Simpan",
-            cancel: "Batal",
-            delete: "Hapuih",
-            edit: "Edit",
-            add: "Tambah",
-            back: "Baliak",
-            next: "Lanjuik",
-            submit: "Kirim",
-            loading: "Samantaro...",
-            search: "Cari",
-            filter: "Saring",
-            close: "Tutuik",
-            yes: "Yo",
-            no: "Indak",
-            ok: "Oke",
-            language: "Bahaso"
-        }
-    },
-    ban: {
-        meta: { language: "Balinese", code: "ban", flag: "🇮🇩" },
-        common: {
-            home: "Jumah",
-            dashboard: "Papan Kontrol",
-            courses: "Kelas",
-            quizzes: "Kuis",
-            assignments: "Tugas",
-            grades: "Nilai",
-            discussions: "Diskusi",
-            settings: "Setelan",
-            profile: "Profil",
-            logout: "Metu",
-            login: "Mlebu",
-            register: "Daptar",
-            save: "Simpen",
-            cancel: "Batal",
-            delete: "Busak",
-            edit: "Edit",
-            add: "Tambah",
-            back: "Mbalik",
-            next: "Lanjud",
-            submit: "Kirim",
-            loading: "Ngemu...",
-            search: "Rereh",
-            filter: "Saring",
-            close: "Tutup",
-            yes: "Inggih",
-            no: "Nenten",
-            ok: "Oke",
-            language: "Basa"
-        }
     }
 };
 
@@ -452,12 +182,12 @@ function t(key, defaultValue = null) {
 
 // Set language and update UI
 async function setLanguage(langCode) {
-    const supportedLanguages = ['id', 'en', 'en-US', 'en-GB', 'ar', 'jv', 'jv-YO', 'jv-MA', 'su', 'min', 'ban'];
+    const supportedLanguages = ['id', 'en-US', 'jv-MA', 'su'];
     if (!supportedLanguages.includes(langCode)) {
         console.error('Unsupported language:', langCode);
         return false;
     }
-    
+
     try {
         const response = await fetch('/api/set-language', {
             method: 'POST',
@@ -466,13 +196,13 @@ async function setLanguage(langCode) {
             },
             body: JSON.stringify({ language: langCode })
         });
-        
+
         const data = await response.json();
-        
+
         if (data.success) {
             currentLang = langCode;
             localStorage.setItem('preferred_language', langCode);
-            
+
             // Update RTL and Font
             const meta = translations[langCode]?.meta;
             if (meta?.rtl) {
@@ -480,20 +210,20 @@ async function setLanguage(langCode) {
             } else {
                 document.documentElement.setAttribute('dir', 'ltr');
             }
-            
+
             if (meta?.font) {
                 document.body.style.fontFamily = meta.font;
             } else {
                 document.body.style.fontFamily = '';
             }
-            
+
             document.documentElement.setAttribute('lang', langCode);
-            
+
             // Update all elements with data-i18n attribute
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 const translated = t(key);
-                
+
                 if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
                     if (el.getAttribute('placeholder')) {
                         el.placeholder = translated;
@@ -504,21 +234,24 @@ async function setLanguage(langCode) {
                     el.textContent = translated;
                 }
             });
-            
+
             // Update all elements with data-i18n-placeholder attribute
             document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
                 const key = el.getAttribute('data-i18n-placeholder');
                 el.placeholder = t(key);
             });
-            
+
             // Dispatch event for other components to listen
-            window.dispatchEvent(new CustomEvent('languageChanged', { 
-                detail: { language: langCode, translations: translations[langCode] } 
+            window.dispatchEvent(new CustomEvent('languageChanged', {
+                detail: { language: langCode, translations: translations[langCode] }
             }));
-            
-            // Refresh sidebar language selector
+
+            // Refresh sidebar and settings language selector
             initLanguageSelector();
-            
+            if (typeof renderSettingsLanguage === 'function') {
+                renderSettingsLanguage();
+            }
+
             return true;
         } else {
             console.error('Failed to set language:', data.message);
@@ -589,12 +322,8 @@ function initLanguageSelector() {
     const languages = [
         { code: 'id', name: 'Indonesia', flag: '🇮🇩' },
         { code: 'en-US', name: 'English (US)', flag: '🇺🇸' },
-        { code: 'en-GB', name: 'English (UK)', flag: '🇬🇧' },
-        { code: 'ar', name: 'العربية', flag: '🇸🇦' },
-        { code: 'jv-YO', name: 'Jawa (Jogja)', flag: '🇮🇩' },
         { code: 'jv-MA', name: 'Jawa (Malang)', flag: '🇮🇩' },
-        { code: 'su', name: 'Sunda', flag: '🇮🇩' },
-        { code: 'ban', name: 'Bali', flag: '🇮🇩' }
+        { code: 'su', name: 'Sunda', flag: '🇮🇩' }
     ];
 
     const current = languages.find(l => l.code === currentLang) || languages[0];

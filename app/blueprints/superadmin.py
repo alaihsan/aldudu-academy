@@ -5,7 +5,7 @@ from app.extensions import db
 from app.models import (
     User, UserRole, School, SchoolStatus,
     Ticket, TicketMessage, TicketStatus,
-    ActivityLog, Issue, IssueStatus
+    ActivityLog, Issue, IssueStatus, WhatsNew
 )
 from app.helpers import get_jakarta_now, sanitize_text
 from app.services.email_service import send_school_approved_email, send_ticket_update_email, send_email
@@ -447,3 +447,109 @@ def api_test_email():
     if ok:
         return jsonify({'success': True, 'message': f'Email test berhasil dikirim ke {recipient}'})
     return jsonify({'success': False, 'message': 'Gagal mengirim email. Cek kredensial Mailtrap di .env.'}), 500
+
+
+# ─── What's New Routes ─────────────────────────────────
+
+@superadmin_bp.route('/whats-new')
+def whats_new():
+    """Halaman Input What's New untuk Super Admin."""
+    return render_template('superadmin/whats_new.html')
+
+
+@superadmin_bp.route('/api/whats-new', methods=['GET'])
+def api_get_whats_new():
+    """Get semua What's New posts."""
+    posts = WhatsNew.query.order_by(WhatsNew.created_at.desc()).all()
+    return jsonify({
+        'success': True,
+        'posts': [p.to_dict(include_author=True) for p in posts]
+    })
+
+
+@superadmin_bp.route('/api/whats-new', methods=['POST'])
+def api_create_whats_new():
+    """Create What's New post."""
+    data = request.get_json() or {}
+    title = sanitize_text(data.get('title', ''), max_len=200)
+    content = data.get('content', '').strip()
+    is_published = data.get('is_published', True)
+
+    if not title:
+        return jsonify({'success': False, 'message': 'Judul tidak boleh kosong'}), 400
+    if not content:
+        return jsonify({'success': False, 'message': 'Konten tidak boleh kosong'}), 400
+
+    post = WhatsNew(
+        title=title,
+        content=content,
+        author_id=current_user.id,
+        is_published=is_published,
+    )
+    db.session.add(post)
+    db.session.commit()
+
+    return jsonify({
+        'success': True,
+        'message': 'What\'s New berhasil dibuat',
+        'post': post.to_dict(include_author=True)
+    })
+
+
+@superadmin_bp.route('/api/whats-new/<int:post_id>', methods=['GET'])
+def api_get_whats_new_post(post_id):
+    """Get single What's New post."""
+    post = db.session.get(WhatsNew, post_id)
+    if not post:
+        return jsonify({'success': False, 'message': 'Post tidak ditemukan'}), 404
+
+    return jsonify({
+        'success': True,
+        'post': post.to_dict(include_author=True)
+    })
+
+
+@superadmin_bp.route('/api/whats-new/<int:post_id>', methods=['PUT'])
+def api_update_whats_new_post(post_id):
+    """Update What's New post."""
+    post = db.session.get(WhatsNew, post_id)
+    if not post:
+        return jsonify({'success': False, 'message': 'Post tidak ditemukan'}), 404
+
+    data = request.get_json() or {}
+    title = sanitize_text(data.get('title', ''), max_len=200)
+    content = data.get('content', '').strip()
+    is_published = data.get('is_published', post.is_published)
+
+    if not title:
+        return jsonify({'success': False, 'message': 'Judul tidak boleh kosong'}), 400
+    if not content:
+        return jsonify({'success': False, 'message': 'Konten tidak boleh kosong'}), 400
+
+    post.title = title
+    post.content = content
+    post.is_published = is_published
+    post.updated_at = get_jakarta_now()
+    db.session.commit()
+
+    return jsonify({
+        'success': True,
+        'message': 'What\'s New berhasil diperbarui',
+        'post': post.to_dict(include_author=True)
+    })
+
+
+@superadmin_bp.route('/api/whats-new/<int:post_id>', methods=['DELETE'])
+def api_delete_whats_new_post(post_id):
+    """Delete What's New post."""
+    post = db.session.get(WhatsNew, post_id)
+    if not post:
+        return jsonify({'success': False, 'message': 'Post tidak ditemukan'}), 404
+
+    db.session.delete(post)
+    db.session.commit()
+
+    return jsonify({
+        'success': True,
+        'message': 'What\'s New berhasil dihapus'
+    })

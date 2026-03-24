@@ -4,7 +4,8 @@ from flask_login import login_required, current_user
 from app.models import (
     db, Course, Quiz, Question, Option,
     QuestionType, GradeType, UserRole, Link, File,
-    QuizSubmission, Answer, Discussion, QuizStatus, ActivityLog
+    QuizSubmission, Answer, Discussion, QuizStatus, ActivityLog,
+    Assignment, AssignmentStatus
 )
 from app.helpers import get_jakarta_now
 from app.tenant import get_school_id_or_abort, verify_course_in_school
@@ -452,6 +453,66 @@ def api_restore_file(file_id):
     return jsonify({'success': True, 'message': 'File berhasil dipulihkan'})
 
 
+@main_bp.route('/api/quiz/<int:quiz_id>', methods=['DELETE'])
+@login_required
+def api_delete_quiz(quiz_id):
+    """API endpoint untuk menghapus kuis permanen dari arsip"""
+    from flask import jsonify
+    from app.models import Quiz
+
+    quiz = db.session.get(Quiz, quiz_id)
+    if not quiz:
+        return jsonify({'success': False, 'message': 'Kuis tidak ditemukan'}), 404
+
+    if quiz.course.teacher_id != current_user.id:
+        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
+
+    db.session.delete(quiz)
+    db.session.commit()
+
+    return jsonify({'success': True, 'message': 'Kuis berhasil dihapus permanen'})
+
+
+@main_bp.route('/api/assignment/<int:assignment_id>', methods=['DELETE'])
+@login_required
+def api_delete_assignment(assignment_id):
+    """API endpoint untuk menghapus tugas permanen dari arsip"""
+    from flask import jsonify
+    from app.models import Assignment
+
+    assignment = db.session.get(Assignment, assignment_id)
+    if not assignment:
+        return jsonify({'success': False, 'message': 'Tugas tidak ditemukan'}), 404
+
+    if assignment.course.teacher_id != current_user.id:
+        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
+
+    db.session.delete(assignment)
+    db.session.commit()
+
+    return jsonify({'success': True, 'message': 'Tugas berhasil dihapus permanen'})
+
+
+@main_bp.route('/api/file/<int:file_id>', methods=['DELETE'])
+@login_required
+def api_delete_file(file_id):
+    """API endpoint untuk menghapus file permanen dari arsip"""
+    from flask import jsonify
+    from app.models import File
+
+    file = db.session.get(File, file_id)
+    if not file:
+        return jsonify({'success': False, 'message': 'File tidak ditemukan'}), 404
+
+    if file.course.teacher_id != current_user.id:
+        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
+
+    db.session.delete(file)
+    db.session.commit()
+
+    return jsonify({'success': True, 'message': 'File berhasil dihapus permanen'})
+
+
 @main_bp.route('/api/course/<int:course_id>/theme', methods=['PUT'])
 @login_required
 def api_update_course_theme(course_id):
@@ -487,26 +548,27 @@ def api_update_course_theme(course_id):
 @login_required
 def course_archives(course_id):
     """Halaman arsip untuk kelas - menampilkan kuis, tugas, dan file yang diarsipkan"""
-    from app.models import Course, Quiz, Assignment, File, Link
+    from app.models import Course, Quiz, Assignment, File, Link, AssignmentStatus, UserRole
 
     course = db.session.get(Course, course_id)
     if course is None:
-        abort(404)
+        abort(404, description='Kelas tidak ditemukan.')
 
     school_id = get_school_id_or_abort()
     verify_course_in_school(course, school_id)
 
+    # Teacher, admin, and enrolled students can access archives
     is_teacher = (current_user.id == course.teacher_id)
     is_student = current_user in course.students
-    is_admin = current_user.role.value == 'admin'
+    is_admin = (current_user.role == UserRole.ADMIN)
     if not (is_teacher or is_student or is_admin):
-        abort(403)
+        abort(403, description='Anda tidak memiliki akses ke arsip kelas ini.')
 
     # Get archived items
     archived_quizzes = Quiz.query.filter_by(course_id=course.id, is_archived=True).order_by(Quiz.updated_at.desc()).all()
     archived_assignments = Assignment.query.filter_by(course_id=course.id, status=AssignmentStatus.ARCHIVED).order_by(Assignment.updated_at.desc()).all()
-    archived_files = File.query.filter_by(course_id=course.id, is_archived=True).order_by(File.updated_at.desc()).all()
-    archived_links = Link.query.filter_by(course_id=course.id, is_archived=True).order_by(Link.updated_at.desc()).all()
+    archived_files = File.query.filter_by(course_id=course.id, is_archived=True).order_by(File.created_at.desc()).all()
+    archived_links = Link.query.filter_by(course_id=course.id, is_archived=True).order_by(Link.created_at.desc()).all()
 
     return render_template('course_archives.html',
                           course=course,
@@ -514,4 +576,9 @@ def course_archives(course_id):
                           archived_assignments=archived_assignments,
                           archived_files=archived_files,
                           archived_links=archived_links,
-                          is_teacher=is_teacher)
+                          is_teacher=is_teacher or is_admin)
+
+
+@main_bp.errorhandler(403)
+def forbidden(error):
+    return render_template('errors/403.html', error=error), 403

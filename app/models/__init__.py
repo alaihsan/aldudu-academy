@@ -31,3 +31,4 @@ from .rasch import (
     RaschThresholdLog,
     RaschRatingScale,
 )
+from .whats_new import WhatsNew

@@ -407,9 +407,14 @@ function showRestoreModal(id, name, type) {
 
 function performRestore() {
     if (!itemToRestore) return;
-    
-    const url = `/api/${itemToRestore.type}/${itemToRestore.id}/restore`;
-    
+
+    let url;
+    if (itemToRestore.type === 'link') {
+        url = `/api/link/${itemToRestore.id}/restore`;
+    } else {
+        url = `/api/${itemToRestore.type}/${itemToRestore.id}/restore`;
+    }
+
     fetch(url, { method: 'POST' })
         .then(res => res.json())
         .then(data => {
@@ -417,7 +422,7 @@ function performRestore() {
                 Swal.fire({
                     icon: 'success',
                     title: 'Berhasil!',
-                    text: itemToRestore.type === 'quiz' ? 'Kuis berhasil dipulihkan.' : 
+                    text: itemToRestore.type === 'quiz' ? 'Kuis berhasil dipulihkan.' :
                           itemToRestore.type === 'assignment' ? 'Tugas berhasil dipulihkan.' :
                           itemToRestore.type === 'file' ? 'Berkas berhasil dipulihkan.' : 'Link berhasil dipulihkan.',
                     confirmButtonColor: '#22c55e',
@@ -503,9 +508,18 @@ function showDeleteModal(id, name, type) {
 
 function performDelete() {
     if (!itemToDelete) return;
-    
-    const url = `/${itemToDelete.type}s/${itemToDelete.id}`;
-    
+
+    let url;
+    if (itemToDelete.type === 'quiz') {
+        url = `/api/quiz/${itemToDelete.id}`;
+    } else if (itemToDelete.type === 'assignment') {
+        url = `/api/assignment/${itemToDelete.id}`;
+    } else if (itemToDelete.type === 'file') {
+        url = `/api/file/${itemToDelete.id}`;
+    } else if (itemToDelete.type === 'link') {
+        url = `/api/link/${itemToDelete.id}`;
+    }
+
     fetch(url, { method: 'DELETE' })
         .then(res => res.json())
         .then(data => {

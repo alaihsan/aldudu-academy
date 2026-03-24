@@ -17,11 +17,17 @@ depends_on = None
 
 
 def upgrade():
-    # Add preferred_language column to users table
-    op.add_column('users', sa.Column('preferred_language', sa.String(length=10), nullable=True, default='id'))
+    # Check if column already exists (for idempotent migration)
+    from sqlalchemy import inspect
+    conn = op.get_bind()
+    inspector = inspect(conn)
+    columns = [col['name'] for col in inspector.get_columns('users')]
     
-    # Set default value for existing users
-    op.execute("UPDATE users SET preferred_language = 'id' WHERE preferred_language IS NULL")
+    if 'preferred_language' not in columns:
+        # Add preferred_language column to users table
+        op.add_column('users', sa.Column('preferred_language', sa.String(length=10), nullable=True, default='id'))
+        # Set default value for existing users
+        op.execute("UPDATE users SET preferred_language = 'id' WHERE preferred_language IS NULL")
 
 
 def downgrade():

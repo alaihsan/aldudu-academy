@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+
+{% block title %}What's New - Aldudu Academy{% endblock %}
+
+{% block body %}
+<div id="app-page" class="min-h-screen bg-gray-50 flex">
+    {% include '_sidebar.html' %}
+
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <header class="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-8 sticky top-0 z-30">
+            <div class="flex items-center space-x-4">
+                <a href="{{ url_for('main.dashboard') }}" class="p-2 text-gray-400 hover:text-primary-600 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                </a>
+                <h2 class="text-lg font-bold text-gray-900 truncate">What's New</h2>
+            </div>
+            <div class="flex items-center space-x-3">
+                <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Pengumuman Platform</span>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-8">
+            <div class="max-w-4xl mx-auto">
+                
+                <!-- Header -->
+                <div class="mb-8">
+                    <h1 class="text-3xl font-black text-gray-900 mb-2">📢 What's New</h1>
+                    <p class="text-gray-500 font-medium">Pengumuman terbaru dari tim Aldudu Academy</p>
+                </div>
+
+                <!-- Posts List -->
+                <div id="posts-container" class="space-y-6">
+                    <!-- Loading state -->
+                    <div class="text-center py-16">
+                        <svg class="w-12 h-12 text-gray-200 mx-auto mb-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                        <p class="text-gray-400 font-medium">Memuat pengumuman...</p>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Post Detail Modal -->
+<div id="post-modal" class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto animate-slide-up">
+        <div class="sticky top-0 bg-white border-b border-gray-100 px-8 py-6 flex items-center justify-between">
+            <button onclick="closePostModal()" class="p-3 hover:bg-gray-100 rounded-2xl transition-all active:scale-95">
+                <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+            </button>
+            <div class="text-center">
+                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Pengumuman</p>
+            </div>
+            <div class="w-12"></div>
+        </div>
+        
+        <div class="px-8 py-6">
+            <div id="post-content">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+marked.setOptions({
+    breaks: true,
+    gfm: true,
+});
+
+// Load posts
+async function loadPosts() {
+    try {
+        const res = await fetch('/api/whats-new/published');
+        const data = await res.json();
+        
+        const container = document.getElementById('posts-container');
+        
+        if (!data.posts || data.posts.length === 0) {
+            container.innerHTML = `
+                <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-12 text-center">
+                    <svg class="w-16 h-16 text-gray-200 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
+                    </svg>
+                    <h3 class="text-lg font-black text-gray-900 mb-2">Belum Ada Pengumuman</h3>
+                    <p class="text-gray-500 font-medium">Belum ada pengumuman dari administrator.</p>
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = data.posts.map((post, index) => `
+            <article 
+                onclick="openPostModal(${post.id})"
+                class="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 hover:shadow-lg hover:border-primary-200 transition-all cursor-pointer group animate-fade-in"
+                style="animation-delay: ${index * 50}ms"
+            >
+                <div class="flex items-start justify-between gap-4 mb-4">
+                    <div class="flex-1">
+                        <h2 class="text-xl font-black text-gray-900 group-hover:text-primary-600 transition-colors mb-2">
+                            ${escapeHtml(post.title)}
+                        </h2>
+                        <div class="flex items-center gap-3 text-xs text-gray-400">
+                            <span class="font-bold">📝 ${post.author?.name || 'Admin'}</span>
+                            <span>•</span>
+                            <span>${formatDate(post.created_at)}</span>
+                        </div>
+                    </div>
+                    <svg class="w-6 h-6 text-gray-300 group-hover:text-primary-500 transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </div>
+                
+                <div class="prose prose-slate max-w-none prose-headings:font-black prose-headings:text-gray-900 prose-p:text-gray-600 prose-a:text-primary-600 prose-strong:font-bold line-clamp-3">
+                    ${marked.parse(post.content.substring(0, 300) + (post.content.length > 300 ? '...' : ''))}
+                </div>
+            </article>
+        `).join('');
+    } catch (err) {
+        console.error('Error loading posts:', err);
+        document.getElementById('posts-container').innerHTML = `
+            <div class="bg-white rounded-3xl border border-red-100 shadow-sm p-12 text-center">
+                <svg class="w-16 h-16 text-red-200 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <h3 class="text-lg font-black text-red-600 mb-2">Gagal Memuat Pengumuman</h3>
+                <p class="text-gray-500 font-medium">Silakan refresh halaman atau coba lagi nanti.</p>
+            </div>
+        `;
+    }
+}
+
+// Open post modal
+async function openPostModal(postId) {
+    try {
+        const res = await fetch(`/api/whats-new/${postId}`);
+        const data = await res.json();
+        
+        if (data.success) {
+            const post = data.post;
+            document.getElementById('post-content').innerHTML = `
+                <div class="space-y-6">
+                    <div>
+                        <h1 class="text-2xl font-black text-gray-900 mb-3">${escapeHtml(post.title)}</h1>
+                        <div class="flex items-center gap-4 text-sm text-gray-400 pb-6 border-b border-gray-100">
+                            <span class="font-bold">📝 ${post.author?.name || 'Admin'}</span>
+                            <span>•</span>
+                            <span>${formatFullDate(post.created_at)}</span>
+                            ${post.updated_at !== post.created_at ? `<span>• (Diperbarui: ${formatFullDate(post.updated_at)})</span>` : ''}
+                        </div>
+                    </div>
+                    <div class="prose prose-slate max-w-none prose-headings:font-black prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-primary-600 prose-strong:font-bold prose-img:rounded-2xl prose-blockquote:border-primary-500 prose-blockquote:bg-primary-50 prose-blockquote:px-4 prose-blockquote:py-3 prose-blockquote:rounded-xl">
+                        ${marked.parse(post.content)}
+                    </div>
+                </div>
+            `;
+            document.getElementById('post-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        } else {
+            Swal.fire({ icon: 'error', title: 'Error', text: data.message || 'Gagal memuat pengumuman', confirmButtonColor: '#4f46e5' });
+        }
+    } catch (err) {
+        console.error('Error loading post:', err);
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Gagal memuat pengumuman', confirmButtonColor: '#ef4444' });
+    }
+}
+
+// Close post modal
+function closePostModal() {
+    document.getElementById('post-modal').classList.add('hidden');
+    document.body.style.overflow = '';
+}
+
+// Utility functions
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function formatDate(isoString) {
+    const date = new Date(isoString);
+    return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function formatFullDate(isoString) {
+    const date = new Date(isoString);
+    return date.toLocaleDateString('id-ID', { 
+        weekday: 'long', 
+        day: 'numeric', 
+        month: 'long', 
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+// Close modal on backdrop click
+document.getElementById('post-modal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closePostModal();
+    }
+});
+
+// Close modal on Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closePostModal();
+    }
+});
+
+// Initialize
+loadPosts();
+</script>
+{% endblock %}

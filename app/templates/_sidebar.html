@@ -134,22 +134,59 @@
 <div id="logout-modal" class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-sm overflow-hidden animate-slide-up border border-gray-100">
         <div class="p-10 text-center">
-            <div class="w-20 h-20 bg-red-50 text-red-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-inner">
+            <div class="w-20 h-20 bg-gradient-to-br from-primary-50 to-primary-100 text-primary-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-inner">
                 <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                 </svg>
             </div>
-            <h3 class="text-2xl font-black text-gray-900 mb-2" data-i18n="auth.logout">Keluar Sesi?</h3>
-            <p class="text-gray-500 font-medium">Anda perlu login kembali untuk mengakses data Anda.</p>
+            <h3 class="text-2xl font-black text-gray-900 mb-3">Sampai Jumpa Lagi! 👋</h3>
+            <p class="text-gray-600 font-medium leading-relaxed">
+                Terima kasih telah menggunakan Aldudu Academy.<br>
+                Silakan login kembali kapan saja untuk melanjutkan pengalaman belajar yang menarik!
+            </p>
         </div>
         <div class="px-8 pb-10 flex flex-col space-y-3">
-            <button onclick="handleGlobalLogout()" class="w-full py-4 bg-red-600 text-white rounded-2xl font-bold shadow-lg shadow-red-200 hover:bg-red-700 transition-all active:scale-95" data-i18n="common.yes">
-                Ya, Keluar Sekarang
+            <button onclick="handleGlobalLogout()" class="w-full py-4 bg-primary-600 text-white rounded-2xl font-bold shadow-lg shadow-primary-200 hover:bg-primary-700 transition-all active:scale-95">
+                Ya, Sampai Jumpa!
             </button>
-            <button id="close-logout-modal" class="w-full py-4 text-gray-500 bg-gray-100 rounded-2xl font-bold hover:bg-gray-200 transition-all active:scale-95" data-i18n="common.no">
-                Tetap Di Sini
+            <button id="close-logout-modal" class="w-full py-4 text-gray-600 bg-gray-50 rounded-2xl font-bold hover:bg-gray-100 transition-all active:scale-95">
+                Tetap Login
             </button>
         </div>
     </div>
 </div>
+
+<script>
+// Logout modal event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    // Settings logout button - show modal
+    const settingsLogoutBtn = document.getElementById('user-dropdown-logout');
+    if (settingsLogoutBtn) {
+        settingsLogoutBtn.addEventListener('click', showLogoutModal);
+    }
+
+    // Close modal button
+    const closeBtn = document.getElementById('close-logout-modal');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeLogoutModal);
+    }
+
+    // Close modal on backdrop click
+    const modal = document.getElementById('logout-modal');
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeLogoutModal();
+            }
+        });
+    }
+
+    // Close on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeLogoutModal();
+        }
+    });
+});
+</script>
 

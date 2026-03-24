@@ -1130,14 +1130,33 @@ def api_restore_link(link_id):
     """Restore an archived link"""
     link = Link.query.get_or_404(link_id)
     course = Course.query.get(link.course_id)
-    
+
     school_id = get_school_id_or_abort()
     verify_course_in_school(course, school_id)
-    
+
     if course.teacher_id != current_user.id:
         return jsonify({'success': False, 'message': 'Unauthorized'}), 403
-    
+
     link.is_archived = False
     db.session.commit()
-    
+
     return jsonify({'success': True, 'message': 'Link berhasil dipulihkan'})
+
+
+@courses_bp.route('/api/link/<int:link_id>', methods=['DELETE'])
+@login_required
+def api_delete_link(link_id):
+    """Delete a link permanently from archive"""
+    link = Link.query.get_or_404(link_id)
+    course = Course.query.get(link.course_id)
+
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(course, school_id)
+
+    if course.teacher_id != current_user.id:
+        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+
+    db.session.delete(link)
+    db.session.commit()
+
+    return jsonify({'success': True, 'message': 'Link berhasil dihapus permanen'})

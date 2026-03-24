@@ -153,19 +153,32 @@ const CourseDetail = {
             item.addEventListener('dragstart', (e) => {
                 this.draggedEl = item;
                 item.classList.add('dragging');
+                
+                // Set drag image and data
                 e.dataTransfer.effectAllowed = 'move';
                 e.dataTransfer.setData('text/plain', JSON.stringify({
                     id: item.dataset.itemId,
-                    type: item.dataset.itemType
+                    type: item.dataset.itemType,
+                    folderId: item.dataset.folderId || ''
                 }));
+                
+                // Add visual feedback
+                setTimeout(() => {
+                    item.style.opacity = '0.5';
+                    item.style.transform = 'scale(1.02)';
+                }, 0);
             });
 
             item.addEventListener('dragend', () => {
                 item.classList.remove('dragging');
+                item.style.opacity = '1';
+                item.style.transform = 'scale(1)';
                 this.draggedEl = null;
+                
                 // Remove all drag-over states
-                document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
-                document.querySelectorAll('.folder-drop-highlight').forEach(el => el.classList.remove('folder-drop-highlight'));
+                document.querySelectorAll('.drag-over, .folder-drop-highlight').forEach(el => {
+                    el.classList.remove('drag-over', 'folder-drop-highlight');
+                });
             });
         });
     },
@@ -179,7 +192,7 @@ const CourseDetail = {
             e.dataTransfer.dropEffect = 'move';
 
             const afterElement = this.getDragAfterElement(container, e.clientY, e.clientX);
-            if (this.draggedEl) {
+            if (this.draggedEl && !this.draggedEl.classList.contains('folder-card')) {
                 if (afterElement == null) {
                     container.appendChild(this.draggedEl);
                 } else {
@@ -190,7 +203,7 @@ const CourseDetail = {
 
         container.addEventListener('drop', (e) => {
             e.preventDefault();
-            if (!this.draggedEl) return;
+            if (!this.draggedEl || this.draggedEl.classList.contains('folder-card')) return;
 
             // If dropped on the main container (not in a folder), remove from folder
             if (this.draggedEl.dataset.folderId) {
@@ -275,40 +288,92 @@ const CourseDetail = {
     async moveToFolder(itemEl, folderId) {
         const itemId = itemEl.dataset.itemId;
         const itemType = itemEl.dataset.itemType;
+        const originalFolderId = itemEl.dataset.folderId;
+
+        // Visual feedback - show moving state
+        itemEl.style.transition = 'all 0.3s ease';
+        itemEl.style.transform = 'scale(0.95)';
+        itemEl.style.opacity = '0.7';
 
         try {
             const res = await fetch(`/api/courses/${this.courseId}/content/move-to-folder`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ item_id: itemId, item_type: itemType, folder_id: folderId })
+                body: JSON.stringify({ 
+                    item_id: itemId, 
+                    item_type: itemType, 
+                    folder_id: folderId 
+                })
             });
+            
+            if (!res.ok) {
+                throw new Error('Failed to move item');
+            }
+            
             const data = await res.json();
+            
             if (data.success) {
+                // Update data attribute
+                itemEl.dataset.folderId = folderId;
+                
+                // Visual success feedback
+                itemEl.style.transform = 'scale(1)';
+                itemEl.style.opacity = '1';
+                itemEl.style.backgroundColor = '#dcfce7'; // green-100
+                setTimeout(() => {
+                    itemEl.style.backgroundColor = '';
+                }, 1000);
+                
                 // Move item visually into the folder's drop zone
                 const folderCard = document.querySelector(`.folder-card[data-item-id="${folderId}"]`);
                 if (folderCard) {
                     const dropZone = folderCard.querySelector('.folder-drop-zone');
                     const emptyMsg = dropZone.querySelector('.folder-empty-msg');
-                    if (emptyMsg) emptyMsg.remove();
+                    if (emptyMsg) emptyMsg.style.display = 'none';
 
                     // Create a compact version of the item inside the folder
                     const miniItem = this.createMiniItem(itemEl, folderId);
                     dropZone.appendChild(miniItem);
 
-                    // Remove from main grid
-                    itemEl.remove();
+                    // Remove from main grid if it was there
+                    if (itemEl.parentElement === this.topicsContainer) {
+                        itemEl.remove();
+                    }
 
                     // Expand folder to show the item
                     const contents = folderCard.querySelector('.folder-contents');
-                    contents.classList.remove('hidden');
-                    const arrow = folderCard.querySelector('.folder-arrow');
-                    if (arrow) arrow.style.transform = 'rotate(180deg)';
+                    if (contents.classList.contains('hidden')) {
+                        contents.classList.remove('hidden');
+                        const arrow = folderCard.querySelector('.folder-arrow');
+                        if (arrow) arrow.style.transform = 'rotate(180deg)';
+                    }
 
                     this.updateFolderCounts();
+                    
+                    // Show success notification
+                    this.showNotification('✅ Materi berhasil dipindahkan ke folder', 'success');
                 }
+            } else {
+                throw new Error(data.message || 'Gagal memindahkan materi');
             }
         } catch (err) {
-            console.error('Failed to move item', err);
+            console.error('Failed to move item:', err);
+            
+            // Revert visual state on error
+            itemEl.style.transform = 'scale(1)';
+            itemEl.style.opacity = '1';
+            itemEl.style.backgroundColor = '#fee2e2'; // red-100
+            setTimeout(() => {
+                itemEl.style.backgroundColor = '';
+            }, 1000);
+            
+            // Show error notification
+            this.showNotification('❌ Gagal memindahkan materi. Silakan coba lagi.', 'error');
+            
+            // Revert folderId if move failed
+            if (originalFolderId) {
+                itemEl.dataset.folderId = originalFolderId;
+            }
         }
     },
 
@@ -763,5 +828,38 @@ const CourseDetail = {
             console.error('Submit failed', err);
             if (errorEl) { errorEl.textContent = 'Kesalahan koneksi ke server'; errorEl.classList.remove('hidden'); }
         }
+    },
+
+    // ─── Notifications ────────────────────────────────────────────
+
+    showNotification(message, type = 'info') {
+        // Remove existing notification
+        const existing = document.querySelector('.drag-notification');
+        if (existing) existing.remove();
+
+        const colors = {
+            success: { bg: 'bg-green-50', border: 'border-green-200', text: 'text-green-700', icon: '✅' },
+            error: { bg: 'bg-red-50', border: 'border-red-200', text: 'text-red-700', icon: '❌' },
+            info: { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-700', icon: 'ℹ️' }
+        };
+
+        const color = colors[type] || colors.info;
+
+        const notification = document.createElement('div');
+        notification.className = `drag-notification fixed bottom-6 right-6 ${color.bg} ${color.border} border-2 rounded-2xl px-6 py-4 shadow-2xl z-[9999] animate-slide-up flex items-center gap-3`;
+        notification.innerHTML = `
+            <span class="text-xl">${color.icon}</span>
+            <span class="font-bold ${color.text}">${message}</span>
+        `;
+
+        document.body.appendChild(notification);
+
+        // Auto-remove after 3 seconds
+        setTimeout(() => {
+            notification.style.transition = 'all 0.3s ease';
+            notification.style.opacity = '0';
+            notification.style.transform = 'translateY(20px)';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
     }
 };

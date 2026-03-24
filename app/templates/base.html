@@ -384,11 +384,57 @@
     
     <!-- Language Manager -->
     <script src="{{ url_for('static', filename='js/language.js') }}?v={{ range(1, 9999) | random }}"></script>
-    
+
     <!-- Sidebar & Global Logic -->
     <script src="{{ url_for('static', filename='js/sidebar.js') }}?v={{ range(1, 9999) | random }}"></script>
-    
+
     <script>
+        // Global Logout Function
+        async function handleGlobalLogout() {
+            try {
+                const res = await fetch('/api/logout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    window.location.href = '/login';
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal Logout',
+                        text: 'Terjadi kesalahan saat logout',
+                        confirmButtonColor: '#ef4444'
+                    });
+                }
+            } catch (err) {
+                console.error('Logout error:', err);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal Logout',
+                    text: 'Terjadi kesalahan koneksi',
+                    confirmButtonColor: '#ef4444'
+                });
+            }
+        }
+
+        // Show Logout Modal
+        function showLogoutModal() {
+            const modal = document.getElementById('logout-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+            }
+        }
+
+        // Close Logout Modal
+        function closeLogoutModal() {
+            const modal = document.getElementById('logout-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        }
+
         // Global Elegant Modal Overrides
         window.alert = function(message) {
             Swal.fire({
