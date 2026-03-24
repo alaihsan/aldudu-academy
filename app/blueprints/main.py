@@ -497,7 +497,9 @@ def course_archives(course_id):
     verify_course_in_school(course, school_id)
 
     is_teacher = (current_user.id == course.teacher_id)
-    if not is_teacher:
+    is_student = current_user in course.students
+    is_admin = current_user.role.value == 'admin'
+    if not (is_teacher or is_student or is_admin):
         abort(403)
 
     # Get archived items
