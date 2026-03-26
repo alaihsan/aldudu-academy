@@ -591,7 +591,7 @@ def api_get_bloom_summary(quiz_id):
     # Get questions
     questions = Question.query.filter_by(quiz_id=quiz_id).all()
     total = len(questions)
-    
+
     if total == 0:
         return jsonify({
             'success': True,
@@ -600,7 +600,16 @@ def api_get_bloom_summary(quiz_id):
             'distribution': {},
             'cognitive_depth': 'unknown'
         })
+
+    # Pre-load all Bloom taxonomy classifications in a single query
+    question_ids = [q.id for q in questions]
+    all_blooms = QuestionBloomTaxonomy.query.filter(
+        QuestionBloomTaxonomy.question_id.in_(question_ids)
+    ).all()
     
+    # Create a lookup dictionary: question_id -> bloom
+    blooms_lookup = {b.question_id: b for b in all_blooms}
+
     # Count Bloom levels
     distribution = {
         'remember': 0,
@@ -611,10 +620,10 @@ def api_get_bloom_summary(quiz_id):
         'create': 0,
         'unclassified': 0,
     }
-    
+
     for q in questions:
-        bloom = QuestionBloomTaxonomy.query.filter_by(question_id=q.id).first()
-        
+        bloom = blooms_lookup.get(q.id)
+
         if bloom:
             level = bloom.bloom_level.value
             if level in distribution:

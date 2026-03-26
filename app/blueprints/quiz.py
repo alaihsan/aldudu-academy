@@ -3,6 +3,7 @@ from flask import (
     render_template, make_response, url_for
 )
 from flask_login import login_required, current_user
+from sqlalchemy.orm import joinedload
 from app.models import (
     db, Course, Quiz, UserRole, GradeType, QuizStatus,
     Question, Option, QuestionType,
@@ -303,37 +304,66 @@ def api_update_submission_score(submission_id):
 @login_required
 def api_get_quiz_stats(quiz_id):
     quiz = get_quiz_or_abort(quiz_id)
-    submissions = QuizSubmission.query.filter_by(quiz_id=quiz_id).all()
+    
+    # Pre-load submissions with user relationship
+    submissions = QuizSubmission.query.options(joinedload(QuizSubmission.user)).filter_by(quiz_id=quiz_id).all()
     total_submissions = len(submissions)
-    if total_submissions == 0: return jsonify({'success': True, 'total_submissions': 0})
+    if total_submissions == 0: 
+        return jsonify({'success': True, 'total_submissions': 0})
+
+    # Pre-load all questions
+    questions = quiz.questions.order_by(Question.order).all()
+    
+    # Pre-load all answers in a single query using IN clause
+    submission_ids = [s.id for s in submissions]
+    question_ids = [q.id for q in questions]
+    
+    all_answers = Answer.query.filter(
+        Answer.submission_id.in_(submission_ids),
+        Answer.question_id.in_(question_ids)
+    ).all()
+    
+    # Create a lookup dictionary: (submission_id, question_id) -> answer
+    answers_lookup = {}
+    for ans in all_answers:
+        answers_lookup[(ans.submission_id, ans.question_id)] = ans
     
     questions_stats = []
-    for q in quiz.questions.order_by(Question.order).all():
+    for q in questions:
         correct_count = 0
         incorrect_count = 0
         for sub in submissions:
-            ans = Answer.query.filter_by(submission_id=sub.id, question_id=q.id).first()
+            ans = answers_lookup.get((sub.id, q.id))
             if ans:
                 if q.question_type in [QuestionType.MULTIPLE_CHOICE, QuestionType.DROPDOWN, QuestionType.TRUE_FALSE]:
-                    if ans.selected_option and ans.selected_option.is_correct: correct_count += 1
-                    else: incorrect_count += 1
-                elif ans.answer_text: correct_count += 1
-        questions_stats.append({'question_text': q.question_text, 'type': q.question_type.name, 'correct': correct_count, 'incorrect': incorrect_count, 'total': correct_count + incorrect_count})
+                    if ans.selected_option and ans.selected_option.is_correct:
+                        correct_count += 1
+                    else:
+                        incorrect_count += 1
+                elif ans.answer_text:
+                    correct_count += 1
+        questions_stats.append({
+            'question_text': q.question_text,
+            'type': q.question_type.name,
+            'correct': correct_count,
+            'incorrect': incorrect_count,
+            'total': correct_count + incorrect_count
+        })
 
     scores = [s.score for s in submissions if s.score is not None]
     avg_score = sum(scores) / total_submissions if total_submissions > 0 else 0
     return jsonify({
-        'success': True, 
-        'total_submissions': total_submissions, 
-        'average_score': round(avg_score, 1), 
-        'max_score': round(max(scores) if scores else 0, 1), 
-        'min_score': round(min(scores) if scores else 0, 1), 
-        'questions_stats': questions_stats, 
+        'success': True,
+        'total_submissions': total_submissions,
+        'average_score': round(avg_score, 1),
+        'max_score': round(max(scores) if scores else 0, 1),
+        'min_score': round(min(scores) if scores else 0, 1),
+        'questions_stats': questions_stats,
         'submissions': [
             {
                 'id': s.id,
-                'student_name': s.user.name, 
-                'score': round(s.score, 1) if s.score is not None else 0, 
+                'student_name': s.user.name,
+                'score': round(s.score, 1) if s.score is not None else 0,
                 'submitted_at': s.submitted_at.strftime('%Y-%m-%d %H:%M')
             } for s in submissions
         ]

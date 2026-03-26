@@ -100,7 +100,7 @@ def calculate_student_grade(student_id: int, course_id: int) -> Dict:
 def calculate_category_grade(student_id: int, category_id: int) -> Dict:
     """
     Calculate grade for a specific category
-    
+
     Handles 3 scenarios:
     1. All items weight=0 → simple average (all items count equally)
     2. All items weight>0 → weighted average (items count by their weight)
@@ -113,6 +113,16 @@ def calculate_category_grade(student_id: int, category_id: int) -> Dict:
     # Get all grade items in this category
     grade_items = GradeItem.query.filter_by(category_id=category_id).all()
 
+    # Pre-load all grade entries for this student and category in a single query
+    item_ids = [item.id for item in grade_items]
+    all_entries = GradeEntry.query.filter(
+        GradeEntry.grade_item_id.in_(item_ids),
+        GradeEntry.student_id == student_id
+    ).all()
+    
+    # Create a lookup dictionary: grade_item_id -> entry
+    entries_lookup = {e.grade_item_id: e for e in all_entries}
+
     total_score = 0.0
     total_max_score = 0.0
     items_count = 0
@@ -123,15 +133,12 @@ def calculate_category_grade(student_id: int, category_id: int) -> Dict:
     has_mixed_weights = not all_zero_weight and not all_nonzero_weight
 
     for item in grade_items:
-        entry = GradeEntry.query.filter_by(
-            grade_item_id=item.id,
-            student_id=student_id
-        ).first()
+        entry = entries_lookup.get(item.id)
 
         if entry and entry.score is not None:
             # Normalize to percentage
             percentage = entry.percentage if entry.percentage else (entry.score / item.max_score * 100) if item.max_score > 0 else 0
-            
+
             if all_zero_weight:
                 # Scenario 1: Simple average - all items count equally
                 total_score += percentage
@@ -153,7 +160,7 @@ def calculate_category_grade(student_id: int, category_id: int) -> Dict:
                     # We treat weight=0 items as having equal weight among themselves
                     total_score += percentage
                     total_max_score += 100
-            
+
             items_count += 1
 
     # Calculate category average
