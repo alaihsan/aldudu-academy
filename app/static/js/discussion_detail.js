@@ -33,11 +33,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const canDeletePosts = currentUserRole === 'GURU' || currentUserId == discussionCreatorId;
 
-        postsContainer.innerHTML = posts.map(post => `
+        postsContainer.innerHTML = DOMPurify.sanitize(posts.map(post => `
             <div class="post-card" data-post-id="${post.id}" style="border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1rem; background-color: var(--surface-color);">
                 <div class="post-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                     <div class="post-author">
-                        <strong>${post.user.name}</strong>
+                        <strong>${DOMPurify.sanitize(post.user.name)}</strong>
                         <span style="color: var(--text-secondary-color); font-size: 0.875rem;">${new Date(post.created_at).toLocaleString()}</span>
                     </div>
                     <div class="post-actions">
@@ -50,24 +50,24 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 </div>
                 <div class="post-content" style="margin-bottom: 0.5rem;">
-                    ${post.content.replace(/\n/g, '<br>')}
+                    ${DOMPurify.sanitize(post.content).replace(/\n/g, '<br>')}
                 </div>
                 <div class="replies">
                     ${renderReplies(posts, post.id)}
                 </div>
             </div>
-        `).join('');
+        `).join(''), { ADD_ATTR: ['style', 'data-post-id'] });
     }
 
     function renderReplies(allPosts, parentId) {
         const replies = allPosts.filter(post => post.parent_id == parentId);
         const canDeletePosts = currentUserRole === 'GURU' || currentUserId == discussionCreatorId;
 
-        return replies.map(reply => `
+        return DOMPurify.sanitize(replies.map(reply => `
             <div class="reply-card" data-post-id="${reply.id}" style="margin-top: 0.5rem;">
                 <div class="post-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                     <div class="post-author">
-                        <strong>${reply.user.name}</strong>
+                        <strong>${DOMPurify.sanitize(reply.user.name)}</strong>
                         <span style="color: var(--text-secondary-color); font-size: 0.875rem;">${new Date(reply.created_at).toLocaleString()}</span>
                     </div>
                     <div class="post-actions">
@@ -80,10 +80,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 </div>
                 <div class="post-content">
-                    ${reply.content.replace(/\n/g, '<br>')}
+                    ${DOMPurify.sanitize(reply.content).replace(/\n/g, '<br>')}
                 </div>
             </div>
-        `).join('');
+        `).join(''), { ADD_ATTR: ['style', 'data-post-id'] });
     }
 
 

@@ -750,18 +750,18 @@ const CourseDetail = {
             return;
         }
 
-        this.discussionsContainer.innerHTML = discussions.map(d => `
+        this.discussionsContainer.innerHTML = DOMPurify.sanitize(discussions.map(d => `
             <div class="group bg-white rounded-[2rem] border border-gray-100 shadow-premium hover:shadow-xl transition-all duration-500 p-8 flex flex-col h-full transform hover:-translate-y-2">
                 <div class="flex items-center space-x-3 mb-6">
                     <div class="w-10 h-10 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-bold">
                         ${d.user.name[0].toUpperCase()}
                     </div>
                     <div>
-                        <p class="text-xs font-black text-gray-400 uppercase tracking-widest leading-none mb-1">${d.user.name}</p>
+                        <p class="text-xs font-black text-gray-400 uppercase tracking-widest leading-none mb-1">${DOMPurify.sanitize(d.user.name)}</p>
                         <p class="text-[10px] text-gray-400">${new Date(d.created_at).toLocaleDateString()}</p>
                     </div>
                 </div>
-                <h3 class="text-lg font-bold text-gray-900 group-hover:text-primary-600 transition-colors mb-4 line-clamp-2">${d.title}</h3>
+                <h3 class="text-lg font-bold text-gray-900 group-hover:text-primary-600 transition-colors mb-4 line-clamp-2">${DOMPurify.sanitize(d.title)}</h3>
                 <div class="mt-auto pt-6 border-t border-gray-50 flex items-center justify-between text-gray-400">
                     <div class="flex items-center space-x-4">
                         <div class="flex items-center space-x-1.5">
@@ -772,7 +772,7 @@ const CourseDetail = {
                     <a href="/kelas/${this.courseId}/diskusi/${d.id}" class="text-xs font-black text-primary-600 uppercase tracking-widest hover:underline">Buka Diskusi</a>
                 </div>
             </div>
-        `).join('');
+        `).join(''));
     },
 
     // ─── Modals & Forms ─────────────────────────────────────────

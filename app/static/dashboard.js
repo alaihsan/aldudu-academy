@@ -337,27 +337,27 @@ const Dashboard = {
                 return;
             }
             this.elements.emptyState?.classList.add('hidden');
-            
-            this.elements.classGrid.innerHTML = courses.map(c => `
+
+            this.elements.classGrid.innerHTML = DOMPurify.sanitize(courses.map(c => `
                 <div data-id="${c.id}" style="view-transition-name: course-${c.id}" class="group bg-white rounded-[2.5rem] border border-gray-100 shadow-premium hover:shadow-2xl transition-all duration-500 overflow-hidden flex flex-col h-full transform hover:-translate-y-3">
                     <div class="h-40 relative overflow-hidden flex items-center justify-center p-8" style="background-color: ${c.color || '#0284c7'}">
                         <div class="absolute inset-0 opacity-20 group-hover:scale-150 transition-transform duration-1000 ease-in-out">
                             <svg class="w-full h-full" fill="currentColor" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0 100 C 20 0 50 0 100 100 Z" /></svg>
                         </div>
-                        <h3 class="relative z-10 text-2xl font-black text-white text-center leading-tight drop-shadow-md group-hover:scale-105 transition-transform duration-500">${c.name}</h3>
+                        <h3 class="relative z-10 text-2xl font-black text-white text-center leading-tight drop-shadow-md group-hover:scale-105 transition-transform duration-500">${DOMPurify.sanitize(c.name)}</h3>
                         ${this.state.isTeacher ? `<button type="button" onclick="event.preventDefault(); Dashboard.openEditClass(${c.id})" class="absolute top-5 right-5 p-2.5 bg-white/20 hover:bg-white text-white hover:text-gray-900 rounded-2xl backdrop-blur-md shadow-lg transition-all duration-300 z-20"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>` : ''}
                     </div>
                     <div class="p-10 flex-1 flex flex-col space-y-8">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-4">
                                 <div class="w-12 h-12 rounded-2xl bg-primary-50 flex items-center justify-center text-primary-600 group-hover:bg-primary-600 group-hover:text-white transition-all duration-500"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg></div>
-                                <div class="min-w-0"><p class="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1.5">Pengajar</p><p class="text-sm font-bold text-gray-700 truncate">${c.teacher.name}</p></div>
+                                <div class="min-w-0"><p class="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1.5">Pengajar</p><p class="text-sm font-bold text-gray-700 truncate">${DOMPurify.sanitize(c.teacher.name)}</p></div>
                             </div>
                             <div class="px-5 py-2.5 bg-green-50 text-green-600 rounded-2xl text-[11px] font-black uppercase tracking-widest border border-green-100/50 shadow-sm">${c.studentCount} Murid</div>
                         </div>
                         <div class="flex items-center p-5 bg-gray-50/50 rounded-2xl border border-gray-100 group-hover:border-primary-100 transition-all duration-500">
                             <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm mr-4"><svg class="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg></div>
-                            <div><p class="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1.5">Kode Akses</p><p class="text-base font-mono font-black text-primary-600">${c.classCode}</p></div>
+                            <div><p class="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1.5">Kode Akses</p><p class="text-base font-mono font-black text-primary-600">${DOMPurify.sanitize(c.classCode)}</p></div>
                         </div>
                         <div class="mt-auto flex items-center space-x-4 pt-6 border-t border-gray-50">
                             <a href="/kelas/${c.id}" class="flex-1 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white py-5 rounded-[1.75rem] text-center font-bold text-sm transition-all shadow-xl shadow-primary-200 active:scale-95 btn-shine">Buka Kelas</a>
@@ -365,7 +365,7 @@ const Dashboard = {
                         </div>
                     </div>
                 </div>
-            `).join('');
+            `).join(''), { ADD_ATTR: ['style', 'data-id', 'view-transition-name'] });
 
             this.initSortable();
         };

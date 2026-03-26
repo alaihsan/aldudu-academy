@@ -209,7 +209,7 @@ class MaterialsList {
 
     render() {
         this.applyFilters();
-        
+
         const html = `
             <div class="materials-wrapper">
                 ${this.renderHeader()}
@@ -218,7 +218,7 @@ class MaterialsList {
             </div>
         `;
 
-        this.container.innerHTML = html;
+        this.container.innerHTML = DOMPurify.sanitize(html);
     }
 
     renderHeader() {
