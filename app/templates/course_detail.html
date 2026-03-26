@@ -827,9 +827,9 @@ document.addEventListener('DOMContentLoaded', function() {
 {% endblock %}
 
 {% block extra_scripts %}
-<script src="{{ url_for('static', filename='js/materials-list-v2.js') }}?v={{ range(1, 9999) | random }}"></script>
-<script src="{{ url_for('static', filename='js/course_detail.js') }}?v={{ range(1, 9999) | random }}"></script>
-<script src="{{ url_for('static', filename='js/discussion.js') }}?v={{ range(1, 9999) | random }}"></script>
+<script src="{{ url_for('static', filename='js/materials-list-v2.js') }}?v={{ asset_hash('js/materials-list-v2.js') }}"></script>
+<script src="{{ url_for('static', filename='js/course_detail.js') }}?v={{ asset_hash('js/course_detail.js') }}"></script>
+<script src="{{ url_for('static', filename='js/discussion.js') }}?v={{ asset_hash('js/discussion.js') }}"></script>
 
 <script>
 // Pass template data to JavaScript globals

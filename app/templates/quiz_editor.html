@@ -597,7 +597,7 @@
 {% endblock %}
 
 {% block extra_scripts %}
-<script src="{{ url_for('static', filename='quiz-editor.js') }}?v={{ range(1, 9999) | random }}"></script>
+<script src="{{ url_for('static', filename='quiz-editor.js') }}?v={{ asset_hash('quiz-editor.js') }}"></script>
 <script>
     // ===== Utility =====
     function hexToRgb(hex) {

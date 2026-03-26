@@ -118,5 +118,5 @@
 {% endblock %}
 
 {% block extra_scripts %}
-<script src="{{ url_for('static', filename='js/issues.js') }}?v={{ range(1, 9999) | random }}"></script>
+<script src="{{ url_for('static', filename='js/issues.js') }}?v={{ asset_hash('js/issues.js') }}"></script>
 {% endblock %}

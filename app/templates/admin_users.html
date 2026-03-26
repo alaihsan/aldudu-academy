@@ -193,7 +193,7 @@
 {% endblock %}
 
 {% block extra_scripts %}
-<script src="{{ url_for('static', filename='js/admin.js') }}?v={{ range(1, 9999) | random }}"></script>
+<script src="{{ url_for('static', filename='js/admin.js') }}?v={{ asset_hash('js/admin.js') }}"></script>
 <script>
     function toggleModal(id, show) {
         const m = document.getElementById(id);

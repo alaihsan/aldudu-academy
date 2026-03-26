@@ -537,7 +537,7 @@
 {% endblock %}
 
 {% block extra_scripts %}
-<script src="{{ url_for('static', filename='dashboard.js') }}?v={{ range(1, 9999) | random }}"></script>
+<script src="{{ url_for('static', filename='dashboard.js') }}?v={{ asset_hash('dashboard.js') }}"></script>
 
 <!-- Dynamic Quote with Typing Effect -->
 <style>
