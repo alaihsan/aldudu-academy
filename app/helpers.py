@@ -1,5 +1,6 @@
 import string
 import random
+import secrets
 import re
 import html
 from datetime import datetime, timedelta, timezone
@@ -37,27 +38,43 @@ def log_activity(user_id, action, target_type=None, target_id=None, details=None
         db.session.rollback()
         print(f"Failed to log activity: {e}")
 
-def generate_random_password(length=4):
-    """Generates a random 4-character password with lowercase, number, and symbol."""
+def generate_random_password(length=6):
+    """Generates a random password using cryptographically secure secrets module.
+    
+    Args:
+        length: Password length (minimum 6 characters). Default is 6.
+    
+    Returns:
+        A random password containing lowercase, digits, and symbols.
+    """
+    if length < 6:
+        length = 6
+    
     lower = string.ascii_lowercase
     digits = string.digits
     symbols = "!@#$%^&*"
     all_chars = lower + digits + symbols
-    
+
+    # Ensure at least one of each required type using secrets (CSPRNG)
     password = [
-        random.choice(lower),
-        random.choice(digits),
-        random.choice(symbols),
-        random.choice(all_chars)
+        secrets.choice(lower),
+        secrets.choice(digits),
+        secrets.choice(symbols),
     ]
-    random.shuffle(password)
-    return ''.join(password[:length])
+    
+    # Fill remaining length with random characters
+    for _ in range(length - 3):
+        password.append(secrets.choice(all_chars))
+    
+    # Shuffle securely
+    secrets.SystemRandom().shuffle(password)
+    return ''.join(password)
 
 def generate_class_code(length=6):
     from app.models import Course
     characters = string.ascii_uppercase + string.digits
     while True:
-        code = ''.join(random.choices(characters, k=length))
+        code = ''.join(secrets.choice(characters) for _ in range(length))
         if not Course.query.filter_by(class_code=code).first():
             return code
 

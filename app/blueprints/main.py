@@ -136,8 +136,8 @@ def quiz_detail(quiz_id):
     else:
         questions = quiz.questions.order_by(Question.order).all()
         if quiz.shuffle_questions:
-            import random
-            random.shuffle(questions)
+            import secrets
+            secrets.SystemRandom().shuffle(questions)
         return render_template(
             'quiz_detail.html',
             quiz=quiz,
