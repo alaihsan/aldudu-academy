@@ -147,6 +147,7 @@ def create_app(test_config: Optional[Dict] = None) -> Flask:
             'https://cdn.tailwindcss.com',
             'https://unpkg.com',
             'https://cdn.jsdelivr.net',
+            'https://cdnjs.cloudflare.com',
             "'unsafe-inline'",
         ],
         'style-src': [
