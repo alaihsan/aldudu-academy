@@ -59,8 +59,8 @@
         }
     </script>
     
-    <!-- Custom CSS with versioning to bypass cache -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='custom.css') }}?v={{ range(1, 9999) | random }}">
+    <!-- Custom CSS with content-based hash for proper cache busting -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='custom.css') }}?v={{ asset_hash('custom.css') }}">
     
     <!-- HTMX for SPA feel -->
     <script src="https://cdn.jsdelivr.net/npm/htmx.org@1.9.10/dist/htmx.min.js"></script>
@@ -386,10 +386,10 @@
     {% block extra_scripts %}{% endblock %}
     
     <!-- Language Manager -->
-    <script src="{{ url_for('static', filename='js/language.js') }}?v={{ range(1, 9999) | random }}"></script>
+    <script src="{{ url_for('static', filename='js/language.js') }}?v={{ asset_hash('js/language.js') }}"></script>
 
     <!-- Sidebar & Global Logic -->
-    <script src="{{ url_for('static', filename='js/sidebar.js') }}?v={{ range(1, 9999) | random }}"></script>
+    <script src="{{ url_for('static', filename='js/sidebar.js') }}?v={{ asset_hash('js/sidebar.js') }}"></script>
 
     <script>
         // Global Logout Function
