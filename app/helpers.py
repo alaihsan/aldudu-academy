@@ -81,23 +81,29 @@ def generate_class_code(length=6):
 def get_courses_for_user(user, year_id):
     from app.models import Course, User, UserRole, UserCourseOrder
     if not year_id:
+        print(f"[DEBUG] No year_id provided for user {user.id} ({user.role.value})")
         return []
-    
+
     query = Course.query.options(joinedload(Course.teacher))
-    
+
     # Outer join with UserCourseOrder for the current user
     query = query.outerjoin(
-        UserCourseOrder, 
+        UserCourseOrder,
         (UserCourseOrder.course_id == Course.id) & (UserCourseOrder.user_id == user.id)
     )
-    
+
     if user.role == UserRole.GURU:
+        # For teachers, show their own courses
+        print(f"[DEBUG] Teacher query: user.id={user.id}, year_id={year_id}")
         query = query.filter(Course.teacher_id == user.id, Course.academic_year_id == year_id)
     else:
+        # For students, show enrolled courses
         query = query.join(Course.students).filter(User.id == user.id, Course.academic_year_id == year_id)
-        
+
     # Order by manual_order first (coalesce NULL to 0), then by name
-    return query.order_by(func.coalesce(UserCourseOrder.manual_order, 0), Course.name).all()
+    result = query.order_by(func.coalesce(UserCourseOrder.manual_order, 0), Course.name).all()
+    print(f"[DEBUG] Found {len(result)} courses for user {user.id} ({user.role.value})")
+    return result
 
 def format_course_data(course, user):
     return {
