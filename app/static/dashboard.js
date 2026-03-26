@@ -230,9 +230,8 @@ const Dashboard = {
                     return;
                 }
                 this.state.currentUser = data.user;
-                // Fix: Check role correctly - 'guru' not 'GURU'
+                // Fix: Check role correctly - 'guru' and 'admin' are teachers
                 this.state.isTeacher = data.user.role === 'guru' || data.user.role === 'admin';
-                console.log('User role:', data.user.role, 'isTeacher:', this.state.isTeacher);
                 this.setupUI();
                 await this.loadInitialData();
             } else {

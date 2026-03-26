@@ -47,13 +47,9 @@ def api_initial_data():
         current_year = AcademicYear(year='2025/2026', is_active=True, school_id=school_id)
         db.session.add(current_year)
         db.session.commit()
-    
-    print(f"[DEBUG] api_initial_data: user={current_user.id} ({current_user.role.value}), school_id={school_id}, year_id={current_year.id}")
 
     courses_query = get_courses_for_user(current_user, current_year.id)
     courses = [format_course_data(c, current_user) for c in courses_query]
-    
-    print(f"[DEBUG] api_initial_data: returning {len(courses)} courses")
 
     return jsonify({
         'academicYears': [{'id': current_year.id, 'year': current_year.year}],
