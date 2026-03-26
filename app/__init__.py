@@ -32,14 +32,13 @@ def create_app(test_config: Optional[Dict] = None) -> Flask:
         app.config.update(test_config)
 
     # Initialize Sentry
-    sentry_dsn = os.environ.get('SENTRY_DSN', 'https://f62390a07b26a64ee235921994078f43@o4511087650734080.ingest.de.sentry.io/4511087662530640')
+    sentry_dsn = os.environ.get('SENTRY_DSN')
     if sentry_dsn:
         import sentry_sdk
         sentry_sdk.init(
             dsn=sentry_dsn,
-            # Add data like request headers and IP for users
-            # See https://docs.sentry.io/platforms/python/data-management/data-collected/ for more info
-            send_default_pii=True,
+            # Do not send PII (Personally Identifiable Information)
+            send_default_pii=False,
             traces_sample_rate=float(os.environ.get('SENTRY_TRACES_SAMPLE_RATE', '0.1')),
             profiles_sample_rate=float(os.environ.get('SENTRY_PROFILES_SAMPLE_RATE', '0.1')),
             environment=env,
@@ -305,18 +304,17 @@ def create_app(test_config: Optional[Dict] = None) -> Flask:
             overall_healthy = False
         
         # 4. Sentry Check
-        sentry_dsn = os.environ.get('SENTRY_DSN', 'https://f62390a07b26a64ee235921994078f43@o4511087650734080.ingest.de.sentry.io/4511087662530640')
+        sentry_dsn = os.environ.get('SENTRY_DSN')
         if sentry_dsn:
             checks['sentry'] = {
                 'status': 'healthy',
-                'message': 'Sentry configured (Default DSN)',
-                'dsn': sentry_dsn[:40] + '...',
-                'pii_enabled': True,
+                'message': 'Sentry configured',
+                'pii_enabled': False,
             }
         else:
             checks['sentry'] = {
                 'status': 'warning',
-                'message': 'Sentry not configured'
+                'message': 'Sentry not configured (add SENTRY_DSN to .env)'
             }
         
         # 5. Storage/Write Permission Check

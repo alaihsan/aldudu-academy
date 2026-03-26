@@ -60,16 +60,16 @@ Edit `.env` file to override default settings:
 
 ```env
 # Sentry Configuration
-# Default DSN is already configured. Add this only if you want to use your own DSN.
+# Get your DSN from https://sentry.io and add to .env
 SENTRY_DSN=https://your-sentry-dsn@sentry.io/your-project-id
 SENTRY_TRACES_SAMPLE_RATE=0.1
 SENTRY_PROFILES_SAMPLE_RATE=0.1
 SENTRY_RELEASE=aldudu-academy@1.0.0
 ```
 
-**Default Configuration:**
-- **DSN**: `https://f62390a07b26a64ee235921994078f43@o4511087650734080.ingest.de.sentry.io/4511087662530640`
-- **PII Enabled**: Yes (sends user data like IP, headers)
+**Configuration:**
+- **DSN**: Must be set in `.env` (get from your Sentry dashboard)
+- **PII Enabled**: No (disabled by default for privacy)
 - **Trace Sample Rate**: 10%
 - **Profile Sample Rate**: 10%
 - **Environment**: Auto-detected (development/production)
