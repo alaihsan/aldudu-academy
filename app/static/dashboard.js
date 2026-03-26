@@ -108,7 +108,15 @@ const Dashboard = {
         
         const openAddModal = (e) => { e?.preventDefault(); this.elements.addClassModal.classList.remove('hidden'); };
         this.elements.createClassBtn?.addEventListener('click', openAddModal);
-        this.elements.emptyCreateBtn?.addEventListener('click', openAddModal);
+        
+        // Only allow teachers to open create class modal from empty state
+        if (this.elements.emptyCreateBtn) {
+            this.elements.emptyCreateBtn.addEventListener('click', (e) => {
+                if (this.state.isTeacher) {
+                    openAddModal(e);
+                }
+            });
+        }
         
         this.elements.addCancelBtn?.addEventListener('click', () => this.elements.addClassModal.classList.add('hidden'));
         this.elements.editCancelBtn?.addEventListener('click', () => this.elements.editClassModal.classList.add('hidden'));
@@ -277,6 +285,8 @@ const Dashboard = {
             this.elements.enrollSection?.classList.add('hidden');
         } else {
             this.elements.enrollSection?.classList.remove('hidden');
+            // Hide create buttons for students (murid)
+            this.elements.createClassBtn?.classList.add('hidden');
         }
     },
 
@@ -317,6 +327,12 @@ const Dashboard = {
 
             if (courses.length === 0) {
                 this.elements.emptyState?.classList.remove('hidden');
+                // Hide create button in empty state for students
+                if (!this.state.isTeacher && this.elements.emptyCreateBtn) {
+                    this.elements.emptyCreateBtn.classList.add('hidden');
+                } else if (this.elements.emptyCreateBtn) {
+                    this.elements.emptyCreateBtn.classList.remove('hidden');
+                }
                 this.elements.classGrid.innerHTML = '';
                 return;
             }
