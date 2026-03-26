@@ -41,14 +41,28 @@ def generate_secure_filename(original_filename):
 @login_required
 def api_initial_data():
     school_id = get_school_id_or_abort()
-    # Only use the current academic year 2025/2026, scoped to school
-    current_year = AcademicYear.query.filter_by(year='2025/2026', school_id=school_id).first()
-    if not current_year:
-        current_year = AcademicYear(year='2025/2026', is_active=True, school_id=school_id)
-        db.session.add(current_year)
-        db.session.commit()
+    
+    # For teachers: use -1 to show all their courses (no year filter)
+    # For students: use active academic year
+    if current_user.role == UserRole.GURU:
+        year_id = -1  # Show all courses for teachers
+        current_year = AcademicYear.query.filter_by(school_id=school_id, is_active=True).first()
+        if not current_year:
+            current_year = AcademicYear(year='2025/2026', is_active=True, school_id=school_id)
+            db.session.add(current_year)
+            db.session.commit()
+    else:
+        # For students, use the active academic year
+        current_year = AcademicYear.query.filter_by(year='2025/2026', school_id=school_id, is_active=True).first()
+        if not current_year:
+            current_year = AcademicYear.query.filter_by(school_id=school_id, is_active=True).first()
+        if not current_year:
+            current_year = AcademicYear(year='2025/2026', is_active=True, school_id=school_id)
+            db.session.add(current_year)
+            db.session.commit()
+        year_id = current_year.id
 
-    courses_query = get_courses_for_user(current_user, current_year.id)
+    courses_query = get_courses_for_user(current_user, year_id)
     courses = [format_course_data(c, current_user) for c in courses_query]
 
     return jsonify({

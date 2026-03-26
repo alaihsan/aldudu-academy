@@ -92,8 +92,12 @@ def get_courses_for_user(user, year_id):
     )
 
     if user.role == UserRole.GURU:
-        # For teachers, show their own courses
-        query = query.filter(Course.teacher_id == user.id, Course.academic_year_id == year_id)
+        # For teachers, show their own courses in the specified year
+        # If year_id is -1, show all courses (no year filter)
+        if year_id == -1:
+            query = query.filter(Course.teacher_id == user.id)
+        else:
+            query = query.filter(Course.teacher_id == user.id, Course.academic_year_id == year_id)
     else:
         # For students, show enrolled courses
         query = query.join(Course.students).filter(User.id == user.id, Course.academic_year_id == year_id)
