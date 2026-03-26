@@ -13,6 +13,7 @@ const CourseDetail = {
     draggedEl: null,
 
     init() {
+        this.initFileSizeSlider();
         this.cacheElements();
         this.bindEvents();
         this.loadDiscussions();
@@ -20,6 +21,17 @@ const CourseDetail = {
         this.initDragAndDrop();
         this.initFolders();
         this.updateFolderCounts();
+    },
+
+    initFileSizeSlider() {
+        const sizeSlider = document.getElementById('file-max-size-slider');
+        const sizeValue = document.getElementById('file-max-size-value');
+        
+        if (sizeSlider && sizeValue) {
+            sizeSlider.addEventListener('input', () => {
+                sizeValue.textContent = `${sizeSlider.value} MB`;
+            });
+        }
     },
 
     cacheElements() {
@@ -791,9 +803,39 @@ const CourseDetail = {
 
         if (type === 'file') {
             url += 'files';
+            
+            // Validate file upload
+            const fileInput = document.getElementById('file-upload-input');
+            const file = fileInput.files[0];
+            const maxSizeSlider = document.getElementById('file-max-size-slider');
+            const maxSizeMB = parseInt(maxSizeSlider.value) || 10;
+            const maxSizeBytes = maxSizeMB * 1024 * 1024;
+            
+            if (!file) {
+                errorEl.textContent = 'Pilih file yang akan diunggah';
+                errorEl.classList.remove('hidden');
+                return;
+            }
+            
+            // Validate file type
+            const allowedExtensions = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'png', 'jpg', 'jpeg', 'gif', 'webp', 'txt', 'rtf', 'zip', 'rar', '7z'];
+            const fileExtension = file.name.split('.').pop().toLowerCase();
+            if (!allowedExtensions.includes(fileExtension)) {
+                errorEl.textContent = `Tipe file .${fileExtension} tidak diizinkan. Format yang diterima: ${allowedExtensions.join(', ')}`;
+                errorEl.classList.remove('hidden');
+                return;
+            }
+            
+            // Validate file size
+            if (file.size > maxSizeBytes) {
+                errorEl.textContent = `Ukuran file (${(file.size / (1024 * 1024)).toFixed(2)} MB) melebihi batas maksimal ${maxSizeMB} MB`;
+                errorEl.classList.remove('hidden');
+                return;
+            }
+            
             const formData = new FormData();
             formData.append('name', document.getElementById('file-name-input').value);
-            formData.append('file', document.getElementById('file-upload-input').files[0]);
+            formData.append('file', file);
             options.body = formData;
         } else if (type === 'assignment') {
             url = `/assignment/course/${this.courseId}/create`;

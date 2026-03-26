@@ -29,6 +29,13 @@ class Config:
     # App
     APP_URL = os.environ.get('APP_URL', 'http://localhost:5000')
 
+    # File Upload Security
+    MAX_CONTENT_LENGTH = int(os.environ.get('MAX_CONTENT_LENGTH', '16777216'))  # 16MB default
+    ALLOWED_EXTENSIONS = {'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx',
+                          'png', 'jpg', 'jpeg', 'gif', 'webp',
+                          'txt', 'rtf', 'zip', 'rar', '7z'}
+    UPLOAD_FOLDER = os.path.join(os.getcwd(), 'instance', 'uploads')
+
 
 class DevelopmentConfig(Config):
     DEBUG = True

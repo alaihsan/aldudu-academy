@@ -1,6 +1,7 @@
 import os
+import uuid
 from datetime import datetime, time
-from flask import Blueprint, request, jsonify, abort
+from flask import Blueprint, request, jsonify, abort, current_app
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 from sqlalchemy.orm import joinedload, selectinload
@@ -9,6 +10,31 @@ from app.helpers import sanitize_text, is_valid_color, is_valid_class_code, gene
 from app.tenant import get_school_id_or_abort, verify_course_in_school, verify_academic_year_in_school
 
 courses_bp = Blueprint('courses', __name__, url_prefix='/api')
+
+
+def allowed_file(filename, allowed_extensions=None):
+    """Check if file extension is allowed"""
+    if allowed_extensions is None:
+        allowed_extensions = current_app.config.get('ALLOWED_EXTENSIONS', {
+            'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx',
+            'png', 'jpg', 'jpeg', 'gif', 'webp',
+            'txt', 'rtf', 'zip', 'rar', '7z'
+        })
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
+
+
+def get_file_extension(filename):
+    """Get file extension from filename"""
+    if '.' in filename:
+        return filename.rsplit('.', 1)[1].lower()
+    return ''
+
+
+def generate_secure_filename(original_filename):
+    """Generate a secure filename with UUID to prevent path traversal"""
+    ext = get_file_extension(original_filename)
+    unique_id = uuid.uuid4().hex
+    return f"{unique_id}.{ext}" if ext else unique_id
 
 
 @courses_bp.route('/initial-data', methods=['GET'])
@@ -297,6 +323,26 @@ def api_create_file(course_id):
     if file.filename == '':
         return jsonify({'success': False, 'message': 'Tidak ada file yang dipilih'}), 400
 
+    # Validate file extension
+    if not allowed_file(file.filename):
+        allowed = current_app.config.get('ALLOWED_EXTENSIONS', [])
+        return jsonify({
+            'success': False,
+            'message': f'Tipe file tidak diizinkan. Hanya file dengan ekstensi: {", ".join(sorted(allowed))}'
+        }), 400
+
+    # Validate file size (check Content-Length header)
+    file.seek(0, 2)  # Seek to end
+    file_size = file.tell()
+    file.seek(0)  # Reset to beginning
+    
+    max_size = current_app.config.get('MAX_CONTENT_LENGTH', 16777216)  # 16MB default
+    if file_size > max_size:
+        return jsonify({
+            'success': False,
+            'message': f'Ukuran file terlalu besar. Maksimal: {max_size // (1024 * 1024)}MB'
+        }), 400
+
     start_date = None
     if start_date_str:
         try:
@@ -312,16 +358,21 @@ def api_create_file(course_id):
             return jsonify({'success': False, 'message': 'Format tanggal selesai tidak valid'}), 400
 
     if file:
-        filename = secure_filename(file.filename)
+        # Generate secure filename with UUID
+        secure_name = generate_secure_filename(file.filename)
+        
+        # Create upload folder
         upload_folder = os.path.join(os.getcwd(), 'instance', 'uploads', str(course_id))
         os.makedirs(upload_folder, exist_ok=True)
-        file_path = os.path.join(upload_folder, filename)
+        
+        # Save file with secure name
+        file_path = os.path.join(upload_folder, secure_name)
         file.save(file_path)
 
         new_file = File(
             name=name,
             description=description,
-            filename=filename,
+            filename=secure_name,
             course_id=course_id,
             start_date=start_date,
             end_date=end_date
