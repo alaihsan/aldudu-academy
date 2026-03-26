@@ -1,4 +1,5 @@
 import os
+import hashlib
 from typing import Optional, Dict
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request, render_template
@@ -164,6 +165,17 @@ def create_app(test_config: Optional[Dict] = None) -> Flask:
     }
     is_prod = os.environ.get('FLASK_ENV') == 'production'
     Talisman(app, content_security_policy=csp, force_https=is_prod)
+
+    # Register asset_hash Jinja2 helper for cache-busting static assets
+    @app.template_global()
+    def asset_hash(filename: str) -> str:
+        """Return a short content-based hash for a static file (cache-busting)."""
+        filepath = os.path.join(app.static_folder, filename)
+        try:
+            with open(filepath, 'rb') as f:
+                return hashlib.md5(f.read()).hexdigest()[:8]
+        except FileNotFoundError:
+            return 'missing'
 
     # Register tenant middleware
     from .middleware import register_middleware
