@@ -4,7 +4,9 @@ Gradebook Service - Handles grade calculations and data management
 from typing import Dict, List, Optional, Tuple
 from datetime import datetime
 from sqlalchemy import func
-from app.extensions import db
+from flask import current_app
+from flask_caching import Cache
+from app.extensions import db, cache
 from app.models import (
     Course, User, Quiz, QuizSubmission, QuizStatus,
     GradeCategory, GradeCategoryType, LearningObjective, LearningGoal,
@@ -16,30 +18,36 @@ from app.helpers import get_jakarta_now
 def calculate_final_grade(student_id: int, course_id: int, use_category_weighting: bool = True) -> float:
     """
     Calculate final grade for a student in a course.
-    
+
     This is the unified function used by both teacher and student views.
-    
+
     Args:
         student_id: Student user ID
         course_id: Course ID
         use_category_weighting: If True, use category weighting. If False, use simple average.
-    
+
     Returns:
         Final grade as a percentage (0-100)
     """
+    # Try to get from cache
+    cache_key = f'gradebook:final_grade:{student_id}:{course_id}:{use_category_weighting}'
+    cached_result = cache.get(cache_key)
+    if cached_result is not None:
+        return cached_result
+    
     if use_category_weighting:
         # Use category weighting (teacher view)
         categories = GradeCategory.query.filter_by(course_id=course_id).all()
-        
+
         if not categories:
             # No categories defined, fall back to simple average
             use_category_weighting = False
-    
+
     if not use_category_weighting:
         # Simple average of all graded items (student view fallback)
         all_items = GradeItem.query.filter_by(course_id=course_id).all()
         all_percentages = []
-        
+
         for item in all_items:
             entry = GradeEntry.query.filter_by(
                 grade_item_id=item.id,
@@ -47,9 +55,12 @@ def calculate_final_grade(student_id: int, course_id: int, use_category_weightin
             ).first()
             if entry and entry.percentage is not None:
                 all_percentages.append(entry.percentage)
-        
-        return round(sum(all_percentages) / len(all_percentages), 2) if all_percentages else 0.0
-    
+
+        result = round(sum(all_percentages) / len(all_percentages), 2) if all_percentages else 0.0
+        # Cache for 5 minutes
+        cache.set(cache_key, result, timeout=300)
+        return result
+
     # Category-weighted calculation
     total_weighted_score = 0.0
     total_weight = 0.0
@@ -61,7 +72,10 @@ def calculate_final_grade(student_id: int, course_id: int, use_category_weightin
             total_weight += category_data['weight']
 
     # Return as percentage (0-100), not ratio (0-1)
-    return round((total_weighted_score / total_weight) * 100, 2) if total_weight > 0 else 0.0
+    result = round((total_weighted_score / total_weight) * 100, 2) if total_weight > 0 else 0.0
+    # Cache for 5 minutes
+    cache.set(cache_key, result, timeout=300)
+    return result
 
 
 def calculate_student_grade(student_id: int, course_id: int) -> Dict:

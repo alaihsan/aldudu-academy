@@ -34,7 +34,6 @@ const Dashboard = {
     },
 
     async init() {
-        console.log('Dashboard: Initializing...');
         this.cacheElements();
 
         // If elements don't exist (not on dashboard page), stop

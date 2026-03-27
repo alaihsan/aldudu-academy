@@ -57,7 +57,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) {
                 throw new Error('Failed to save the quiz.');
             }
-            console.log('Quiz saved automatically.');
             clearLocalStorage(); // Clear local storage on successful save
         } catch (error) {
             console.error('Error saving quiz:', error);

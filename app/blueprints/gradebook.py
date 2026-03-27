@@ -4,18 +4,25 @@ Gradebook Blueprint - Routes for managing grades
 from datetime import datetime
 from flask import Blueprint, render_template, request, jsonify, redirect, url_for, abort
 from flask_login import login_required, current_user
+from flask_caching import Cache
 from app.models import Course, User, UserRole, Quiz, QuizStatus, AcademicYear
 from app.models.gradebook import (
     GradeCategory, GradeCategoryType, LearningObjective, LearningGoal,
     GradeItem, GradeEntry
 )
-from app.extensions import db
+from app.extensions import db, cache
 from app.services.gradebook_service import (
     calculate_student_grade, calculate_category_grade, calculate_course_statistics,
     import_quiz_to_gradebook, sync_quiz_grades, get_student_grades_summary,
     bulk_save_grades
 )
 from app.helpers import log_activity, get_jakarta_now
+
+
+def invalidate_grade_cache(student_id: int, course_id: int):
+    """Invalidate grade cache for a student in a course"""
+    cache.delete(f'gradebook:final_grade:{student_id}:{course_id}:True')
+    cache.delete(f'gradebook:final_grade:{student_id}:{course_id}:False')
 
 gradebook_bp = Blueprint('gradebook', __name__, url_prefix='/gradebook')
 
@@ -577,10 +584,10 @@ def api_bulk_save_entries():
     """Bulk save grade entries"""
     data = request.get_json() or {}
     entries_data = data.get('entries', [])
-    
+
     if not entries_data:
         return jsonify({'success': False, 'message': 'No entries provided'}), 400
-    
+
     # Validate permission for first entry
     if entries_data:
         first_item = GradeItem.query.get(entries_data[0].get('grade_item_id'))
@@ -588,9 +595,15 @@ def api_bulk_save_entries():
             course = Course.query.get(first_item.course_id)
             if not course or (course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN):
                 return jsonify({'success': False, 'message': 'Unauthorized'}), 403
-    
+
     saved_count = bulk_save_grades(entries_data, current_user.id)
-    
+
+    # Invalidate cache for all affected students
+    if entries_data and first_item:
+        student_ids = set(e.get('student_id') for e in entries_data if e.get('student_id'))
+        for student_id in student_ids:
+            invalidate_grade_cache(student_id, first_item.course_id)
+
     return jsonify({'success': True, 'saved_count': saved_count})
 
 
@@ -601,23 +614,26 @@ def api_update_grade_entry(entry_id):
     entry = GradeEntry.query.get_or_404(entry_id)
     item = GradeItem.query.get(entry.grade_item_id)
     course = Course.query.get(item.course_id)
-    
+
     if not course or (course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN):
         return jsonify({'success': False, 'message': 'Unauthorized'}), 403
-    
+
     data = request.get_json() or {}
-    
+
     if 'score' in data:
         entry.score = float(data['score'])
         entry.percentage = (entry.score / item.max_score * 100) if item.max_score > 0 else 0
     if 'feedback' in data:
         entry.feedback = data['feedback']
-    
+
     entry.graded_at = get_jakarta_now()
     entry.graded_by = current_user.id
-    
+
     db.session.commit()
-    
+
+    # Invalidate cache for this student
+    invalidate_grade_cache(entry.student_id, course.id)
+
     return jsonify({'success': True, 'entry': entry.to_dict()})
 
 

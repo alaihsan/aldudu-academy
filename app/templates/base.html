@@ -384,12 +384,17 @@
 
     
     {% block extra_scripts %}{% endblock %}
-    
-    <!-- Language Manager -->
+
+    <!-- Language Manager (always needed) -->
     <script src="{{ url_for('static', filename='js/language.js') }}?v={{ asset_hash('js/language.js') }}"></script>
 
-    <!-- Sidebar & Global Logic -->
+    <!-- Sidebar & Global Logic (always needed) -->
     <script src="{{ url_for('static', filename='js/sidebar.js') }}?v={{ asset_hash('js/sidebar.js') }}"></script>
+
+    <!-- Page-specific scripts (loaded only on relevant pages) -->
+    {% if page_script %}
+    <script src="{{ url_for('static', filename='js/' + page_script) }}?v={{ asset_hash('js/' + page_script) }}"></script>
+    {% endif %}
 
     <script>
         // Global Logout Function

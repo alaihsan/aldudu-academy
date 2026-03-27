@@ -90,7 +90,6 @@ const Dashboard = {
 
         // Placeholder: Filter logic would go here
         // For now, this just shows the selected filter
-        console.log('Filtering by:', filterValue);
     },
 
     sortClassroomItems() {
@@ -99,7 +98,6 @@ const Dashboard = {
 
         // Placeholder: Sort logic would go here
         // For now, this just shows the selected sort
-        console.log('Sorting by:', sortValue);
     },
 
     loadDashboard() {
@@ -116,7 +114,6 @@ const Dashboard = {
 
         // Would make API call here to enroll in class
         // Placeholder for future implementation
-        console.log('Enrolling in class with code:', code);
     },
 
     handleLogout() {

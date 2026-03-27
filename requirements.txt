@@ -25,3 +25,7 @@ psutil==6.1.0
 # Prometheus Metrics & Monitoring
 prometheus-client==0.20.0
 prometheus-flask-exporter==0.23.1
+
+# Asset Minification (Production)
+csscompressor==0.9.5
+jsmin==3.0.1
