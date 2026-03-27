@@ -11,6 +11,27 @@ logger = logging.getLogger(__name__)
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 
+
+def validate_password(password):
+    """
+    Validate password strength.
+    Returns (is_valid, error_message)
+    Requirements:
+    - Minimum 6 characters
+    - At least 1 uppercase letter
+    - At least 1 number
+    - At least 1 symbol
+    """
+    if len(password) < 6:
+        return False, 'Password minimal 6 karakter'
+    if not re.search(r'[A-Z]', password):
+        return False, 'Password harus mengandung minimal 1 huruf kapital'
+    if not re.search(r'\d', password):
+        return False, 'Password harus mengandung minimal 1 angka'
+    if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+        return False, 'Password harus mengandung minimal 1 simbol (!@#$%^&*(),.?":{}|<>)'
+    return True, None
+
 @admin_bp.before_request
 @login_required
 def admin_required():
@@ -41,6 +62,49 @@ def user_management():
     gurus = User.query.filter_by(role=UserRole.GURU, school_id=school_id).order_by(User.name).all()
     murids = User.query.filter_by(role=UserRole.MURID, school_id=school_id).order_by(User.name).all()
     return render_template('admin_users.html', gurus=gurus, murids=murids)
+
+
+@admin_bp.route('/api/users', methods=['GET'])
+def api_get_users():
+    """Get list of users (guru and murid) with pagination."""
+    role_filter = request.args.get('role')  # 'guru', 'murid', or None for all
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 20, type=int)
+    per_page = min(per_page, 100)
+
+    school_id = current_user.school_id
+    query = User.query.filter_by(school_id=school_id)
+
+    if role_filter:
+        try:
+            role = UserRole(role_filter)
+            query = query.filter_by(role=role)
+        except ValueError:
+            pass
+
+    # Order by role (guru first) then by name
+    pagination = query.order_by(User.role.desc(), User.name).paginate(
+        page=page, per_page=per_page, error_out=False
+    )
+
+    result = []
+    for user in pagination.items:
+        result.append({
+            'id': user.id,
+            'name': user.name,
+            'email': user.email,
+            'role': user.role.value,
+            'is_active': user.is_active,
+            'email_verified': user.email_verified,
+        })
+
+    return jsonify({
+        'success': True,
+        'users': result,
+        'total': pagination.total,
+        'pages': pagination.pages,
+        'current_page': page,
+    })
 
 @admin_bp.route('/api/users/bulk-import', methods=['POST'])
 def bulk_import_users():
@@ -129,9 +193,10 @@ def reset_password(user_id):
 
     data = request.get_json() or {}
     new_password = data.get('password', '').strip()
-    
-    if len(new_password) < 6:
-        return jsonify({'success': False, 'message': 'Password minimal 6 digit'}), 400
+
+    is_valid, error_msg = validate_password(new_password)
+    if not is_valid:
+        return jsonify({'success': False, 'message': error_msg}), 400
         
     user.set_password(new_password)
     db.session.commit()

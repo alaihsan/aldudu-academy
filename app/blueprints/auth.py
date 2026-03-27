@@ -1,3 +1,4 @@
+import re
 from flask import Blueprint, request, jsonify, render_template, redirect
 from flask_login import login_user, logout_user, current_user, login_required
 from app.models import User, UserRole, SchoolStatus, PasswordResetToken, School
@@ -9,6 +10,27 @@ from app.services.auth_service import (
 )
 
 auth_bp = Blueprint('auth', __name__)
+
+
+def validate_password(password):
+    """
+    Validate password strength.
+    Returns (is_valid, error_message)
+    Requirements:
+    - Minimum 6 characters
+    - At least 1 uppercase letter
+    - At least 1 number
+    - At least 1 symbol
+    """
+    if len(password) < 6:
+        return False, 'Password minimal 6 karakter'
+    if not re.search(r'[A-Z]', password):
+        return False, 'Password harus mengandung minimal 1 huruf kapital'
+    if not re.search(r'\d', password):
+        return False, 'Password harus mengandung minimal 1 angka'
+    if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+        return False, 'Password harus mengandung minimal 1 simbol (!@#$%^&*(),.?":{}|<>)'
+    return True, None
 
 
 # ─── Page Routes ────────────────────────────────────
@@ -147,8 +169,9 @@ def api_register():
     if not is_valid_email(school_email) or not is_valid_email(admin_email):
         return jsonify({'success': False, 'message': 'Format email tidak valid'}), 400
 
-    if len(password) < 6:
-        return jsonify({'success': False, 'message': 'Password minimal 6 karakter'}), 400
+    is_valid, error_msg = validate_password(password)
+    if not is_valid:
+        return jsonify({'success': False, 'message': error_msg}), 400
 
     school, error = register_school(
         name=school_name,
@@ -229,9 +252,10 @@ def api_register_user():
     if not is_valid_email(email):
         return jsonify({'success': False, 'message': 'Format email tidak valid'}), 400
 
-    # Validate password length
-    if len(password) < 6:
-        return jsonify({'success': False, 'message': 'Password minimal 6 karakter'}), 400
+    # Validate password strength
+    is_valid, error_msg = validate_password(password)
+    if not is_valid:
+        return jsonify({'success': False, 'message': error_msg}), 400
 
     # Check if email already exists
     if User.query.filter_by(email=email).first():
@@ -282,8 +306,10 @@ def api_change_password():
         return jsonify({'success': False, 'message': 'Semua field wajib diisi'}), 400
     if not current_user.check_password(old_password):
         return jsonify({'success': False, 'message': 'Password lama salah'}), 401
-    if len(new_password) < 6:
-        return jsonify({'success': False, 'message': 'Password baru minimal 6 karakter'}), 400
+    
+    is_valid, error_msg = validate_password(new_password)
+    if not is_valid:
+        return jsonify({'success': False, 'message': error_msg}), 400
 
     current_user.set_password(new_password)
     db.session.commit()

@@ -15,11 +15,7 @@
       "Bash(git reset *)",
       "Bash(git stash)",
       "Bash(git pull *)",
-      "Bash(git stash *)",
-      "Bash(pytest *)",
-      "Bash(powershell *)",
-      "Bash(git *)"
+      "Bash(git stash *)"
     ]
-  },
-  "$version": 3
+  }
 }

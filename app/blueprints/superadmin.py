@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, jsonify, abort
+import re
 from flask_login import login_required, current_user
 from sqlalchemy import func
 from app.extensions import db
@@ -13,6 +14,27 @@ from app.services.ticket_service import transition_status, TicketStatus as TStat
 from app.middleware import invalidate_school_cache
 
 superadmin_bp = Blueprint('superadmin', __name__, url_prefix='/superadmin')
+
+
+def validate_password(password):
+    """
+    Validate password strength.
+    Returns (is_valid, error_message)
+    Requirements:
+    - Minimum 6 characters
+    - At least 1 uppercase letter
+    - At least 1 number
+    - At least 1 symbol
+    """
+    if len(password) < 6:
+        return False, 'Password minimal 6 karakter'
+    if not re.search(r'[A-Z]', password):
+        return False, 'Password harus mengandung minimal 1 huruf kapital'
+    if not re.search(r'\d', password):
+        return False, 'Password harus mengandung minimal 1 angka'
+    if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+        return False, 'Password harus mengandung minimal 1 simbol (!@#$%^&*(),.?":{}|<>)'
+    return True, None
 
 
 @superadmin_bp.before_request
@@ -76,8 +98,22 @@ def api_get_schools():
         except ValueError:
             pass
 
-    schools = query.order_by(School.created_at.desc()).all()
-    return jsonify({'success': True, 'schools': [s.to_dict() for s in schools]})
+    # Add pagination
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 20, type=int)
+    per_page = min(per_page, 100)  # Max 100 items per page
+
+    pagination = query.order_by(School.created_at.desc()).paginate(
+        page=page, per_page=per_page, error_out=False
+    )
+
+    return jsonify({
+        'success': True,
+        'schools': [s.to_dict() for s in pagination.items],
+        'total': pagination.total,
+        'pages': pagination.pages,
+        'current_page': page,
+    })
 
 
 @superadmin_bp.route('/api/schools/<int:school_id>/approve', methods=['POST'])
@@ -266,10 +302,16 @@ def api_get_admins():
             pass
     
     # Order by role (super_admin first) then by id (newest first)
-    admins = query.order_by(User.role.desc(), User.id.desc()).all()
-    
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 20, type=int)
+    per_page = min(per_page, 100)
+
+    pagination = query.order_by(User.role.desc(), User.id.desc()).paginate(
+        page=page, per_page=per_page, error_out=False
+    )
+
     result = []
-    for admin in admins:
+    for admin in pagination.items:
         data = {
             'id': admin.id,
             'name': admin.name,
@@ -288,8 +330,14 @@ def api_get_admins():
                 'status': admin.school.status.value,
             }
         result.append(data)
-    
-    return jsonify({'success': True, 'admins': result})
+
+    return jsonify({
+        'success': True,
+        'admins': result,
+        'total': pagination.total,
+        'pages': pagination.pages,
+        'current_page': page,
+    })
 
 
 @superadmin_bp.route('/api/admins/<int:admin_id>/reset-password', methods=['POST'])
@@ -308,13 +356,14 @@ def api_reset_password(admin_id):
     
     data = request.get_json() or {}
     new_password = data.get('password', '').strip()
-    
+
     if not new_password:
         return jsonify({'success': False, 'message': 'Password tidak boleh kosong'}), 400
-    
-    if len(new_password) < 6:
-        return jsonify({'success': False, 'message': 'Password minimal 6 karakter'}), 400
-    
+
+    is_valid, error_msg = validate_password(new_password)
+    if not is_valid:
+        return jsonify({'success': False, 'message': error_msg}), 400
+
     admin.set_password(new_password)
     db.session.commit()
     
@@ -401,14 +450,28 @@ def api_get_issues():
     elif status_filter == 'resolved':
         query = query.filter(Issue.status.in_([IssueStatus.RESOLVED, IssueStatus.CLOSED]))
 
-    issues = query.order_by(Issue.created_at.desc()).all()
+    # Add pagination
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 20, type=int)
+    per_page = min(per_page, 100)
+
+    pagination = query.order_by(Issue.created_at.desc()).paginate(
+        page=page, per_page=per_page, error_out=False
+    )
+
     result = []
-    for issue in issues:
+    for issue in pagination.items:
         d = issue.to_dict()
         d['school_name'] = issue.school.name if issue.school else '-'
         result.append(d)
 
-    return jsonify({'success': True, 'issues': result})
+    return jsonify({
+        'success': True,
+        'issues': result,
+        'total': pagination.total,
+        'pages': pagination.pages,
+        'current_page': page,
+    })
 
 
 @superadmin_bp.route('/api/issues/<int:issue_id>/status', methods=['POST'])
@@ -460,10 +523,20 @@ def whats_new():
 @superadmin_bp.route('/api/whats-new', methods=['GET'])
 def api_get_whats_new():
     """Get semua What's New posts."""
-    posts = WhatsNew.query.order_by(WhatsNew.created_at.desc()).all()
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 20, type=int)
+    per_page = min(per_page, 100)
+
+    pagination = WhatsNew.query.order_by(WhatsNew.created_at.desc()).paginate(
+        page=page, per_page=per_page, error_out=False
+    )
+
     return jsonify({
         'success': True,
-        'posts': [p.to_dict(include_author=True) for p in posts]
+        'posts': [p.to_dict(include_author=True) for p in pagination.items],
+        'total': pagination.total,
+        'pages': pagination.pages,
+        'current_page': page,
     })
 
 
