@@ -3,10 +3,13 @@ import random
 import secrets
 import re
 import html
+import logging
 from datetime import datetime, timedelta, timezone
 from flask import request
 from sqlalchemy import func
 from sqlalchemy.orm import joinedload
+
+logger = logging.getLogger(__name__)
 
 def get_jakarta_now():
     """Returns current time in Jakarta (WIB, UTC+7)."""
@@ -36,7 +39,7 @@ def log_activity(user_id, action, target_type=None, target_id=None, details=None
         db.session.commit()
     except Exception as e:
         db.session.rollback()
-        print(f"Failed to log activity: {e}")
+        logger.error(f"Failed to log activity: {e}", exc_info=True)
 
 def generate_random_password(length=6):
     """Generates a random password using cryptographically secure secrets module.

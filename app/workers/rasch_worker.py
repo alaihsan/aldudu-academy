@@ -116,7 +116,7 @@ try:
                 except Exception as exc:
                     # Retry dengan exponential backoff
                     raise self.retry(exc=exc, countdown=60 * (2 ** self.request.retries))
-    
-except Exception:
+
+except ImportError:
     # Fallback untuk testing tanpa Celery
     logger.info("Celery not configured, using sync execution")

@@ -1,5 +1,6 @@
 import os
 import uuid
+import logging
 from datetime import datetime, time
 from flask import Blueprint, request, jsonify, abort, current_app
 from flask_login import login_required, current_user
@@ -8,6 +9,8 @@ from sqlalchemy.orm import joinedload, selectinload
 from app.models import db, Course, AcademicYear, UserRole, Link, File, Discussion, Post, Like, UserCourseOrder, KbmNote, KbmActivityType, Quiz, GradeType, QuizStatus, ContentFolder, Assignment
 from app.helpers import sanitize_text, is_valid_color, is_valid_class_code, generate_class_code, get_courses_for_user, format_course_data, log_activity
 from app.tenant import get_school_id_or_abort, verify_course_in_school, verify_academic_year_in_school
+
+logger = logging.getLogger(__name__)
 
 courses_bp = Blueprint('courses', __name__, url_prefix='/api')
 
@@ -94,7 +97,8 @@ def api_create_course():
         return jsonify({'success': False, 'message': 'Nama kelas wajib diisi'}), 400
     try:
         academic_year_id = int(academic_year_id)
-    except Exception:
+    except (ValueError, TypeError) as e:
+        logger.error(f"Invalid academic_year_id: {academic_year_id}, error: {e}", exc_info=True)
         return jsonify({'success': False, 'message': 'Tahun ajaran tidak valid'}), 400
 
     school_id = get_school_id_or_abort()
@@ -156,7 +160,7 @@ def api_delete_course(course_id):
     try:
         db.session.delete(course)
         db.session.commit()
-        
+
         # Log the activity
         log_activity(
             user_id=current_user.id,
@@ -165,10 +169,11 @@ def api_delete_course(course_id):
             target_id=course_id,
             details=f'Guru "{teacher_name}" menghapus kelas "{course_name}"'
         )
-        
+
         return jsonify({'success': True, 'message': 'Kelas berhasil dihapus'})
-    except Exception:
+    except Exception as e:
         db.session.rollback()
+        logger.error(f"Failed to delete course {course_id}: {e}", exc_info=True)
         return jsonify({'success': False, 'message': 'Gagal menghapus kelas'}), 500
 
 
@@ -301,8 +306,9 @@ def api_create_link(course_id):
             }
         }), 201
 
-    except Exception:
+    except Exception as e:
         db.session.rollback()
+        logger.error(f"Failed to create link for course {course_id}: {e}", exc_info=True)
         return jsonify({'success': False, 'message': 'Terjadi kesalahan server'}), 500
 
 
@@ -448,8 +454,9 @@ def create_discussion(course_id):
         db.session.commit()
 
         return jsonify({'success': True, 'discussion': {'id': new_discussion.id, 'title': new_discussion.title}}), 201
-    except Exception:
+    except Exception as e:
         db.session.rollback()
+        logger.error(f"Failed to create discussion for course {course_id}: {e}", exc_info=True)
         return jsonify({'success': False, 'message': 'Terjadi kesalahan saat membuat diskusi'}), 500
 
 
@@ -593,8 +600,9 @@ def api_reorder_courses():
 
         db.session.commit()
         return jsonify({'success': True, 'message': 'Urutan kelas berhasil diperbarui'})
-    except Exception:
+    except Exception as e:
         db.session.rollback()
+        logger.error(f"Failed to reorder courses for user {current_user.id}: {e}", exc_info=True)
         return jsonify({'success': False, 'message': 'Gagal memperbarui urutan'}), 500
 
 
@@ -641,8 +649,9 @@ def api_reorder_content(course_id):
 
         db.session.commit()
         return jsonify({'success': True})
-    except Exception:
+    except Exception as e:
         db.session.rollback()
+        logger.error(f"Failed to reorder content for course {course_id}: {e}", exc_info=True)
         return jsonify({'success': False, 'message': 'Gagal menyimpan urutan'}), 500
 
 

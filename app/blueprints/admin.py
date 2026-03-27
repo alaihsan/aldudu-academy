@@ -1,10 +1,13 @@
 from flask import Blueprint, render_template, request, jsonify, abort
 import re
+import logging
 from flask_login import login_required, current_user
 from app.models import db, User, UserRole, ActivityLog, Course, AcademicYear, QuizSubmission, Quiz
 from app.helpers import log_activity, sanitize_text, is_valid_email, generate_random_password
 from sqlalchemy import func
 from app.tenant import get_school_id_or_abort
+
+logger = logging.getLogger(__name__)
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 
@@ -108,11 +111,11 @@ def bulk_import_users():
 
         db.session.commit()
         log_activity(current_user.id, f"Impor massal {imported_count} {role.value}", details=f"Mendaftarkan {imported_count} user baru.")
-        
+
         return jsonify({'success': True, 'count': imported_count, 'results': results})
     except Exception as e:
         db.session.rollback()
-        print(f"IMPORT ERROR: {str(e)}")
+        logger.error(f"IMPORT ERROR: {str(e)}", exc_info=True)
         return jsonify({'success': False, 'message': f'Gagal menyimpan ke database: {str(e)}'}), 500
 
 @admin_bp.route('/api/users/<int:user_id>/reset-password', methods=['POST'])

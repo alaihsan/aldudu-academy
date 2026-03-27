@@ -12,7 +12,10 @@ from app.models import (
 from app.helpers import sanitize_text, sanitize_rich_text
 import datetime
 import os
+import logging
 from werkzeug.utils import secure_filename
+
+logger = logging.getLogger(__name__)
 
 quiz_bp = Blueprint('quiz', __name__, url_prefix='/api')
 
@@ -577,7 +580,11 @@ def api_submit_quiz(quiz_id):
         answers_list = data.get('answers', [])
     else:
         import json
-        answers_list = json.loads(request.form.get('answers', '[]'))
+        try:
+            answers_list = json.loads(request.form.get('answers', '[]'))
+        except (json.JSONDecodeError, ValueError) as e:
+            logger.error(f"Invalid JSON in quiz submission {quiz_id}: {e}", exc_info=True)
+            return jsonify({'success': False, 'message': 'Format jawaban tidak valid'}), 400
 
     # Create submission
     submission = QuizSubmission(
@@ -680,26 +687,24 @@ def api_submit_quiz(quiz_id):
         grade_entry.graded_by = quiz.course.teacher_id
     except Exception as e:
         db.session.rollback()
-        import traceback
-        print(f"[WARN] Gradebook sync failed for quiz {quiz.id}: {e}\n{traceback.format_exc()}")
-    
+        logger.error(f"[WARN] Gradebook sync failed for quiz {quiz.id}: {e}", exc_info=True)
+
     # ── Auto-trigger Rasch analysis threshold check ───────────────────
     try:
         from app.services.rasch_threshold_service import RaschThresholdService
-        
+
         threshold_service = RaschThresholdService()
         threshold_met, message = threshold_service.check_and_trigger(
             quiz_id=quiz.id,
             submission_id=submission.id,
             check_type='auto'
         )
-        
+
         if threshold_met:
-            print(f"[INFO] Rasch analysis triggered for quiz {quiz.id}: {message}")
+            logger.info(f"[INFO] Rasch analysis triggered for quiz {quiz.id}: {message}")
     except Exception as e:
         # Don't fail submission if Rasch check fails
-        import traceback
-        print(f"[WARN] Rasch threshold check failed: {e}\n{traceback.format_exc()}")
+        logger.warning(f"[WARN] Rasch threshold check failed: {e}", exc_info=True)
     # ───────────────────────────────────────────────────────────────────
     
     db.session.commit()
