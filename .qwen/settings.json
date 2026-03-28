@@ -19,7 +19,8 @@
       "Bash(pytest *)",
       "Bash(powershell *)",
       "Bash(git *)",
-      "Bash(cmd *)"
+      "Bash(cmd *)",
+      "Bash(mkdir *)"
     ]
   },
   "$version": 3

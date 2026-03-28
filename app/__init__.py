@@ -1,5 +1,6 @@
 import os
 import hashlib
+import warnings
 from typing import Optional, Dict
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request, render_template
@@ -7,11 +8,21 @@ from flask_talisman import Talisman
 
 from .extensions import db, login_manager, mail, migrate, cache, limiter
 from .config import config_by_name
+from .validators.env import run_all_validations
 
 
 def create_app(test_config: Optional[Dict] = None) -> Flask:
     load_dotenv(override=True)
     app = Flask(__name__, instance_relative_config=True)
+
+    # Validate environment variables
+    testing = test_config is not None or os.environ.get('TESTING', 'false').lower() == 'true'
+    try:
+        run_all_validations(testing=testing)
+    except Exception as e:
+        if not testing:
+            raise
+        warnings.warn(f"Environment validation warning (testing mode): {str(e)}")
 
     # Load config
     env = os.environ.get('FLASK_ENV', 'development')

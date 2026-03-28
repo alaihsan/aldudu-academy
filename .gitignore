@@ -31,12 +31,17 @@ target/
 .env
 .env.local
 .env.*
+.instance/
+
+# Documentation - only track in docs/ folder
+# All .md files in root are ignored except README.md
+*.md
+!README.md
+!docs/
 
 # Editors
 .vscode/
 .idea/
-*.swp
-*.swo
 
 # System files
 .DS_Store
@@ -48,5 +53,4 @@ htmlcov/
 .coverage
 
 # Migrations (if not already tracked)
-migrations/alembic_version
-```".claude/worktrees/"  
+migrations/alembic_version  
