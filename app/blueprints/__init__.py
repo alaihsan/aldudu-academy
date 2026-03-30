@@ -16,5 +16,22 @@ def create_blueprints():
     from .rasch import rasch_bp
     from .rasch_dashboard import rasch_dashboard_bp
     from .whats_new_view import whats_new_view_bp
+    from .evaluation import evaluation_bp
 
-    return [main_bp, auth_bp, courses_bp, quiz_bp, discussion_bp, issues_bp, admin_bp, superadmin_bp, tickets_bp, gradebook_bp, assignment_bp, rasch_bp, rasch_dashboard_bp, whats_new_view_bp]
+    return [
+        main_bp,
+        auth_bp,
+        courses_bp,
+        quiz_bp,
+        discussion_bp,
+        issues_bp,
+        admin_bp,
+        superadmin_bp,
+        tickets_bp,
+        gradebook_bp,
+        assignment_bp,
+        rasch_bp,
+        rasch_dashboard_bp,
+        whats_new_view_bp,
+        evaluation_bp
+    ]

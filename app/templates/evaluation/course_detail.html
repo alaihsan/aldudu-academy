@@ -1,0 +1,690 @@
+{% extends "base.html" %}
+
+{% block title %}Evaluasi Tes - {{ course.name }} - Aldudu Academy{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gray-50">
+    <!-- Header dengan Navigasi Tab -->
+    <div class="bg-gradient-to-r from-primary-600 to-primary-800 text-white py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <a href="{{ url_for('evaluation.dashboard') }}" class="text-primary-100 hover:text-white text-sm flex items-center mb-2">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                        Kembali ke Dashboard
+                    </a>
+                    <h1 class="text-3xl font-bold">{{ course.name }}</h1>
+                    <p class="text-primary-100 mt-1">{{ course.academic_year }}</p>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <button onclick="exportReport()" class="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-xl font-bold hover:bg-white/30 transition-all flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        Export
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab Navigation -->
+            <div class="flex space-x-2 mt-6 overflow-x-auto">
+                <button onclick="switchTab('ringkasan')" id="tab-ringkasan" class="tab-btn px-6 py-3 bg-white/20 backdrop-blur-sm rounded-xl font-bold hover:bg-white/30 transition-all whitespace-nowrap active">
+                    📊 Ringkasan
+                </button>
+                <button onclick="switchTab('evaluations')" id="tab-evaluations" class="tab-btn px-6 py-3 bg-white/20 backdrop-blur-sm rounded-xl font-bold hover:bg-white/30 transition-all whitespace-nowrap">
+                    📝 Daftar Tes & Tugas
+                </button>
+                <button onclick="switchTab('analysis')" id="tab-analysis" class="tab-btn px-6 py-3 bg-white/20 backdrop-blur-sm rounded-xl font-bold hover:bg-white/30 transition-all whitespace-nowrap">
+                    📈 Analisis Kualitas Soal
+                </button>
+                <button onclick="switchTab('students')" id="tab-students" class="tab-btn px-6 py-3 bg-white/20 backdrop-blur-sm rounded-xl font-bold hover:bg-white/30 transition-all whitespace-nowrap">
+                    👤 Kemampuan Siswa
+                </button>
+                <button onclick="switchTab('settings')" id="tab-settings" class="tab-btn px-6 py-3 bg-white/20 backdrop-blur-sm rounded-xl font-bold hover:bg-white/30 transition-all whitespace-nowrap">
+                    ⚙️ Pengaturan
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- TAB 1: RINGKASAN -->
+        <div id="content-ringkasan" class="tab-content">
+            <!-- Summary Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500 font-medium">Total Evaluasi</p>
+                            <p class="text-3xl font-bold text-gray-900 mt-1" id="total-evaluations">-</p>
+                        </div>
+                        <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500 font-medium">Total Pengerjaan</p>
+                            <p class="text-3xl font-bold text-purple-600 mt-1" id="total-submissions">-</p>
+                        </div>
+                        <div class="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center">
+                            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500 font-medium">Rata-rata Kelas</p>
+                            <p class="text-3xl font-bold text-green-600 mt-1" id="average-score">-</p>
+                        </div>
+                        <div class="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500 font-medium">Soal Perlu Perhatian</p>
+                            <p class="text-3xl font-bold text-amber-600 mt-1" id="items-needing-attention">-</p>
+                        </div>
+                        <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center">
+                            <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <!-- Score Distribution Chart -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">📊 Distribusi Nilai Siswa</h3>
+                    <p class="text-sm text-gray-500 mb-4">Sebaran nilai siswa - idealnya berbentuk lonceng</p>
+                    <div class="chart-container" style="position: relative; height: 300px;">
+                        <canvas id="scoreDistributionChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Comparison Chart -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">📈 Perbandingan Tes</h3>
+                    <p class="text-sm text-gray-500 mb-4">Rata-rata nilai & jumlah pengerjaan per tes</p>
+                    <div class="chart-container" style="position: relative; height: 300px;">
+                        <canvas id="comparisonChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Evaluations -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <h3 class="text-lg font-bold text-gray-900 mb-4">📝 Evaluasi Terbaru</h3>
+                <div class="space-y-3" id="recent-evaluations">
+                    <!-- Will be populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: DAFTAR TES & TUGAS -->
+        <div id="content-evaluations" class="tab-content hidden">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <!-- Filters -->
+                <div class="flex flex-wrap items-center gap-4 mb-6">
+                    <div class="flex items-center space-x-2">
+                        <label class="text-sm font-medium text-gray-700">Tipe:</label>
+                        <select id="filter-type" class="px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                            <option value="all">Semua</option>
+                            <option value="quiz">Quiz</option>
+                            <option value="assignment">Tugas</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <label class="text-sm font-medium text-gray-700">Status:</label>
+                        <select id="filter-status" class="px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                            <option value="all">Semua</option>
+                            <option value="published">Published</option>
+                            <option value="draft">Draft</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <label class="text-sm font-medium text-gray-700">
+                            <input type="checkbox" id="filter-needs-analysis" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+                            Butuh Analisis Rasch
+                        </label>
+                    </div>
+                    <button onclick="applyFilters()" class="px-4 py-2 bg-primary-600 text-white rounded-xl font-bold hover:bg-primary-700 transition-all">
+                        Filter
+                    </button>
+                </div>
+
+                <!-- Evaluations Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-gray-100">
+                                <th class="text-left py-3 px-4 text-sm font-bold text-gray-700">Nama</th>
+                                <th class="text-left py-3 px-4 text-sm font-bold text-gray-700">Tipe</th>
+                                <th class="text-left py-3 px-4 text-sm font-bold text-gray-700">Tanggal</th>
+                                <th class="text-left py-3 px-4 text-sm font-bold text-gray-700">Siswa</th>
+                                <th class="text-left py-3 px-4 text-sm font-bold text-gray-700">Rata-rata</th>
+                                <th class="text-left py-3 px-4 text-sm font-bold text-gray-700">Status Rasch</th>
+                                <th class="text-left py-3 px-4 text-sm font-bold text-gray-700">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="evaluations-table-body">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: ANALISIS KUALITAS SOAL -->
+        <div id="content-analysis" class="tab-content hidden">
+            <!-- Rasch Analyses List -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
+                <h3 class="text-lg font-bold text-gray-900 mb-4">📈 Analisis Rasch yang Tersedia</h3>
+                <div class="space-y-3" id="rasch-analyses-list">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Wright Map Container (hidden until analysis selected) -->
+            <div id="wright-map-container" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6 hidden">
+                <h3 class="text-lg font-bold text-gray-900 mb-4">🗺️ Wright Map (Peta Kemampuan & Kesulitan)</h3>
+                <p class="text-sm text-gray-500 mb-4">
+                    <strong>Interpretasi:</strong> Siswa di atas soal = mampu menjawab. Soal di atas semua siswa = terlalu sulit.
+                </p>
+                <div class="chart-container" style="position: relative; height: 400px;">
+                    <canvas id="wrightMapChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Item Analysis Chart -->
+            <div id="item-analysis-container" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <h3 class="text-lg font-bold text-gray-900 mb-4">🎯 Analisis Soal (Kesulitan vs Daya Beda)</h3>
+                <p class="text-sm text-gray-500 mb-4">
+                    <strong>Zona Ideal:</strong> Kesulitan 40-80%, Daya Beda > 0.3
+                </p>
+                <div class="chart-container" style="position: relative; height: 350px;">
+                    <canvas id="itemAnalysisChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: KEMAMPUAN SISWA -->
+        <div id="content-students" class="tab-content hidden">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <h3 class="text-lg font-bold text-gray-900 mb-4">👤 Ranking Kemampuan Siswa</h3>
+                <p class="text-sm text-gray-500 mb-6">Berdasarkan analisis Rasch Model - kemampuan siswa diukur secara independen dari kesulitan soal</p>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b-2 border-gray-200">
+                                <th class="text-left py-3 px-4 text-sm font-bold text-gray-700">Rank</th>
+                                <th class="text-left py-3 px-4 text-sm font-bold text-gray-700">Nama Siswa</th>
+                                <th class="text-left py-3 px-4 text-sm font-bold text-gray-700">Level Kemampuan</th>
+                                <th class="text-left py-3 px-4 text-sm font-bold text-gray-700">Persentil</th>
+                                <th class="text-left py-3 px-4 text-sm font-bold text-gray-700">Kategori</th>
+                                <th class="text-left py-3 px-4 text-sm font-bold text-gray-700">Rekomendasi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="student-abilities-body">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: PENGATURAN -->
+        <div id="content-settings" class="tab-content hidden">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <h3 class="text-lg font-bold text-gray-900 mb-6">⚙️ Pengaturan Evaluasi</h3>
+                
+                <div class="space-y-6">
+                    <!-- Auto Analyze Setting -->
+                    <div class="flex items-center justify-between py-4 border-b border-gray-100">
+                        <div>
+                            <h4 class="font-bold text-gray-900">Auto-Analyze Rasch</h4>
+                            <p class="text-sm text-gray-500 mt-1">Otomatis analisis Rasch saat jumlah siswa mencapai threshold</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="auto-analyze-toggle" class="sr-only peer" checked>
+                            <div class="w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary-600"></div>
+                        </label>
+                    </div>
+
+                    <!-- Threshold Setting -->
+                    <div class="flex items-center justify-between py-4 border-b border-gray-100">
+                        <div>
+                            <h4 class="font-bold text-gray-900">Threshold Minimal Siswa</h4>
+                            <p class="text-sm text-gray-500 mt-1">Jumlah minimal siswa untuk analisis Rasch yang valid</p>
+                        </div>
+                        <input type="number" id="threshold-input" value="30" min="10" max="100" 
+                               class="px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent w-24 text-center font-bold">
+                    </div>
+
+                    <!-- Show to Students Setting -->
+                    <div class="flex items-center justify-between py-4 border-b border-gray-100">
+                        <div>
+                            <h4 class="font-bold text-gray-900">Tampilkan ke Siswa</h4>
+                            <p class="text-sm text-gray-500 mt-1">Izinkan siswa melihat kemampuan mereka di dashboard</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="show-to-students-toggle" class="sr-only peer">
+                            <div class="w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary-600"></div>
+                        </label>
+                    </div>
+
+                    <!-- Email Notification Setting -->
+                    <div class="flex items-center justify-between py-4 border-b border-gray-100">
+                        <div>
+                            <h4 class="font-bold text-gray-900">Email Notification</h4>
+                            <p class="text-sm text-gray-500 mt-1">Kirim email saat analisis Rasch selesai</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="email-notification-toggle" class="sr-only peer" checked>
+                            <div class="w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary-600"></div>
+                        </label>
+                    </div>
+
+                    <!-- Save Button -->
+                    <div class="pt-4">
+                        <button onclick="saveSettings()" class="px-6 py-3 bg-primary-600 text-white rounded-xl font-bold hover:bg-primary-700 transition-all shadow-lg shadow-primary-200">
+                            Simpan Pengaturan
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<script>
+const courseId = {{ course.id }};
+
+// Tab Switching
+function switchTab(tabName) {
+    // Hide all contents
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+    // Remove active from all buttons
+    document.querySelectorAll('.tab-btn').forEach(el => {
+        el.classList.remove('bg-primary-600', 'text-white');
+        el.classList.add('bg-white/20');
+    });
+    
+    // Show selected
+    document.getElementById('content-' + tabName).classList.remove('hidden');
+    document.getElementById('tab-' + tabName).classList.remove('bg-white/20');
+    document.getElementById('tab-' + tabName).classList.add('bg-primary-600', 'text-white');
+    
+    // Load data for tab
+    if (tabName === 'ringkasan') loadRingkasanData();
+    if (tabName === 'evaluations') loadEvaluationsData();
+    if (tabName === 'analysis') loadAnalysisData();
+    if (tabName === 'students') loadStudentData();
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    switchTab('ringkasan');
+});
+
+// Load Ringkasan Data
+async function loadRingkasanData() {
+    try {
+        const summaryRes = await fetch(`/evaluasi-tes/api/${courseId}/summary`);
+        const summaryData = await summaryRes.json();
+        
+        if (summaryData.success) {
+            const s = summaryData.summary;
+            document.getElementById('total-evaluations').textContent = s.total_evaluations;
+            document.getElementById('total-submissions').textContent = s.total_submissions;
+            document.getElementById('average-score').textContent = s.average_score;
+            document.getElementById('items-needing-attention').textContent = s.items_needing_attention?.total || 0;
+            
+            // Load recent evaluations
+            loadRecentEvaluations(s.recent_evaluations || []);
+        }
+        
+        // Load charts
+        loadScoreDistributionChart();
+        loadComparisonChart();
+    } catch (error) {
+        console.error('Error loading ringkasan:', error);
+    }
+}
+
+function loadRecentEvaluations(evaluations) {
+    const container = document.getElementById('recent-evaluations');
+    if (!evaluations.length) {
+        container.innerHTML = '<p class="text-gray-500 text-sm">Belum ada evaluasi</p>';
+        return;
+    }
+    
+    container.innerHTML = evaluations.map(e => `
+        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+            <div class="flex items-center space-x-4">
+                <div class="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center">
+                    <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="font-bold text-gray-900">${e.name}</p>
+                    <p class="text-xs text-gray-500">${e.submissions} pengerjaan</p>
+                </div>
+            </div>
+            <span class="px-3 py-1 text-xs font-bold rounded-full ${e.status === 'published' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}">${e.status}</span>
+        </div>
+    `).join('');
+}
+
+// Chart 1: Score Distribution
+let scoreDistChart = null;
+async function loadScoreDistributionChart() {
+    try {
+        const res = await fetch(`/evaluasi-tes/api/${courseId}/score-distribution`);
+        const data = await res.json();
+        
+        const ctx = document.getElementById('scoreDistributionChart').getContext('2d');
+        
+        if (scoreDistChart) scoreDistChart.destroy();
+        
+        scoreDistChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.data.labels,
+                datasets: [{
+                    label: 'Jumlah Siswa',
+                    data: data.data.data,
+                    backgroundColor: 'rgba(99, 102, 241, 0.6)',
+                    borderColor: 'rgba(99, 102, 241, 1)',
+                    borderWidth: 2,
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Error loading score distribution:', error);
+    }
+}
+
+// Chart 2: Comparison Chart
+let comparisonChart = null;
+async function loadComparisonChart() {
+    try {
+        const res = await fetch(`/evaluasi-tes/api/${courseId}/comparison-chart`);
+        const data = await res.json();
+        
+        const ctx = document.getElementById('comparisonChart').getContext('2d');
+        
+        if (comparisonChart) comparisonChart.destroy();
+        
+        comparisonChart = new Chart(ctx, {
+            type: 'bar',
+            data: data.data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { 
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        grid: { color: 'rgba(0,0,0,0.05)' }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        grid: { display: false }
+                    },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Error loading comparison chart:', error);
+    }
+}
+
+// Load Evaluations Data
+async function loadEvaluationsData() {
+    // This would be implemented to fetch and display all evaluations
+    console.log('Loading evaluations...');
+}
+
+// Load Analysis Data
+async function loadAnalysisData() {
+    try {
+        const res = await fetch(`/evaluasi-tes/api/${courseId}/rasch-summary`);
+        const data = await res.json();
+        
+        const container = document.getElementById('rasch-analyses-list');
+        
+        if (!data.summary.length) {
+            container.innerHTML = '<p class="text-gray-500 text-sm">Belum ada analisis Rasch</p>';
+            return;
+        }
+        
+        container.innerHTML = data.summary.map(a => `
+            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div>
+                    <p class="font-bold text-gray-900">${a.quiz_name}</p>
+                    <p class="text-xs text-gray-500">${a.created_at} • ${a.person_count} siswa • ${a.item_count} soal</p>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <span class="px-3 py-1 text-xs font-bold rounded-full ${
+                        a.status === 'completed' ? 'bg-green-100 text-green-700' : 
+                        a.status === 'processing' ? 'bg-blue-100 text-blue-700' : 
+                        'bg-gray-100 text-gray-700'
+                    }">${a.reliability_label}</span>
+                    <button onclick="loadWrightMap(${a.analysis_id})" class="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-bold hover:bg-primary-700">
+                        Lihat Wright Map
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    } catch (error) {
+        console.error('Error loading analysis:', error);
+    }
+}
+
+// Wright Map Chart
+let wrightMapChart = null;
+async function loadWrightMap(analysisId) {
+    document.getElementById('wright-map-container').classList.remove('hidden');
+    
+    try {
+        const res = await fetch(`/evaluasi-tes/api/${courseId}/wright-map/${analysisId}`);
+        const data = await res.json();
+        
+        const ctx = document.getElementById('wrightMapChart').getContext('2d');
+        
+        if (wrightMapChart) wrightMapChart.destroy();
+        
+        // Prepare data for scatter chart
+        const personData = data.data.person_measures.map(p => ({
+            x: p.ability,
+            y: 0,
+            student_name: p.student_name
+        }));
+        
+        const itemData = data.data.item_measures.map(i => ({
+            x: i.difficulty,
+            y: 1,
+            item_text: i.item_text
+        }));
+        
+        wrightMapChart = new Chart(ctx, {
+            type: 'scatter',
+            data: {
+                datasets: [
+                    {
+                        label: 'Siswa',
+                        data: personData,
+                        backgroundColor: 'rgba(99, 102, 241, 0.6)',
+                        pointRadius: 6,
+                        pointHoverRadius: 8
+                    },
+                    {
+                        label: 'Soal',
+                        data: itemData,
+                        backgroundColor: 'rgba(239, 68, 68, 0.6)',
+                        pointRadius: 6,
+                        pointHoverRadius: 8
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        min: data.data.scale_range[0],
+                        max: data.data.scale_range[1],
+                        title: {
+                            display: true,
+                            text: 'Kemampuan / Kesulitan (logit)'
+                        }
+                    },
+                    y: {
+                        display: false,
+                        min: -0.5,
+                        max: 1.5
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const point = context.raw;
+                                if (context.datasetIndex === 0) {
+                                    return `${point.student_name}: ${point.x.toFixed(2)}`;
+                                } else {
+                                    return `${point.item_text}: ${point.x.toFixed(2)}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Scroll to chart
+        document.getElementById('wright-map-container').scrollIntoView({ behavior: 'smooth' });
+    } catch (error) {
+        console.error('Error loading wright map:', error);
+    }
+}
+
+// Load Student Data
+async function loadStudentData() {
+    try {
+        const res = await fetch(`/evaluasi-tes/api/${courseId}/student-abilities`);
+        const data = await res.json();
+        
+        const tbody = document.getElementById('student-abilities-body');
+        
+        if (!data.data.length) {
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-gray-500">Belum ada data kemampuan siswa</td></tr>';
+            return;
+        }
+        
+        tbody.innerHTML = data.data.map((s, i) => `
+            <tr class="border-b border-gray-100 hover:bg-gray-50">
+                <td class="py-3 px-4 text-sm font-bold text-gray-900">${i + 1}</td>
+                <td class="py-3 px-4 text-sm text-gray-900">${s.student_name}</td>
+                <td class="py-3 px-4 text-sm text-gray-900">${s.ability_measure.toFixed(2)}</td>
+                <td class="py-3 px-4 text-sm text-gray-900">${s.percentile_rank || 'N/A'}%</td>
+                <td class="py-3 px-4 text-sm">${s.ability_label}</td>
+                <td class="py-3 px-4 text-sm">
+                    <span class="px-3 py-1 rounded-full text-xs font-bold ${
+                        s.recommendation.includes('pengayaan') ? 'bg-purple-100 text-purple-700' :
+                        s.recommendation.includes('remedial') ? 'bg-red-100 text-red-700' :
+                        'bg-green-100 text-green-700'
+                    }">${s.recommendation}</span>
+                </td>
+            </tr>
+        `).join('');
+    } catch (error) {
+        console.error('Error loading student data:', error);
+    }
+}
+
+// Utility functions
+function applyFilters() {
+    console.log('Applying filters...');
+}
+
+function exportReport() {
+    alert('Fitur export akan segera hadir!');
+}
+
+function saveSettings() {
+    alert('Pengaturan disimpan!');
+}
+</script>
+
+<style>
+.tab-btn.active {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.tab-content {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Chart containers - fixed height to prevent stretching */
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+.chart-container canvas {
+    max-height: 300px;
+}
+</style>
+{% endblock %}

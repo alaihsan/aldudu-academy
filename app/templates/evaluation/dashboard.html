@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Evaluasi Tes - Aldudu Academy{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-primary-600 to-primary-800 text-white py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h1 class="text-3xl font-bold mb-2">📊 Evaluasi Tes</h1>
+            <p class="text-primary-100">Dashboard evaluasi dan analisis tes untuk guru</p>
+        </div>
+    </div>
+
+    <!-- Course Selection -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
+        <div class="bg-white rounded-2xl shadow-lg p-6">
+            <h2 class="text-lg font-bold text-gray-900 mb-4">Pilih Kelas</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {% for course in courses %}
+                <a href="{{ url_for('evaluation.course_detail', course_id=course.id) }}" 
+                   class="block p-6 border-2 border-gray-100 rounded-xl hover:border-primary-500 hover:bg-primary-50 transition-all group">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-bold text-gray-900 group-hover:text-primary-700">{{ course.name }}</h3>
+                            <p class="text-sm text-gray-500 mt-1">{{ course.academic_year }}</p>
+                        </div>
+                        <svg class="w-6 h-6 text-gray-400 group-hover:text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

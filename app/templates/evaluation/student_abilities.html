@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Kemampuan Siswa - {{ course.name }}{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gray-50 p-8">
+    <div class="max-w-7xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-900 mb-6">👤 Kemampuan Siswa - {{ course.name }}</h1>
+        <p class="text-gray-600">Ranking dan analisis kemampuan siswa berdasarkan Rasch Model</p>
+        
+        <div class="mt-8 bg-white rounded-2xl shadow-sm p-6">
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b-2 border-gray-200">
+                            <th class="text-left py-3 px-4 font-bold">Rank</th>
+                            <th class="text-left py-3 px-4 font-bold">Nama</th>
+                            <th class="text-left py-3 px-4 font-bold">Ability</th>
+                            <th class="text-left py-3 px-4 font-bold">Persentil</th>
+                            <th class="text-left py-3 px-4 font-bold">Rekomendasi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in student_data %}
+                        <tr class="border-b">
+                            <td class="py-3 px-4">{{ loop.index }}</td>
+                            <td class="py-3 px-4">{{ student.student_name }}</td>
+                            <td class="py-3 px-4">{{ student.ability_measure }}</td>
+                            <td class="py-3 px-4">{{ student.percentile_rank }}%</td>
+                            <td class="py-3 px-4">{{ student.recommendation }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="mt-8">
+            <a href="{{ url_for('evaluation.course_detail', course_id=course.id) }}" class="text-primary-600 hover:underline">
+                ← Kembali ke Evaluasi Tes
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

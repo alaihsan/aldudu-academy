@@ -90,6 +90,24 @@
 {% endblock %}
 
 {% block body %}
+<!-- Redirect Notice -->
+<div class="bg-primary-50 border border-primary-200 rounded-xl p-4 mb-6 max-w-7xl mx-auto mt-4">
+    <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <div>
+                <p class="font-bold text-primary-900">📊 Fitur Rasch Model telah dipindahkan!</p>
+                <p class="text-sm text-primary-700">Semua analisis Rasch sekarang tersedia di menu <strong>Evaluasi Tes</strong> dengan tampilan yang lebih lengkap dan mudah dipahami.</p>
+            </div>
+        </div>
+        <a href="{{ url_for('evaluation.course_detail', course_id=course.id) }}" class="px-6 py-3 bg-primary-600 text-white rounded-xl font-bold hover:bg-primary-700 transition-all whitespace-nowrap">
+            Buka Evaluasi Tes →
+        </a>
+    </div>
+</div>
+
 <!-- Header -->
 <div class="rasch-header">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

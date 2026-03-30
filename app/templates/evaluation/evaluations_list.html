@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Daftar Tes & Tugas - {{ course.name }}{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gray-50 p-8">
+    <div class="max-w-7xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-900 mb-6">📝 Daftar Tes & Tugas - {{ course.name }}</h1>
+        <p class="text-gray-600">Halaman ini akan menampilkan daftar lengkap semua evaluasi (quiz dan assignment)</p>
+        
+        <div class="mt-8">
+            <a href="{{ url_for('evaluation.course_detail', course_id=course.id) }}" class="text-primary-600 hover:underline">
+                ← Kembali ke Evaluasi Tes
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

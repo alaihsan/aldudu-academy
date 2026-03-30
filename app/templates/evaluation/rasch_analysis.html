@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Analisis Kualitas Soal - {{ course.name }}{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gray-50 p-8">
+    <div class="max-w-7xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-900 mb-6">📈 Analisis Kualitas Soal (Rasch) - {{ course.name }}</h1>
+        <p class="text-gray-600">Analisis mendalam kualitas soal menggunakan Rasch Model</p>
+        
+        <div class="mt-8 bg-white rounded-2xl shadow-sm p-6">
+            <h3 class="text-lg font-bold mb-4">Analisis yang Tersedia:</h3>
+            <div class="space-y-3">
+                {% for analysis in analyses %}
+                <div class="p-4 bg-gray-50 rounded-xl flex items-center justify-between">
+                    <div>
+                        <p class="font-bold">Analysis #{{ analysis.id }}</p>
+                        <p class="text-sm text-gray-500">Status: {{ analysis.status.value }}</p>
+                    </div>
+                    <a href="{{ url_for('rasch_dashboard.analysis_detail', analysis_id=analysis.id) }}" 
+                       class="px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700">
+                        Lihat Detail
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="mt-8">
+            <a href="{{ url_for('evaluation.course_detail', course_id=course.id) }}" class="text-primary-600 hover:underline">
+                ← Kembali ke Evaluasi Tes
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
