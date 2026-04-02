@@ -6,8 +6,10 @@ Endpoints untuk:
 - Status polling
 - Results retrieval (person measures, item measures)
 - Wright Map visualization
+- Simplified metrics for teachers
 """
 
+import math
 from flask import Blueprint, request, jsonify, current_app
 from flask_login import login_required, current_user
 from app.models import db, Course, UserRole
@@ -424,7 +426,7 @@ def api_get_analysis(analysis_id):
 def api_get_analysis_status(analysis_id):
     """
     Polling status analysis.
-    
+
     Response:
     {
         "status": "processing",
@@ -435,10 +437,10 @@ def api_get_analysis_status(analysis_id):
     }
     """
     analysis = get_analysis_or_abort(analysis_id)
-    
+
     if not isinstance(analysis, RaschAnalysis):
         return analysis
-    
+
     return jsonify({
         'success': True,
         'status': analysis.status,
@@ -448,6 +450,385 @@ def api_get_analysis_status(analysis_id):
         'is_failed': analysis.status == RaschAnalysisStatus.FAILED.value,
         'started_at': analysis.started_at.isoformat() if analysis.started_at else None,
         'completed_at': analysis.completed_at.isoformat() if analysis.completed_at else None,
+    })
+
+
+# ============================================================
+# Simplified Metrics (Teacher-Friendly)
+# ============================================================
+
+@rasch_bp.route('/analyses/<int:analysis_id>/persons/simplified', methods=['GET'])
+@login_required
+def api_get_person_measures_simplified(analysis_id):
+    """
+    Get person measures dengan metrik yang disederhanakan untuk guru.
+    
+    Termasuk:
+    - Scaled Score (0-100)
+    - Warning badges untuk fit issues
+    - Actionable insights
+    
+    Response:
+    {
+        "success": true,
+        "persons": [
+            {
+                "student_id": 101,
+                "student_name": "Ahmad",
+                "scaled_score": 72.5,
+                "grade": "B",
+                "category": "Baik",
+                "ability_level": "high",
+                "warning": {
+                    "level": "none",
+                    "label": "VALID",
+                    "message": "Pola jawaban konsisten dan valid",
+                    "color": "badge-success"
+                },
+                "insights": [
+                    {
+                        "type": "strength",
+                        "title": "Kemampuan Tinggi",
+                        "description": "Siswa menunjukkan pemahaman yang sangat baik...",
+                        "priority": 4
+                    }
+                ],
+                "mastery_zone": {
+                    "zone": "developing",
+                    "label": "Dalam Pengembangan",
+                    "mastered_percentage": 65.0,
+                    "recommendation": "Fokus pada soal-soal di zona challenge..."
+                }
+            }
+        ]
+    }
+    """
+    from app.services.rasch_ui_helpers import (
+        format_scaled_score,
+        get_person_fit_warning,
+        generate_person_insights,
+        get_mastery_zone,
+    )
+    
+    analysis = get_analysis_or_abort(analysis_id)
+    
+    if not isinstance(analysis, RaschAnalysis):
+        return analysis
+    
+    # Get all person measures
+    measures = RaschPersonMeasure.query.filter_by(rasch_analysis_id=analysis_id).all()
+    
+    # Get all item deltas for mastery zone calculation
+    item_measures = RaschItemMeasure.query.filter_by(rasch_analysis_id=analysis_id).all()
+    item_deltas = [m.delta for m in item_measures if m.delta is not None]
+    
+    # Calculate mean and SD for scaling
+    person_thetas = [m.theta for m in measures if m.theta is not None]
+    mean_theta = sum(person_thetas) / len(person_thetas) if person_thetas else 0
+    
+    if len(person_thetas) > 1:
+        sd_theta = math.sqrt(sum((t - mean_theta) ** 2 for t in person_thetas) / (len(person_thetas) - 1))
+    else:
+        sd_theta = 1
+    
+    persons = []
+    for m in measures:
+        # Scaled score transformation
+        score_data = format_scaled_score(m.theta, {'mean_theta': mean_theta, 'sd_theta': sd_theta})
+        
+        # Warning badge
+        warning = get_person_fit_warning(m.outfit_mnsq or 1.0, m.infit_mnsq or 1.0)
+        
+        # Insights
+        insights = generate_person_insights(
+            theta=m.theta or 0,
+            outfit_mnsq=m.outfit_mnsq or 1.0,
+            theta_se=m.theta_se or 0.5,
+            percentile=m.ability_percentile or 50,
+            ability_level=m.ability_level or 'average'
+        )
+        
+        # Mastery zone
+        mastery = get_mastery_zone(m.theta or 0, item_deltas)
+        
+        persons.append({
+            'student_id': m.student_id,
+            'student_name': m.student.name if m.student else 'Unknown',
+            'scaled_score': score_data['scaled_score'],
+            'grade': score_data['grade'],
+            'category': score_data['category'],
+            'ability_level': m.ability_level,
+            'ability_percentile': float(m.ability_percentile) if m.ability_percentile else None,
+            'theta': float(m.theta) if m.theta else None,  # Keep for reference
+            'warning': {
+                'level': warning.level.value,
+                'label': warning.label,
+                'message': warning.message,
+                'color': warning.color,
+                'icon': warning.icon,
+            },
+            'insights': [
+                {
+                    'type': i.type.value,
+                    'title': i.title,
+                    'description': i.description,
+                    'priority': i.priority,
+                }
+                for i in insights
+            ],
+            'mastery_zone': mastery,
+        })
+    
+    # Sort by scaled score descending
+    persons.sort(key=lambda x: x['scaled_score'], reverse=True)
+    
+    return jsonify({
+        'success': True,
+        'analysis_id': analysis_id,
+        'count': len(persons),
+        'scaling_info': {
+            'mean_theta': round(mean_theta, 3),
+            'sd_theta': round(sd_theta, 3),
+            'formula': 'Scaled Score = 50 + 10 * ((theta - mean) / SD)',
+        },
+        'persons': persons,
+    })
+
+
+@rasch_bp.route('/analyses/<int:analysis_id>/items/simplified', methods=['GET'])
+@login_required
+def api_get_item_measures_simplified(analysis_id):
+    """
+    Get item measures dengan metrik yang disederhanakan untuk guru.
+    
+    Termasuk:
+    - Difficulty label (Mudah, Sedang, Sulit)
+    - Warning badges untuk problematic items
+    - Actionable insights
+    
+    Response:
+    {
+        "success": true,
+        "items": [
+            {
+                "question_id": 1,
+                "question_text": "Apa ibu kota Indonesia?",
+                "difficulty_label": "Mudah",
+                "difficulty_description": "Lebih dari 80% siswa menjawab benar",
+                "p_value": 0.85,
+                "delta": -1.5,
+                "discrimination": {
+                    "label": "Baik",
+                    "point_biserial": 0.42
+                },
+                "warning": {
+                    "level": "none",
+                    "label": "BAIK",
+                    "message": "Soal berfungsi dengan baik",
+                    "color": "badge-success"
+                },
+                "insights": [...],
+                "bloom_level": "remember"
+            }
+        ]
+    }
+    """
+    from app.services.rasch_ui_helpers import (
+        format_item_difficulty,
+        get_item_fit_warning,
+        generate_item_insights,
+    )
+    
+    analysis = get_analysis_or_abort(analysis_id)
+    
+    if not isinstance(analysis, RaschAnalysis):
+        return analysis
+    
+    # Get all item measures
+    measures = RaschItemMeasure.query.filter_by(rasch_analysis_id=analysis_id).all()
+    
+    items = []
+    for m in measures:
+        # Difficulty interpretation
+        difficulty = format_item_difficulty(m.delta or 0, m.p_value or 0.5)
+        
+        # Warning badge
+        warning = get_item_fit_warning(m.outfit_mnsq or 1.0, m.infit_mnsq or 1.0)
+        
+        # Insights
+        insights = generate_item_insights(
+            delta=m.delta or 0,
+            p_value=m.p_value or 0.5,
+            point_biserial=m.point_biserial or 0,
+            outfit_mnsq=m.outfit_mnsq or 1.0,
+            bloom_level=m.bloom_level
+        )
+        
+        # Discrimination interpretation
+        pb = m.point_biserial or 0
+        if pb >= 0.4:
+            disc_label = 'Sangat Baik'
+            disc_color = 'success'
+        elif pb >= 0.3:
+            disc_label = 'Baik'
+            disc_color = 'info'
+        elif pb >= 0.2:
+            disc_label = 'Cukup'
+            disc_color = 'warning'
+        else:
+            disc_label = 'Kurang'
+            disc_color = 'danger'
+        
+        items.append({
+            'question_id': m.question_id,
+            'question_text': (m.question.question_text[:100] + '...') if m.question and m.question.question_text else None,
+            'difficulty_label': difficulty['difficulty_label'],
+            'difficulty_description': difficulty['difficulty_description'],
+            'difficulty_color': difficulty['color_class'],
+            'p_value': difficulty['p_value'],
+            'delta': difficulty['delta'],
+            'discrimination': {
+                'label': disc_label,
+                'point_biserial': round(pb, 3),
+                'color': disc_color,
+            },
+            'warning': {
+                'level': warning.level.value,
+                'label': warning.label,
+                'message': warning.message,
+                'color': warning.color,
+                'icon': warning.icon,
+            },
+            'insights': [
+                {
+                    'type': i.type.value,
+                    'title': i.title,
+                    'description': i.description,
+                    'priority': i.priority,
+                }
+                for i in insights
+            ],
+            'bloom_level': m.bloom_level,
+            'fit_status': m.fit_status,
+        })
+    
+    # Sort by p_value (easiest first)
+    items.sort(key=lambda x: x['p_value'], reverse=True)
+    
+    return jsonify({
+        'success': True,
+        'analysis_id': analysis_id,
+        'count': len(items),
+        'items': items,
+    })
+
+
+@rasch_bp.route('/analyses/<int:analysis_id>/insights', methods=['GET'])
+@login_required
+def api_get_analysis_insights(analysis_id):
+    """
+    Get actionable insights untuk keseluruhan analisis.
+    
+    Response:
+    {
+        "success": true,
+        "quiz_insights": [...],
+        "summary": {
+            "reliability": {
+                "value": 0.85,
+                "label": "Sangat Baik",
+                "color": "success"
+            },
+            "separation": {
+                "person": 2.5,
+                "item": 3.2,
+                "label": "Baik"
+            }
+        },
+        "recommendations": [...]
+    }
+    """
+    from app.services.rasch_ui_helpers import (
+        generate_quiz_insights,
+        theta_to_scaled_score,
+    )
+    
+    analysis = get_analysis_or_abort(analysis_id)
+    
+    if not isinstance(analysis, RaschAnalysis):
+        return analysis
+    
+    # Generate quiz insights
+    quiz_insights = generate_quiz_insights(
+        cronbach_alpha=analysis.cronbach_alpha or 0.7,
+        person_separation=analysis.person_separation_index or 1.5,
+        item_separation=analysis.item_separation_index or 2.0,
+        num_persons=analysis.num_persons or 0,
+        num_items=analysis.num_items or 0,
+    )
+    
+    # Reliability summary
+    alpha = analysis.cronbach_alpha or 0
+    if alpha >= 0.8:
+        rel_label = 'Sangat Baik'
+        rel_color = 'success'
+    elif alpha >= 0.7:
+        rel_label = 'Baik'
+        rel_color = 'info'
+    elif alpha >= 0.6:
+        rel_label = 'Cukup'
+        rel_color = 'warning'
+    else:
+        rel_label = 'Kurang'
+        rel_color = 'danger'
+    
+    # Separation summary
+    ps = analysis.person_separation_index or 0
+    if ps >= 2.0:
+        sep_label = 'Baik'
+        sep_color = 'success'
+    elif ps >= 1.5:
+        sep_label = 'Cukup'
+        sep_color = 'warning'
+    else:
+        sep_label = 'Kurang'
+        sep_color = 'danger'
+    
+    return jsonify({
+        'success': True,
+        'analysis_id': analysis_id,
+        'quiz_insights': [
+            {
+                'type': i.type.value,
+                'title': i.title,
+                'description': i.description,
+                'priority': i.priority,
+            }
+            for i in quiz_insights
+        ],
+        'summary': {
+            'reliability': {
+                'value': round(alpha, 3),
+                'label': rel_label,
+                'color': rel_color,
+                'description': 'Konsistensi internal kuis',
+            },
+            'separation': {
+                'person': round(ps, 2),
+                'item': round(analysis.item_separation_index or 0, 2),
+                'label': sep_label,
+                'color': sep_color,
+                'description': 'Kemampuan membedakan level kemampuan',
+            },
+        },
+        'recommendations': [
+            {
+                'type': i.type.value,
+                'title': i.title,
+                'description': i.description,
+            }
+            for i in quiz_insights if i.type.value in ['suggestion', 'weakness']
+        ],
     })
 
 
