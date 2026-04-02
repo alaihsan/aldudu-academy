@@ -133,7 +133,7 @@ def api_get_threshold_status(quiz_id):
 def api_manual_trigger_analysis(quiz_id):
     """
     Manual trigger Rasch analysis (bypass threshold).
-    
+
     Request:
     {
         "min_persons": 20  // Optional: override default
@@ -141,25 +141,25 @@ def api_manual_trigger_analysis(quiz_id):
     """
     from app.models.quiz import Quiz
     from app.services.rasch_threshold_service import RaschThresholdService
-    
+
     quiz = Quiz.query.get(quiz_id)
-    
+
     if not quiz:
         return jsonify({'success': False, 'message': 'Quiz tidak ditemukan'}), 404
-    
+
     # Check permission
     course = Course.query.get(quiz.course_id)
     if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
         return jsonify({'success': False, 'message': 'Akses ditolak'}), 403
-    
+
     # Get override min_persons
     data = request.get_json() or {}
     min_persons = data.get('min_persons')
-    
+
     # Trigger analysis
     service = RaschThresholdService()
     success, message = service.manual_trigger(quiz_id, min_persons)
-    
+
     if success:
         return jsonify({
             'success': True,
@@ -170,6 +170,178 @@ def api_manual_trigger_analysis(quiz_id):
             'success': False,
             'message': message
         }), 400
+
+
+@rasch_bp.route('/quizzes/<int:quiz_id>/process-late-submissions', methods=['POST'])
+@login_required
+def api_process_late_submissions(quiz_id):
+    """
+    Process late submissions untuk quiz yang sudah dianalisis.
+    
+    Menggunakan anchor values untuk menghitung ability siswa baru
+    tanpa perlu re-run analisis penuh.
+    
+    Request (optional):
+    {
+        "submission_id": 123  // Process specific submission only
+    }
+    
+    Response:
+    {
+        "success": true,
+        "processed": 5,
+        "failed": 0,
+        "total_late": 5,
+        "results": [...]
+    }
+    """
+    from app.models.quiz import Quiz, QuizSubmission
+    from app.models.gradebook import GradeItem
+    from app.models.rasch import RaschAnalysis, RaschAnalysisStatus
+    from app.services.rasch_anchor_service import process_late_submissions, RaschAnchorService
+
+    quiz = Quiz.query.get(quiz_id)
+
+    if not quiz:
+        return jsonify({'success': False, 'message': 'Quiz tidak ditemukan'}), 404
+
+    # Check permission
+    course = Course.query.get(quiz.course_id)
+    if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
+        return jsonify({'success': False, 'message': 'Akses ditolak'}), 403
+
+    # Get completed analysis
+    grade_item = GradeItem.query.filter_by(quiz_id=quiz_id).first()
+    
+    if not grade_item or not grade_item.rasch_analysis_id:
+        return jsonify({
+            'success': False,
+            'message': 'Belum ada analisis Rasch untuk quiz ini'
+        }), 404
+    
+    analysis = RaschAnalysis.query.get(grade_item.rasch_analysis_id)
+    
+    if not analysis or analysis.status != RaschAnalysisStatus.COMPLETED.value:
+        return jsonify({
+            'success': False,
+            'message': 'Analisis belum completed. Tidak ada late submissions untuk diproses.'
+        }), 400
+
+    # Check if specific submission requested
+    data = request.get_json() or {}
+    submission_id = data.get('submission_id', type=int)
+    
+    if submission_id:
+        # Process single submission
+        service = RaschAnchorService(analysis_id=analysis.id)
+        result = service.calculate_ability_for_submission(submission_id)
+        
+        if result and result.get('success'):
+            return jsonify({
+                'success': True,
+                'submission_id': submission_id,
+                'result': result
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'message': 'Gagal memproses submission ini'
+            }), 400
+    else:
+        # Process all late submissions
+        result = process_late_submissions(quiz_id)
+        
+        if result.get('success'):
+            return jsonify(result)
+        else:
+            return jsonify({
+                'success': False,
+                'message': result.get('error', 'Gagal memproses late submissions')
+            }), 400
+
+
+@rasch_bp.route('/analyses/<int:analysis_id>/re-run', methods=['POST'])
+@login_required
+def api_rerun_analysis(analysis_id):
+    """
+    Re-run analisis Rasch untuk include late submissions.
+    
+    Ini akan menghapus person dan item measures lama dan menjalankan
+    ulang analisis dengan semua submissions terbaru.
+    
+    Request (optional):
+    {
+        "min_late_percentage": 10  // Minimum percentage of late submissions to trigger re-run
+    }
+    """
+    from app.models.rasch import RaschItemMeasure, RaschPersonMeasure
+    
+    analysis = get_analysis_or_abort(analysis_id)
+
+    if not isinstance(analysis, RaschAnalysis):
+        return analysis
+    
+    # Check if analysis is completed
+    if analysis.status != RaschAnalysisStatus.COMPLETED.value:
+        return jsonify({
+            'success': False,
+            'message': 'Hanya analisis completed yang bisa di-re-run'
+        }), 400
+    
+    # Check late submissions
+    if analysis.quiz_id:
+        submission_count = QuizSubmission.query.filter_by(quiz_id=analysis.quiz_id).count()
+        existing_measures = RaschPersonMeasure.query.filter_by(
+            rasch_analysis_id=analysis_id
+        ).count()
+        late_count = submission_count - existing_measures
+        
+        if late_count <= 0:
+            return jsonify({
+                'success': False,
+                'message': 'Tidak ada late submissions untuk di-re-run'
+            }), 400
+        
+        # Check minimum percentage
+        data = request.get_json() or {}
+        min_percentage = data.get('min_late_percentage', 0)
+        late_percentage = (late_count / submission_count * 100) if submission_count > 0 else 0
+        
+        if late_percentage < min_percentage:
+            return jsonify({
+                'success': False,
+                'message': f'Late submissions hanya {late_percentage:.1f}% (minimum: {min_percentage}%)'
+            }), 400
+    
+    try:
+        # Delete old measures
+        RaschPersonMeasure.query.filter_by(rasch_analysis_id=analysis_id).delete()
+        RaschItemMeasure.query.filter_by(rasch_analysis_id=analysis_id).delete()
+        
+        # Reset analysis status
+        analysis.status = RaschAnalysisStatus.PENDING.value
+        analysis.status_message = "Re-running analysis dengan data terbaru"
+        db.session.commit()
+        
+        # Trigger analysis
+        from app.services.rasch_threshold_service import RaschThresholdService
+        service = RaschThresholdService()
+        service._trigger_analysis(analysis, check_type='manual')
+        
+        return jsonify({
+            'success': True,
+            'message': f'Analisis di-re-run dengan {late_count} late submissions',
+            'analysis_id': analysis_id,
+            'late_count': late_count,
+        })
+        
+    except Exception as e:
+        logger.error(f"Error re-running analysis: {e}")
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'message': f'Error: {str(e)}'
+        }), 500
 
 
 # ============================================================
@@ -563,6 +735,8 @@ def api_get_bloom_summary(quiz_id):
     """
     Get Bloom taxonomy distribution untuk quiz.
     
+    Response includes UI hints untuk handling unclassified questions.
+
     Response:
     {
         "quiz_id": 123,
@@ -572,22 +746,31 @@ def api_get_bloom_summary(quiz_id):
             "understand": {"count": 8, "percentage": 26.7},
             ...
         },
-        "cognitive_depth": "moderate"
+        "cognitive_depth": "moderate",
+        "mapping_status": {
+            "is_complete": false,
+            "mapped_count": 20,
+            "unmapped_count": 10,
+            "mapped_percentage": 66.7,
+            "is_optional_feature": true,
+            "ui_message": "10 soal belum diklasifikasikan. Taksonomi Bloom adalah fitur opsional.",
+            "recommendation": "Klasifikasikan soal untuk analisis kognitif yang lebih lengkap"
+        }
     }
     """
     from app.models.quiz import Question
     from app.models.rasch import QuestionBloomTaxonomy
-    
+
     quiz = Quiz.query.get(quiz_id)
-    
+
     if not quiz:
         return jsonify({'success': False, 'message': 'Quiz tidak ditemukan'}), 404
-    
+
     # Check permission
     course = Course.query.get(quiz.course_id)
     if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
         return jsonify({'success': False, 'message': 'Akses ditolak'}), 403
-    
+
     # Get questions
     questions = Question.query.filter_by(quiz_id=quiz_id).all()
     total = len(questions)
@@ -598,7 +781,16 @@ def api_get_bloom_summary(quiz_id):
             'quiz_id': quiz_id,
             'total_questions': 0,
             'distribution': {},
-            'cognitive_depth': 'unknown'
+            'cognitive_depth': 'unknown',
+            'mapping_status': {
+                'is_complete': False,
+                'mapped_count': 0,
+                'unmapped_count': 0,
+                'mapped_percentage': 0,
+                'is_optional_feature': True,
+                'ui_message': 'Quiz ini belum memiliki soal.',
+                'recommendation': 'Tambahkan soal terlebih dahulu.'
+            }
         })
 
     # Pre-load all Bloom taxonomy classifications in a single query
@@ -606,7 +798,7 @@ def api_get_bloom_summary(quiz_id):
     all_blooms = QuestionBloomTaxonomy.query.filter(
         QuestionBloomTaxonomy.question_id.in_(question_ids)
     ).all()
-    
+
     # Create a lookup dictionary: question_id -> bloom
     blooms_lookup = {b.question_id: b for b in all_blooms}
 
@@ -632,7 +824,7 @@ def api_get_bloom_summary(quiz_id):
                 distribution['unclassified'] += 1
         else:
             distribution['unclassified'] += 1
-    
+
     # Calculate percentages
     distribution_with_pct = {}
     for level, count in distribution.items():
@@ -640,24 +832,73 @@ def api_get_bloom_summary(quiz_id):
             'count': count,
             'percentage': round(count / total * 100, 1) if total > 0 else 0
         }
-    
-    # Determine cognitive depth
+
+    # Determine cognitive depth (only based on classified questions)
+    classified_count = total - distribution['unclassified']
     higher_order = distribution['analyze'] + distribution['evaluate'] + distribution['create']
     lower_order = distribution['remember'] + distribution['understand']
-    
-    if higher_order > lower_order:
+
+    if classified_count == 0:
+        cognitive_depth = 'not_classified'
+    elif higher_order > lower_order:
         cognitive_depth = 'high'
     elif higher_order < lower_order:
         cognitive_depth = 'low'
     else:
         cognitive_depth = 'moderate'
-    
+
+    # Build mapping status for UI
+    mapped_count = classified_count
+    unmapped_count = distribution['unclassified']
+    mapped_percentage = round(mapped_count / total * 100, 1) if total > 0 else 0
+    is_complete = unmapped_count == 0
+
+    # Generate UI messages based on mapping status
+    if unmapped_count == 0:
+        ui_message = "Semua soal sudah diklasifikasikan dengan Taksonomi Bloom."
+        ui_status = "complete"
+        recommendation = None
+    elif unmapped_count == total:
+        ui_message = "Belum ada soal yang diklasifikasikan. Taksonomi Bloom adalah fitur opsional untuk analisis kognitif."
+        ui_status = "not_started"
+        recommendation = "Klasifikasikan soal-soal untuk melihat distribusi tingkat kognitif."
+    elif mapped_percentage >= 80:
+        ui_message = f"{unmapped_count} soal belum diklasifikasikan. Analisis sudah cukup representatif."
+        ui_status = "mostly_complete"
+        recommendation = None
+    else:
+        ui_message = f"{unmapped_count} dari {total} soal belum diklasifikasikan. Taksonomi Bloom adalah fitur opsional."
+        ui_status = "in_progress"
+        recommendation = "Klasifikasikan lebih banyak soal untuk analisis kognitif yang lebih akurat."
+
+    mapping_status = {
+        'is_complete': is_complete,
+        'mapped_count': mapped_count,
+        'unmapped_count': unmapped_count,
+        'mapped_percentage': mapped_percentage,
+        'is_optional_feature': True,
+        'ui_message': ui_message,
+        'ui_status': ui_status,
+        'recommendation': recommendation,
+        'feature_info': {
+            'title': 'Taksonomi Bloom (Opsional)',
+            'description': 'Klasifikasi tingkat kognitif soal membantu menganalisis kedalaman penilaian.',
+            'benefits': [
+                'Memahami distribusi tingkat kesulitan kognitif',
+                'Memastikan keseimbangan soal lower-order dan higher-order thinking',
+                'Analisis korelasi antara cognitive level dan student performance'
+            ],
+            'skip_message': 'Anda dapat melewati fitur ini dan tetap menggunakan analisis Rasch dasar.'
+        }
+    }
+
     return jsonify({
         'success': True,
         'quiz_id': quiz_id,
         'total_questions': total,
         'distribution': distribution_with_pct,
         'cognitive_depth': cognitive_depth,
+        'mapping_status': mapping_status,
     })
 
 
@@ -743,3 +984,102 @@ def api_get_my_ability(course_id):
             'created_at': student_measure.created_at.strftime('%Y-%m-%d') if student_measure.created_at else None
         }
     })
+
+
+# ============================================================
+# Scheduled Batch Processing (Admin Only)
+# ============================================================
+
+@rasch_bp.route('/admin/batch/nightly-analysis', methods=['POST'])
+@login_required
+def api_run_nightly_batch():
+    """
+    Run nightly batch analysis untuk semua quiz yang eligible.
+    
+    Hanya untuk super admin.
+    
+    Request (optional):
+    {
+        "course_id": 123  // Filter by specific course
+    }
+    
+    Response:
+    {
+        "success": true,
+        "new_analyses": 5,
+        "re_analyses": 2,
+        "skipped": 10,
+        "failed": 0,
+        "details": [...]
+    }
+    """
+    from app.models.user import UserRole
+    
+    # Only super admin
+    if current_user.role != UserRole.SUPER_ADMIN:
+        return jsonify({
+            'success': False,
+            'message': 'Akses ditolak. Hanya super admin yang bisa menjalankan batch processing.'
+        }), 403
+    
+    data = request.get_json() or {}
+    course_id = data.get('course_id', type=int)
+    
+    from app.services.rasch_scheduled_service import run_nightly_analysis
+    
+    result = run_nightly_analysis(course_id)
+    
+    if result.get('success'):
+        return jsonify(result)
+    else:
+        return jsonify({
+            'success': False,
+            'message': result.get('error', 'Batch processing failed')
+        }), 500
+
+
+@rasch_bp.route('/admin/batch/late-submissions', methods=['POST'])
+@login_required
+def api_run_late_submissions_batch():
+    """
+    Process late submissions untuk semua quiz yang sudah dianalisis.
+    
+    Hanya untuk super admin.
+    
+    Request (optional):
+    {
+        "course_id": 123  // Filter by specific course
+    }
+    
+    Response:
+    {
+        "success": true,
+        "quizzes_processed": 5,
+        "students_processed": 15,
+        "failed": 0,
+        "details": [...]
+    }
+    """
+    from app.models.user import UserRole
+    
+    # Only super admin
+    if current_user.role != UserRole.SUPER_ADMIN:
+        return jsonify({
+            'success': False,
+            'message': 'Akses ditolak. Hanya super admin yang bisa menjalankan batch processing.'
+        }), 403
+    
+    data = request.get_json() or {}
+    course_id = data.get('course_id', type=int)
+    
+    from app.services.rasch_scheduled_service import run_late_submissions_processing
+    
+    result = run_late_submissions_processing(course_id)
+    
+    if result.get('success'):
+        return jsonify(result)
+    else:
+        return jsonify({
+            'success': False,
+            'message': result.get('error', 'Batch processing failed')
+        }), 500

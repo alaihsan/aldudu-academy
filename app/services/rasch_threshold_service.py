@@ -81,19 +81,28 @@ class RaschThresholdService:
             if not grade_item or not grade_item.enable_rasch_analysis:
                 logger.debug(f"Quiz {quiz_id} does not have Rasch analysis enabled")
                 return False, "Rasch analysis not enabled for this quiz"
-            
+
             # Count submissions
             submission_count = QuizSubmission.query.filter_by(quiz_id=quiz_id).count()
-            
+
             # Get or create analysis record
             analysis = self._get_or_create_analysis(quiz_id, grade_item)
-            
+
+            # Check if analysis should be skipped (already completed/processing/queued)
+            if getattr(analysis, '_skip_trigger', False):
+                # Analysis is already completed/processing - check for late submission
+                if analysis.status == RaschAnalysisStatus.COMPLETED.value:
+                    # Process late submission using anchor values
+                    return self._process_late_submission(analysis, submission_id)
+                logger.info(f"Skipping threshold check for quiz {quiz_id} - analysis already active")
+                return False, "Analisis Rasch sedang berjalan atau sudah selesai"
+
             # Get threshold from analysis
             min_persons = analysis.min_persons or self.default_min_persons
-            
+
             # Check threshold
             threshold_met = submission_count >= min_persons
-            
+
             # Log threshold check
             self._log_threshold_check(
                 analysis_id=analysis.id,
@@ -102,7 +111,7 @@ class RaschThresholdService:
                 min_required=min_persons,
                 threshold_met=threshold_met
             )
-            
+
             if threshold_met:
                 # Trigger analysis
                 return self._trigger_analysis(analysis, check_type)
@@ -113,10 +122,10 @@ class RaschThresholdService:
                 analysis.status_message = f"Menunggu {remaining} siswa lagi untuk memulai analisis"
                 analysis.progress_percentage = (submission_count / min_persons) * 100
                 db.session.commit()
-                
+
                 logger.info(f"Threshold not met for quiz {quiz_id}: {submission_count}/{min_persons}")
                 return False, f"Menunggu {remaining} siswa lagi untuk memulai analisis Rasch"
-                
+
         except Exception as e:
             logger.error(f"Error in threshold check: {e}", exc_info=True)
             return False, f"Error: {str(e)}"
@@ -124,14 +133,28 @@ class RaschThresholdService:
     def _get_or_create_analysis(self, quiz_id: int, grade_item) -> RaschAnalysis:
         """Get existing analysis or create new one"""
         from app.models.user import User
-        
+
         # Check if analysis already exists
         existing = RaschAnalysis.query.filter_by(
             quiz_id=quiz_id,
             analysis_type=RaschAnalysisType.QUIZ.value
         ).first()
-        
+
         if existing:
+            # Check if analysis is already in a terminal or active state
+            # If so, don't allow re-triggering
+            if existing.status in [
+                RaschAnalysisStatus.COMPLETED.value,
+                RaschAnalysisStatus.PROCESSING.value,
+                RaschAnalysisStatus.QUEUED.value,
+            ]:
+                logger.info(
+                    f"Analysis {existing.id} for quiz {quiz_id} is in status {existing.status}, skipping trigger"
+                )
+                # Return a mock object with is_active flag to signal caller to skip
+                existing._skip_trigger = True
+                return existing
+            
             logger.debug(f"Found existing analysis {existing.id} for quiz {quiz_id}")
             return existing
         
@@ -210,14 +233,49 @@ class RaschThresholdService:
     def _run_analysis_sync(self, analysis_id: int):
         """Run analysis synchronously (fallback)"""
         from app.services.rasch_analysis_service import RaschAnalysisService
-        
+
         try:
             service = RaschAnalysisService(analysis_id=analysis_id)
             service.run_analysis()
             logger.info(f"Sync Rasch analysis {analysis_id} completed")
         except Exception as e:
             logger.error(f"Sync analysis failed: {e}")
-    
+
+    def _process_late_submission(self, analysis: RaschAnalysis, submission_id: Optional[int]) -> Tuple[bool, str]:
+        """
+        Process late submission using anchor values.
+        
+        Args:
+            analysis: Completed Rasch analysis record
+            submission_id: ID of the new submission
+            
+        Returns:
+            Tuple[bool, str]: (success, message)
+        """
+        if not submission_id:
+            return False, "Submission ID required for late processing"
+        
+        try:
+            from app.services.rasch_anchor_service import RaschAnchorService
+            
+            service = RaschAnchorService(analysis_id=analysis.id)
+            result = service.calculate_ability_for_submission(submission_id)
+            
+            if result and result.get('success'):
+                theta = result.get('theta', 0)
+                ability_level = result.get('ability_level', 'unknown')
+                logger.info(
+                    f"Late submission {submission_id} processed: theta={theta:.3f}, level={ability_level}"
+                )
+                return True, f"Nilai ability berhasil dihitung: θ={theta:.3f} ({ability_level})"
+            else:
+                logger.warning(f"Failed to process late submission {submission_id}")
+                return False, "Gagal menghitung nilai ability untuk submission ini"
+                
+        except Exception as e:
+            logger.error(f"Error processing late submission: {e}", exc_info=True)
+            return False, f"Error: {str(e)}"
+
     def _log_threshold_check(
         self,
         analysis_id: int,

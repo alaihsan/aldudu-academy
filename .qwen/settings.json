@@ -20,7 +20,11 @@
       "Bash(powershell *)",
       "Bash(git *)",
       "Bash(cmd *)",
-      "Bash(mkdir *)"
+      "Bash(mkdir *)",
+      "Bash(c:\\python310\\python.exe *)",
+      "Bash(python3 *)",
+      "Bash($env:path *)",
+      "Bash(where-object *)"
     ]
   },
   "$version": 3

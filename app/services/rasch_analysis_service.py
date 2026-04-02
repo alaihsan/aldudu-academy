@@ -188,31 +188,45 @@ class RaschAnalysisService:
     def initialize_measures(self):
         """
         Initialize ability dan difficulty measures.
-        
+
         Ability diinisialisasi berdasarkan raw score.
         Difficulty diinisialisasi berdasarkan p-value.
+        
+        Extreme scores (0 atau sempurna) di-exclude dari iterasi JMLE untuk
+        menghindari bias kalibrasi. Ability mereka dihitung via ekstrapolasi
+        setelah item konvergen.
         """
+        # Identify students with extreme scores
+        self.extreme_high_students = []  # Perfect scores
+        self.extreme_low_students = []   # Zero scores
+        self.non_extreme_students = []   # Students included in JMLE
+        
         # Initialize abilities based on raw scores
         for student_id in self.students:
             raw_score = self._calculate_raw_score(student_id)
             total_items = len(self.questions)
             
-            # Avoid extreme values (0 or 1)
+            # Classify students
             if raw_score == 0:
-                raw_score = 0.5
+                self.extreme_low_students.append(student_id)
+                # Initial placeholder (will be extrapolated later)
+                self.abilities[student_id] = -4.0  # Starting point for extrapolation
             elif raw_score == total_items:
-                raw_score = total_items - 0.5
-            
-            # Logit transformation: theta = ln(p / (1-p))
-            p = raw_score / total_items
-            theta = math.log(p / (1 - p)) if 0 < p < 1 else 0
-            self.abilities[student_id] = theta
+                self.extreme_high_students.append(student_id)
+                # Initial placeholder (will be extrapolated later)
+                self.abilities[student_id] = 4.0  # Starting point for extrapolation
+            else:
+                self.non_extreme_students.append(student_id)
+                # Logit transformation: theta = ln(p / (1-p))
+                p = raw_score / total_items
+                theta = math.log(p / (1 - p)) if 0 < p < 1 else 0
+                self.abilities[student_id] = theta
         
-        # Initialize difficulties based on p-values
+        # Initialize difficulties based on p-values (using all students)
         for question_id in self.questions:
             p_value = self._calculate_p_value(question_id)
             
-            # Avoid extreme values
+            # Avoid extreme values for items
             if p_value <= 0:
                 p_value = 0.01
             elif p_value >= 1:
@@ -222,7 +236,10 @@ class RaschAnalysisService:
             delta = math.log((1 - p_value) / p_value)
             self.difficulties[question_id] = delta
         
-        logger.info("Initialized ability and difficulty measures")
+        logger.info(
+            f"Initialized measures: {len(self.non_extreme_students)} non-extreme students, "
+            f"{len(self.extreme_high_students)} extreme high, {len(self.extreme_low_students)} extreme low"
+        )
     
     def _calculate_raw_score(self, student_id: int) -> int:
         """Calculate raw score untuk siswa"""
@@ -248,119 +265,241 @@ class RaschAnalysisService:
         """
         Run Joint Maximum Likelihood Estimation algorithm.
         
+        Hanya menggunakan non-extreme students untuk kalibrasi difficulty.
+        Extreme students akan diekstrapolasi setelah konvergensi.
+
         Returns:
             bool: True jika converge
         """
         logger.info(f"Starting JMLE (max_iter={self.max_iterations}, threshold={self.convergence_threshold})")
-        
-        prev_abilities = self.abilities.copy()
+
+        prev_abilities = {k: v for k, v in self.abilities.items() if k in self.non_extreme_students}
         prev_difficulties = self.difficulties.copy()
-        
+
         for iteration in range(1, self.max_iterations + 1):
             # Update progress
             self._update_progress(iteration)
-            
+
             # Step 1: Update item difficulties (fixing person abilities)
+            # Only use non-extreme students for item calibration
             self._update_item_difficulties()
-            
+
             # Step 2: Update person abilities (fixing item difficulties)
-            self._update_person_abilities()
-            
-            # Step 3: Check convergence
-            ability_change = self._calculate_max_change(prev_abilities, self.abilities)
+            # Only update non-extreme students
+            self._update_person_abilities_non_extreme()
+
+            # Step 3: Check convergence (only for non-extreme students)
+            ability_change = self._calculate_max_change_filtered(prev_abilities, self.abilities, self.non_extreme_students)
             difficulty_change = self._calculate_max_change(prev_difficulties, self.difficulties)
-            
+
             max_change = max(ability_change, difficulty_change)
-            
+
             logger.debug(f"Iteration {iteration}: max_change={max_change:.6f}")
-            
+
             if max_change < self.convergence_threshold:
                 logger.info(f"Converged at iteration {iteration}")
+                # Extrapolate abilities for extreme students
+                self._extrapolate_extreme_abilities()
                 self._save_results(iteration, converged=True)
                 return True
-            
-            prev_abilities = self.abilities.copy()
+
+            prev_abilities = {k: v for k, v in self.abilities.items() if k in self.non_extreme_students}
             prev_difficulties = self.difficulties.copy()
-        
+
         logger.warning(f"Did not converge after {self.max_iterations} iterations")
+        # Still extrapolate even if not converged
+        self._extrapolate_extreme_abilities()
         self._save_results(self.max_iterations, converged=False)
         return False
     
     def _update_item_difficulties(self):
-        """Update item difficulties using Newton-Raphson"""
+        """
+        Update item difficulties using Newton-Raphson.
+        Hanya menggunakan non-extreme students untuk kalibrasi difficulty yang tidak bias.
+        """
         for question_id in self.questions:
-            # Get responses for this item
+            # Get responses for this item (only from non-extreme students)
             responses = []
             abilities_for_item = []
-            
-            for student_id in self.students:
+
+            for student_id in self.non_extreme_students:
                 if (student_id, question_id) in self.response_matrix:
                     responses.append(self.response_matrix[(student_id, question_id)])
                     abilities_for_item.append(self.abilities[student_id])
-            
+
             if not responses:
                 continue
-            
+
             # Newton-Raphson update
             delta = self.difficulties[question_id]
-            
+
             for _ in range(10):  # Max 10 iterations per item
                 # Calculate expected and observed
                 sum_expected = 0
                 sum_variance = 0
                 sum_observed = sum(responses)
-                
+
                 for i, theta in enumerate(abilities_for_item):
                     p = self._probability(theta, delta)
                     sum_expected += p
                     sum_variance += p * (1 - p)
-                
+
                 # Update delta
                 if sum_variance > 0.0001:
                     delta_new = delta + (sum_observed - sum_expected) / sum_variance
                     delta = delta_new
                 else:
                     break
-            
+
             self.difficulties[question_id] = delta
     
     def _update_person_abilities(self):
-        """Update person abilities using Newton-Raphson"""
+        """Update person abilities using Newton-Raphson (legacy, use _update_person_abilities_non_extreme)"""
         for student_id in self.students:
             # Get responses for this person
             responses = []
             difficulties_for_person = []
-            
+
             for question_id in self.questions:
                 if (student_id, question_id) in self.response_matrix:
                     responses.append(self.response_matrix[(student_id, question_id)])
                     difficulties_for_person.append(self.difficulties[question_id])
-            
+
             if not responses:
                 continue
-            
+
             # Newton-Raphson update
             theta = self.abilities[student_id]
-            
+
             for _ in range(10):  # Max 10 iterations per person
                 # Calculate expected and observed
                 sum_expected = 0
                 sum_variance = 0
                 sum_observed = sum(responses)
-                
+
                 for i, delta in enumerate(difficulties_for_person):
                     p = self._probability(theta, delta)
                     sum_expected += p
                     sum_variance += p * (1 - p)
-                
+
                 # Update theta
                 if sum_variance > 0.0001:
                     theta_new = theta + (sum_observed - sum_expected) / sum_variance
                     theta = theta_new
                 else:
                     break
-            
+
             self.abilities[student_id] = theta
+
+    def _update_person_abilities_non_extreme(self):
+        """
+        Update person abilities using Newton-Raphson.
+        Hanya update non-extreme students untuk menghindari bias.
+        """
+        for student_id in self.non_extreme_students:
+            # Get responses for this person
+            responses = []
+            difficulties_for_person = []
+
+            for question_id in self.questions:
+                if (student_id, question_id) in self.response_matrix:
+                    responses.append(self.response_matrix[(student_id, question_id)])
+                    difficulties_for_person.append(self.difficulties[question_id])
+
+            if not responses:
+                continue
+
+            # Newton-Raphson update
+            theta = self.abilities[student_id]
+
+            for _ in range(10):  # Max 10 iterations per person
+                # Calculate expected and observed
+                sum_expected = 0
+                sum_variance = 0
+                sum_observed = sum(responses)
+
+                for i, delta in enumerate(difficulties_for_person):
+                    p = self._probability(theta, delta)
+                    sum_expected += p
+                    sum_variance += p * (1 - p)
+
+                # Update theta
+                if sum_variance > 0.0001:
+                    theta_new = theta + (sum_observed - sum_expected) / sum_variance
+                    theta = theta_new
+                else:
+                    break
+
+            self.abilities[student_id] = theta
+
+    def _extrapolate_extreme_abilities(self):
+        """
+        Extrapolate ability estimates for extreme students (perfect or zero scores).
+        
+        Menggunakan metode Wright & Linacre (1990) untuk extrapolasi:
+        - Extreme high: theta ≈ theta_max + SE_max
+        - Extreme low: theta ≈ theta_min - SE_min
+        
+        Dimana theta_max/min adalah ability tertinggi/terendah dari non-extreme students,
+        dan SE adalah standard error.
+        """
+        if not self.non_extreme_students:
+            logger.warning("No non-extreme students for extrapolation")
+            return
+        
+        # Get abilities and SE for non-extreme students
+        non_extreme_thetas = [self.abilities[s] for s in self.non_extreme_students]
+        
+        if not non_extreme_thetas:
+            return
+        
+        # Calculate average ability and spread
+        mean_theta = sum(non_extreme_thetas) / len(non_extreme_thetas)
+        
+        # Calculate standard deviation of non-extreme abilities
+        if len(non_extreme_thetas) > 1:
+            variance = sum((t - mean_theta) ** 2 for t in non_extreme_thetas) / (len(non_extreme_thetas) - 1)
+            std_dev = math.sqrt(variance) if variance > 0 else 1.0
+        else:
+            std_dev = 1.0
+        
+        # Extrapolate extreme high students (perfect scores)
+        for student_id in self.extreme_high_students:
+            # Use Wright & Linacre approximation: theta ≈ theta_max + 1.4 * SE
+            # SE is approximated from the spread of non-extreme abilities
+            extreme_theta = mean_theta + (2.0 * std_dev)
+            self.abilities[student_id] = extreme_theta
+            logger.debug(f"Extrapolated extreme-high student {student_id}: theta={extreme_theta:.3f}")
+        
+        # Extrapolate extreme low students (zero scores)
+        for student_id in self.extreme_low_students:
+            # Use Wright & Linacre approximation: theta ≈ theta_min - 1.4 * SE
+            extreme_theta = mean_theta - (2.0 * std_dev)
+            self.abilities[student_id] = extreme_theta
+            logger.debug(f"Extrapolated extreme-low student {student_id}: theta={extreme_theta:.3f}")
+        
+        logger.info(
+            f"Extrapolated {len(self.extreme_high_students)} extreme-high and "
+            f"{len(self.extreme_low_students)} extreme-low students"
+        )
+
+    def _calculate_max_change_filtered(
+        self,
+        old_values: Dict[int, float],
+        new_values: Dict[int, float],
+        filter_keys: List[int]
+    ) -> float:
+        """
+        Calculate maximum absolute change between iterations for filtered keys only.
+        """
+        max_change = 0
+
+        for key in filter_keys:
+            if key in old_values and key in new_values:
+                change = abs(new_values[key] - old_values[key])
+                max_change = max(max_change, change)
+
+        return max_change
     
     def _probability(self, theta: float, delta: float) -> float:
         """
