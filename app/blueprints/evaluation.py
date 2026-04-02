@@ -213,14 +213,22 @@ def settings(course_id):
 @login_required
 def api_summary(course_id):
     """API: Ringkasan dashboard"""
+    print(f"[EVALUATION API] Getting summary for course {course_id}")
+    
     course = Course.query.get_or_404(course_id)
-    
+
     if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
+        print(f"[EVALUATION API] Unauthorized: user {current_user.id} not teacher of course {course_id}")
         return jsonify({'success': False, 'message': 'Unauthorized'}), 403
-    
+
+    print(f"[EVALUATION API] Creating service for course {course_id}")
     service = EvaluationTesService(course_id, current_user.id)
+    
+    print(f"[EVALUATION API] Getting dashboard summary")
     summary = service.get_dashboard_summary()
     
+    print(f"[EVALUATION API] Summary: {summary}")
+
     return jsonify({'success': True, 'summary': summary})
 
 

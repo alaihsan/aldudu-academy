@@ -4,53 +4,66 @@
 
 {% block body %}
 <div class="min-h-screen bg-gray-50">
-    <!-- Header dengan Navigasi Tab -->
-    <div class="bg-gradient-to-r from-primary-600 to-primary-800 text-white py-8">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between mb-4">
-                <div>
-                    <a href="{{ url_for('evaluation.dashboard') }}" class="text-primary-100 hover:text-white text-sm flex items-center mb-2">
-                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                        </svg>
-                        Kembali ke Dashboard
-                    </a>
-                    <h1 class="text-3xl font-bold">{{ course.name }}</h1>
-                    <p class="text-primary-100 mt-1">{{ course.academic_year }}</p>
-                </div>
+    <!-- Sticky Header -->
+    <div class="sticky top-0 z-50 bg-gradient-to-r from-primary-600 to-primary-800 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <!-- Top Navigation Bar -->
+            <div class="flex items-center justify-between mb-3">
                 <div class="flex items-center space-x-3">
-                    <button onclick="exportReport()" class="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-xl font-bold hover:bg-white/30 transition-all flex items-center">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    <!-- Back to Course Button -->
+                    <a href="{{ url_for('main.course_detail', course_id=course.id) }}" 
+                       class="inline-flex items-center px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-lg font-bold hover:bg-white/30 transition-all text-sm group">
+                        <svg class="w-4 h-4 mr-1.5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
                         </svg>
-                        Export
-                    </button>
+                        <span class="hidden sm:inline">Kembali ke Kelas</span>
+                        <span class="sm:hidden">Kembali</span>
+                    </a>
+                    <div class="h-4 w-px bg-white/20 hidden sm:block"></div>
+                    <a href="{{ url_for('evaluation.dashboard') }}" class="text-primary-100 hover:text-white text-sm flex items-center">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                        <span class="hidden sm:inline">Dashboard</span>
+                    </a>
                 </div>
+                <button onclick="exportReport()" class="px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-lg font-bold hover:bg-white/30 transition-all text-sm flex items-center">
+                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <span class="hidden sm:inline">Export</span>
+                </button>
+            </div>
+            
+            <!-- Course Info -->
+            <div class="mb-3">
+                <h1 class="text-xl font-bold">{{ course.name }}</h1>
+                <p class="text-xs text-primary-100 mt-0.5">{{ course.academic_year }}</p>
             </div>
 
             <!-- Tab Navigation -->
-            <div class="flex space-x-2 mt-6 overflow-x-auto">
-                <button onclick="switchTab('ringkasan')" id="tab-ringkasan" class="tab-btn px-6 py-3 bg-white/20 backdrop-blur-sm rounded-xl font-bold hover:bg-white/30 transition-all whitespace-nowrap active">
+            <div class="flex space-x-1 overflow-x-auto">
+                <button onclick="switchTab('ringkasan')" id="tab-ringkasan" class="tab-btn px-3 py-1.5 bg-white/30 backdrop-blur-sm rounded-lg font-bold text-xs sm:text-sm whitespace-nowrap active">
                     📊 Ringkasan
                 </button>
-                <button onclick="switchTab('evaluations')" id="tab-evaluations" class="tab-btn px-6 py-3 bg-white/20 backdrop-blur-sm rounded-xl font-bold hover:bg-white/30 transition-all whitespace-nowrap">
-                    📝 Daftar Tes & Tugas
+                <button onclick="switchTab('evaluations')" id="tab-evaluations" class="tab-btn px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-lg font-bold text-xs sm:text-sm whitespace-nowrap hover:bg-white/30">
+                    📝 Daftar Tes
                 </button>
-                <button onclick="switchTab('analysis')" id="tab-analysis" class="tab-btn px-6 py-3 bg-white/20 backdrop-blur-sm rounded-xl font-bold hover:bg-white/30 transition-all whitespace-nowrap">
-                    📈 Analisis Kualitas Soal
+                <button onclick="switchTab('analysis')" id="tab-analysis" class="tab-btn px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-lg font-bold text-xs sm:text-sm whitespace-nowrap hover:bg-white/30">
+                    📈 Analisis
                 </button>
-                <button onclick="switchTab('students')" id="tab-students" class="tab-btn px-6 py-3 bg-white/20 backdrop-blur-sm rounded-xl font-bold hover:bg-white/30 transition-all whitespace-nowrap">
-                    👤 Kemampuan Siswa
+                <button onclick="switchTab('students')" id="tab-students" class="tab-btn px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-lg font-bold text-xs sm:text-sm whitespace-nowrap hover:bg-white/30">
+                    👤 Siswa
                 </button>
-                <button onclick="switchTab('settings')" id="tab-settings" class="tab-btn px-6 py-3 bg-white/20 backdrop-blur-sm rounded-xl font-bold hover:bg-white/30 transition-all whitespace-nowrap">
+                <button onclick="switchTab('settings')" id="tab-settings" class="tab-btn px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-lg font-bold text-xs sm:text-sm whitespace-nowrap hover:bg-white/30">
                     ⚙️ Pengaturan
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Tab Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Content Area -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         
         <!-- TAB 1: RINGKASAN -->
         <div id="content-ringkasan" class="tab-content">
@@ -60,7 +73,9 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm text-gray-500 font-medium">Total Evaluasi</p>
-                            <p class="text-3xl font-bold text-gray-900 mt-1" id="total-evaluations">-</p>
+                            <p class="text-3xl font-bold text-gray-900 mt-1" id="total-evaluations">
+                                {{ summary.total_evaluations }}
+                            </p>
                         </div>
                         <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
                             <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -74,7 +89,9 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm text-gray-500 font-medium">Total Pengerjaan</p>
-                            <p class="text-3xl font-bold text-purple-600 mt-1" id="total-submissions">-</p>
+                            <p class="text-3xl font-bold text-purple-600 mt-1" id="total-submissions">
+                                {{ summary.total_submissions }}
+                            </p>
                         </div>
                         <div class="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center">
                             <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -88,7 +105,9 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm text-gray-500 font-medium">Rata-rata Kelas</p>
-                            <p class="text-3xl font-bold text-green-600 mt-1" id="average-score">-</p>
+                            <p class="text-3xl font-bold text-green-600 mt-1" id="average-score">
+                                {{ "%.1f"|format(summary.average_score) if summary.average_score else '0' }}
+                            </p>
                         </div>
                         <div class="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center">
                             <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -102,7 +121,9 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm text-gray-500 font-medium">Soal Perlu Perhatian</p>
-                            <p class="text-3xl font-bold text-amber-600 mt-1" id="items-needing-attention">-</p>
+                            <p class="text-3xl font-bold text-amber-600 mt-1" id="items-needing-attention">
+                                {{ summary.items_needing_attention.total }}
+                            </p>
                         </div>
                         <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center">
                             <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -329,19 +350,31 @@ const courseId = {{ course.id }};
 
 // Tab Switching
 function switchTab(tabName) {
+    console.log('Switching to tab:', tabName);
+    
     // Hide all contents
     document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+    
     // Remove active from all buttons
     document.querySelectorAll('.tab-btn').forEach(el => {
-        el.classList.remove('bg-primary-600', 'text-white');
+        el.classList.remove('bg-white/30', 'active');
         el.classList.add('bg-white/20');
     });
-    
+
     // Show selected
-    document.getElementById('content-' + tabName).classList.remove('hidden');
-    document.getElementById('tab-' + tabName).classList.remove('bg-white/20');
-    document.getElementById('tab-' + tabName).classList.add('bg-primary-600', 'text-white');
+    const selectedContent = document.getElementById('content-' + tabName);
+    const selectedButton = document.getElementById('tab-' + tabName);
     
+    if (selectedContent) {
+        selectedContent.classList.remove('hidden');
+        console.log('Showing content:', tabName);
+    }
+    
+    if (selectedButton) {
+        selectedButton.classList.remove('bg-white/20');
+        selectedButton.classList.add('bg-white/30', 'active');
+    }
+
     // Load data for tab
     if (tabName === 'ringkasan') loadRingkasanData();
     if (tabName === 'evaluations') loadEvaluationsData();
@@ -351,32 +384,64 @@ function switchTab(tabName) {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Page loaded, initializing...');
     switchTab('ringkasan');
 });
 
 // Load Ringkasan Data
 async function loadRingkasanData() {
+    console.log('Loading ringkasan data...');
+    
     try {
         const summaryRes = await fetch(`/evaluasi-tes/api/${courseId}/summary`);
+        console.log('Response status:', summaryRes.status);
+        
         const summaryData = await summaryRes.json();
-        
-        if (summaryData.success) {
+        console.log('Summary data received:', summaryData);
+
+        if (summaryData.success && summaryData.summary) {
             const s = summaryData.summary;
-            document.getElementById('total-evaluations').textContent = s.total_evaluations;
-            document.getElementById('total-submissions').textContent = s.total_submissions;
-            document.getElementById('average-score').textContent = s.average_score;
-            document.getElementById('items-needing-attention').textContent = s.items_needing_attention?.total || 0;
             
+            // Update summary cards
+            const totalEvalEl = document.getElementById('total-evaluations');
+            const totalSubEl = document.getElementById('total-submissions');
+            const avgScoreEl = document.getElementById('average-score');
+            const itemsAttnEl = document.getElementById('items-needing-attention');
+            
+            if (totalEvalEl) totalEvalEl.textContent = s.total_evaluations || 0;
+            if (totalSubEl) totalSubEl.textContent = s.total_submissions || 0;
+            if (avgScoreEl) avgScoreEl.textContent = s.average_score ? s.average_score.toFixed(1) : '0';
+            if (itemsAttnEl) itemsAttnEl.textContent = s.items_needing_attention?.total || 0;
+
             // Load recent evaluations
-            loadRecentEvaluations(s.recent_evaluations || []);
+            if (s.recent_evaluations && s.recent_evaluations.length > 0) {
+                loadRecentEvaluations(s.recent_evaluations);
+            } else {
+                const container = document.getElementById('recent-evaluations');
+                if (container) {
+                    container.innerHTML = '<p class="text-gray-500 text-sm">Belum ada evaluasi</p>';
+                }
+            }
+        } else {
+            console.warn('Summary API returned success=false or no summary');
+            showFallbackContent();
         }
-        
+
         // Load charts
         loadScoreDistributionChart();
         loadComparisonChart();
     } catch (error) {
         console.error('Error loading ringkasan:', error);
+        showFallbackContent();
     }
+}
+
+function showFallbackContent() {
+    document.getElementById('total-evaluations').textContent = '0';
+    document.getElementById('total-submissions').textContent = '0';
+    document.getElementById('average-score').textContent = '-';
+    document.getElementById('items-needing-attention').textContent = '0';
+    document.getElementById('recent-evaluations').innerHTML = '<p class="text-gray-500 text-sm">Belum ada data evaluasi</p>';
 }
 
 function loadRecentEvaluations(evaluations) {

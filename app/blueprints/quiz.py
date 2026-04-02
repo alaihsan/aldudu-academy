@@ -1,6 +1,6 @@
 from flask import (
     Blueprint, request, jsonify, abort,
-    render_template, make_response, url_for
+    render_template, make_response, url_for, current_app
 )
 from flask_login import login_required, current_user
 from sqlalchemy.orm import joinedload
@@ -47,33 +47,42 @@ def get_question_or_abort(question_id, check_teacher=True):
 @login_required
 def api_add_question(quiz_id):
     quiz = get_quiz_or_abort(quiz_id)
-    try:
-        q_type_str = request.form.get('question_type', 'MULTIPLE_CHOICE')
-        q_type = QuestionType[q_type_str]
-    except KeyError:
-        q_type = QuestionType.MULTIPLE_CHOICE
-
-    last_q = quiz.questions.order_by(Question.order.desc()).first()
-    new_order = (last_q.order + 1) if last_q else 1
-
-    question = Question(
-        quiz_id=quiz.id,
-        question_text="",
-        question_type=q_type,
-        order=new_order,
-        points=quiz.default_points,
-        is_required=quiz.required_by_default
-    )
     
-    if q_type in [QuestionType.MULTIPLE_CHOICE, QuestionType.DROPDOWN, QuestionType.CHECKBOX]:
-        question.options.append(Option(option_text="Opsi 1", order=1))
-    elif q_type == QuestionType.TRUE_FALSE:
-        question.options.extend([Option(option_text="Benar", order=1), Option(option_text="Salah", order=2)])
+    try:
+        # Get question type from form data (HTMX sends form-encoded)
+        q_type_str = request.form.get('question_type') or request.args.get('question_type', 'MULTIPLE_CHOICE')
+        
+        try:
+            q_type = QuestionType[q_type_str]
+        except (KeyError, ValueError):
+            q_type = QuestionType.MULTIPLE_CHOICE
 
-    db.session.add(question)
-    db.session.commit()
-    db.session.refresh(question)
-    return render_template('_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question)
+        last_q = quiz.questions.order_by(Question.order.desc()).first()
+        new_order = (last_q.order + 1) if last_q else 1
+
+        question = Question(
+            quiz_id=quiz.id,
+            question_text="",
+            question_type=q_type,
+            order=new_order,
+            points=quiz.default_points,
+            is_required=quiz.required_by_default
+        )
+
+        if q_type in [QuestionType.MULTIPLE_CHOICE, QuestionType.DROPDOWN, QuestionType.CHECKBOX]:
+            question.options.append(Option(option_text="Opsi 1", order=1))
+        elif q_type == QuestionType.TRUE_FALSE:
+            question.options.extend([Option(option_text="Benar", order=1), Option(option_text="Salah", order=2)])
+
+        db.session.add(question)
+        db.session.commit()
+        db.session.refresh(question)
+        return render_template('_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question)
+    
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"Error adding question: {e}", exc_info=True)
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 @quiz_bp.route('/question/<int:question_id>/change-type', methods=['POST'])
 @login_required
@@ -200,7 +209,29 @@ def api_set_correct(question_id):
         selected_id = int(request.form.get(f'correct_option_q{question.id}', 0))
         for opt in question.options: opt.is_correct = (opt.id == selected_id)
     db.session.commit()
-    return ""
+    
+    # Return updated true/false options HTML
+    from app.models import Option
+    options_html = '<div class="grid grid-cols-1 md:grid-cols-2 gap-4">'
+    for opt in question.options.order_by(Option.order).all():
+        is_correct_class = 'border-primary-500 bg-primary-50 shadow-sm' if opt.is_correct else 'border-gray-100 bg-gray-50/30 hover:border-gray-200'
+        options_html += f'''
+            <label class="flex items-center p-5 rounded-3xl border-2 cursor-pointer transition-all active:scale-95 {is_correct_class}">
+                <input type="radio"
+                    name="correct_option_q{question.id}"
+                    value="{opt.id}"
+                    {"checked" if opt.is_correct else ""}
+                    hx-post="/api/question/{question.id}/set-correct"
+                    hx-target="#true-false-options-{question.id}"
+                    hx-swap="innerHTML"
+                    class="w-5 h-5 text-primary-600 focus:ring-0 border-gray-300"
+                >
+                <span class="ml-4 font-bold text-gray-700">{opt.option_text}</span>
+            </label>
+        '''
+    options_html += '</div>'
+    
+    return options_html
 
 @quiz_bp.route('/question/<int:question_id>/option/add', methods=['POST'])
 @login_required

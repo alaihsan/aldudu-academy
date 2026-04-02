@@ -111,17 +111,17 @@
             </div>
             
         {% elif question.question_type.name == 'TRUE_FALSE' %}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="true-false-options-{{ question.id }}">
                 {% for option in question.options.order_by(Option.order).all() %}
                     <label class="flex items-center p-5 rounded-3xl border-2 cursor-pointer transition-all active:scale-95
                         {% if option.is_correct %} border-primary-500 bg-primary-50 shadow-sm {% else %} border-gray-100 bg-gray-50/30 hover:border-gray-200 {% endif %}">
-                        <input type="radio" 
-                            name="correct_option_q{{ question.id }}" 
+                        <input type="radio"
+                            name="correct_option_q{{ question.id }}"
                             value="{{ option.id }}"
                             {% if option.is_correct %}checked{% endif %}
                             hx-post="/api/question/{{ question.id }}/set-correct"
-                            hx-target="#question-{{ question.id }}"
-                            hx-swap="outerHTML"
+                            hx-target="#true-false-options-{{ question.id }}"
+                            hx-swap="innerHTML"
                             class="w-5 h-5 text-primary-600 focus:ring-0 border-gray-300"
                         >
                         <span class="ml-4 font-bold text-gray-700">{{ option.option_text }}</span>

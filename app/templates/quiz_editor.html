@@ -319,7 +319,13 @@
 <!-- Questions Section -->
 <div id="questions-section" class="quiz-container pb-32 relative">
     <div id="side-toolbar">
-        <button type="button" class="toolbar-btn" hx-post="/api/quiz/{{ quiz.id }}/question/add" hx-vals='{"question_type": "MULTIPLE_CHOICE"}' hx-target="#questions-list" hx-swap="beforeend" title="Tambah Pertanyaan">
+        <button type="button" class="toolbar-btn" 
+            hx-post="/api/quiz/{{ quiz.id }}/question/add" 
+            hx-vals='{"question_type": "MULTIPLE_CHOICE"}' 
+            hx-encoding="application/x-www-form-urlencoded"
+            hx-target="#questions-list" 
+            hx-swap="beforeend" 
+            title="Tambah Pertanyaan">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
         </button>
         <button type="button" class="toolbar-btn" id="duplicate-btn" title="Duplikat Pertanyaan">
@@ -864,8 +870,40 @@
     document.addEventListener('DOMContentLoaded', () => {
         const toolbar = document.getElementById('side-toolbar');
         const duplicateBtn = document.getElementById('duplicate-btn');
+        const addQuestionBtn = document.querySelector('[hx-post*="/question/add"]');
         let activeQuestionId = null;
         let activeCard = null;
+
+        // Fix: Handle HTMX completion for add question button
+        if (addQuestionBtn) {
+            addQuestionBtn.addEventListener('htmx:afterSwap', function(event) {
+                // Scroll to new question
+                const newQuestion = event.target.querySelector('[data-question-id]') || event.detail.target;
+                if (newQuestion) {
+                    newQuestion.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    newQuestion.classList.add('animate-pulse');
+                    setTimeout(() => newQuestion.classList.remove('animate-pulse'), 2000);
+                }
+            });
+
+            addQuestionBtn.addEventListener('htmx:beforeRequest', function() {
+                // Show loading state
+                this.disabled = true;
+                this.classList.add('opacity-50');
+            });
+
+            addQuestionBtn.addEventListener('htmx:afterRequest', function() {
+                // Re-enable button
+                this.disabled = false;
+                this.classList.remove('opacity-50');
+            });
+        }
+
+        // Fix: Handle HTMX errors
+        document.body.addEventListener('htmx:responseError', function(event) {
+            console.error('HTMX Error:', event.detail);
+            alert('Terjadi kesalahan saat menyimpan. Silakan coba lagi.');
+        });
 
         function updateToolbar(card) {
             if (card && toolbar && !document.getElementById('questions-section').classList.contains('hidden')) {
