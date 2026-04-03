@@ -240,13 +240,22 @@
             </div>
 
             <!-- Item Analysis Chart -->
-            <div id="item-analysis-container" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <div id="item-analysis-container" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
                 <h3 class="text-lg font-bold text-gray-900 mb-4">🎯 Analisis Soal (Kesulitan vs Daya Beda)</h3>
                 <p class="text-sm text-gray-500 mb-4">
                     <strong>Zona Ideal:</strong> Kesulitan 40-80%, Daya Beda > 0.3
                 </p>
                 <div class="chart-container" style="position: relative; height: 350px;">
                     <canvas id="itemAnalysisChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Bloom Taxonomy Overview -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <h3 class="text-lg font-bold text-gray-900 mb-2">🌸 Taksonomi Bloom</h3>
+                <p class="text-sm text-gray-500 mb-4">Distribusi tingkat berpikir soal di seluruh kuis</p>
+                <div id="bloom-overview-content">
+                    <div class="text-center py-8 text-gray-400 text-sm">Memuat data...</div>
                 </div>
             </div>
         </div>
@@ -341,6 +350,9 @@
 
     </div>
 </div>
+
+<!-- Rasch Glossary Info Button -->
+{% include 'components/_rasch_glossary.html' %}
 
 <!-- Chart.js CDN -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -586,8 +598,123 @@ async function loadAnalysisData() {
                 </div>
             </div>
         `).join('');
+        // Also load Bloom overview
+        loadBloomOverview();
     } catch (error) {
         console.error('Error loading analysis:', error);
+    }
+}
+
+// Bloom Taxonomy Overview
+async function loadBloomOverview() {
+    const container = document.getElementById('bloom-overview-content');
+    try {
+        const res = await fetch(`/evaluasi-tes/api/${courseId}/bloom-overview`);
+        const data = await res.json();
+
+        if (!data.success || !data.data || data.data.total_questions === 0) {
+            container.innerHTML = '<p class="text-gray-500 text-sm">Belum ada soal untuk dianalisis</p>';
+            return;
+        }
+
+        const d = data.data;
+        const dist = d.distribution;
+        const colors = {
+            remember: {bg: 'bg-red-100', text: 'text-red-700', bar: 'bg-red-500'},
+            understand: {bg: 'bg-amber-100', text: 'text-amber-700', bar: 'bg-amber-500'},
+            apply: {bg: 'bg-green-100', text: 'text-green-700', bar: 'bg-green-500'},
+            analyze: {bg: 'bg-blue-100', text: 'text-blue-700', bar: 'bg-blue-500'},
+            evaluate: {bg: 'bg-purple-100', text: 'text-purple-700', bar: 'bg-purple-500'},
+            create: {bg: 'bg-pink-100', text: 'text-pink-700', bar: 'bg-pink-500'},
+        };
+
+        let html = '';
+
+        // Summary stats
+        html += `
+            <div class="grid grid-cols-3 gap-4 mb-6">
+                <div class="bg-gray-50 rounded-xl p-4 text-center">
+                    <p class="text-2xl font-bold text-gray-900">${d.total_questions}</p>
+                    <p class="text-xs text-gray-500">Total Soal</p>
+                </div>
+                <div class="bg-green-50 rounded-xl p-4 text-center">
+                    <p class="text-2xl font-bold text-green-600">${d.mapped_count}</p>
+                    <p class="text-xs text-gray-500">Sudah Diklasifikasi</p>
+                </div>
+                <div class="bg-amber-50 rounded-xl p-4 text-center">
+                    <p class="text-2xl font-bold text-amber-600">${d.unmapped_count}</p>
+                    <p class="text-xs text-gray-500">Belum Diklasifikasi</p>
+                </div>
+            </div>
+        `;
+
+        // Distribution bars
+        html += '<div class="space-y-3 mb-6">';
+        for (const [key, val] of Object.entries(dist)) {
+            const c = colors[key] || {bg: 'bg-gray-100', text: 'text-gray-700', bar: 'bg-gray-500'};
+            html += `
+                <div class="flex items-center space-x-3">
+                    <span class="w-28 text-xs font-bold ${c.text} flex-shrink-0">${val.label}</span>
+                    <div class="flex-1 bg-gray-100 rounded-full h-5 overflow-hidden">
+                        <div class="${c.bar} h-full rounded-full transition-all" style="width: ${val.percentage}%"></div>
+                    </div>
+                    <span class="w-16 text-right text-xs font-bold text-gray-600">${val.count} (${val.percentage}%)</span>
+                </div>
+            `;
+        }
+        html += '</div>';
+
+        // LOTS vs HOTS breakdown
+        const lots = (dist.remember?.count || 0) + (dist.understand?.count || 0) + (dist.apply?.count || 0);
+        const hots = (dist.analyze?.count || 0) + (dist.evaluate?.count || 0) + (dist.create?.count || 0);
+        const lotsP = d.mapped_count > 0 ? Math.round(lots / d.mapped_count * 100) : 0;
+        const hotsP = d.mapped_count > 0 ? Math.round(hots / d.mapped_count * 100) : 0;
+
+        if (d.mapped_count > 0) {
+            html += `
+                <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-xl">
+                    <div class="flex-1 text-center">
+                        <p class="text-lg font-bold text-amber-600">${lotsP}%</p>
+                        <p class="text-xs text-gray-500">LOTS (C1-C3)</p>
+                        <p class="text-[10px] text-gray-400">Berpikir Dasar</p>
+                    </div>
+                    <div class="h-10 w-px bg-gray-200"></div>
+                    <div class="flex-1 text-center">
+                        <p class="text-lg font-bold text-purple-600">${hotsP}%</p>
+                        <p class="text-xs text-gray-500">HOTS (C4-C6)</p>
+                        <p class="text-[10px] text-gray-400">Berpikir Tingkat Tinggi</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Per-quiz breakdown
+        if (d.per_quiz && d.per_quiz.length > 0) {
+            html += '<div class="mt-6"><h4 class="text-sm font-bold text-gray-700 mb-3">Per Kuis:</h4><div class="space-y-2">';
+            d.per_quiz.forEach(q => {
+                const mappedPct = q.total_questions > 0 ? Math.round(q.mapped_count / q.total_questions * 100) : 0;
+                html += `
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                        <div>
+                            <p class="text-sm font-bold text-gray-900">${q.quiz_name}</p>
+                            <p class="text-xs text-gray-500">${q.total_questions} soal, ${q.mapped_count} diklasifikasi</p>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-20 bg-gray-200 rounded-full h-2 overflow-hidden">
+                                <div class="bg-indigo-500 h-full rounded-full" style="width: ${mappedPct}%"></div>
+                            </div>
+                            <span class="text-xs font-bold text-gray-500">${mappedPct}%</span>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div></div>';
+        }
+
+        container.innerHTML = html;
+    } catch (error) {
+        console.error('Error loading bloom overview:', error);
+        container.innerHTML = '<p class="text-gray-500 text-sm">Gagal memuat data Bloom Taxonomy</p>';
     }
 }
 

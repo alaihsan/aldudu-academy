@@ -18,7 +18,11 @@
       "Bash(grep -A1 \"revision = ''2c13b90e5d9c\\\\|revision = ''90f676653\\\\|revision = ''b621ddade\\\\|revision = ''3166bb1d\\\\|revision = ''a8f8c33e\")",
       "Bash(python -m flask db history)",
       "Bash(xargs grep -l \"set-language\\\\|/api.*lang\")",
-      "Bash(python -c \"from app import create_app; app = create_app\\(\\); print\\(''OK''\\)\")"
+      "Bash(python -c \"from app import create_app; app = create_app\\(\\); print\\(''OK''\\)\")",
+      "Bash(grep -E \"\\\\.html$\")",
+      "Bash(grep -r \"class EvaluationTesService\\\\|class RaschAnalysisService\\\\|def \" /c/Users/iksan/dev/aldudu-academy/app/services/rasch_*.py)",
+      "Bash(python -c \"from app import create_app; app = create_app\\(\\); print\\(''App created successfully''\\)\")",
+      "Bash(taskkill //F //IM python.exe)"
     ]
   }
 }

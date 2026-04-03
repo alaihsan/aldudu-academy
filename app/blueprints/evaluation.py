@@ -347,11 +347,97 @@ def api_wright_map(course_id, analysis_id):
 def api_student_abilities(course_id):
     """API: Data kemampuan siswa"""
     course = Course.query.get_or_404(course_id)
-    
+
     if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
         return jsonify({'success': False, 'message': 'Unauthorized'}), 403
-    
+
     service = EvaluationTesService(course_id, current_user.id)
     data = service.get_student_ability_data()
-    
+
     return jsonify({'success': True, 'data': data})
+
+
+@evaluation_bp.route('/api/<int:course_id>/bloom-overview')
+@login_required
+def api_bloom_overview(course_id):
+    """API: Ringkasan Bloom Taxonomy untuk seluruh kuis di course"""
+    course = Course.query.get_or_404(course_id)
+
+    if course.teacher_id != current_user.id and current_user.role not in [UserRole.ADMIN, UserRole.SUPER_ADMIN]:
+        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+
+    from app.models import Quiz
+    from app.models.quiz import Question
+    from app.models.rasch import QuestionBloomTaxonomy
+
+    quizzes = Quiz.query.filter_by(course_id=course_id, is_archived=False).all()
+    quiz_ids = [q.id for q in quizzes]
+
+    if not quiz_ids:
+        return jsonify({'success': True, 'data': {
+            'total_questions': 0,
+            'mapped_count': 0,
+            'distribution': {},
+            'per_quiz': []
+        }})
+
+    # Get all questions for these quizzes
+    questions = Question.query.filter(Question.quiz_id.in_(quiz_ids)).all()
+    question_ids = [q.id for q in questions]
+
+    # Get bloom taxonomy data
+    blooms = QuestionBloomTaxonomy.query.filter(
+        QuestionBloomTaxonomy.question_id.in_(question_ids)
+    ).all() if question_ids else []
+
+    bloom_lookup = {b.question_id: b for b in blooms}
+
+    # Overall distribution
+    distribution = {
+        'remember': {'count': 0, 'label': 'C1 Mengingat'},
+        'understand': {'count': 0, 'label': 'C2 Memahami'},
+        'apply': {'count': 0, 'label': 'C3 Menerapkan'},
+        'analyze': {'count': 0, 'label': 'C4 Menganalisis'},
+        'evaluate': {'count': 0, 'label': 'C5 Mengevaluasi'},
+        'create': {'count': 0, 'label': 'C6 Mencipta'},
+    }
+
+    for q in questions:
+        bloom = bloom_lookup.get(q.id)
+        if bloom and bloom.bloom_level.value in distribution:
+            distribution[bloom.bloom_level.value]['count'] += 1
+
+    total = len(questions)
+    mapped = sum(d['count'] for d in distribution.values())
+
+    for key in distribution:
+        distribution[key]['percentage'] = round(distribution[key]['count'] / total * 100, 1) if total > 0 else 0
+
+    # Per-quiz breakdown
+    per_quiz = []
+    for quiz in quizzes:
+        q_questions = [q for q in questions if q.quiz_id == quiz.id]
+        q_total = len(q_questions)
+        q_mapped = sum(1 for q in q_questions if q.id in bloom_lookup)
+        q_dist = {}
+        for q in q_questions:
+            bloom = bloom_lookup.get(q.id)
+            if bloom:
+                level = bloom.bloom_level.value
+                q_dist[level] = q_dist.get(level, 0) + 1
+
+        per_quiz.append({
+            'quiz_id': quiz.id,
+            'quiz_name': quiz.name,
+            'total_questions': q_total,
+            'mapped_count': q_mapped,
+            'distribution': q_dist,
+        })
+
+    return jsonify({'success': True, 'data': {
+        'total_questions': total,
+        'mapped_count': mapped,
+        'unmapped_count': total - mapped,
+        'distribution': distribution,
+        'per_quiz': per_quiz,
+    }})

@@ -180,7 +180,8 @@ def api_delete_course(course_id):
 @courses_bp.route('/courses/<int:course_id>/quizzes', methods=['POST'])
 @login_required
 def api_create_quiz(course_id):
-    if current_user.role != UserRole.GURU:
+    allowed_roles = [UserRole.GURU, UserRole.ADMIN, UserRole.SUPER_ADMIN]
+    if current_user.role not in allowed_roles:
         return jsonify({'success': False, 'message': 'Hanya guru yang dapat membuat kuis'}), 403
 
     course = db.session.get(Course, course_id)
@@ -190,7 +191,7 @@ def api_create_quiz(course_id):
     school_id = get_school_id_or_abort()
     verify_course_in_school(course, school_id)
 
-    if course.teacher_id != current_user.id:
+    if course.teacher_id != current_user.id and current_user.role not in [UserRole.ADMIN, UserRole.SUPER_ADMIN]:
         return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
 
     data = request.get_json() or {}

@@ -9,6 +9,7 @@ from app.models import (
     Question, Option, QuestionType,
     QuizSubmission, Answer
 )
+from app.models.rasch import QuestionBloomTaxonomy, BloomLevel
 from app.helpers import sanitize_text, sanitize_rich_text
 import datetime
 import os
@@ -77,7 +78,7 @@ def api_add_question(quiz_id):
         db.session.add(question)
         db.session.commit()
         db.session.refresh(question)
-        return render_template('_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question)
+        return render_template('_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question, BloomLevel=BloomLevel)
     
     except Exception as e:
         db.session.rollback()
@@ -131,7 +132,7 @@ def api_change_question_type(question_id):
 
     db.session.commit()
     db.session.refresh(question)
-    return render_template('_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question)
+    return render_template('_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question, BloomLevel=BloomLevel)
 
 @quiz_bp.route('/question/<int:question_id>/duplicate', methods=['POST'])
 @login_required
@@ -167,7 +168,7 @@ def api_duplicate_question(question_id):
     db.session.commit()
     db.session.refresh(new_q)
     
-    return render_template('_question_form.html', question=new_q, QuestionType=QuestionType, Option=Option, Question=Question)
+    return render_template('_question_form.html', question=new_q, QuestionType=QuestionType, Option=Option, Question=Question, BloomLevel=BloomLevel)
 
 @quiz_bp.route('/question/<int:question_id>/update', methods=['PUT'])
 @login_required
@@ -196,7 +197,7 @@ def api_toggle_question_required(question_id):
     question = get_question_or_abort(question_id)
     question.is_required = not question.is_required
     db.session.commit()
-    return render_template('_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question)
+    return render_template('_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question, BloomLevel=BloomLevel)
 
 @quiz_bp.route('/question/<int:question_id>/set-correct', methods=['POST'])
 @login_required
@@ -210,9 +211,9 @@ def api_set_correct(question_id):
         for opt in question.options: opt.is_correct = (opt.id == selected_id)
     db.session.commit()
     
-    # Return updated true/false options HTML
+    # Return updated true/false options HTML (without grid wrapper - target div already has it)
     from app.models import Option
-    options_html = '<div class="grid grid-cols-1 md:grid-cols-2 gap-4">'
+    options_html = ''
     for opt in question.options.order_by(Option.order).all():
         is_correct_class = 'border-primary-500 bg-primary-50 shadow-sm' if opt.is_correct else 'border-gray-100 bg-gray-50/30 hover:border-gray-200'
         options_html += f'''
@@ -229,8 +230,7 @@ def api_set_correct(question_id):
                 <span class="ml-4 font-bold text-gray-700">{opt.option_text}</span>
             </label>
         '''
-    options_html += '</div>'
-    
+
     return options_html
 
 @quiz_bp.route('/question/<int:question_id>/option/add', methods=['POST'])
@@ -272,6 +272,39 @@ def api_delete_option(option_id):
         db.session.delete(option)
         db.session.commit()
     return "", 200
+
+@quiz_bp.route('/question/<int:question_id>/set-bloom', methods=['POST'])
+@login_required
+def api_set_bloom_taxonomy(question_id):
+    question = get_question_or_abort(question_id)
+    bloom_value = request.form.get('bloom_level', '').strip()
+
+    if not bloom_value or bloom_value == 'none':
+        # Remove bloom taxonomy if exists
+        if question.bloom_taxonomy:
+            db.session.delete(question.bloom_taxonomy)
+            db.session.commit()
+        return render_template('_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question, BloomLevel=BloomLevel)
+
+    try:
+        bloom_level = BloomLevel(bloom_value)
+    except (ValueError, KeyError):
+        return "Invalid bloom level", 400
+
+    if question.bloom_taxonomy:
+        question.bloom_taxonomy.bloom_level = bloom_level
+        question.bloom_taxonomy.verified_by = current_user.id
+    else:
+        bt = QuestionBloomTaxonomy(
+            question_id=question.id,
+            bloom_level=bloom_level,
+            verified_by=current_user.id
+        )
+        db.session.add(bt)
+
+    db.session.commit()
+    db.session.refresh(question)
+    return render_template('_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question, BloomLevel=BloomLevel)
 
 @quiz_bp.route('/question/<int:question_id>/delete', methods=['DELETE'])
 @login_required
@@ -539,7 +572,7 @@ def api_update_upload_settings(question_id):
         db.session.commit()
     except (ValueError, TypeError):
         pass
-    return render_template('_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question)
+    return render_template('_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question, BloomLevel=BloomLevel)
 
 @quiz_bp.route('/question/<int:question_id>/upload-image', methods=['POST'])
 @login_required
@@ -568,7 +601,7 @@ def api_upload_question_image(question_id):
         question.image = filename
         db.session.commit()
         
-        return render_template('_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question)
+        return render_template('_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question, BloomLevel=BloomLevel)
 
 @quiz_bp.route('/question/<int:question_id>/remove-image', methods=['DELETE'])
 @login_required
@@ -583,7 +616,7 @@ def api_remove_question_image(question_id):
         question.image = None
         db.session.commit()
     
-    return render_template('_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question)
+    return render_template('_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question, BloomLevel=BloomLevel)
 
 @quiz_bp.route('/quiz/<int:quiz_id>/submit', methods=['POST'])
 @login_required

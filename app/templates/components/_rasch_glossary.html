@@ -1,0 +1,589 @@
+<!-- Tombol Info (i) Rasch Glossary - Floating Button Pojok Kanan Atas -->
+<button onclick="openRaschGlossary()"
+        class="fixed top-20 right-6 z-50 w-12 h-12 bg-primary-600 hover:bg-primary-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all flex items-center justify-center group"
+        title="Kamus Istilah Rasch Model">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    </svg>
+    <span class="absolute right-14 bg-gray-900 text-white text-xs px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+        Kamus Istilah
+    </span>
+</button>
+
+<!-- Modal Glossary -->
+<div id="rasch-glossary-modal" class="fixed inset-0 z-[100] hidden">
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeRaschGlossary()"></div>
+
+    <!-- Modal Content -->
+    <div class="absolute inset-4 sm:inset-8 md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:inset-auto md:w-full md:max-w-3xl md:max-h-[85vh] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-primary-600 to-primary-800 text-white px-6 py-5 flex-shrink-0">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold">Kamus Istilah Evaluasi Tes</h2>
+                        <p class="text-primary-100 text-sm">Penjelasan istilah teknis dalam bahasa sederhana</p>
+                    </div>
+                </div>
+                <button onclick="closeRaschGlossary()" class="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-xl flex items-center justify-center transition-all">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <!-- Search -->
+            <div class="mt-4 relative">
+                <input type="text" id="glossary-search" placeholder="Cari istilah..."
+                       class="w-full px-4 py-2.5 pl-10 bg-white/20 placeholder-white/60 text-white rounded-xl border border-white/20 focus:outline-none focus:ring-2 focus:ring-white/40 text-sm"
+                       oninput="filterGlossary(this.value)">
+                <svg class="w-4 h-4 absolute left-3 top-3 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Category Tabs -->
+        <div class="flex border-b border-gray-100 px-6 pt-3 flex-shrink-0 overflow-x-auto">
+            <button onclick="filterCategory('all')" class="glossary-cat-btn px-4 py-2 text-sm font-bold text-primary-600 border-b-2 border-primary-600 whitespace-nowrap" data-cat="all">Semua</button>
+            <button onclick="filterCategory('dasar')" class="glossary-cat-btn px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 border-b-2 border-transparent whitespace-nowrap" data-cat="dasar">Dasar</button>
+            <button onclick="filterCategory('siswa')" class="glossary-cat-btn px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 border-b-2 border-transparent whitespace-nowrap" data-cat="siswa">Siswa</button>
+            <button onclick="filterCategory('soal')" class="glossary-cat-btn px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 border-b-2 border-transparent whitespace-nowrap" data-cat="soal">Soal</button>
+            <button onclick="filterCategory('kualitas')" class="glossary-cat-btn px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 border-b-2 border-transparent whitespace-nowrap" data-cat="kualitas">Kualitas Tes</button>
+            <button onclick="filterCategory('visual')" class="glossary-cat-btn px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 border-b-2 border-transparent whitespace-nowrap" data-cat="visual">Visualisasi</button>
+        </div>
+
+        <!-- Glossary Content -->
+        <div class="flex-1 overflow-y-auto px-6 py-4" id="glossary-content">
+
+            <!-- Kategori: Dasar -->
+            <div class="glossary-section" data-category="dasar">
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Konsep Dasar</h3>
+
+                <div class="glossary-item space-y-3 mb-4" data-terms="rasch model">
+                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                        <div class="flex items-start space-x-3">
+                            <span class="flex-shrink-0 w-8 h-8 bg-primary-100 text-primary-700 rounded-lg flex items-center justify-center text-xs font-bold">R</span>
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-1">
+                                    <h4 class="font-bold text-gray-900">Rasch Model</h4>
+                                    <span class="text-xs bg-primary-50 text-primary-600 px-2 py-0.5 rounded-full">Metode Analisis</span>
+                                </div>
+                                <p class="text-sm text-gray-600 leading-relaxed">
+                                    <strong>Bahasa awam:</strong> Cara cerdas untuk mengukur kemampuan siswa yang <em>tidak terpengaruh</em> oleh soal yang kebetulan mudah atau sulit. Ibarat timbangan yang sudah dikalibrasi, hasilnya lebih adil dan akurat dibanding sekadar menghitung jawaban benar.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glossary-item space-y-3 mb-4" data-terms="logit satuan pengukuran">
+                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                        <div class="flex items-start space-x-3">
+                            <span class="flex-shrink-0 w-8 h-8 bg-indigo-100 text-indigo-700 rounded-lg flex items-center justify-center text-xs font-bold">L</span>
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-1">
+                                    <h4 class="font-bold text-gray-900">Logit</h4>
+                                    <span class="text-xs bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-full">Satuan Ukur</span>
+                                </div>
+                                <p class="text-sm text-gray-600 leading-relaxed">
+                                    <strong>Bahasa awam:</strong> Satuan pengukuran yang dipakai Rasch Model, seperti "cm" untuk tinggi badan. Angka 0 artinya rata-rata. Angka positif (+) artinya di atas rata-rata, angka negatif (-) artinya di bawah rata-rata. Semakin jauh dari 0, semakin tinggi/rendah.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glossary-item space-y-3 mb-4" data-terms="jmle joint maximum likelihood estimation estimasi">
+                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                        <div class="flex items-start space-x-3">
+                            <span class="flex-shrink-0 w-8 h-8 bg-violet-100 text-violet-700 rounded-lg flex items-center justify-center text-xs font-bold">J</span>
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-1">
+                                    <h4 class="font-bold text-gray-900">JMLE (Joint Maximum Likelihood Estimation)</h4>
+                                    <span class="text-xs bg-violet-50 text-violet-600 px-2 py-0.5 rounded-full">Proses Hitung</span>
+                                </div>
+                                <p class="text-sm text-gray-600 leading-relaxed">
+                                    <strong>Bahasa awam:</strong> Proses perhitungan yang dilakukan komputer untuk menentukan kemampuan siswa dan kesulitan soal secara bersamaan. Komputer menghitung berulang-ulang sampai hasilnya stabil dan akurat.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kategori: Siswa -->
+            <div class="glossary-section" data-category="siswa">
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 mt-6">Pengukuran Siswa</h3>
+
+                <div class="glossary-item space-y-3 mb-4" data-terms="theta kemampuan ability skor">
+                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                        <div class="flex items-start space-x-3">
+                            <span class="flex-shrink-0 w-8 h-8 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center text-sm font-bold">&theta;</span>
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-1">
+                                    <h4 class="font-bold text-gray-900">Theta (&theta;) &mdash; Kemampuan Siswa</h4>
+                                    <span class="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">Person Measure</span>
+                                </div>
+                                <p class="text-sm text-gray-600 leading-relaxed">
+                                    <strong>Bahasa awam:</strong> Angka yang menunjukkan seberapa pintar siswa dalam topik yang diujikan. Semakin tinggi angkanya, semakin tinggi kemampuannya. Berbeda dengan nilai biasa, angka ini sudah memperhitungkan tingkat kesulitan setiap soal.
+                                </p>
+                                <div class="mt-2 grid grid-cols-2 gap-2 text-xs">
+                                    <div class="bg-purple-50 rounded-lg px-3 py-1.5"><span class="font-bold text-purple-700">&gt; +2.0</span> <span class="text-purple-600">= Sangat Tinggi</span></div>
+                                    <div class="bg-blue-50 rounded-lg px-3 py-1.5"><span class="font-bold text-blue-700">+0.5 s/d +2.0</span> <span class="text-blue-600">= Tinggi</span></div>
+                                    <div class="bg-green-50 rounded-lg px-3 py-1.5"><span class="font-bold text-green-700">-0.5 s/d +0.5</span> <span class="text-green-600">= Rata-rata</span></div>
+                                    <div class="bg-amber-50 rounded-lg px-3 py-1.5"><span class="font-bold text-amber-700">&lt; -0.5</span> <span class="text-amber-600">= Di Bawah Rata-rata</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glossary-item space-y-3 mb-4" data-terms="scaled score skor skala nilai">
+                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                        <div class="flex items-start space-x-3">
+                            <span class="flex-shrink-0 w-8 h-8 bg-green-100 text-green-700 rounded-lg flex items-center justify-center text-xs font-bold">SS</span>
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-1">
+                                    <h4 class="font-bold text-gray-900">Scaled Score (Skor Skala)</h4>
+                                    <span class="text-xs bg-green-50 text-green-600 px-2 py-0.5 rounded-full">Nilai 0-100</span>
+                                </div>
+                                <p class="text-sm text-gray-600 leading-relaxed">
+                                    <strong>Bahasa awam:</strong> Nilai kemampuan siswa yang sudah diubah ke skala 0-100 agar lebih mudah dipahami. Angka 50 = rata-rata kelas. Di atas 50 artinya di atas rata-rata, di bawah 50 artinya di bawah rata-rata.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glossary-item space-y-3 mb-4" data-terms="percentile persentil ranking peringkat">
+                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                        <div class="flex items-start space-x-3">
+                            <span class="flex-shrink-0 w-8 h-8 bg-teal-100 text-teal-700 rounded-lg flex items-center justify-center text-xs font-bold">%</span>
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-1">
+                                    <h4 class="font-bold text-gray-900">Persentil</h4>
+                                    <span class="text-xs bg-teal-50 text-teal-600 px-2 py-0.5 rounded-full">Peringkat Relatif</span>
+                                </div>
+                                <p class="text-sm text-gray-600 leading-relaxed">
+                                    <strong>Bahasa awam:</strong> Posisi siswa dibandingkan teman sekelasnya. Contoh: persentil 75 artinya siswa ini lebih baik dari 75% teman-temannya. Semakin tinggi angka persentil, semakin bagus posisinya.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glossary-item space-y-3 mb-4" data-terms="standard error se galat baku presisi akurasi">
+                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                        <div class="flex items-start space-x-3">
+                            <span class="flex-shrink-0 w-8 h-8 bg-gray-200 text-gray-700 rounded-lg flex items-center justify-center text-xs font-bold">SE</span>
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-1">
+                                    <h4 class="font-bold text-gray-900">Standard Error (Galat Baku)</h4>
+                                    <span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">Ketelitian Ukuran</span>
+                                </div>
+                                <p class="text-sm text-gray-600 leading-relaxed">
+                                    <strong>Bahasa awam:</strong> Seberapa tepat pengukuran kemampuan siswa. Angka kecil = pengukuran akurat. Angka besar = pengukuran kurang pasti, biasanya karena soal yang dikerjakan terlalu sedikit. Ibarat menimbang badan &mdash; timbangan digital lebih tepat dari timbangan pegas.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kategori: Soal -->
+            <div class="glossary-section" data-category="soal">
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 mt-6">Pengukuran Soal</h3>
+
+                <div class="glossary-item space-y-3 mb-4" data-terms="delta kesulitan difficulty tingkat soal">
+                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                        <div class="flex items-start space-x-3">
+                            <span class="flex-shrink-0 w-8 h-8 bg-orange-100 text-orange-700 rounded-lg flex items-center justify-center text-sm font-bold">&delta;</span>
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-1">
+                                    <h4 class="font-bold text-gray-900">Delta (&delta;) &mdash; Tingkat Kesulitan Soal</h4>
+                                    <span class="text-xs bg-orange-50 text-orange-600 px-2 py-0.5 rounded-full">Item Measure</span>
+                                </div>
+                                <p class="text-sm text-gray-600 leading-relaxed">
+                                    <strong>Bahasa awam:</strong> Angka yang menunjukkan seberapa sulit sebuah soal. Semakin tinggi angkanya, semakin sulit soalnya. Angka 0 berarti kesulitan rata-rata. Soal yang baik memiliki variasi kesulitan dari mudah sampai sulit.
+                                </p>
+                                <div class="mt-2 grid grid-cols-2 gap-2 text-xs">
+                                    <div class="bg-green-50 rounded-lg px-3 py-1.5"><span class="font-bold text-green-700">&lt; -2.0</span> <span class="text-green-600">= Sangat Mudah</span></div>
+                                    <div class="bg-blue-50 rounded-lg px-3 py-1.5"><span class="font-bold text-blue-700">-0.5 s/d +0.5</span> <span class="text-blue-600">= Sedang</span></div>
+                                    <div class="bg-amber-50 rounded-lg px-3 py-1.5"><span class="font-bold text-amber-700">+0.5 s/d +2.0</span> <span class="text-amber-600">= Sulit</span></div>
+                                    <div class="bg-red-50 rounded-lg px-3 py-1.5"><span class="font-bold text-red-700">&gt; +2.0</span> <span class="text-red-600">= Sangat Sulit</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glossary-item space-y-3 mb-4" data-terms="p-value proporsi benar mudah">
+                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                        <div class="flex items-start space-x-3">
+                            <span class="flex-shrink-0 w-8 h-8 bg-cyan-100 text-cyan-700 rounded-lg flex items-center justify-center text-xs font-bold">P</span>
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-1">
+                                    <h4 class="font-bold text-gray-900">P-Value (Proporsi Benar)</h4>
+                                    <span class="text-xs bg-cyan-50 text-cyan-600 px-2 py-0.5 rounded-full">Kesulitan Klasik</span>
+                                </div>
+                                <p class="text-sm text-gray-600 leading-relaxed">
+                                    <strong>Bahasa awam:</strong> Persentase siswa yang menjawab soal dengan benar. P-Value 0.80 berarti 80% siswa menjawab benar (soal mudah). P-Value 0.20 berarti hanya 20% yang benar (soal sulit). Idealnya, soal memiliki P-Value antara 0.30 &ndash; 0.80.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glossary-item space-y-3 mb-4" data-terms="point biserial daya beda diskriminasi">
+                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                        <div class="flex items-start space-x-3">
+                            <span class="flex-shrink-0 w-8 h-8 bg-pink-100 text-pink-700 rounded-lg flex items-center justify-center text-xs font-bold">PB</span>
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-1">
+                                    <h4 class="font-bold text-gray-900">Point Biserial &mdash; Daya Beda Soal</h4>
+                                    <span class="text-xs bg-pink-50 text-pink-600 px-2 py-0.5 rounded-full">Diskriminasi</span>
+                                </div>
+                                <p class="text-sm text-gray-600 leading-relaxed">
+                                    <strong>Bahasa awam:</strong> Ukuran seberapa baik soal membedakan siswa pandai dan siswa yang kurang. Angka tinggi (&gt; 0.3) berarti soal bagus: siswa pandai menjawab benar, siswa kurang menjawab salah. Angka rendah (&lt; 0.2) berarti soal buruk: siswa pandai dan kurang sama-sama bisa benar/salah.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glossary-item space-y-3 mb-4" data-terms="bloom taxonomy taksonomi tingkat berpikir hots lots">
+                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                        <div class="flex items-start space-x-3">
+                            <span class="flex-shrink-0 w-8 h-8 bg-fuchsia-100 text-fuchsia-700 rounded-lg flex items-center justify-center text-xs font-bold">BT</span>
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-1">
+                                    <h4 class="font-bold text-gray-900">Bloom Taxonomy (Taksonomi Bloom)</h4>
+                                    <span class="text-xs bg-fuchsia-50 text-fuchsia-600 px-2 py-0.5 rounded-full">Level Berpikir</span>
+                                </div>
+                                <p class="text-sm text-gray-600 leading-relaxed">
+                                    <strong>Bahasa awam:</strong> Pengelompokan soal berdasarkan tingkat berpikir yang dibutuhkan. Dari yang paling dasar: <strong>Mengingat</strong> (hafalan) &rarr; <strong>Memahami</strong> &rarr; <strong>Menerapkan</strong> &rarr; <strong>Menganalisis</strong> &rarr; <strong>Mengevaluasi</strong> &rarr; <strong>Mencipta</strong> (paling tinggi). Soal yang baik memiliki campuran dari berbagai level.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kategori: Kualitas Tes -->
+            <div class="glossary-section" data-category="kualitas">
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 mt-6">Kualitas &amp; Kesesuaian</h3>
+
+                <div class="glossary-item space-y-3 mb-4" data-terms="fit infit outfit mnsq kesesuaian cocok">
+                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                        <div class="flex items-start space-x-3">
+                            <span class="flex-shrink-0 w-8 h-8 bg-emerald-100 text-emerald-700 rounded-lg flex items-center justify-center text-xs font-bold">FIT</span>
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-1">
+                                    <h4 class="font-bold text-gray-900">Fit Statistics (Infit &amp; Outfit MNSQ)</h4>
+                                    <span class="text-xs bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full">Kesesuaian</span>
+                                </div>
+                                <p class="text-sm text-gray-600 leading-relaxed">
+                                    <strong>Bahasa awam:</strong> Ukuran apakah pola jawaban siswa atau soal sesuai dengan yang diharapkan. Nilai ideal = <strong>1.0</strong> (rentang baik: 0.5 &ndash; 1.5).
+                                </p>
+                                <div class="mt-2 space-y-1.5 text-xs">
+                                    <div class="flex items-center space-x-2 bg-green-50 rounded-lg px-3 py-1.5">
+                                        <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                                        <span><strong>0.5 &ndash; 1.5 (Baik):</strong> Jawaban sesuai pola normal</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2 bg-red-50 rounded-lg px-3 py-1.5">
+                                        <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                                        <span><strong>&gt; 1.5 (Underfit):</strong> Jawaban tidak konsisten &mdash; mungkin menebak atau soal membingungkan</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2 bg-amber-50 rounded-lg px-3 py-1.5">
+                                        <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                                        <span><strong>&lt; 0.5 (Overfit):</strong> Jawaban terlalu terpola &mdash; mungkin menghafal atau soal terlalu mudah ditebak</span>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-2 italic">
+                                    <strong>Infit</strong> = lebih sensitif pada soal yang sesuai level siswa. <strong>Outfit</strong> = lebih sensitif pada jawaban tak terduga (misal: siswa pandai salah di soal mudah).
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glossary-item space-y-3 mb-4" data-terms="underfit tidak cocok inkonsisten menebak">
+                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                        <div class="flex items-start space-x-3">
+                            <span class="flex-shrink-0 w-8 h-8 bg-red-100 text-red-700 rounded-lg flex items-center justify-center text-xs font-bold">UF</span>
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-1">
+                                    <h4 class="font-bold text-gray-900">Underfit</h4>
+                                    <span class="text-xs bg-red-50 text-red-600 px-2 py-0.5 rounded-full">Masalah Kesesuaian</span>
+                                </div>
+                                <p class="text-sm text-gray-600 leading-relaxed">
+                                    <strong>Bahasa awam:</strong> Pola jawaban terlalu acak/tidak konsisten. <em>Untuk siswa:</em> mungkin menebak, tidak fokus, atau asal menjawab. <em>Untuk soal:</em> mungkin kalimatnya membingungkan, pilihan jawaban menjebak, atau kunci jawaban salah.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glossary-item space-y-3 mb-4" data-terms="overfit terlalu cocok menghafal terprediksi">
+                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                        <div class="flex items-start space-x-3">
+                            <span class="flex-shrink-0 w-8 h-8 bg-amber-100 text-amber-700 rounded-lg flex items-center justify-center text-xs font-bold">OF</span>
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-1">
+                                    <h4 class="font-bold text-gray-900">Overfit</h4>
+                                    <span class="text-xs bg-amber-50 text-amber-600 px-2 py-0.5 rounded-full">Masalah Kesesuaian</span>
+                                </div>
+                                <p class="text-sm text-gray-600 leading-relaxed">
+                                    <strong>Bahasa awam:</strong> Pola jawaban terlalu sempurna/terprediksi. <em>Untuk siswa:</em> mungkin hanya menghafal tanpa benar-benar paham. <em>Untuk soal:</em> mungkin terlalu mudah ditebak jawabannya tanpa perlu memahami materi.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glossary-item space-y-3 mb-4" data-terms="cronbach alpha reliabilitas konsistensi andal">
+                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                        <div class="flex items-start space-x-3">
+                            <span class="flex-shrink-0 w-8 h-8 bg-green-100 text-green-700 rounded-lg flex items-center justify-center text-sm font-bold">&alpha;</span>
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-1">
+                                    <h4 class="font-bold text-gray-900">Cronbach's Alpha &mdash; Reliabilitas</h4>
+                                    <span class="text-xs bg-green-50 text-green-600 px-2 py-0.5 rounded-full">Konsistensi Tes</span>
+                                </div>
+                                <p class="text-sm text-gray-600 leading-relaxed">
+                                    <strong>Bahasa awam:</strong> Ukuran seberapa konsisten tes ini. Jika siswa mengerjakan tes yang sama dua kali, apakah hasilnya serupa? Skala 0 &ndash; 1. Semakin mendekati 1, semakin bisa diandalkan.
+                                </p>
+                                <div class="mt-2 grid grid-cols-2 gap-2 text-xs">
+                                    <div class="bg-green-50 rounded-lg px-3 py-1.5"><span class="font-bold text-green-700">&ge; 0.8</span> <span class="text-green-600">= Sangat Baik</span></div>
+                                    <div class="bg-blue-50 rounded-lg px-3 py-1.5"><span class="font-bold text-blue-700">0.7 &ndash; 0.8</span> <span class="text-blue-600">= Baik</span></div>
+                                    <div class="bg-amber-50 rounded-lg px-3 py-1.5"><span class="font-bold text-amber-700">0.6 &ndash; 0.7</span> <span class="text-amber-600">= Cukup</span></div>
+                                    <div class="bg-red-50 rounded-lg px-3 py-1.5"><span class="font-bold text-red-700">&lt; 0.6</span> <span class="text-red-600">= Kurang</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glossary-item space-y-3 mb-4" data-terms="person separation index daya beda siswa pemisahan">
+                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                        <div class="flex items-start space-x-3">
+                            <span class="flex-shrink-0 w-8 h-8 bg-indigo-100 text-indigo-700 rounded-lg flex items-center justify-center text-xs font-bold">PSI</span>
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-1">
+                                    <h4 class="font-bold text-gray-900">Person Separation Index &mdash; Daya Beda Siswa</h4>
+                                    <span class="text-xs bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-full">Pemisahan</span>
+                                </div>
+                                <p class="text-sm text-gray-600 leading-relaxed">
+                                    <strong>Bahasa awam:</strong> Seberapa baik tes ini membedakan tingkat kemampuan siswa. Angka &ge; 2.0 berarti tes mampu membedakan minimal 3 kelompok kemampuan (tinggi, sedang, rendah). Semakin tinggi angkanya, semakin banyak level kemampuan yang bisa dibedakan.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glossary-item space-y-3 mb-4" data-terms="item separation index hierarki soal pemisahan">
+                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                        <div class="flex items-start space-x-3">
+                            <span class="flex-shrink-0 w-8 h-8 bg-orange-100 text-orange-700 rounded-lg flex items-center justify-center text-xs font-bold">ISI</span>
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-1">
+                                    <h4 class="font-bold text-gray-900">Item Separation Index &mdash; Hierarki Soal</h4>
+                                    <span class="text-xs bg-orange-50 text-orange-600 px-2 py-0.5 rounded-full">Pemisahan</span>
+                                </div>
+                                <p class="text-sm text-gray-600 leading-relaxed">
+                                    <strong>Bahasa awam:</strong> Seberapa jelas urutan kesulitan soal dari mudah ke sulit. Angka tinggi (&ge; 3.0) berarti soal-soal memiliki tingkat kesulitan yang jelas berbeda satu sama lain. Angka rendah berarti soal-soal kesulitannya hampir sama semua.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glossary-item space-y-3 mb-4" data-terms="threshold batas minimal auto trigger otomatis">
+                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                        <div class="flex items-start space-x-3">
+                            <span class="flex-shrink-0 w-8 h-8 bg-sky-100 text-sky-700 rounded-lg flex items-center justify-center text-xs font-bold">TH</span>
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-1">
+                                    <h4 class="font-bold text-gray-900">Threshold (Batas Minimal Siswa)</h4>
+                                    <span class="text-xs bg-sky-50 text-sky-600 px-2 py-0.5 rounded-full">Pengaturan</span>
+                                </div>
+                                <p class="text-sm text-gray-600 leading-relaxed">
+                                    <strong>Bahasa awam:</strong> Jumlah minimal siswa yang harus sudah mengerjakan tes sebelum analisis Rasch bisa dijalankan. Standarnya 30 siswa. Semakin banyak siswa, semakin akurat hasilnya. Jika belum cukup, sistem akan menunggu secara otomatis.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kategori: Visualisasi -->
+            <div class="glossary-section" data-category="visual">
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 mt-6">Visualisasi &amp; Grafik</h3>
+
+                <div class="glossary-item space-y-3 mb-4" data-terms="wright map peta kemampuan kesulitan person item">
+                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                        <div class="flex items-start space-x-3">
+                            <span class="flex-shrink-0 w-8 h-8 bg-violet-100 text-violet-700 rounded-lg flex items-center justify-center text-xs font-bold">WM</span>
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-1">
+                                    <h4 class="font-bold text-gray-900">Wright Map (Peta Kemampuan &amp; Kesulitan)</h4>
+                                    <span class="text-xs bg-violet-50 text-violet-600 px-2 py-0.5 rounded-full">Grafik</span>
+                                </div>
+                                <p class="text-sm text-gray-600 leading-relaxed">
+                                    <strong>Bahasa awam:</strong> Grafik yang menampilkan posisi siswa dan soal dalam satu skala. Siswa yang posisinya <strong>di atas</strong> soal = mampu menjawab soal tersebut. Siswa yang posisinya <strong>di bawah</strong> soal = kemungkinan besar tidak mampu. Grafik ini membantu guru melihat apakah soal cocok dengan kemampuan siswa.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glossary-item space-y-3 mb-4" data-terms="zona penguasaan mastery zone mastered ready challenge">
+                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                        <div class="flex items-start space-x-3">
+                            <span class="flex-shrink-0 w-8 h-8 bg-emerald-100 text-emerald-700 rounded-lg flex items-center justify-center text-xs font-bold">ZP</span>
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-1">
+                                    <h4 class="font-bold text-gray-900">Zona Penguasaan</h4>
+                                    <span class="text-xs bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full">Kategori</span>
+                                </div>
+                                <p class="text-sm text-gray-600 leading-relaxed">
+                                    <strong>Bahasa awam:</strong> Pengelompokan soal berdasarkan kemampuan siswa. Setiap siswa memiliki 4 zona:
+                                </p>
+                                <div class="mt-2 space-y-1.5 text-xs">
+                                    <div class="flex items-center space-x-2 bg-green-50 rounded-lg px-3 py-1.5">
+                                        <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                                        <span><strong>Dikuasai:</strong> Soal yang sudah pasti bisa dijawab (&gt;88% peluang benar)</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2 bg-blue-50 rounded-lg px-3 py-1.5">
+                                        <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                                        <span><strong>Siap:</strong> Soal yang kemungkinan besar bisa dijawab (62&ndash;88%)</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2 bg-amber-50 rounded-lg px-3 py-1.5">
+                                        <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                                        <span><strong>Tantangan:</strong> Soal yang fifty-fifty, cocok untuk belajar (38&ndash;62%)</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2 bg-red-50 rounded-lg px-3 py-1.5">
+                                        <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                                        <span><strong>Terlalu Sulit:</strong> Soal yang belum bisa dijawab (&lt;38%)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glossary-item space-y-3 mb-4" data-terms="distribusi sebaran histogram grafik batang">
+                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                        <div class="flex items-start space-x-3">
+                            <span class="flex-shrink-0 w-8 h-8 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center text-xs font-bold">DS</span>
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-1">
+                                    <h4 class="font-bold text-gray-900">Distribusi Nilai</h4>
+                                    <span class="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">Grafik Batang</span>
+                                </div>
+                                <p class="text-sm text-gray-600 leading-relaxed">
+                                    <strong>Bahasa awam:</strong> Grafik batang yang menunjukkan berapa banyak siswa yang mendapat nilai di setiap rentang (0-10, 11-20, dst). Idealnya berbentuk seperti <strong>lonceng</strong> (banyak siswa di tengah, sedikit di ujung). Jika miring ke kiri = tes terlalu sulit. Miring ke kanan = tes terlalu mudah.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty Search State -->
+            <div id="glossary-empty" class="hidden text-center py-12">
+                <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+                <p class="text-gray-500 font-medium">Istilah tidak ditemukan</p>
+                <p class="text-gray-400 text-sm mt-1">Coba kata kunci lain</p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="border-t border-gray-100 px-6 py-3 bg-gray-50 flex-shrink-0 rounded-b-2xl">
+            <p class="text-xs text-gray-400 text-center">
+                Kamus ini menjelaskan istilah Rasch Model dalam bahasa sederhana untuk membantu guru memahami hasil analisis.
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+function openRaschGlossary() {
+    document.getElementById('rasch-glossary-modal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeRaschGlossary() {
+    document.getElementById('rasch-glossary-modal').classList.add('hidden');
+    document.body.style.overflow = '';
+    // Reset search and filters
+    const searchInput = document.getElementById('glossary-search');
+    if (searchInput) searchInput.value = '';
+    filterGlossary('');
+    filterCategory('all');
+}
+
+function filterGlossary(query) {
+    const items = document.querySelectorAll('.glossary-item');
+    const sections = document.querySelectorAll('.glossary-section');
+    const emptyState = document.getElementById('glossary-empty');
+    let hasResults = false;
+
+    query = query.toLowerCase().trim();
+
+    items.forEach(item => {
+        const terms = item.getAttribute('data-terms') || '';
+        const text = item.textContent.toLowerCase();
+        const matches = !query || terms.includes(query) || text.includes(query);
+        item.style.display = matches ? '' : 'none';
+        if (matches) hasResults = true;
+    });
+
+    // Show/hide section headers based on visible items
+    sections.forEach(section => {
+        const visibleItems = section.querySelectorAll('.glossary-item:not([style*="display: none"])');
+        const header = section.querySelector('h3');
+        if (header) header.style.display = visibleItems.length > 0 ? '' : 'none';
+    });
+
+    if (emptyState) {
+        emptyState.classList.toggle('hidden', hasResults);
+    }
+}
+
+function filterCategory(category) {
+    // Update button styles
+    document.querySelectorAll('.glossary-cat-btn').forEach(btn => {
+        if (btn.getAttribute('data-cat') === category) {
+            btn.classList.add('text-primary-600', 'border-primary-600', 'font-bold');
+            btn.classList.remove('text-gray-500', 'border-transparent', 'font-medium');
+        } else {
+            btn.classList.remove('text-primary-600', 'border-primary-600', 'font-bold');
+            btn.classList.add('text-gray-500', 'border-transparent', 'font-medium');
+        }
+    });
+
+    const sections = document.querySelectorAll('.glossary-section');
+    sections.forEach(section => {
+        const sectionCat = section.getAttribute('data-category');
+        if (category === 'all' || sectionCat === category) {
+            section.style.display = '';
+        } else {
+            section.style.display = 'none';
+        }
+    });
+}
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeRaschGlossary();
+});
+</script>

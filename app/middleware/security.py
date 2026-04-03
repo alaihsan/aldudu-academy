@@ -15,7 +15,8 @@ def register_security_middleware(app):
         """Validate Content-Type header for API POST/PUT requests."""
         if request.path.startswith('/api/') and request.method in ('POST', 'PUT'):
             if request.content_type and 'multipart/form-data' not in request.content_type:
-                if 'application/json' not in request.content_type:
+                if 'application/json' not in request.content_type and \
+                   'application/x-www-form-urlencoded' not in request.content_type:
                     abort(415, description='Unsupported Media Type. Use application/json.')
 
     @app.after_request
