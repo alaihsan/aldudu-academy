@@ -1,0 +1,40 @@
+#dynamic-quote {
+    position: relative;
+    min-height: 4.5rem; /* Space for 2 lines */
+}
+
+.typing-text {
+    display: inline;
+    overflow: hidden;
+    border-right: 2px solid rgba(255,255,255,0.5);
+    white-space: normal; /* Allow wrapping for multi-line */
+    word-wrap: break-word;
+    line-height: 1.6;
+}
+
+.typing-text.typing-active {
+    animation: blink-caret 0.75s step-end infinite;
+}
+
+.typing-text.typing-complete {
+    border-right: none; /* Remove cursor when complete */
+}
+
+.quote-fade {
+    animation: fadeOut 0.5s ease-out forwards;
+}
+
+@keyframes blink-caret {
+    from, to { border-color: transparent }
+    50% { border-color: rgba(255,255,255,0.5) }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-10px); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

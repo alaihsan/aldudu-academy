@@ -3,35 +3,7 @@
 {% block title %}Hasil: {{ submission.user.name }} - {{ submission.quiz.name }}{% endblock %}
 
 {% block extra_head %}
-<style>
-    :root {
-        --quiz-theme: {{ submission.quiz.theme_color or '#673ab7' }};
-        --quiz-bg: #f8f9fa;
-    }
-    body { background-color: var(--quiz-bg); }
-    .submission-container { max-width: 850px; margin: 0 auto; }
-    
-    .answer-card {
-        background: white;
-        border-radius: 12px;
-        border: 1px solid #e5e7eb;
-        padding: 24px;
-        margin-bottom: 16px;
-        transition: all 0.2s;
-    }
-    .answer-card.correct { border-left: 6px solid #10b981; }
-    .answer-card.incorrect { border-left: 6px solid #ef4444; }
-    .answer-card.manual-pending { border-left: 6px solid #fbbf24; }
-
-    .score-badge {
-        padding: 4px 12px;
-        border-radius: 9999px;
-        font-weight: 800;
-        text-transform: uppercase;
-        font-size: 0.75rem;
-        letter-spacing: 0.05em;
-    }
-</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/quiz_submission_detail.css') }}?v={{ asset_hash('css/quiz_submission_detail.css') }}">
 {% endblock %}
 
 {% block body %}
@@ -181,36 +153,8 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    async function editScore() {
-        const { value: newScore } = await Swal.fire({
-            title: 'Ubah Nilai Murid',
-            input: 'number',
-            inputLabel: 'Masukkan skor baru (0-100)',
-            inputValue: {{ submission.score|round(1) if submission.score is not None else 0 }},
-            showCancelButton: true,
-            inputAttributes: { min: 0, max: 100, step: 0.1 },
-            confirmButtonText: 'Simpan',
-            cancelButtonText: 'Batal'
-        });
-
-        if (newScore !== undefined && newScore !== null && newScore !== "") {
-            try {
-                const res = await fetch(`/api/submission/{{ submission.id }}/update-score`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ score: parseFloat(newScore) })
-                });
-                const data = await res.json();
-                if (data.success) {
-                    document.getElementById('submission-score').textContent = parseFloat(newScore).toFixed(1) + '%';
-                    Swal.fire('Berhasil!', 'Nilai telah diperbarui.', 'success');
-                } else {
-                    Swal.fire('Gagal!', data.message, 'error');
-                }
-            } catch (err) {
-                Swal.fire('Error', 'Gagal menghubungi server', 'error');
-            }
-        }
-    }
+  window.submissionId = {{ submission.id }};
+  window.submissionScore = {{ submission.score|round(1) if submission.score is not None else 0 }};
 </script>
+<script src="{{ url_for('static', filename='js/quiz_submission_detail.js') }}?v={{ asset_hash('js/quiz_submission_detail.js') }}"></script>
 {% endblock %}

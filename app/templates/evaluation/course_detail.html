@@ -854,29 +854,5 @@ function saveSettings() {
 }
 </script>
 
-<style>
-.tab-btn.active {
-    background-color: rgba(255, 255, 255, 0.3);
-}
-
-.tab-content {
-    animation: fadeIn 0.3s ease-in;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* Chart containers - fixed height to prevent stretching */
-.chart-container {
-    position: relative;
-    height: 300px;
-    width: 100%;
-}
-
-.chart-container canvas {
-    max-height: 300px;
-}
-</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/evaluation/course_detail.css') }}?v={{ asset_hash('css/evaluation/course_detail.css') }}">
 {% endblock %}

@@ -1,0 +1,27 @@
+:root {
+    --quiz-theme: {{ submission.quiz.theme_color or '#673ab7' }};
+    --quiz-bg: #f8f9fa;
+}
+body { background-color: var(--quiz-bg); }
+.submission-container { max-width: 850px; margin: 0 auto; }
+
+.answer-card {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    padding: 24px;
+    margin-bottom: 16px;
+    transition: all 0.2s;
+}
+.answer-card.correct { border-left: 6px solid #10b981; }
+.answer-card.incorrect { border-left: 6px solid #ef4444; }
+.answer-card.manual-pending { border-left: 6px solid #fbbf24; }
+
+.score-badge {
+    padding: 4px 12px;
+    border-radius: 9999px;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+}

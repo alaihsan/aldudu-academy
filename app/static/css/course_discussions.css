@@ -1,0 +1,7 @@
+:root {
+    --course-theme: {{ course.color or '#2563eb' }};
+    --course-theme-light: {{ course.color }}15;
+}
+.bg-theme { background-color: var(--course-theme) !important; }
+.text-theme { color: var(--course-theme) !important; }
+.border-theme { border-color: var(--course-theme) !important; }

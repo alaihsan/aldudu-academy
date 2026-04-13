@@ -3,15 +3,7 @@
 {% block title %}Forum Diskusi - {{ course.name }}{% endblock %}
 
 {% block extra_head %}
-<style>
-    :root {
-        --course-theme: {{ course.color or '#2563eb' }};
-        --course-theme-light: {{ course.color }}15;
-    }
-    .bg-theme { background-color: var(--course-theme) !important; }
-    .text-theme { color: var(--course-theme) !important; }
-    .border-theme { border-color: var(--course-theme) !important; }
-</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/course_discussions.css') }}?v={{ asset_hash('css/course_discussions.css') }}">
 {% endblock %}
 
 {% block body %}

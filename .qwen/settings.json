@@ -24,7 +24,9 @@
       "Bash(c:\\python310\\python.exe *)",
       "Bash(python3 *)",
       "Bash($env:path *)",
-      "Bash(where-object *)"
+      "Bash(where-object *)",
+      "Bash(move *)",
+      "Bash(dir *)"
     ]
   },
   "$version": 3

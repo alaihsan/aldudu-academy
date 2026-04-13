@@ -32,115 +32,7 @@
             },
         };
     </script>
-    <style>
-        * { box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; }
-
-        /* Sidebar */
-        #sa-sidebar {
-            width: 260px;
-            min-height: 100vh;
-            background: linear-gradient(180deg, #0f172a 0%, #1e1b4b 100%);
-            position: fixed;
-            top: 0; left: 0;
-            display: flex;
-            flex-direction: column;
-            z-index: 40;
-            transition: transform 0.3s ease;
-        }
-        #sa-main {
-            margin-left: 260px;
-            min-height: 100vh;
-            background: #f8fafc;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Nav item */
-        .sa-nav-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 16px;
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: 600;
-            color: rgba(255,255,255,0.55);
-            text-decoration: none;
-            transition: all 0.2s ease;
-            margin: 1px 8px;
-        }
-        .sa-nav-item:hover {
-            background: rgba(255,255,255,0.08);
-            color: rgba(255,255,255,0.9);
-        }
-        .sa-nav-item.active {
-            background: rgba(99,102,241,0.25);
-            color: #a5b4fc;
-            border: 1px solid rgba(99,102,241,0.3);
-        }
-        .sa-nav-item svg { flex-shrink: 0; opacity: 0.8; }
-        .sa-nav-item.active svg { opacity: 1; }
-
-        /* Badge */
-        .sa-badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 2px 8px;
-            border-radius: 999px;
-            font-size: 10px;
-            font-weight: 800;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-        }
-        /* Tab */
-        .sa-tab {
-            padding: 8px 16px; border-radius: 10px; font-size: 12px; font-weight: 700;
-            text-transform: uppercase; letter-spacing: 0.04em;
-            background: #f1f5f9; color: #64748b; border: none; cursor: pointer; transition: all 0.2s;
-        }
-        .sa-tab:hover { background: #e2e8f0; color: #334155; }
-        .sa-tab.active { background: #4f46e5; color: #fff; box-shadow: 0 4px 12px rgba(79,70,229,0.3); }
-
-        /* Stat card */
-        .sa-stat {
-            background: #fff;
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-            transition: box-shadow 0.2s, transform 0.2s;
-        }
-        .sa-stat:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); transform: translateY(-1px); }
-
-        /* Card */
-        .sa-card {
-            background: #fff;
-            border-radius: 16px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-        }
-
-        /* Dark mode overrides */
-        html.dark #sa-main { background: #030712; }
-        html.dark .sa-stat { background: #1f2937; }
-        html.dark .sa-card { background: #1f2937; }
-        html.dark .sa-tab { background: #1f2937; color: #9ca3af; }
-        html.dark .sa-tab:hover { background: #374151; color: #d1d5db; }
-        html.dark .swal2-popup { background: #1f2937 !important; color: #f1f5f9 !important; }
-        html.dark .swal2-title { color: #f1f5f9 !important; }
-        html.dark .swal2-html-container { color: #cbd5e1 !important; }
-
-        /* Mobile sidebar toggle */
-        @media (max-width: 768px) {
-            #sa-sidebar { transform: translateX(-100%); }
-            #sa-sidebar.open { transform: translateX(0); }
-            #sa-main { margin-left: 0; }
-        }
-
-        /* SweetAlert override */
-        .swal2-popup { border-radius: 16px !important; font-family: 'Inter', sans-serif !important; }
-        .swal2-confirm { border-radius: 10px !important; font-weight: 700 !important; }
-        .swal2-cancel { border-radius: 10px !important; font-weight: 700 !important; }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/superadmin.css') }}?v={{ asset_hash('css/superadmin.css') }}">
     {% block extra_head %}{% endblock %}
 </head>
 <body class="bg-slate-50 dark:bg-gray-950">
@@ -258,73 +150,12 @@
 </div>
 
 <script src="{{ url_for('static', filename='js/theme-manager.js') }}?v={{ asset_hash('js/theme-manager.js') }}"></script>
-
+{% if current_user and current_user.email %}
 <script>
-    // Sidebar toggle (mobile)
-    function toggleSidebar() {
-        const sidebar = document.getElementById('sa-sidebar');
-        const overlay = document.getElementById('sa-overlay');
-        sidebar.classList.toggle('open');
-        overlay.classList.toggle('hidden');
-    }
-
-    // Logout
-    async function handleSALogout() {
-        const result = await Swal.fire({
-            title: 'Logout?',
-            text: 'Sesi kamu akan berakhir.',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Ya, Logout',
-            cancelButtonText: 'Batal',
-            confirmButtonColor: '#ef4444',
-            reverseButtons: true,
-        });
-        if (result.isConfirmed) {
-            await fetch('/api/logout', { method: 'POST' });
-            window.location.href = '/login';
-        }
-    }
-
-    // Test email
-    async function testEmail() {
-        const { value: email } = await Swal.fire({
-            title: 'Test Kirim Email',
-            input: 'email',
-            inputLabel: 'Alamat email tujuan',
-            inputPlaceholder: 'contoh@email.com',
-            inputValue: '{{ current_user.email }}',
-            showCancelButton: true,
-            confirmButtonText: 'Kirim',
-            cancelButtonText: 'Batal',
-            confirmButtonColor: '#4f46e5',
-        });
-        if (!email) return;
-
-        const btn = Swal.showLoading();
-        const res = await fetch('/superadmin/api/test-email', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email }),
-        });
-        const data = await res.json();
-        if (data.success) {
-            Swal.fire({ icon: 'success', title: 'Terkirim!', text: data.message, confirmButtonColor: '#4f46e5' });
-        } else {
-            Swal.fire({ icon: 'error', title: 'Gagal', text: data.message });
-        }
-    }
-
-    // Global confirm helper
-    window.ask = (title, text, icon = 'question') => Swal.fire({
-        title, text, icon,
-        showCancelButton: true,
-        confirmButtonText: 'Ya',
-        cancelButtonText: 'Batal',
-        confirmButtonColor: '#4f46e5',
-        reverseButtons: true,
-    }).then(r => r.isConfirmed);
+  window.saCurrentUserEmail = '{{ current_user.email }}';
 </script>
+{% endif %}
+<script src="{{ url_for('static', filename='js/superadmin/sa-core.js') }}?v={{ asset_hash('js/superadmin/sa-core.js') }}"></script>
 {% block extra_scripts %}{% endblock %}
 </body>
 </html>

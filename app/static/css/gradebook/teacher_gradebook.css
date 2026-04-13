@@ -1,0 +1,17 @@
+:root {
+    --course-theme: {{ course.color or '#2563eb' }};
+    --course-theme-light: {{ course.color }}15;
+}
+.bg-theme { background-color: var(--course-theme) !important; }
+.text-theme { color: var(--course-theme) !important; }
+.border-theme { border-color: var(--course-theme) !important; }
+.bg-theme-light { background-color: var(--course-theme-light) !important; }
+.focus-theme:focus {
+    border-color: var(--course-theme) !important;
+    box-shadow: 0 0 0 3px var(--course-theme-light) !important;
+}
+.tab-btn.active {
+    background-color: var(--course-theme) !important;
+    color: white !important;
+    box-shadow: 0 4px 6px -1px var(--course-theme-light);
+}

@@ -1,0 +1,4 @@
+:root {
+    --course-theme: {{ course.color or '#2563eb' }};
+    --course-theme-light: {{ course.color }}15;
+}

@@ -1,0 +1,106 @@
+/* Override CSS variables with course color */
+:root {
+    --course-theme: {{ course.color or '#2563eb' }};
+    --course-theme-light: {{ course.color }}15;
+    --course-theme-dark: {{ course.color }}cc;
+    --course-theme-gradient: linear-gradient(135deg, {{ course.color }}, {{ course.color }}cc);
+}
+
+/* Apply theme color to buttons and links */
+.btn-theme, button.bg-primary-600, a.bg-primary-600 {
+    background-color: var(--course-theme) !important;
+}
+.btn-theme:hover, button.bg-primary-600:hover, a.bg-primary-600:hover {
+    background-color: var(--course-theme-dark) !important;
+}
+
+/* Theme color for text and icons */
+.text-theme, .text-primary-600 {
+    color: var(--course-theme) !important;
+}
+
+/* Theme color for backgrounds */
+.bg-theme, .bg-primary-50 {
+    background-color: var(--course-theme-light) !important;
+}
+
+/* Theme color for borders */
+.border-theme, .border-primary-200 {
+    border-color: var(--course-theme) !important;
+}
+
+/* Theme color for ring/focus states */
+.focus\:ring-primary-500:focus, .focus\:border-primary-500:focus {
+    --tw-ring-color: var(--course-theme);
+    border-color: var(--course-theme);
+}
+
+/* Gradient backgrounds */
+.bg-gradient-theme {
+    background: var(--course-theme-gradient) !important;
+}
+
+/* Hover states with theme */
+.hover\:bg-primary-50:hover {
+    background-color: var(--course-theme-light) !important;
+}
+.hover\:text-primary-600:hover {
+    color: var(--course-theme) !important;
+}
+.hover\:bg-primary-600:hover {
+    background-color: var(--course-theme-dark) !important;
+}
+
+/* Shadow with theme */
+.shadow-theme {
+    box-shadow: 0 4px 14px -2px var(--course-theme-light) !important;
+}
+.shadow-theme-lg {
+    box-shadow: 0 10px 25px -5px var(--course-theme-light) !important;
+}
+
+/* Drag and Drop Styles */
+.material-item.dragging, .folder-item.dragging {
+    opacity: 0.5;
+    transform: scale(1.02);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    z-index: 100;
+}
+
+.material-item.drag-above {
+    border-top: 3px solid #22c55e !important;
+    transform: translateY(-2px);
+}
+
+.material-item.drag-below {
+    border-bottom: 3px solid #22c55e !important;
+    transform: translateY(2px);
+}
+
+.folder-item.drag-over {
+    background-color: rgba(168, 85, 247, 0.1) !important;
+    border-color: #a855f7 !important;
+}
+
+.drag-handle {
+    cursor: grab;
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+}
+
+.folder-contents {
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

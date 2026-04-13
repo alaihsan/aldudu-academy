@@ -1,0 +1,183 @@
+/* base.css - Extracted from base.html */
+
+[x-cloak] { display: none !important; }
+
+/* Global Course Theming - CSS Variables */
+:root {
+    --course-theme: #2563eb;
+    --course-theme-light: #2563eb15;
+    --course-theme-dark: #2563ebcc;
+    --course-theme-gradient: linear-gradient(135deg, #2563eb, #2563ebcc);
+}
+
+/* Dark mode overrides */
+html.dark {
+    color-scheme: dark;
+}
+
+/* Scrollbar - Light mode */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #f1f5f9; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+/* Scrollbar - Dark mode */
+html.dark ::-webkit-scrollbar-track { background: #1e293b; }
+html.dark ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+html.dark ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+/* Theme Utility Classes - Available Globally */
+.bg-theme { background-color: var(--course-theme) !important; }
+.bg-theme-light { background-color: var(--course-theme-light) !important; }
+.bg-theme-dark { background-color: var(--course-theme-dark) !important; }
+.text-theme { color: var(--course-theme) !important; }
+.text-theme-dark { color: var(--course-theme-dark) !important; }
+.border-theme { border-color: var(--course-theme) !important; }
+.border-theme-light { border-color: var(--course-theme-light) !important; }
+.shadow-theme { box-shadow: 0 4px 6px -1px var(--course-theme-light) !important; }
+.shadow-theme-lg { box-shadow: 0 10px 15px -3px var(--course-theme-light) !important; }
+.focus-theme:focus {
+    border-color: var(--course-theme) !important;
+    box-shadow: 0 0 0 3px var(--course-theme-light) !important;
+}
+.bg-gradient-theme { background: var(--course-theme-gradient) !important; }
+
+/* Sidebar Navigation Links - Theme Aware */
+.nav-link-course:hover,
+.nav-link-kbm:hover,
+.nav-link-gradebook:hover,
+.nav-link-grades:hover,
+.nav-link-discussions:hover {
+    background-color: var(--course-theme-light) !important;
+    color: var(--course-theme) !important;
+}
+
+.nav-link-course.active,
+.nav-link-kbm.active,
+.nav-link-gradebook.active,
+.nav-link-grades.active,
+.nav-link-discussions.active {
+    background-color: var(--course-theme-light) !important;
+    color: var(--course-theme) !important;
+}
+
+/* SweetAlert Custom Styling to match Aldudu UI */
+.swal2-popup {
+    border-radius: 2rem !important;
+    padding: 2rem !important;
+    font-family: 'Inter', sans-serif !important;
+}
+.swal2-title {
+    font-weight: 800 !important;
+    color: #1e1b4b !important;
+}
+html.dark .swal2-title {
+    color: #f1f5f9 !important;
+}
+html.dark .swal2-popup {
+    background: #1e293b !important;
+    color: #f1f5f9 !important;
+}
+html.dark .swal2-html-container {
+    color: #cbd5e1 !important;
+}
+.swal2-confirm {
+    background-color: #4f46e5 !important;
+    border-radius: 1rem !important;
+    padding: 0.8rem 2rem !important;
+    font-weight: 700 !important;
+    font-size: 0.875rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+}
+.swal2-cancel {
+    border-radius: 1rem !important;
+    padding: 0.8rem 2rem !important;
+    font-weight: 700 !important;
+    font-size: 0.875rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+}
+
+/* Premium Entrance Animations */
+@keyframes premium-entrance {
+    0% { opacity: 0; transform: translateY(20px) scale(0.98); filter: blur(10px); }
+    100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
+@keyframes slide-right-premium {
+    0% { opacity: 0; transform: translateX(-40px); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+
+.animate-premium-entrance {
+    animation: premium-entrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-slide-right-premium {
+    animation: slide-right-premium 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-500 { animation-delay: 500ms; }
+
+/* Page Transitions */
+.page-transition {
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes success-pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+}
+
+@keyframes toast-float {
+    0% { opacity: 0; transform: translateY(15px); }
+    15% { opacity: 1; transform: translateY(0); }
+    85% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-15px); }
+}
+
+.animate-success-pop { animation: success-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+.animate-toast-float { animation: toast-float 2s ease-in-out forwards; }
+
+/* Loading Bar (NProgress style) */
+.htmx-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 3px;
+    background: #2563eb;
+    z-index: 9999;
+    transition: width 0.3s ease;
+    box-shadow: 0 0 10px rgba(37, 99, 235, 0.5);
+}
+.htmx-request .htmx-progress {
+    width: 40%;
+    animation: progress-run 2s infinite ease-in-out;
+}
+@keyframes progress-run {
+    0% { width: 0%; left: 0%; }
+    50% { width: 70%; left: 15%; }
+    100% { width: 100%; left: 100%; }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #f1f5f9; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+/* Modal transitions */
+.modal { transition: opacity 0.3s ease; }
+.modal.hidden { opacity: 0; pointer-events: none; }
+.modal:not(.hidden) { opacity: 1; pointer-events: auto; }

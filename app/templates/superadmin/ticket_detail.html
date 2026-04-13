@@ -113,44 +113,8 @@
 
 {% block extra_scripts %}
 <script>
-document.getElementById('reply-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const content = document.getElementById('reply-content').value.trim();
-    if (!content) return;
-    const isInternal = document.getElementById('reply-internal').checked;
-    const btn = document.getElementById('reply-btn');
-    btn.disabled = true;
-    btn.textContent = 'Mengirim...';
-
-    const res = await fetch(`/superadmin/api/tickets/{{ ticket.id }}/reply`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content, is_internal: isInternal })
-    });
-    const data = await res.json();
-    if (data.success) {
-        location.reload();
-    } else {
-        Swal.fire({ icon: 'error', title: 'Gagal', text: data.message });
-        btn.disabled = false;
-        btn.textContent = 'Kirim Balasan';
-    }
-});
-
-async function updateStatus() {
-    const status = document.getElementById('status-select').value;
-    const res = await fetch(`/superadmin/api/tickets/{{ ticket.id }}/status`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status })
-    });
-    const data = await res.json();
-    if (data.success) {
-        Swal.fire({ icon: 'success', title: 'Status diperbarui', timer: 1500, showConfirmButton: false });
-    } else {
-        Swal.fire({ icon: 'error', title: 'Gagal', text: data.message });
-        location.reload();
-    }
-}
+  window.saTicketId = {{ ticket.id }};
 </script>
+<script src="{{ url_for('static', filename='js/superadmin/sa-core.js') }}?v={{ asset_hash('js/superadmin/sa-core.js') }}"></script>
+<script src="{{ url_for('static', filename='js/superadmin/ticket_detail.js') }}?v={{ asset_hash('js/superadmin/ticket_detail.js') }}"></script>
 {% endblock %}

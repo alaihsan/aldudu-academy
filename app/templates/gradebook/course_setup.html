@@ -3,19 +3,7 @@
 {% block title %}Setup Kurikulum - {{ course.name }}{% endblock %}
 
 {% block extra_head %}
-<style>
-    :root {
-        --course-theme: {{ course.color or '#2563eb' }};
-        --course-theme-light: {{ course.color }}15;
-    }
-    .bg-theme { background-color: var(--course-theme) !important; }
-    .text-theme { color: var(--course-theme) !important; }
-    .border-theme { border-color: var(--course-theme) !important; }
-    .focus-theme:focus {
-        border-color: var(--course-theme) !important;
-        box-shadow: 0 0 0 3px var(--course-theme-light) !important;
-    }
-</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/gradebook/course_setup.css') }}?v={{ asset_hash('css/gradebook/course_setup.css') }}">
 {% endblock %}
 
 {% block body %}

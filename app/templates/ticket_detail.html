@@ -64,20 +64,7 @@
 </div>
 
 <script>
-const SLUG = window.location.pathname.split('/')[2];
-
-{% if ticket.status.value not in ['closed', 'resolved'] %}
-document.getElementById('reply-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const content = document.getElementById('reply-content').value;
-    const res = await fetch(`/s/${SLUG}/api/tickets/{{ ticket.id }}/message`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content })
-    });
-    const data = await res.json();
-    if (data.success) location.reload();
-});
-{% endif %}
+  window.ticketId = {{ ticket.id }};
 </script>
+<script src="{{ url_for('static', filename='js/ticket_detail.js') }}?v={{ asset_hash('js/ticket_detail.js') }}"></script>
 {% endblock %}

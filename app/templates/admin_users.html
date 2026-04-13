@@ -195,17 +195,5 @@
 
 {% block extra_scripts %}
 <script src="{{ url_for('static', filename='js/admin.js') }}?v={{ asset_hash('js/admin.js') }}"></script>
-<script>
-    function toggleModal(id, show) {
-        const m = document.getElementById(id);
-        if (show) m.classList.remove('hidden');
-        else m.classList.add('hidden');
-    }
-
-    function openResetModal(id, name) {
-        document.getElementById('reset-user-id').value = id;
-        document.getElementById('reset-user-name').innerText = `Mengubah password untuk ${name}`;
-        toggleModal('reset-modal', true);
-    }
-</script>
+<script src="{{ url_for('static', filename='js/admin_users.js') }}?v={{ asset_hash('js/admin_users.js') }}"></script>
 {% endblock %}

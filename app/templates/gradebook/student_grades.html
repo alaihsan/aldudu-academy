@@ -3,26 +3,7 @@
 {% block title %}Nilai Saya - {{ course.name }}{% endblock %}
 
 {% block extra_head %}
-<style>
-    :root {
-        --course-theme: {{ course.color or '#2563eb' }};
-        --course-theme-light: {{ course.color }}15;
-    }
-    .bg-theme { background-color: var(--course-theme) !important; }
-    .text-theme { color: var(--course-theme) !important; }
-    .border-theme { border-color: var(--course-theme) !important; }
-    .bg-theme-light { background-color: var(--course-theme-light) !important; }
-
-    @keyframes grade-pop {
-        0% { transform: scale(0.5); opacity: 0; }
-        70% { transform: scale(1.1); }
-        100% { transform: scale(1); opacity: 1; }
-    }
-    .animate-grade-pop { animation: grade-pop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-
-    .mastery-badge { transition: all 0.3s; }
-    .mastery-badge:hover { transform: translateY(-2px); box-shadow: 0 8px 20px -4px rgba(0,0,0,0.1); }
-</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/gradebook/student_grades.css') }}?v={{ asset_hash('css/gradebook/student_grades.css') }}">
 {% endblock %}
 
 {% block body %}
