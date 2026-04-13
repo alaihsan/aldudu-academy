@@ -16,6 +16,7 @@
     <!-- Tailwind Config -->
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     fontFamily: {
@@ -84,6 +85,22 @@
             --course-theme-dark: #2563ebcc;
             --course-theme-gradient: linear-gradient(135deg, #2563eb, #2563ebcc);
         }
+
+        /* Dark mode overrides */
+        html.dark {
+            color-scheme: dark;
+        }
+
+        /* Scrollbar - Light mode */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Scrollbar - Dark mode */
+        html.dark ::-webkit-scrollbar-track { background: #1e293b; }
+        html.dark ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+        html.dark ::-webkit-scrollbar-thumb:hover { background: #64748b; }
         
         /* Theme Utility Classes - Available Globally */
         .bg-theme { background-color: var(--course-theme) !important; }
@@ -129,6 +146,16 @@
         .swal2-title {
             font-weight: 800 !important;
             color: #1e1b4b !important;
+        }
+        html.dark .swal2-title {
+            color: #f1f5f9 !important;
+        }
+        html.dark .swal2-popup {
+            background: #1e293b !important;
+            color: #f1f5f9 !important;
+        }
+        html.dark .swal2-html-container {
+            color: #cbd5e1 !important;
         }
         .swal2-confirm {
             background-color: #4f46e5 !important;
@@ -234,7 +261,7 @@
     
     {% block extra_head %}{% endblock %}
 </head>
-<body class="font-sans antialiased bg-gray-50 text-gray-900">
+<body class="font-sans antialiased bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100">
     <div class="htmx-progress"></div>
     <div class="page-transition pb-20 lg:pb-0">
         {% block body %}{% endblock %}
@@ -242,19 +269,19 @@
 
     {# Bottom Navigation for Mobile #}
     {% if current_user.is_authenticated %}
-    <nav class="lg:hidden fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-xl border-t border-gray-100 z-50 px-6 py-3 safe-area-bottom">
+    <nav class="lg:hidden fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-t border-gray-100 dark:border-gray-800 z-50 px-6 py-3 safe-area-bottom">
         <div class="flex items-center justify-around max-w-md mx-auto">
             <a href="{{ url_for('main.dashboard') }}" class="flex flex-col items-center space-y-1 group">
-                <div class="p-2 rounded-2xl transition-all {{ 'bg-primary-50 text-primary-600' if request.endpoint == 'main.dashboard' else 'text-gray-400 group-hover:bg-gray-50' }}">
+                <div class="p-2 rounded-2xl transition-all {{ 'bg-primary-50 text-primary-600' if request.endpoint == 'main.dashboard' else 'text-gray-400 group-hover:bg-gray-50 dark:group-hover:bg-gray-800' }}">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                     </svg>
                 </div>
                 <span class="text-[10px] font-black uppercase tracking-widest {{ 'text-primary-600' if request.endpoint == 'main.dashboard' else 'text-gray-400' }}">Home</span>
             </a>
-            
+
             <a href="{{ url_for('main.issues') }}" class="flex flex-col items-center space-y-1 group">
-                <div class="p-2 rounded-2xl transition-all {{ 'bg-primary-50 text-primary-600' if request.endpoint == 'main.issues' else 'text-gray-400 group-hover:bg-gray-50' }}">
+                <div class="p-2 rounded-2xl transition-all {{ 'bg-primary-50 text-primary-600' if request.endpoint == 'main.issues' else 'text-gray-400 group-hover:bg-gray-50 dark:group-hover:bg-gray-800' }}">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                     </svg>
@@ -263,7 +290,7 @@
             </a>
 
             <a href="{{ url_for('main.settings') }}" class="flex flex-col items-center space-y-1 group">
-                <div class="p-2 rounded-2xl transition-all {{ 'bg-primary-50 text-primary-600' if request.endpoint == 'main.settings' else 'text-gray-400 group-hover:bg-gray-50' }}">
+                <div class="p-2 rounded-2xl transition-all {{ 'bg-primary-50 text-primary-600' if request.endpoint == 'main.settings' else 'text-gray-400 group-hover:bg-gray-50 dark:group-hover:bg-gray-800' }}">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -288,7 +315,7 @@
         </button>
 
         <!-- Floating Issue Form -->
-        <div id="floating-issue-modal" class="hidden w-80 md:w-96 bg-white rounded-3xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] border border-indigo-50 overflow-hidden animate-slide-up">
+        <div id="floating-issue-modal" class="hidden w-80 md:w-96 bg-white dark:bg-gray-800 rounded-3xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] dark:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] border border-indigo-50 dark:border-gray-700 overflow-hidden animate-slide-up">
             <form id="floating-issue-form">
                 <div class="bg-indigo-600 px-6 py-5 text-white flex items-center justify-between">
                     <div>
@@ -302,11 +329,11 @@
                 <div class="p-6 space-y-4">
                     <div>
                         <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Judul Masalah</label>
-                        <input type="text" id="float-issue-title" class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:border-indigo-500 outline-none text-sm font-bold transition-all" required placeholder="Apa masalahnya?">
+                        <input type="text" id="float-issue-title" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 rounded-xl focus:border-indigo-500 outline-none text-sm font-bold transition-all text-gray-900 dark:text-gray-100" required placeholder="Apa masalahnya?">
                     </div>
                     <div>
                         <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Deskripsi</label>
-                        <textarea id="float-issue-desc" class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:border-indigo-500 outline-none text-sm font-bold transition-all" rows="3" required placeholder="Jelaskan secara singkat..."></textarea>
+                        <textarea id="float-issue-desc" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 rounded-xl focus:border-indigo-500 outline-none text-sm font-bold transition-all text-gray-900 dark:text-gray-100" rows="3" required placeholder="Jelaskan secara singkat..."></textarea>
                     </div>
                     <button type="submit" id="submit-floating-issue" class="w-full py-3.5 bg-indigo-600 text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-indigo-700 transition-all active:scale-95 shadow-lg shadow-indigo-100">
                         Kirim Laporan
@@ -387,6 +414,9 @@
 
     <!-- Language Manager (always needed) -->
     <script src="{{ url_for('static', filename='js/language.js') }}?v={{ asset_hash('js/language.js') }}"></script>
+
+    <!-- Theme Manager (dark mode) -->
+    <script src="{{ url_for('static', filename='js/theme-manager.js') }}?v={{ asset_hash('js/theme-manager.js') }}"></script>
 
     <!-- Sidebar & Global Logic (always needed) -->
     <script src="{{ url_for('static', filename='js/sidebar.js') }}?v={{ asset_hash('js/sidebar.js') }}"></script>

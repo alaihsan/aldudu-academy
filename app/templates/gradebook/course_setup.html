@@ -19,37 +19,37 @@
 {% endblock %}
 
 {% block body %}
-<div id="app-page" class="min-h-screen bg-gray-50 flex">
+<div id="app-page" class="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
     {% include '_sidebar.html' %}
 
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <header class="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-8 sticky top-0 z-30">
+        <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 h-16 flex items-center justify-between px-8 sticky top-0 z-30">
             <div class="flex items-center space-x-4">
-                <a href="{{ url_for('gradebook.course_gradebook', course_id=course.id) }}" class="p-2 text-gray-400 hover:text-theme transition-colors">
+                <a href="{{ url_for('gradebook.course_gradebook', course_id=course.id) }}" class="p-2 text-gray-400 dark:text-gray-500 hover:text-theme transition-colors">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
                 </a>
                 <div>
-                    <h2 class="text-lg font-bold text-gray-900">{{ course.name }}</h2>
-                    <p class="text-xs text-gray-500">Setup Kurikulum</p>
+                    <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100">{{ course.name }}</h2>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Setup Kurikulum</p>
                 </div>
             </div>
         </header>
 
         <main class="flex-1 overflow-y-auto p-8">
             <div class="max-w-5xl mx-auto space-y-6">
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                     <div class="mb-6">
-                        <h1 class="text-2xl font-bold text-gray-900">📌 Setup Kurikulum</h1>
-                        <p class="text-gray-500 mt-1">Kelola Capaian Pembelajaran (CP), Tujuan Pembelajaran (TP), dan Kategori Penilaian</p>
+                        <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">📌 Setup Kurikulum</h1>
+                        <p class="text-gray-500 dark:text-gray-400 mt-1">Kelola Capaian Pembelajaran (CP), Tujuan Pembelajaran (TP), dan Kategori Penilaian</p>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- CP Section -->
                         <div class="space-y-4">
                             <div class="flex items-center justify-between">
-                                <h2 class="text-lg font-bold text-gray-900">Capaian Pembelajaran (CP)</h2>
+                                <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100">Capaian Pembelajaran (CP)</h2>
                                 <button onclick="openAddCPModal()" class="px-4 py-2 bg-theme text-white rounded-lg text-sm font-semibold hover:opacity-90 transition-all">+ Tambah CP</button>
                             </div>
                             <div id="cp-list" class="space-y-3">
@@ -60,7 +60,7 @@
                         <!-- Categories Section -->
                         <div class="space-y-4">
                             <div class="flex items-center justify-between">
-                                <h2 class="text-lg font-bold text-gray-900">📊 Kategori Penilaian</h2>
+                                <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100">📊 Kategori Penilaian</h2>
                                 <button onclick="openAddCategoryModal()" class="px-4 py-2 bg-theme text-white rounded-lg text-sm font-semibold hover:opacity-90 transition-all">+ Tambah</button>
                             </div>
                             <div id="category-list" class="space-y-3">
@@ -75,68 +75,68 @@
 </div>
 
 <!-- ADD CP MODAL -->
-<div id="add-cp-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg animate-slide-up">
+<div id="add-cp-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 z-50 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg animate-slide-up">
         <div class="modal-header-theme px-6 py-4">
             <h3 class="text-xl font-bold text-white">Tambah Capaian Pembelajaran</h3>
         </div>
         <div class="p-6 space-y-4">
             <input type="hidden" id="cp-course-id" value="{{ course.id }}">
             <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Kode CP</label>
-                <input type="text" id="cp-code" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none" placeholder="CP-1">
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Kode CP</label>
+                <input type="text" id="cp-code" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none" placeholder="CP-1">
             </div>
             <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Deskripsi</label>
-                <textarea id="cp-description" rows="3" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none" placeholder="Deskripsi capaian pembelajaran..."></textarea>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Deskripsi</label>
+                <textarea id="cp-description" rows="3" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none" placeholder="Deskripsi capaian pembelajaran..."></textarea>
             </div>
         </div>
-        <div class="bg-gray-50 px-6 py-4 flex justify-end space-x-3 rounded-b-2xl">
-            <button onclick="closeAddCPModal()" class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all font-semibold">Batal</button>
+        <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 flex justify-end space-x-3 rounded-b-2xl">
+            <button onclick="closeAddCPModal()" class="px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all font-semibold">Batal</button>
             <button onclick="saveCP()" class="px-4 py-2 bg-theme text-white rounded-lg hover:opacity-90 transition-all font-semibold">Simpan</button>
         </div>
     </div>
 </div>
 
 <!-- ADD TP MODAL -->
-<div id="add-tp-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg animate-slide-up">
+<div id="add-tp-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 z-50 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg animate-slide-up">
         <div class="modal-header-theme px-6 py-4">
             <h3 class="text-xl font-bold text-white">Tambah Tujuan Pembelajaran</h3>
         </div>
         <div class="p-6 space-y-4">
             <input type="hidden" id="tp-cp-id">
             <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Kode TP</label>
-                <input type="text" id="tp-code" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none" placeholder="TP-1.1">
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Kode TP</label>
+                <input type="text" id="tp-code" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none" placeholder="TP-1.1">
             </div>
             <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Deskripsi</label>
-                <textarea id="tp-description" rows="3" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none" placeholder="Deskripsi tujuan pembelajaran..."></textarea>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Deskripsi</label>
+                <textarea id="tp-description" rows="3" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none" placeholder="Deskripsi tujuan pembelajaran..."></textarea>
             </div>
         </div>
-        <div class="bg-gray-50 px-6 py-4 flex justify-end space-x-3 rounded-b-2xl">
-            <button onclick="closeAddTPModal()" class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all font-semibold">Batal</button>
+        <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 flex justify-end space-x-3 rounded-b-2xl">
+            <button onclick="closeAddTPModal()" class="px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all font-semibold">Batal</button>
             <button onclick="saveTP()" class="px-4 py-2 bg-theme text-white rounded-lg hover:opacity-90 transition-all font-semibold">Simpan</button>
         </div>
     </div>
 </div>
 
 <!-- ADD CATEGORY MODAL -->
-<div id="add-category-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg animate-slide-up">
+<div id="add-category-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 z-50 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg animate-slide-up">
         <div class="modal-header-theme px-6 py-4">
             <h3 class="text-xl font-bold text-white">Tambah Kategori Penilaian</h3>
         </div>
         <div class="p-6 space-y-4">
             <input type="hidden" id="cat-course-id" value="{{ course.id }}">
             <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Nama Kategori</label>
-                <input type="text" id="cat-name" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none" placeholder="Contoh: Penilaian Harian">
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Nama Kategori</label>
+                <input type="text" id="cat-name" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none" placeholder="Contoh: Penilaian Harian">
             </div>
             <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Tipe</label>
-                <select id="cat-type" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none">
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Tipe</label>
+                <select id="cat-type" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none">
                     <option value="formatif">Formatif</option>
                     <option value="sumatif">Sumatif</option>
                     <option value="sikap">Sikap</option>
@@ -144,12 +144,12 @@
                 </select>
             </div>
             <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Bobot (%)</label>
-                <input type="number" id="cat-weight" value="0" step="0.1" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none">
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Bobot (%)</label>
+                <input type="number" id="cat-weight" value="0" step="0.1" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none">
             </div>
         </div>
-        <div class="bg-gray-50 px-6 py-4 flex justify-end space-x-3 rounded-b-2xl">
-            <button onclick="closeAddCategoryModal()" class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all font-semibold">Batal</button>
+        <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 flex justify-end space-x-3 rounded-b-2xl">
+            <button onclick="closeAddCategoryModal()" class="px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all font-semibold">Batal</button>
             <button onclick="saveCategory()" class="px-4 py-2 bg-theme text-white rounded-lg hover:opacity-90 transition-all font-semibold">Simpan</button>
         </div>
     </div>
@@ -174,26 +174,26 @@ async function loadCPs() {
         if (data.success && data.learning_objectives.length > 0) {
             data.learning_objectives.forEach(cp => {
                 const div = document.createElement('div');
-                div.className = 'border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all';
+                div.className = 'border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-all bg-white dark:bg-gray-800';
                 div.innerHTML = `
                     <div class="flex items-start justify-between">
                         <div class="flex-1">
                             <div class="flex items-center space-x-2 mb-2">
                                 <span class="px-2 py-1 bg-theme-light text-theme rounded text-xs font-bold">${cp.code}</span>
                             </div>
-                            <p class="text-sm text-gray-700">${cp.description}</p>
-                            <p class="text-xs text-gray-400 mt-2">${cp.goals_count || 0} TP</p>
+                            <p class="text-sm text-gray-700 dark:text-gray-300">${cp.description}</p>
+                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-2">${cp.goals_count || 0} TP</p>
                         </div>
                         <div class="flex space-x-2">
-                            <button onclick="openAddTPModal(${cp.id})" class="px-3 py-1.5 text-xs bg-green-50 text-green-600 rounded-lg hover:bg-green-100 font-semibold">+ TP</button>
-                            <button onclick="deleteCP(${cp.id})" class="px-3 py-1.5 text-xs bg-red-50 text-red-600 rounded-lg hover:bg-red-100 font-semibold">Hapus</button>
+                            <button onclick="openAddTPModal(${cp.id})" class="px-3 py-1.5 text-xs bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/50 font-semibold">+ TP</button>
+                            <button onclick="deleteCP(${cp.id})" class="px-3 py-1.5 text-xs bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50 font-semibold">Hapus</button>
                         </div>
                     </div>
                 `;
                 container.appendChild(div);
             });
         } else {
-            container.innerHTML = '<div class="text-center py-8 text-gray-400">Belum ada CP. Klik "Tambah CP" untuk membuat.</div>';
+            container.innerHTML = '<div class="text-center py-8 text-gray-400 dark:text-gray-500">Belum ada CP. Klik "Tambah CP" untuk membuat.</div>';
         }
     } catch (err) {
         console.error('Failed to load CPs:', err);
@@ -211,23 +211,23 @@ async function loadCategories() {
         if (data.success && data.categories.length > 0) {
             data.categories.forEach(cat => {
                 const div = document.createElement('div');
-                div.className = 'border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all';
+                div.className = 'border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-all bg-white dark:bg-gray-800';
                 div.innerHTML = `
                     <div class="flex items-start justify-between">
                         <div class="flex-1">
-                            <h4 class="font-bold text-gray-900">${cat.name}</h4>
+                            <h4 class="font-bold text-gray-900 dark:text-gray-100">${cat.name}</h4>
                             <div class="flex items-center space-x-2 mt-2">
-                                <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-bold uppercase">${cat.category_type}</span>
-                                <span class="text-xs text-gray-500">Bobot: ${cat.weight}%</span>
+                                <span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded text-xs font-bold uppercase">${cat.category_type}</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400">Bobot: ${cat.weight}%</span>
                             </div>
                         </div>
-                        <button onclick="deleteCategory(${cat.id})" class="px-3 py-1.5 text-xs bg-red-50 text-red-600 rounded-lg hover:bg-red-100 font-semibold">Hapus</button>
+                        <button onclick="deleteCategory(${cat.id})" class="px-3 py-1.5 text-xs bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50 font-semibold">Hapus</button>
                     </div>
                 `;
                 container.appendChild(div);
             });
         } else {
-            container.innerHTML = '<div class="text-center py-8 text-gray-400">Belum ada kategori. Klik "Tambah" untuk membuat.</div>';
+            container.innerHTML = '<div class="text-center py-8 text-gray-400 dark:text-gray-500">Belum ada kategori. Klik "Tambah" untuk membuat.</div>';
         }
     } catch (err) {
         console.error('Failed to load categories:', err);

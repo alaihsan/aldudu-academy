@@ -14,22 +14,22 @@
 <div id="issues-list"></div>
 
 <!-- Detail Modal -->
-<div id="issue-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+<div id="issue-modal" class="fixed inset-0 bg-black/40 dark:bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
         <div class="p-6">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-black text-slate-900" id="modal-title"></h3>
-                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600">
+                <h3 class="text-lg font-black text-slate-900 dark:text-gray-100" id="modal-title"></h3>
+                <button onclick="closeModal()" class="text-slate-400 dark:text-gray-500 hover:text-slate-600 dark:hover:text-gray-300">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
             <div class="space-y-3 text-sm">
                 <div class="flex items-center gap-2 flex-wrap" id="modal-badges"></div>
-                <div class="text-xs text-slate-400" id="modal-meta"></div>
-                <div class="bg-slate-50 rounded-xl p-4 text-slate-700 text-sm leading-relaxed whitespace-pre-wrap" id="modal-desc"></div>
+                <div class="text-xs text-slate-400 dark:text-gray-500" id="modal-meta"></div>
+                <div class="bg-slate-50 dark:bg-gray-700 rounded-xl p-4 text-slate-700 dark:text-gray-300 text-sm leading-relaxed whitespace-pre-wrap" id="modal-desc"></div>
             </div>
-            <div class="mt-5 pt-4 border-t border-slate-100">
-                <label class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Ubah Status</label>
+            <div class="mt-5 pt-4 border-t border-slate-100 dark:border-gray-700">
+                <label class="text-xs font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider mb-2 block">Ubah Status</label>
                 <div class="flex gap-2 flex-wrap" id="modal-actions"></div>
             </div>
         </div>
@@ -49,7 +49,7 @@ async function loadIssues(status) {
     document.getElementById(currentFilter ? `tab-${currentFilter}` : 'tab-all')?.classList.add('active');
 
     const list = document.getElementById('issues-list');
-    list.innerHTML = `<div class="flex items-center justify-center py-16 text-slate-300">
+    list.innerHTML = `<div class="flex items-center justify-center py-16 text-slate-300 dark:text-gray-600">
         <svg class="w-6 h-6 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>
     </div>`;
 
@@ -61,8 +61,8 @@ async function loadIssues(status) {
 
     if (!allIssues.length) {
         list.innerHTML = `<div class="sa-card flex flex-col items-center py-16 text-center">
-            <svg class="w-12 h-12 text-slate-200 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-            <p class="text-sm font-bold text-slate-400">Tidak ada laporan masalah</p>
+            <svg class="w-12 h-12 text-slate-200 dark:text-gray-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            <p class="text-sm font-bold text-slate-400 dark:text-gray-500">Tidak ada laporan masalah</p>
         </div>`;
         return;
     }
@@ -75,10 +75,10 @@ async function loadIssues(status) {
                     <span class="sa-badge ${priorityBadge(i.priority)}">${esc(i.priority)}</span>
                     <span class="sa-badge ${statusBadge(i.status)}">${esc(i.status)}</span>
                 </div>
-                <h4 class="font-bold text-slate-900 text-sm group-hover:text-indigo-600 transition-colors">${esc(i.title)}</h4>
-                <p class="text-xs text-slate-400 mt-0.5">${esc(i.school_name)} · ${esc(i.user_name)} · ${i.created_at}</p>
+                <h4 class="font-bold text-slate-900 dark:text-gray-100 text-sm group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">${esc(i.title)}</h4>
+                <p class="text-xs text-slate-400 dark:text-gray-500 mt-0.5">${esc(i.school_name)} · ${esc(i.user_name)} · ${i.created_at}</p>
             </div>
-            <svg class="w-4 h-4 text-slate-300 group-hover:text-indigo-400 transition-colors flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            <svg class="w-4 h-4 text-slate-300 dark:text-gray-600 group-hover:text-indigo-400 transition-colors flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
         </div>
     `).join('')}</div>`;
 }
@@ -130,16 +130,16 @@ async function updateStatus(id, status) {
 const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 
 function priorityBar(p) {
-    return { Urgent:'bg-red-500', High:'bg-orange-400', Medium:'bg-yellow-400', Low:'bg-slate-300' }[p] || 'bg-slate-300';
+    return { Urgent:'bg-red-500', High:'bg-orange-400', Medium:'bg-yellow-400', Low:'bg-slate-300 dark:bg-gray-600' }[p] || 'bg-slate-300 dark:bg-gray-600';
 }
 function priorityBadge(p) {
-    return { Urgent:'bg-red-50 text-red-600 border border-red-100', High:'bg-orange-50 text-orange-600 border border-orange-100', Medium:'bg-yellow-50 text-yellow-700 border border-yellow-100', Low:'bg-slate-100 text-slate-500' }[p] || 'bg-slate-100 text-slate-500';
+    return { Urgent:'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-800', High:'bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 border border-orange-100 dark:border-orange-800', Medium:'bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border border-yellow-100 dark:border-yellow-800', Low:'bg-slate-100 dark:bg-gray-700 text-slate-500 dark:text-gray-400' }[p] || 'bg-slate-100 dark:bg-gray-700 text-slate-500 dark:text-gray-400';
 }
 function statusBadge(s) {
-    return { Open:'bg-blue-50 text-blue-600 border border-blue-100', 'In Progress':'bg-indigo-50 text-indigo-600 border border-indigo-100', Resolved:'bg-emerald-50 text-emerald-700 border border-emerald-100', Closed:'bg-slate-100 text-slate-500' }[s] || 'bg-slate-100 text-slate-500';
+    return { Open:'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-800', 'In Progress':'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800', Resolved:'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800', Closed:'bg-slate-100 dark:bg-gray-700 text-slate-500 dark:text-gray-400' }[s] || 'bg-slate-100 dark:bg-gray-700 text-slate-500 dark:text-gray-400';
 }
 function statusBtn(s) {
-    return { OPEN:'bg-blue-50 text-blue-600 hover:bg-blue-100', IN_PROGRESS:'bg-indigo-50 text-indigo-600 hover:bg-indigo-100', RESOLVED:'bg-emerald-50 text-emerald-700 hover:bg-emerald-100', CLOSED:'bg-slate-100 text-slate-500 hover:bg-slate-200' }[s] || 'bg-slate-100 text-slate-500';
+    return { OPEN:'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50', IN_PROGRESS:'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/50', RESOLVED:'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/50', CLOSED:'bg-slate-100 dark:bg-gray-700 text-slate-500 dark:text-gray-400 hover:bg-slate-200 dark:hover:bg-gray-600' }[s] || 'bg-slate-100 dark:bg-gray-700 text-slate-500 dark:text-gray-400';
 }
 
 document.getElementById('issue-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });

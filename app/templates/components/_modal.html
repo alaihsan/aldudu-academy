@@ -8,21 +8,21 @@
 #}
 
 {% macro modal(modal_id, title, message='', footer_content='') %}
-<div id="{{ modal_id }}" 
+<div id="{{ modal_id }}"
      class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
      role="dialog"
      aria-modal="true"
      aria-labelledby="{{ modal_id }}-title">
-  
-  <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+
+  <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
     {# Header #}
-    <div class="flex justify-between items-center pb-3 border-b">
-      <h3 id="{{ modal_id }}-title" class="text-lg font-semibold text-gray-900">
+    <div class="flex justify-between items-center pb-3 border-b border-gray-200 dark:border-gray-700">
+      <h3 id="{{ modal_id }}-title" class="text-lg font-semibold text-gray-900 dark:text-gray-100">
         {{ title }}
       </h3>
-      <button onclick="hideModal('{{ modal_id }}')" 
+      <button onclick="hideModal('{{ modal_id }}')"
               type="button"
-              class="text-gray-400 hover:text-gray-600 focus:outline-none"
+              class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 focus:outline-none"
               aria-label="Close">
         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -35,7 +35,7 @@
       {% if caller %}
         {{ caller() }}
       {% elif message %}
-        <p class="text-sm text-gray-600">{{ message }}</p>
+        <p class="text-sm text-gray-600 dark:text-gray-400">{{ message }}</p>
       {% else %}
         <div class="modal-content">
           {{ modal_content | default('') | safe }}
@@ -117,23 +117,23 @@ document.addEventListener('keydown', function(e) {
     {{ confirm_modal('deleteConfirm', 'Delete', 'Are you sure?', 'Delete', 'cancelDelete()', 'confirmDelete()') }}
 #}
 {% macro confirm_modal(modal_id, title, message, confirm_text='Confirm', cancel_callback='', confirm_callback='') %}
-<div id="{{ modal_id }}" 
+<div id="{{ modal_id }}"
      class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
      role="dialog"
      aria-modal="true">
-  
-  <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+
+  <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
     <div class="text-center">
       {# Warning icon #}
       <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
         <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
         </svg>
       </div>
-      
-      <h3 class="text-lg font-semibold text-gray-900 mt-4">{{ title }}</h3>
-      <p class="text-sm text-gray-600 mt-2">{{ message }}</p>
+
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mt-4">{{ title }}</h3>
+      <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">{{ message }}</p>
     </div>
     
     <div class="flex justify-center space-x-3 mt-6">

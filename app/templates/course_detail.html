@@ -115,16 +115,16 @@
 {% endblock %}
 
 {% block body %}
-<div id="app-page" class="min-h-screen bg-gray-50 flex">
+<div id="app-page" class="min-h-screen bg-gray-50 dark:bg-gray-950 flex">
     <!-- Sidebar (Shared Partial) -->
     {% include '_sidebar.html' %}
 
     <!-- Main Content Area -->
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
         <!-- Top Header -->
-        <header class="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-8 sticky top-0 z-30">
+        <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-800 h-16 flex items-center justify-between px-8 sticky top-0 z-30">
             <div class="flex items-center space-x-4">
-                <a href="{{ url_for('main.dashboard') }}" class="p-2 text-gray-400 hover:text-primary-600 transition-colors">
+                <a href="{{ url_for('main.dashboard') }}" class="p-2 text-gray-400 dark:text-gray-500 hover:text-primary-600 transition-colors">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
@@ -133,8 +133,8 @@
                 <!-- Class Switcher Dropdown -->
                 {% if is_teacher %}
                 <div class="relative" id="class-switcher">
-                    <button onclick="toggleClassSwitcher()" class="class-switcher-btn flex items-center space-x-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl transition-all group">
-                        <svg class="w-5 h-5 text-gray-500 group-hover:text-primary-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <button onclick="toggleClassSwitcher()" class="class-switcher-btn flex items-center space-x-2 px-4 py-2 bg-gray-50 dark:bg-gray-950 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-800 rounded-xl transition-all group">
+                        <svg class="w-5 h-5 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
                         </svg>
                         <span class="text-sm font-bold text-gray-700 group-hover:text-primary-700 transition-colors">{{ course.name }}</span>
@@ -144,9 +144,9 @@
                     </button>
                     
                     <!-- Dropdown Menu -->
-                    <div id="class-switcher-menu" class="hidden absolute top-full left-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 z-50 animate-slide-up overflow-hidden">
-                        <div class="px-4 py-2 border-b border-gray-100">
-                            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Pilih Kelas</p>
+                    <div id="class-switcher-menu" class="hidden absolute top-full left-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-700 py-2 z-50 animate-slide-up overflow-hidden">
+                        <div class="px-4 py-2 border-b border-gray-100 dark:border-gray-700">
+                            <p class="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">Pilih Kelas</p>
                         </div>
                         <div id="class-switcher-list" class="max-h-96 overflow-y-auto">
                             <!-- Will be populated by JS -->
@@ -154,14 +154,14 @@
                     </div>
                 </div>
                 {% else %}
-                <h2 class="text-lg font-bold text-gray-900 truncate">{{ course.name }}</h2>
+                <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100 truncate">{{ course.name }}</h2>
                 {% endif %}
             </div>
 
             <div class="flex items-center space-x-3">
                 {% if is_teacher %}
                 <!-- Theme Color Picker Button -->
-                <button onclick="openColorPicker()" class="p-2 text-gray-500 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-all" title="Ganti Warna Tema">
+                <button onclick="openColorPicker()" class="p-2 text-gray-500 dark:text-gray-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-gray-700 rounded-lg transition-all" title="Ganti Warna Tema">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
                     </svg>
@@ -225,11 +225,11 @@
 
                 <!-- KBM Notes Section (Teacher Only) - SEPARATE SECTION -->
                 <div id="kbm-section" class="hidden">
-                    <div class="bg-white rounded-3xl shadow-sm border border-gray-200 p-8">
+                    <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-200 dark:border-gray-800 p-8">
                         <div class="flex items-center justify-between mb-8">
                             <div>
-                                <h2 class="text-2xl font-black text-gray-900">📚 Catatan KBM</h2>
-                                <p class="text-sm text-gray-500 mt-1">Timeline kegiatan belajar mengajar</p>
+                                <h2 class="text-2xl font-black text-gray-900 dark:text-gray-100">📚 Catatan KBM</h2>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Timeline kegiatan belajar mengajar</p>
                             </div>
                             <button onclick="toggleKbmForm()" class="px-6 py-3 bg-theme text-white rounded-2xl font-bold text-sm flex items-center space-x-2 hover:opacity-90 transition-all shadow-theme-lg">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -240,23 +240,23 @@
                         </div>
 
                         <!-- Inline Add Form -->
-                        <div id="kbm-add-form" class="hidden bg-gray-50 rounded-2xl border-2 border-dashed border-gray-300 p-6 mb-8">
+                        <div id="kbm-add-form" class="hidden bg-gray-50 dark:bg-gray-950 rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-700 p-6 mb-8">
                             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                                 <div>
-                                    <label class="block text-xs font-semibold text-gray-500 mb-1">Tanggal *</label>
-                                    <input type="date" id="kbm-date" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none">
+                                    <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Tanggal *</label>
+                                    <input type="date" id="kbm-date" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold text-gray-500 mb-1">Waktu Mulai</label>
-                                    <input type="time" id="kbm-start-time" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none">
+                                    <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Waktu Mulai</label>
+                                    <input type="time" id="kbm-start-time" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold text-gray-500 mb-1">Waktu Selesai</label>
-                                    <input type="time" id="kbm-end-time" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none">
+                                    <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Waktu Selesai</label>
+                                    <input type="time" id="kbm-end-time" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold text-gray-500 mb-1">Kegiatan</label>
-                                    <select id="kbm-type" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none bg-white">
+                                    <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Kegiatan</label>
+                                    <select id="kbm-type" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                                         <option value="teori">📖 Teori</option>
                                         <option value="praktikum">🧪 Praktikum</option>
                                         <option value="ujian">📝 Ujian</option>
@@ -267,19 +267,19 @@
                                 </div>
                             </div>
                             <div class="mb-4">
-                                <label class="block text-xs font-semibold text-gray-500 mb-1">Materi/Topik *</label>
-                                <input type="text" id="kbm-topic" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none" placeholder="Contoh: Stoikiometri - Konsep Mol">
+                                <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Materi/Topik *</label>
+                                <input type="text" id="kbm-topic" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100" placeholder="Contoh: Stoikiometri - Konsep Mol">
                             </div>
                             <div class="mb-4">
-                                <label class="block text-xs font-semibold text-gray-500 mb-1">Detail KBM</label>
-                                <textarea id="kbm-description" rows="2" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none" placeholder="Jelaskan kegiatan yang dilakukan..."></textarea>
+                                <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Detail KBM</label>
+                                <textarea id="kbm-description" rows="2" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100" placeholder="Jelaskan kegiatan yang dilakukan..."></textarea>
                             </div>
                             <div class="mb-4">
-                                <label class="block text-xs font-semibold text-gray-500 mb-1">Catatan Tambahan</label>
-                                <textarea id="kbm-notes" rows="2" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none" placeholder="Refleksi, kendala, dll (opsional)"></textarea>
+                                <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Catatan Tambahan</label>
+                                <textarea id="kbm-notes" rows="2" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100" placeholder="Refleksi, kendala, dll (opsional)"></textarea>
                             </div>
                             <div class="flex justify-end space-x-3">
-                                <button type="button" onclick="toggleKbmForm()" class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all font-semibold">Batal</button>
+                                <button type="button" onclick="toggleKbmForm()" class="px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all font-semibold">Batal</button>
                                 <button type="button" onclick="saveKbmNote()" class="px-4 py-2 bg-theme text-white rounded-lg hover:opacity-90 transition-all font-semibold">Simpan</button>
                             </div>
                         </div>
@@ -303,8 +303,8 @@
 </div>
 
 <!-- Modal Tugas -->
-<div id="create-assignment-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden animate-slide-up border border-green-50">
+<div id="create-assignment-modal" class="modal fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-gray-800 rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden animate-slide-up border border-green-50 dark:border-gray-700">
         <form id="create-assignment-form">
             <div class="bg-gradient-to-br from-green-500 to-green-700 px-8 py-8 text-white">
                 <h3 class="text-2xl font-black">Buat Tugas Baru</h3>
@@ -312,27 +312,27 @@
             </div>
             <div class="p-8 space-y-6">
                 <div>
-                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Judul Tugas</label>
-                    <input type="text" id="assignment-title-input" name="title" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-green-500 outline-none font-bold" required>
+                    <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Judul Tugas</label>
+                    <input type="text" id="assignment-title-input" name="title" class="w-full px-6 py-4 bg-gray-50 dark:bg-gray-700 border-2 border-gray-100 dark:border-gray-600 rounded-2xl focus:border-green-500 outline-none font-bold text-gray-900 dark:text-gray-100" required>
                 </div>
                 <div>
-                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Instruksi (Opsional)</label>
-                    <textarea id="assignment-description-input" name="description" rows="3" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-green-500 outline-none font-bold"></textarea>
+                    <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Instruksi (Opsional)</label>
+                    <textarea id="assignment-description-input" name="description" rows="3" class="w-full px-6 py-4 bg-gray-50 dark:bg-gray-700 border-2 border-gray-100 dark:border-gray-600 rounded-2xl focus:border-green-500 outline-none font-bold text-gray-900 dark:text-gray-100"></textarea>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Tenggat Waktu</label>
-                        <input type="datetime-local" id="assignment-due-date-input" name="due_date" class="w-full px-4 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-green-500 outline-none font-bold text-sm">
+                        <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Tenggat Waktu</label>
+                        <input type="datetime-local" id="assignment-due-date-input" name="due_date" class="w-full px-4 py-4 bg-gray-50 dark:bg-gray-700 border-2 border-gray-100 dark:border-gray-600 rounded-2xl focus:border-green-500 outline-none font-bold text-sm text-gray-900 dark:text-gray-100">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Nilai Maksimal</label>
-                        <input type="number" id="assignment-max-score-input" name="max_score" value="100" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-green-500 outline-none font-bold text-sm" required>
+                        <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Nilai Maksimal</label>
+                        <input type="number" id="assignment-max-score-input" name="max_score" value="100" class="w-full px-6 py-4 bg-gray-50 dark:bg-gray-700 border-2 border-gray-100 dark:border-gray-600 rounded-2xl focus:border-green-500 outline-none font-bold text-sm text-gray-900 dark:text-gray-100" required>
                     </div>
                 </div>
                 <div id="assignment-modal-error" class="hidden p-4 bg-red-50 text-red-600 rounded-2xl text-xs font-bold text-center"></div>
             </div>
             <div class="px-8 pb-8 flex space-x-3">
-                <button type="button" class="assignment-cancel-btn flex-1 px-6 py-4 text-gray-500 bg-gray-100 rounded-2xl font-bold hover:bg-gray-200 transition-all">Batal</button>
+                <button type="button" class="assignment-cancel-btn flex-1 px-6 py-4 text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded-2xl font-bold hover:bg-gray-200 dark:hover:bg-gray-600 transition-all">Batal</button>
                 <button type="submit" class="flex-[2] px-6 py-4 bg-green-600 text-white rounded-2xl font-bold shadow-lg shadow-green-200 hover:bg-green-700 active:scale-95">Simpan Tugas</button>
             </div>
         </form>
@@ -340,8 +340,8 @@
 </div>
 
 <!-- Modal File & Link restyled similarly -->
-<div id="create-file-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden animate-slide-up border border-blue-50">
+<div id="create-file-modal" class="modal fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-gray-800 rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden animate-slide-up border border-blue-50 dark:border-gray-700">
         <form id="create-file-form">
             <div class="bg-gradient-to-br from-blue-500 to-blue-700 px-8 py-8 text-white">
                 <h3 class="text-2xl font-black">Unggah Materi</h3>
@@ -349,18 +349,18 @@
             </div>
             <div class="p-8 space-y-6">
                 <div>
-                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Nama Berkas</label>
-                    <input type="text" id="file-name-input" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-blue-500 outline-none font-bold" required>
+                    <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Nama Berkas</label>
+                    <input type="text" id="file-name-input" class="w-full px-6 py-4 bg-gray-50 dark:bg-gray-700 border-2 border-gray-100 dark:border-gray-600 rounded-2xl focus:border-blue-500 outline-none font-bold text-gray-900 dark:text-gray-100" required>
                 </div>
                 <div>
-                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Pilih File</label>
-                    <input type="file" id="file-upload-input" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-blue-500 outline-none font-bold" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.png,.jpg,.jpeg,.gif,.webp,.txt,.rtf,.zip,.rar,.7z">
+                    <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Pilih File</label>
+                    <input type="file" id="file-upload-input" class="w-full px-6 py-4 bg-gray-50 dark:bg-gray-700 border-2 border-gray-100 dark:border-gray-600 rounded-2xl focus:border-blue-500 outline-none font-bold text-gray-900 dark:text-gray-100" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.png,.jpg,.jpeg,.gif,.webp,.txt,.rtf,.zip,.rar,.7z">
                     <p class="text-xs text-gray-500 mt-2">Format yang diizinkan: PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, PNG, JPG, GIF, WEBP, TXT, RTF, ZIP, RAR, 7Z</p>
                 </div>
                 <div>
-                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Ukuran Maksimal (MB)</label>
+                    <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Ukuran Maksimal (MB)</label>
                     <div class="flex items-center space-x-4">
-                        <input type="range" id="file-max-size-slider" class="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" min="1" max="16" step="1" value="10">
+                        <input type="range" id="file-max-size-slider" class="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer" min="1" max="16" step="1" value="10">
                         <span id="file-max-size-value" class="px-4 py-2 bg-blue-100 text-blue-700 rounded-xl font-bold text-sm whitespace-nowrap">10 MB</span>
                     </div>
                     <p class="text-xs text-gray-500 mt-2">File yang diunggah tidak boleh melebihi ukuran ini</p>
@@ -368,15 +368,15 @@
                 <div id="file-modal-error" class="hidden p-4 bg-red-50 text-red-600 rounded-2xl text-xs font-bold text-center"></div>
             </div>
             <div class="px-8 pb-8 flex space-x-3">
-                <button type="button" class="file-cancel-btn flex-1 px-6 py-4 text-gray-500 bg-gray-100 rounded-2xl font-bold hover:bg-gray-200 transition-all">Batal</button>
+                <button type="button" class="file-cancel-btn flex-1 px-6 py-4 text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded-2xl font-bold hover:bg-gray-200 dark:hover:bg-gray-600 transition-all">Batal</button>
                 <button type="submit" class="flex-[2] px-6 py-4 bg-blue-600 text-white rounded-2xl font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 active:scale-95">Simpan Berkas</button>
             </div>
         </form>
     </div>
 </div>
 
-<div id="create-link-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden animate-slide-up border border-indigo-50">
+<div id="create-link-modal" class="modal fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-gray-800 rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden animate-slide-up border border-indigo-50 dark:border-gray-700">
         <form id="create-link-form">
             <div class="bg-gradient-to-br from-indigo-500 to-indigo-700 px-8 py-8 text-white">
                 <h3 class="text-2xl font-black">Sematkan Link</h3>
@@ -384,17 +384,17 @@
             </div>
             <div class="p-8 space-y-6">
                 <div>
-                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Judul Link</label>
-                    <input type="text" id="link-name-input" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-indigo-500 outline-none font-bold" required>
+                    <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Judul Link</label>
+                    <input type="text" id="link-name-input" class="w-full px-6 py-4 bg-gray-50 dark:bg-gray-700 border-2 border-gray-100 dark:border-gray-600 rounded-2xl focus:border-indigo-500 outline-none font-bold text-gray-900 dark:text-gray-100" required>
                 </div>
                 <div>
-                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">URL (http/https)</label>
-                    <input type="url" id="link-url-input" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-indigo-500 outline-none font-bold" required>
+                    <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">URL (http/https)</label>
+                    <input type="url" id="link-url-input" class="w-full px-6 py-4 bg-gray-50 dark:bg-gray-700 border-2 border-gray-100 dark:border-gray-600 rounded-2xl focus:border-indigo-500 outline-none font-bold text-gray-900 dark:text-gray-100" required>
                 </div>
                 <div id="link-modal-error" class="hidden p-4 bg-red-50 text-red-600 rounded-2xl text-xs font-bold text-center"></div>
             </div>
             <div class="px-8 pb-8 flex space-x-3">
-                <button type="button" class="link-cancel-btn flex-1 px-6 py-4 text-gray-500 bg-gray-100 rounded-2xl font-bold hover:bg-gray-200 transition-all">Batal</button>
+                <button type="button" class="link-cancel-btn flex-1 px-6 py-4 text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded-2xl font-bold hover:bg-gray-200 dark:hover:bg-gray-600 transition-all">Batal</button>
                 <button type="submit" class="flex-[2] px-6 py-4 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700 active:scale-95">Simpan Link</button>
             </div>
         </form>
@@ -402,8 +402,8 @@
 </div>
 
 <!-- Create Discussion Modal -->
-<div id="create-discussion-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden animate-slide-up border border-primary-50">
+<div id="create-discussion-modal" class="modal fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-gray-800 rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden animate-slide-up border border-primary-50 dark:border-gray-700">
         <form id="create-discussion-form">
             <div class="bg-gradient-to-br from-primary-500 to-primary-700 px-8 py-8 text-white">
                 <h3 class="text-2xl font-black">Mulai Diskusi Baru</h3>
@@ -411,17 +411,17 @@
             </div>
             <div class="p-8 space-y-6">
                 <div>
-                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Judul Topik</label>
-                    <input type="text" id="discussion-title-input" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold" required>
+                    <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Judul Topik</label>
+                    <input type="text" id="discussion-title-input" class="w-full px-6 py-4 bg-gray-50 dark:bg-gray-700 border-2 border-gray-100 dark:border-gray-600 rounded-2xl focus:border-primary-500 outline-none font-bold text-gray-900 dark:text-gray-100" required>
                 </div>
                 <div>
-                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Isi Pertanyaan</label>
-                    <textarea id="discussion-content-input" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold" rows="4" required></textarea>
+                    <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Isi Pertanyaan</label>
+                    <textarea id="discussion-content-input" class="w-full px-6 py-4 bg-gray-50 dark:bg-gray-700 border-2 border-gray-100 dark:border-gray-600 rounded-2xl focus:border-primary-500 outline-none font-bold text-gray-900 dark:text-gray-100" rows="4" required></textarea>
                 </div>
                 <div id="discussion-modal-error" class="hidden p-4 bg-red-50 text-red-600 rounded-2xl text-xs font-bold text-center"></div>
             </div>
             <div class="px-8 pb-8 flex space-x-3">
-                <button type="button" class="discussion-cancel-btn flex-1 px-6 py-4 text-gray-500 bg-gray-100 rounded-2xl font-bold hover:bg-gray-200 transition-all">Batal</button>
+                <button type="button" class="discussion-cancel-btn flex-1 px-6 py-4 text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded-2xl font-bold hover:bg-gray-200 dark:hover:bg-gray-600 transition-all">Batal</button>
                 <button type="submit" class="flex-[2] px-6 py-4 bg-theme text-white rounded-2xl font-bold shadow-lg shadow-theme hover:opacity-90 active:scale-95">Mulai Forum</button>
             </div>
         </form>
@@ -429,8 +429,8 @@
 </div>
 
 <!-- KBM Edit Modal -->
-<div id="kbm-edit-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden animate-slide-up border border-primary-50">
+<div id="kbm-edit-modal" class="modal fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-gray-800 rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden animate-slide-up border border-primary-50 dark:border-gray-700">
         <form id="kbm-edit-form">
             <div class="bg-gradient-to-br from-primary-500 to-primary-700 px-8 py-8 text-white">
                 <h3 class="text-2xl font-black">Edit Catatan KBM</h3>
@@ -439,22 +439,22 @@
             <input type="hidden" id="kbm-edit-id">
             <div class="p-8 space-y-4">
                 <div>
-                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Tanggal *</label>
-                    <input type="date" id="kbm-edit-date" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold" required>
+                    <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Tanggal *</label>
+                    <input type="date" id="kbm-edit-date" class="w-full px-6 py-4 bg-gray-50 dark:bg-gray-700 border-2 border-gray-100 dark:border-gray-600 rounded-2xl focus:border-primary-500 outline-none font-bold text-gray-900 dark:text-gray-100" required>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Waktu Mulai</label>
-                        <input type="time" id="kbm-edit-start-time" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold">
+                        <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Waktu Mulai</label>
+                        <input type="time" id="kbm-edit-start-time" class="w-full px-6 py-4 bg-gray-50 dark:bg-gray-700 border-2 border-gray-100 dark:border-gray-600 rounded-2xl focus:border-primary-500 outline-none font-bold text-gray-900 dark:text-gray-100">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Waktu Selesai</label>
-                        <input type="time" id="kbm-edit-end-time" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold">
+                        <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Waktu Selesai</label>
+                        <input type="time" id="kbm-edit-end-time" class="w-full px-6 py-4 bg-gray-50 dark:bg-gray-700 border-2 border-gray-100 dark:border-gray-600 rounded-2xl focus:border-primary-500 outline-none font-bold text-gray-900 dark:text-gray-100">
                     </div>
                 </div>
                 <div>
-                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Kegiatan</label>
-                    <select id="kbm-edit-type" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold bg-white">
+                    <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Kegiatan</label>
+                    <select id="kbm-edit-type" class="w-full px-6 py-4 bg-gray-50 dark:bg-gray-700 border-2 border-gray-100 dark:border-gray-600 rounded-2xl focus:border-primary-500 outline-none font-bold text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700">
                         <option value="teori">📖 Teori</option>
                         <option value="praktikum">🧪 Praktikum</option>
                         <option value="ujian">📝 Ujian</option>
@@ -464,21 +464,21 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Materi/Topik *</label>
-                    <input type="text" id="kbm-edit-topic" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold" required>
+                    <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Materi/Topik *</label>
+                    <input type="text" id="kbm-edit-topic" class="w-full px-6 py-4 bg-gray-50 dark:bg-gray-700 border-2 border-gray-100 dark:border-gray-600 rounded-2xl focus:border-primary-500 outline-none font-bold text-gray-900 dark:text-gray-100" required>
                 </div>
                 <div>
-                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Detail KBM</label>
-                    <textarea id="kbm-edit-description" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold" rows="3"></textarea>
+                    <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Detail KBM</label>
+                    <textarea id="kbm-edit-description" class="w-full px-6 py-4 bg-gray-50 dark:bg-gray-700 border-2 border-gray-100 dark:border-gray-600 rounded-2xl focus:border-primary-500 outline-none font-bold text-gray-900 dark:text-gray-100" rows="3"></textarea>
                 </div>
                 <div>
-                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Catatan Tambahan</label>
-                    <textarea id="kbm-edit-notes" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold" rows="2"></textarea>
+                    <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Catatan Tambahan</label>
+                    <textarea id="kbm-edit-notes" class="w-full px-6 py-4 bg-gray-50 dark:bg-gray-700 border-2 border-gray-100 dark:border-gray-600 rounded-2xl focus:border-primary-500 outline-none font-bold text-gray-900 dark:text-gray-100" rows="2"></textarea>
                 </div>
                 <div id="kbm-edit-error" class="hidden p-4 bg-red-50 text-red-600 rounded-2xl text-xs font-bold text-center"></div>
             </div>
             <div class="px-8 pb-8 flex space-x-3">
-                <button type="button" onclick="closeKbmEditModal()" class="flex-1 px-6 py-4 text-gray-500 bg-gray-100 rounded-2xl font-bold hover:bg-gray-200 transition-all">Batal</button>
+                <button type="button" onclick="closeKbmEditModal()" class="flex-1 px-6 py-4 text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded-2xl font-bold hover:bg-gray-200 dark:hover:bg-gray-600 transition-all">Batal</button>
                 <button type="button" onclick="updateKbmNote()" class="flex-[2] px-6 py-4 bg-theme text-white rounded-2xl font-bold shadow-lg shadow-theme hover:opacity-90 active:scale-95">Update</button>
             </div>
         </form>
@@ -546,7 +546,7 @@ function toggleKbmForm() {
 
 async function loadKbmNotes() {
     const container = document.getElementById('kbm-timeline-content');
-    container.innerHTML = '<div class="text-center py-8 text-gray-500">Memuat catatan...</div>';
+    container.innerHTML = '<div class="text-center py-8 text-gray-500 dark:text-gray-400">Memuat catatan...</div>';
     
     try {
         const res = await fetch(`/api/courses/${COURSE_ID}/kbm-notes`);
@@ -567,7 +567,7 @@ function renderKbmTimeline(notes) {
     const container = document.getElementById('kbm-timeline-content');
     
     if (notes.length === 0) {
-        container.innerHTML = '<div class="text-center py-12 text-gray-400 ml-12">Belum ada catatan KBM. Klik "Tambah Catatan" untuk membuat.</div>';
+        container.innerHTML = '<div class="text-center py-12 text-gray-400 dark:text-gray-600 ml-12">Belum ada catatan KBM. Klik "Tambah Catatan" untuk membuat.</div>';
         return;
     }
     
@@ -594,19 +594,19 @@ function renderKbmTimeline(notes) {
             </div>
             
             <!-- Content card -->
-            <div class="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-lg transition-all cursor-pointer" onclick="openKbmEditModal(${note.id})">
+            <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-2xl p-5 hover:shadow-lg transition-all cursor-pointer" onclick="openKbmEditModal(${note.id})">
                 <div class="flex items-start justify-between mb-2">
                     <div class="flex-1">
-                        <h4 class="font-bold text-gray-900 text-lg">${note.topic}</h4>
-                        <p class="text-xs text-gray-500 mt-1">${dateStr}${note.start_time ? ' • ' + note.start_time + '-' + note.end_time : ''}</p>
+                        <h4 class="font-bold text-gray-900 dark:text-gray-100 text-lg">${note.topic}</h4>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">${dateStr}${note.start_time ? ' • ' + note.start_time + '-' + note.end_time : ''}</p>
                     </div>
                     <div class="flex items-center space-x-2">
-                        <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-bold uppercase">${note.activity_type}</span>
-                        <span class="text-gray-400 group-hover:text-theme transition-colors">✏️</span>
+                        <span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded text-xs font-bold uppercase">${note.activity_type}</span>
+                        <span class="text-gray-400 dark:text-gray-500 group-hover:text-theme transition-colors">✏️</span>
                     </div>
                 </div>
-                ${note.description ? `<p class="text-sm text-gray-700 mt-2 line-clamp-2">${note.description}</p>` : ''}
-                ${note.notes ? `<div class="mt-3 pt-3 border-t border-gray-100"><p class="text-xs text-gray-500 italic">📝 ${note.notes}</p></div>` : ''}
+                ${note.description ? `<p class="text-sm text-gray-700 dark:text-gray-300 mt-2 line-clamp-2">${note.description}</p>` : ''}
+                ${note.notes ? `<div class="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700"><p class="text-xs text-gray-500 dark:text-gray-400 italic">📝 ${note.notes}</p></div>` : ''}
             </div>
         `;
         container.appendChild(div);
@@ -756,15 +756,15 @@ function renderClassSwitcher() {
     allClasses.forEach(course => {
         const a = document.createElement('a');
         a.href = `/course/${course.id}`;
-        a.className = 'flex items-center space-x-4 px-4 py-3 hover:bg-gray-50 group transition-all border-b border-gray-50 last:border-0';
+        a.className = 'flex items-center space-x-4 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 group transition-all border-b border-gray-50 dark:border-gray-700 last:border-0';
         const isActive = course.id == CURRENT_COURSE_ID;
         a.innerHTML = `
             <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold" style="background-color: ${course.color}">
                 ${course.name.charAt(0).toUpperCase()}
             </div>
             <div class="flex-1 min-w-0">
-                <p class="font-bold text-gray-900 text-sm truncate group-hover:text-theme transition-colors">${course.name}</p>
-                <p class="text-xs text-gray-500">${course.students_count || 0} siswa • ${course.class_code}</p>
+                <p class="font-bold text-gray-900 dark:text-gray-100 text-sm truncate group-hover:text-theme transition-colors">${course.name}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">${course.students_count || 0} siswa • ${course.class_code}</p>
             </div>
             ${isActive ? '<span class="text-theme text-xs font-bold">✓ Aktif</span>' : ''}
         `;
@@ -925,8 +925,8 @@ function selectColor(color) {
 </script>
 
 <!-- Color Picker Modal -->
-<div id="color-picker-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden animate-slide-up">
+<div id="color-picker-modal" class="hidden fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-gray-800 rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden animate-slide-up">
         <div class="bg-gradient-to-br from-primary-500 to-primary-700 px-8 py-6 text-white">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-3">
@@ -948,7 +948,7 @@ function selectColor(color) {
             </div>
         </div>
         <div class="p-8">
-            <p class="text-gray-700 font-bold mb-6">Pilih warna favoritmu:</p>
+            <p class="text-gray-700 dark:text-gray-300 font-bold mb-6">Pilih warna favoritmu:</p>
             
             <!-- Color Grid -->
             <div class="grid grid-cols-5 gap-3 mb-6">
@@ -965,7 +965,7 @@ function selectColor(color) {
             </div>
             
             <div class="flex gap-3">
-                <button onclick="closeColorPicker()" class="flex-1 px-5 py-3.5 bg-gray-100 text-gray-700 rounded-2xl font-bold hover:bg-gray-200 transition-all">
+                <button onclick="closeColorPicker()" class="flex-1 px-5 py-3.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-2xl font-bold hover:bg-gray-200 dark:hover:bg-gray-600 transition-all">
                     Batal
                 </button>
             </div>

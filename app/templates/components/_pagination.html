@@ -12,11 +12,11 @@
       {# Previous button #}
       {% if pagination.has_prev %}
         <a href="{{ url_for(endpoint, **{page_param: pagination.prev_num}) }}"
-           class="px-3 py-2 text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-50 text-gray-700">
+           class="px-3 py-2 text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300">
           &laquo; Previous
         </a>
       {% else %}
-        <span class="px-3 py-2 text-sm bg-gray-100 border border-gray-200 rounded-md text-gray-400 cursor-not-allowed">
+        <span class="px-3 py-2 text-sm bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md text-gray-400 dark:text-gray-500 cursor-not-allowed">
           &laquo; Previous
         </span>
       {% endif %}
@@ -30,30 +30,30 @@
             </span>
           {% else %}
             <a href="{{ url_for(endpoint, **{page_param: page}) }}"
-               class="px-3 py-2 text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-50 text-gray-700">
+               class="px-3 py-2 text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300">
               {{ page }}
             </a>
           {% endif %}
         {% else %}
-          <span class="px-2 text-gray-500">&hellip;</span>
+          <span class="px-2 text-gray-500 dark:text-gray-400">&hellip;</span>
         {% endif %}
       {% endfor %}
 
       {# Next button #}
       {% if pagination.has_next %}
         <a href="{{ url_for(endpoint, **{page_param: pagination.next_num}) }}"
-           class="px-3 py-2 text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-50 text-gray-700">
+           class="px-3 py-2 text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300">
           Next &raquo;
         </a>
       {% else %}
-        <span class="px-3 py-2 text-sm bg-gray-100 border border-gray-200 rounded-md text-gray-400 cursor-not-allowed">
+        <span class="px-3 py-2 text-sm bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md text-gray-400 dark:text-gray-500 cursor-not-allowed">
           Next &raquo;
         </span>
       {% endif %}
     </nav>
 
     {# Info text #}
-    <p class="text-center text-sm text-gray-600 mt-2">
+    <p class="text-center text-sm text-gray-600 dark:text-gray-400 mt-2">
       Showing {{ pagination.items|length }} of {{ pagination.total }} items
       {% if pagination.page > 1 %}
         (Page {{ pagination.page }} of {{ pagination.pages }})
@@ -76,7 +76,7 @@
         <span></span>
       {% endif %}
 
-      <span class="text-sm text-gray-600">
+      <span class="text-sm text-gray-600 dark:text-gray-400">
         Page {{ pagination.page }} of {{ pagination.pages }}
       </span>
 

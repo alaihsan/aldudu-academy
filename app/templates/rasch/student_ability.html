@@ -20,6 +20,12 @@
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         transition: all 0.3s ease;
     }
+
+    @media (prefers-color-scheme: dark) {
+        .ability-card {
+            background: #1f2937;
+        }
+    }
     
     .ability-card:hover {
         transform: translateY(-4px);
@@ -137,13 +143,13 @@
     <div class="ability-card mb-8">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div class="md:col-span-2">
-                <h2 class="text-2xl font-bold text-gray-900 mb-2">Kemampuan Terakhir Kamu</h2>
-                <p class="text-gray-600 mb-6">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Kemampuan Terakhir Kamu</h2>
+                <p class="text-gray-600 dark:text-gray-400 mb-6">
                     Berdasarkan analisis Rasch dari {{ latest.rasch_analysis.name }}
                 </p>
-                
+
                 <div class="mb-4">
-                    <h3 class="text-lg font-semibold text-gray-700 mb-2">Tingkat Kemampuan Kamu</h3>
+                    <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">Tingkat Kemampuan Kamu</h3>
                     <div class="flex items-center gap-4 mb-4">
                         <div class="theta-badge theta-{{ latest.ability_level }} text-lg px-4 py-2">
                             {{ get_ability_label(latest.ability_level) }}
@@ -155,41 +161,41 @@
                         <div class="ability-marker" style="left: {{ position }}%"></div>
                     </div>
 
-                    <div class="flex justify-between text-sm text-gray-600">
+                    <div class="flex justify-between text-sm text-gray-600 dark:text-gray-400">
                         <span>Perlu Bimbingan</span>
                         <span>Rata-rata</span>
                         <span>Sangat Baik</span>
                     </div>
                 </div>
             </div>
-            
+
             <div class="text-center">
-                <p class="text-gray-600 mb-2">Percentile Rank di Kelas</p>
+                <p class="text-gray-600 dark:text-gray-400 mb-2">Percentile Rank di Kelas</p>
                 <div class="percentile-badge percentile-{{ get_percentile_class(latest.ability_percentile) }}">
                     <span>🏆</span>
                     <span>{{ latest.ability_percentile|round(1) }}%</span>
                 </div>
-                <p class="text-sm text-gray-600 mt-3">
+                <p class="text-sm text-gray-600 dark:text-gray-400 mt-3">
                     Kamu lebih baik dari {{ latest.ability_percentile|round(0) }}% siswa di kelas
                 </p>
             </div>
         </div>
         
         <!-- Stats Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8 pt-8 border-t border-gray-100">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8 pt-8 border-t border-gray-100 dark:border-gray-700">
             <div class="text-center">
-                <p class="text-gray-600 text-sm mb-1">Raw Score</p>
-                <p class="text-3xl font-bold text-gray-900">{{ latest.raw_score }}</p>
-                <p class="text-xs text-gray-500 mt-1">dari {{ latest.total_possible }} soal</p>
+                <p class="text-gray-600 dark:text-gray-400 text-sm mb-1">Raw Score</p>
+                <p class="text-3xl font-bold text-gray-900 dark:text-gray-100">{{ latest.raw_score }}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">dari {{ latest.total_possible }} soal</p>
             </div>
             <div class="text-center">
-                <p class="text-gray-600 text-sm mb-1">Persentase</p>
+                <p class="text-gray-600 dark:text-gray-400 text-sm mb-1">Persentase</p>
                 <p class="text-3xl font-bold text-indigo-600">{{ latest.percentage|round(1) }}%</p>
             </div>
             <div class="text-center">
-                <p class="text-gray-600 text-sm mb-1">Standard Error</p>
-                <p class="text-3xl font-bold text-gray-700">{{ latest.theta_se|round(3) }}</p>
-                <p class="text-xs text-gray-500 mt-1">SEM</p>
+                <p class="text-gray-600 dark:text-gray-400 text-sm mb-1">Standard Error</p>
+                <p class="text-3xl font-bold text-gray-700 dark:text-gray-300">{{ latest.theta_se|round(3) }}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">SEM</p>
             </div>
         </div>
     </div>
@@ -197,21 +203,21 @@
     <!-- Fit Statistics & Recommendations -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <div class="ability-card">
-            <h3 class="text-xl font-bold text-gray-900 mb-4">📊 Kualitas Jawaban Kamu</h3>
-            
+            <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">📊 Kualitas Jawaban Kamu</h3>
+
             <div class="space-y-4">
                 <div>
                     <div class="flex items-center justify-between mb-2">
-                        <span class="text-sm font-semibold text-gray-700">Outfit MNSQ</span>
+                        <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Outfit MNSQ</span>
                         <span class="text-sm font-bold {{ 'text-green-600' if latest.outfit_mnsq and 0.8 <= latest.outfit_mnsq <= 1.2 else 'text-yellow-600' }}">
                             {{ latest.outfit_mnsq|round(2) if latest.outfit_mnsq else 'N/A' }}
                         </span>
                     </div>
-                    <div class="w-full bg-gray-200 rounded-full h-2">
-                        <div class="bg-indigo-600 h-2 rounded-full" 
+                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                        <div class="bg-indigo-600 h-2 rounded-full"
                              style="width: {{ ([latest.outfit_mnsq, 2]|min / 2 * 100) if latest.outfit_mnsq else 0 }}%"></div>
                     </div>
-                    <p class="text-xs text-gray-600 mt-2">
+                    <p class="text-xs text-gray-600 dark:text-gray-400 mt-2">
                         {% if latest.outfit_mnsq and 0.8 <= latest.outfit_mnsq <= 1.2 %}
                         ✅ Jawaban kamu konsisten dan predictable
                         {% elif latest.outfit_mnsq and latest.outfit_mnsq > 1.2 %}
@@ -224,16 +230,16 @@
                 
                 <div>
                     <div class="flex items-center justify-between mb-2">
-                        <span class="text-sm font-semibold text-gray-700">Infit MNSQ</span>
+                        <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Infit MNSQ</span>
                         <span class="text-sm font-bold {{ 'text-green-600' if latest.infit_mnsq and 0.8 <= latest.infit_mnsq <= 1.2 else 'text-yellow-600' }}">
                             {{ latest.infit_mnsq|round(2) if latest.infit_mnsq else 'N/A' }}
                         </span>
                     </div>
-                    <div class="w-full bg-gray-200 rounded-full h-2">
-                        <div class="bg-green-600 h-2 rounded-full" 
+                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                        <div class="bg-green-600 h-2 rounded-full"
                              style="width: {{ ([latest.infit_mnsq, 2]|min / 2 * 100) if latest.infit_mnsq else 0 }}%"></div>
                     </div>
-                    <p class="text-xs text-gray-600 mt-2">
+                    <p class="text-xs text-gray-600 dark:text-gray-400 mt-2">
                         {% if latest.infit_mnsq and 0.8 <= latest.infit_mnsq <= 1.2 %}
                         ✅ Pattern jawaban kamu sesuai expectation
                         {% else %}
@@ -245,15 +251,15 @@
         </div>
         
         <div class="ability-card">
-            <h3 class="text-xl font-bold text-gray-900 mb-4">💡 Rekomendasi untuk Kamu</h3>
-            
+            <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">💡 Rekomendasi untuk Kamu</h3>
+
             {% if latest.ability_level in ['very_low', 'low'] %}
             <div class="recommendation-card">
-                <p class="font-bold text-gray-900 mb-2">🎯 Fokus Belajar</p>
-                <p class="text-sm text-gray-700 mb-3">
+                <p class="font-bold text-gray-900 dark:text-gray-100 mb-2">🎯 Fokus Belajar</p>
+                <p class="text-sm text-gray-700 dark:text-gray-300 mb-3">
                     Kemampuan kamu masih di bawah rata-rata. Jangan khawatir, ini saat yang tepat untuk belajar lebih giat!
                 </p>
-                <ul class="text-sm text-gray-700 space-y-2">
+                <ul class="text-sm text-gray-700 dark:text-gray-300 space-y-2">
                     <li>✅ Review materi dasar terlebih dahulu</li>
                     <li>✅ Kerjakan soal-soal level mudah dulu</li>
                     <li>✅ Minta bantuan guru atau teman jika ada yang tidak paham</li>
@@ -262,11 +268,11 @@
             </div>
             {% elif latest.ability_level == 'average' %}
             <div class="strength-card">
-                <p class="font-bold text-gray-900 mb-2">👍 Bagus! Kamu di Rata-rata</p>
-                <p class="text-sm text-gray-700 mb-3">
+                <p class="font-bold text-gray-900 dark:text-gray-100 mb-2">👍 Bagus! Kamu di Rata-rata</p>
+                <p class="text-sm text-gray-700 dark:text-gray-300 mb-3">
                     Kemampuan kamu sudah cukup baik. Tingkatkan lagi untuk mencapai level berikutnya!
                 </p>
-                <ul class="text-sm text-gray-700 space-y-2">
+                <ul class="text-sm text-gray-700 dark:text-gray-300 space-y-2">
                     <li>✅ Pertahankan konsistensi belajar</li>
                     <li>✅ Coba kerjakan soal level analyze & evaluate</li>
                     <li>✅ Diskusikan materi dengan teman</li>
@@ -275,11 +281,11 @@
             </div>
             {% else %}
             <div class="strength-card">
-                <p class="font-bold text-gray-900 mb-2">🌟 Excellent! Kamu Above Average</p>
-                <p class="text-sm text-gray-700 mb-3">
+                <p class="font-bold text-gray-900 dark:text-gray-100 mb-2">🌟 Excellent! Kamu Above Average</p>
+                <p class="text-sm text-gray-700 dark:text-gray-300 mb-3">
                     Kemampuan kamu di atas rata-rata! Terus pertahankan dan bantu temanmu juga!
                 </p>
-                <ul class="text-sm text-gray-700 space-y-2">
+                <ul class="text-sm text-gray-700 dark:text-gray-300 space-y-2">
                     <li>✅ Coba kerjakan soal-soal challenge level create</li>
                     <li>✅ Bantu teman yang masih kesulitan</li>
                     <li>✅ Eksplor materi lebih dalam lagi</li>
@@ -292,37 +298,37 @@
     
     <!-- History -->
     <div class="ability-card">
-        <h3 class="text-xl font-bold text-gray-900 mb-6">📈 Riwayat Kemampuan</h3>
-        
+        <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">📈 Riwayat Kemampuan</h3>
+
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead>
-                    <tr class="border-b border-gray-200">
-                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Quiz</th>
-                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Tanggal</th>
-                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Raw Score</th>
-                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Percentage</th>
-                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Theta (θ)</th>
-                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Level</th>
-                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Percentile</th>
+                    <tr class="border-b border-gray-200 dark:border-gray-800">
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Quiz</th>
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Tanggal</th>
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Raw Score</th>
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Percentage</th>
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Theta (θ)</th>
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Level</th>
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Percentile</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for measure in student_measures|sort(attribute='created_at', reverse=true) %}
-                    <tr class="border-b border-gray-50 hover:bg-gray-50">
-                        <td class="py-3 px-4 text-sm font-semibold text-gray-900">
+                    <tr class="border-b border-gray-50 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
+                        <td class="py-3 px-4 text-sm font-semibold text-gray-900 dark:text-gray-100">
                             {{ measure.rasch_analysis.name }}
                         </td>
-                        <td class="py-3 px-4 text-sm text-gray-600">
+                        <td class="py-3 px-4 text-sm text-gray-600 dark:text-gray-400">
                             {{ measure.created_at.strftime('%d %b %Y') }}
                         </td>
-                        <td class="py-3 px-4 text-sm text-gray-700">
+                        <td class="py-3 px-4 text-sm text-gray-700 dark:text-gray-300">
                             {{ measure.raw_score }}/{{ measure.total_possible }}
                         </td>
-                        <td class="py-3 px-4 text-sm text-gray-700">
+                        <td class="py-3 px-4 text-sm text-gray-700 dark:text-gray-300">
                             {{ measure.percentage|round(1) }}%
                         </td>
-                        <td class="py-3 px-4 text-sm font-mono font-semibold {{ 'text-indigo-600' if measure.theta > 0 else 'text-gray-600' }}">
+                        <td class="py-3 px-4 text-sm font-mono font-semibold {{ 'text-indigo-600' if measure.theta > 0 else 'text-gray-600 dark:text-gray-400' }}">
                             {{ measure.theta|round(2) }}
                         </td>
                         <td class="py-3 px-4 text-sm">
@@ -331,7 +337,7 @@
                             </span>
                         </td>
                         <td class="py-3 px-4 text-sm">
-                            <span class="font-bold {{ 'text-green-600' if measure.ability_percentile > 75 else 'text-gray-600' }}">
+                            <span class="font-bold {{ 'text-green-600' if measure.ability_percentile > 75 else 'text-gray-600 dark:text-gray-400' }}">
                                 {{ measure.ability_percentile|round(1) }}%
                             </span>
                         </td>
@@ -346,12 +352,12 @@
     <!-- No Data -->
     <div class="ability-card text-center py-16">
         <div class="text-6xl mb-4">📊</div>
-        <h3 class="text-2xl font-bold text-gray-900 mb-2">Belum Ada Data Analisis</h3>
-        <p class="text-gray-600 mb-6">
+        <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Belum Ada Data Analisis</h3>
+        <p class="text-gray-600 dark:text-gray-400 mb-6">
             Kamu belum memiliki hasil analisis Rasch. Analisis akan tersedia setelah mengerjakan quiz dengan Rasch enabled.
         </p>
         <a href="{{ url_for('main.course_detail', course_id=course.id) }}"
-           class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold transition-all">
+           class="bg-indigo-600 hover:bg-indigo-700 dark:hover:bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold transition-all">
             Lihat Quiz yang Tersedia
         </a>
     </div>

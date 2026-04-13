@@ -3,19 +3,19 @@
 {% block title %}Admin Dashboard - Aldudu Academy{% endblock %}
 
 {% block body %}
-<div id="app-page" class="min-h-screen bg-gray-50 flex">
+<div id="app-page" class="min-h-screen bg-gray-50 dark:bg-gray-950 flex">
     <!-- Sidebar -->
     {% include '_sidebar.html' %}
 
     <!-- Main Content Area -->
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
         <!-- Top Header -->
-        <header class="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-8 sticky top-0 z-30">
+        <header class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 h-16 flex items-center justify-between px-8 sticky top-0 z-30">
             <div class="flex items-center space-x-4">
-                <h2 class="text-lg font-bold text-gray-900 truncate">Superadmin Dashboard</h2>
+                <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100 truncate">Superadmin Dashboard</h2>
             </div>
             <div class="flex items-center space-x-4">
-                <span class="px-4 py-2 bg-indigo-50 text-indigo-700 rounded-xl text-xs font-black uppercase tracking-widest border border-indigo-100">
+                <span class="px-4 py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-xl text-xs font-black uppercase tracking-widest border border-indigo-100 dark:border-indigo-800">
                     System Admin
                 </span>
             </div>
@@ -24,80 +24,80 @@
         <!-- Main Scrollable Area -->
         <main class="flex-1 overflow-y-auto p-8 animate-premium-entrance">
             <div class="max-w-7xl mx-auto space-y-8">
-                
+
                 <!-- Stats Grid -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div class="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-premium flex flex-col items-center text-center">
-                        <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-4">
+                    <div class="bg-white dark:bg-gray-800 p-8 rounded-[2rem] border border-gray-100 dark:border-gray-700 shadow-premium flex flex-col items-center text-center">
+                        <div class="w-12 h-12 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center mb-4">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                         </div>
-                        <p class="text-3xl font-black text-gray-900">{{ stats.total_guru }}</p>
-                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Total Guru</p>
+                        <p class="text-3xl font-black text-gray-900 dark:text-gray-100">{{ stats.total_guru }}</p>
+                        <p class="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-1">Total Guru</p>
                     </div>
-                    
-                    <div class="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-premium flex flex-col items-center text-center">
-                        <div class="w-12 h-12 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center mb-4">
+
+                    <div class="bg-white dark:bg-gray-800 p-8 rounded-[2rem] border border-gray-100 dark:border-gray-700 shadow-premium flex flex-col items-center text-center">
+                        <div class="w-12 h-12 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-2xl flex items-center justify-center mb-4">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                         </div>
-                        <p class="text-3xl font-black text-gray-900">{{ stats.total_murid }}</p>
-                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Total Murid</p>
+                        <p class="text-3xl font-black text-gray-900 dark:text-gray-100">{{ stats.total_murid }}</p>
+                        <p class="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-1">Total Murid</p>
                     </div>
 
-                    <div class="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-premium flex flex-col items-center text-center">
-                        <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center mb-4">
+                    <div class="bg-white dark:bg-gray-800 p-8 rounded-[2rem] border border-gray-100 dark:border-gray-700 shadow-premium flex flex-col items-center text-center">
+                        <div class="w-12 h-12 bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-2xl flex items-center justify-center mb-4">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13"/></svg>
                         </div>
-                        <p class="text-3xl font-black text-gray-900">{{ stats.total_courses }}</p>
-                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Total Kelas</p>
+                        <p class="text-3xl font-black text-gray-900 dark:text-gray-100">{{ stats.total_courses }}</p>
+                        <p class="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-1">Total Kelas</p>
                     </div>
 
-                    <div class="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-premium flex flex-col items-center text-center">
-                        <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center mb-4">
+                    <div class="bg-white dark:bg-gray-800 p-8 rounded-[2rem] border border-gray-100 dark:border-gray-700 shadow-premium flex flex-col items-center text-center">
+                        <div class="w-12 h-12 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-2xl flex items-center justify-center mb-4">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         </div>
-                        <p class="text-3xl font-black text-gray-900">{{ stats.total_submissions }}</p>
-                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Kuis Dikerjakan</p>
+                        <p class="text-3xl font-black text-gray-900 dark:text-gray-100">{{ stats.total_submissions }}</p>
+                        <p class="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-1">Kuis Dikerjakan</p>
                     </div>
                 </div>
 
                 <!-- Activity Log & Quick Access -->
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <!-- Activity Log -->
-                    <div class="lg:col-span-2 bg-white rounded-[2.5rem] border border-gray-100 shadow-premium overflow-hidden">
-                        <div class="px-8 py-6 border-b border-gray-50 flex items-center justify-between">
-                            <h3 class="text-lg font-black text-gray-900">Log Aktivitas Terbaru</h3>
+                    <div class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-[2.5rem] border border-gray-100 dark:border-gray-700 shadow-premium overflow-hidden">
+                        <div class="px-8 py-6 border-b border-gray-50 dark:border-gray-700 flex items-center justify-between">
+                            <h3 class="text-lg font-black text-gray-900 dark:text-gray-100">Log Aktivitas Terbaru</h3>
                             <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                         </div>
                         <div class="overflow-x-auto">
                             <table class="w-full">
-                                <thead class="bg-gray-50">
+                                <thead class="bg-gray-50 dark:bg-gray-800">
                                     <tr>
-                                        <th class="px-8 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">User</th>
-                                        <th class="px-8 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Aktivitas</th>
-                                        <th class="px-8 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Waktu</th>
+                                        <th class="px-8 py-4 text-left text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">User</th>
+                                        <th class="px-8 py-4 text-left text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">Aktivitas</th>
+                                        <th class="px-8 py-4 text-left text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">Waktu</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-gray-50">
+                                <tbody class="divide-y divide-gray-50 dark:divide-gray-700">
                                     {% for log in recent_logs %}
-                                    <tr class="hover:bg-gray-50/50 transition-colors">
+                                    <tr class="hover:bg-gray-50/50 dark:hover:bg-gray-700/50 transition-colors">
                                         <td class="px-8 py-4">
                                             <div class="flex items-center space-x-3">
-                                                <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs">
+                                                <div class="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xs">
                                                     {{ log.user.name[0] }}
                                                 </div>
                                                 <div>
-                                                    <p class="text-sm font-bold text-gray-900">{{ log.user.name }}</p>
-                                                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">{{ log.user.role.value }}</p>
+                                                    <p class="text-sm font-bold text-gray-900 dark:text-gray-100">{{ log.user.name }}</p>
+                                                    <p class="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">{{ log.user.role.value }}</p>
                                                 </div>
                                             </div>
                                         </td>
                                         <td class="px-8 py-4">
-                                            <p class="text-sm text-gray-700 font-medium">{{ log.action }}</p>
+                                            <p class="text-sm text-gray-700 dark:text-gray-300 font-medium">{{ log.action }}</p>
                                             {% if log.details %}
-                                            <p class="text-[10px] text-gray-400">{{ log.details }}</p>
+                                            <p class="text-[10px] text-gray-400 dark:text-gray-500">{{ log.details }}</p>
                                             {% endif %}
                                         </td>
-                                        <td class="px-8 py-4 text-sm text-gray-500">
+                                        <td class="px-8 py-4 text-sm text-gray-500 dark:text-gray-400">
                                             {{ log.created_at.strftime('%H:%M · %d %b') }}
                                         </td>
                                     </tr>
@@ -109,24 +109,24 @@
 
                     <!-- Sidebar Content -->
                     <div class="space-y-6">
-                        <div class="bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-[2.5rem] p-8 text-white shadow-xl shadow-indigo-100">
+                        <div class="bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-[2.5rem] p-8 text-white shadow-xl shadow-indigo-100 dark:shadow-indigo-900/50">
                             <h3 class="text-xl font-bold mb-4">Manajemen Akun</h3>
                             <p class="text-indigo-100 text-sm mb-6 leading-relaxed">Kelola guru dan murid, aktifkan atau nonaktifkan akun dalam satu panel.</p>
                             <a href="{{ url_for('admin.user_management') }}" class="block w-full py-4 bg-white text-indigo-700 rounded-2xl text-center font-black text-sm hover:shadow-lg transition-all active:scale-95">
                                 Kelola Semua User
                             </a>
                         </div>
-                        
-                        <div class="bg-white rounded-[2.5rem] p-8 border border-gray-100 shadow-premium">
-                            <h3 class="text-lg font-black text-gray-900 mb-4">Sistem</h3>
+
+                        <div class="bg-white dark:bg-gray-800 rounded-[2.5rem] p-8 border border-gray-100 dark:border-gray-700 shadow-premium">
+                            <h3 class="text-lg font-black text-gray-900 dark:text-gray-100 mb-4">Sistem</h3>
                             <div class="space-y-4">
-                                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
-                                    <span class="text-xs font-bold text-gray-500">Versi App</span>
-                                    <span class="text-xs font-black text-gray-900">v2.4.0-premium</span>
+                                <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-2xl">
+                                    <span class="text-xs font-bold text-gray-500 dark:text-gray-400">Versi App</span>
+                                    <span class="text-xs font-black text-gray-900 dark:text-gray-100">v2.4.0-premium</span>
                                 </div>
-                                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
-                                    <span class="text-xs font-bold text-gray-500">Status DB</span>
-                                    <span class="flex items-center text-xs font-black text-green-600">
+                                <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-2xl">
+                                    <span class="text-xs font-bold text-gray-500 dark:text-gray-400">Status DB</span>
+                                    <span class="flex items-center text-xs font-black text-green-600 dark:text-green-400">
                                         <span class="w-1.5 h-1.5 bg-green-500 rounded-full mr-2"></span>
                                         Connected
                                     </span>

@@ -25,28 +25,28 @@
 {% endblock %}
 
 {% block body %}
-<div id="app-page" class="min-h-screen bg-gray-50 flex">
+<div id="app-page" class="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
     {% include '_sidebar.html' %}
 
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
         <!-- Header -->
-        <header class="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-8 sticky top-0 z-30">
+        <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 h-16 flex items-center justify-between px-8 sticky top-0 z-30">
             <div class="flex items-center space-x-4">
-                <a href="{{ url_for('main.course_detail', course_id=course.id) }}" class="p-2 text-gray-400 hover:text-theme transition-colors">
+                <a href="{{ url_for('main.course_detail', course_id=course.id) }}" class="p-2 text-gray-400 dark:text-gray-500 hover:text-theme transition-colors">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
                 </a>
                 <div>
-                    <h2 class="text-lg font-bold text-gray-900">{{ course.name }}</h2>
-                    <p class="text-xs text-gray-500">Buku Nilai</p>
+                    <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100">{{ course.name }}</h2>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Buku Nilai</p>
                 </div>
             </div>
             <div class="flex items-center space-x-3">
-                <a href="{{ url_for('evaluation.course_detail', course_id=course.id) }}" class="px-4 py-2 text-sm font-medium text-primary-700 bg-primary-50 border border-primary-200 rounded-lg hover:bg-primary-100 transition-all">
+                <a href="{{ url_for('evaluation.course_detail', course_id=course.id) }}" class="px-4 py-2 text-sm font-medium text-primary-700 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 border border-primary-200 dark:border-primary-800 rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900/50 transition-all">
                     📊 Evaluasi Tes
                 </a>
-                <a href="{{ url_for('gradebook.course_setup', course_id=course.id) }}" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all">
+                <a href="{{ url_for('gradebook.course_setup', course_id=course.id) }}" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-all">
                     ⚙️ Setup CP/TP
                 </a>
                 <a href="{{ url_for('gradebook.my_grades', course_id=course.id) }}" class="px-4 py-2 text-sm font-medium text-white bg-theme rounded-lg hover:opacity-90 transition-all">
@@ -60,18 +60,18 @@
             <div class="max-w-7xl mx-auto space-y-6">
                 
                 <!-- Tabs -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-2">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-2">
                     <div class="flex space-x-2">
                         <button onclick="switchTab('input')" id="tab-input" class="tab-btn active flex-1 px-4 py-3 rounded-lg text-sm font-bold transition-all">
                             📝 Input Nilai
                         </button>
-                        <button onclick="switchTab('recap')" id="tab-recap" class="tab-btn flex-1 px-4 py-3 rounded-lg text-sm font-bold text-gray-600 hover:bg-gray-100 transition-all">
+                        <button onclick="switchTab('recap')" id="tab-recap" class="tab-btn flex-1 px-4 py-3 rounded-lg text-sm font-bold text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all">
                             📊 Rekap Nilai
                         </button>
-                        <button onclick="switchTab('quiz')" id="tab-quiz" class="tab-btn flex-1 px-4 py-3 rounded-lg text-sm font-bold text-gray-600 hover:bg-gray-100 transition-all">
+                        <button onclick="switchTab('quiz')" id="tab-quiz" class="tab-btn flex-1 px-4 py-3 rounded-lg text-sm font-bold text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all">
                             🎯 Import dari Quiz
                         </button>
-                        <button onclick="switchTab('analytics')" id="tab-analytics" class="tab-btn flex-1 px-4 py-3 rounded-lg text-sm font-bold text-gray-600 hover:bg-gray-100 transition-all">
+                        <button onclick="switchTab('analytics')" id="tab-analytics" class="tab-btn flex-1 px-4 py-3 rounded-lg text-sm font-bold text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all">
                             📈 Analitik
                         </button>
                     </div>
@@ -80,17 +80,17 @@
                 <!-- INPUT TAB -->
                 <div id="content-input" class="tab-content space-y-6">
                     <!-- Filter Bar -->
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                         <div class="flex items-end gap-4">
                             <div class="flex-1">
-                                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Kategori</label>
-                                <select id="filter-category" onchange="loadGradeItems()" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none transition-all">
+                                <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Kategori</label>
+                                <select id="filter-category" onchange="loadGradeItems()" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none transition-all">
                                     <option value="">Semua Kategori</option>
                                 </select>
                             </div>
                             <div class="flex-1">
-                                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">CP / TP</label>
-                                <select id="filter-cp" onchange="loadGradeItems()" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none transition-all">
+                                <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">CP / TP</label>
+                                <select id="filter-cp" onchange="loadGradeItems()" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none transition-all">
                                     <option value="">Semua CP/TP</option>
                                 </select>
                             </div>
@@ -110,21 +110,21 @@
 
                 <!-- RECAP TAB -->
                 <div id="content-recap" class="tab-content hidden space-y-6">
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                        <h3 class="text-lg font-bold text-gray-900 mb-6">📊 Rekap Nilai Siswa</h3>
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 mb-6">📊 Rekap Nilai Siswa</h3>
                         <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
+                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                <thead class="bg-gray-50 dark:bg-gray-800">
                                     <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">No</th>
-                                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Nama Siswa</th>
-                                        <th class="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Formatif</th>
-                                        <th class="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Sumatif</th>
-                                        <th class="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Total</th>
-                                        <th class="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Predikat</th>
+                                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">No</th>
+                                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Nama Siswa</th>
+                                        <th class="px-6 py-3 text-center text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Formatif</th>
+                                        <th class="px-6 py-3 text-center text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Sumatif</th>
+                                        <th class="px-6 py-3 text-center text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total</th>
+                                        <th class="px-6 py-3 text-center text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Predikat</th>
                                     </tr>
                                 </thead>
-                                <tbody id="recap-body" class="bg-white divide-y divide-gray-200"></tbody>
+                                <tbody id="recap-body" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"></tbody>
                             </table>
                         </div>
                     </div>
@@ -132,8 +132,8 @@
 
                 <!-- QUIZ TAB -->
                 <div id="content-quiz" class="tab-content hidden space-y-6">
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                        <h3 class="text-lg font-bold text-gray-900 mb-6">🎯 Import Nilai dari Quiz</h3>
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 mb-6">🎯 Import Nilai dari Quiz</h3>
                         <div id="quiz-list" class="space-y-4"></div>
                     </div>
                 </div>
@@ -141,37 +141,37 @@
                 <!-- ANALYTICS TAB -->
                 <div id="content-analytics" class="tab-content hidden space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                            <p class="text-sm text-gray-500 font-semibold uppercase tracking-wider">Rata-rata Kelas</p>
+                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                            <p class="text-sm text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wider">Rata-rata Kelas</p>
                             <p id="stat-average" class="text-4xl font-bold text-theme mt-2">-</p>
                         </div>
-                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                            <p class="text-sm text-gray-500 font-semibold uppercase tracking-wider">Nilai Tertinggi</p>
-                            <p id="stat-highest" class="text-4xl font-bold text-green-600 mt-2">-</p>
+                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                            <p class="text-sm text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wider">Nilai Tertinggi</p>
+                            <p id="stat-highest" class="text-4xl font-bold text-green-600 dark:text-green-400 mt-2">-</p>
                         </div>
-                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                            <p class="text-sm text-gray-500 font-semibold uppercase tracking-wider">Nilai Terendah</p>
-                            <p id="stat-lowest" class="text-4xl font-bold text-orange-600 mt-2">-</p>
+                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                            <p class="text-sm text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wider">Nilai Terendah</p>
+                            <p id="stat-lowest" class="text-4xl font-bold text-orange-600 dark:text-orange-400 mt-2">-</p>
                         </div>
                     </div>
-                    
+
                     <!-- CTT Item Analysis Section -->
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                         <div class="flex items-center justify-between mb-6">
-                            <h3 class="text-lg font-bold text-gray-900">📊 Analisis Butir Soal (CTT)</h3>
-                            <select id="ctt-quiz-select" onchange="loadCTTAnalysis()" class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-semibold focus:ring-2 focus-theme focus:border-theme outline-none">
+                            <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100">📊 Analisis Butir Soal (CTT)</h3>
+                            <select id="ctt-quiz-select" onchange="loadCTTAnalysis()" class="px-4 py-2 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg text-sm font-semibold focus:ring-2 focus-theme focus:border-theme outline-none">
                                 <option value="">Pilih Quiz/Tugas</option>
                             </select>
                         </div>
                         <div id="ctt-analysis-content" class="space-y-4">
-                            <div class="text-center py-12 text-gray-400">
+                            <div class="text-center py-12 text-gray-400 dark:text-gray-500">
                                 <p class="text-sm">Pilih quiz atau tugas untuk melihat analisis butir soal</p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                        <h3 class="text-lg font-bold text-gray-900 mb-6">Distribusi Nilai</h3>
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 mb-6">Distribusi Nilai</h3>
                         <div id="grade-distribution" class="space-y-4"></div>
                     </div>
                 </div>
@@ -181,8 +181,8 @@
 </div>
 
 <!-- ASSIGNMENT PREVIEW MODAL -->
-<div id="assignment-preview-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl animate-slide-up max-h-[90vh] flex flex-col">
+<div id="assignment-preview-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 z-50 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-4xl animate-slide-up max-h-[90vh] flex flex-col">
         <div class="modal-header-theme px-6 py-4 flex items-center justify-between">
             <div>
                 <h3 id="assignment-preview-title" class="text-xl font-bold text-white">Preview Submissions</h3>
@@ -197,7 +197,7 @@
         <div id="assignment-preview-content" class="p-6 overflow-y-auto flex-1">
             <!-- Populated by JS -->
         </div>
-        <div class="bg-gray-50 px-6 py-4 flex justify-end rounded-b-2xl">
+        <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 flex justify-end rounded-b-2xl">
             <button type="button" onclick="closeAssignmentPreview()" class="px-6 py-2 bg-theme text-white rounded-lg hover:opacity-90 transition-all font-semibold">
                 Tutup
             </button>
@@ -206,8 +206,8 @@
 </div>
 
 <!-- ADD ITEM MODAL -->
-<div id="add-item-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg animate-slide-up">
+<div id="add-item-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 z-50 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg animate-slide-up">
         <div class="modal-header-theme px-6 py-4">
             <h3 class="text-xl font-bold text-white">Tambah Item Penilaian</h3>
             <p class="text-white/80 text-sm mt-1">Tambah tugas, ujian, atau penilaian lainnya</p>
@@ -215,78 +215,78 @@
         <form id="add-item-form" class="p-6 space-y-4">
             <input type="hidden" id="item-course-id" value="{{ course.id }}">
             <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Nama Item *</label>
-                <input type="text" id="item-name" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none" placeholder="Contoh: Tugas 1 - Aljabar">
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Nama Item *</label>
+                <input type="text" id="item-name" required class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none" placeholder="Contoh: Tugas 1 - Aljabar">
             </div>
             <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Kategori *</label>
-                <select id="item-category" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none">
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Kategori *</label>
+                <select id="item-category" required class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none">
                     <option value="">Pilih Kategori</option>
                 </select>
             </div>
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Nilai Maksimal</label>
-                    <input type="number" id="item-max-score" value="100" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none">
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Nilai Maksimal</label>
+                    <input type="number" id="item-max-score" value="100" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none">
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Bobot (%)</label>
-                    <input type="number" id="item-weight" value="0" step="0.1" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none">
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Bobot (%)</label>
+                    <input type="number" id="item-weight" value="0" step="0.1" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none">
                 </div>
             </div>
             <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">CP (Opsional)</label>
-                <select id="item-cp" onchange="loadTPForItem()" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none">
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">CP (Opsional)</label>
+                <select id="item-cp" onchange="loadTPForItem()" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none">
                     <option value="">Tidak ada</option>
                 </select>
             </div>
             <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">TP (Opsional)</label>
-                <select id="item-tp" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none">
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">TP (Opsional)</label>
+                <select id="item-tp" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none">
                     <option value="">Tidak ada</option>
                 </select>
             </div>
             <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Deskripsi</label>
-                <textarea id="item-description" rows="2" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none" placeholder="Deskripsi singkat"></textarea>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Deskripsi</label>
+                <textarea id="item-description" rows="2" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none" placeholder="Deskripsi singkat"></textarea>
             </div>
-            <div id="add-item-error" class="hidden text-red-600 text-sm"></div>
+            <div id="add-item-error" class="hidden text-red-600 dark:text-red-400 text-sm"></div>
         </form>
-        <div class="bg-gray-50 px-6 py-4 flex justify-end space-x-3 rounded-b-2xl">
-            <button type="button" onclick="closeAddItemModal()" class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all font-semibold">Batal</button>
+        <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 flex justify-end space-x-3 rounded-b-2xl">
+            <button type="button" onclick="closeAddItemModal()" class="px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all font-semibold">Batal</button>
             <button type="button" onclick="saveGradeItem()" class="px-4 py-2 bg-theme text-white rounded-lg hover:opacity-90 transition-all font-semibold">Simpan</button>
         </div>
     </div>
 </div>
 
 <!-- GRADE ENTRY MODAL -->
-<div id="grade-entry-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-5xl animate-slide-up">
+<div id="grade-entry-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 z-50 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-5xl animate-slide-up">
         <div class="modal-header-theme px-6 py-4">
             <h3 class="text-xl font-bold text-white" id="entry-modal-title">Input Nilai</h3>
             <p class="text-white/80 text-sm mt-1" id="entry-modal-desc">Masukkan nilai untuk semua siswa</p>
         </div>
         <div class="p-6">
             <div class="overflow-x-auto max-h-[60vh]">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50 sticky top-0">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead class="bg-gray-50 dark:bg-gray-800 sticky top-0">
                         <tr>
-                            <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">No</th>
-                            <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">Nama Siswa</th>
-                            <th class="px-4 py-3 text-center text-xs font-bold text-gray-500 uppercase">Nilai</th>
-                            <th class="px-4 py-3 text-center text-xs font-bold text-gray-500 uppercase">Feedback</th>
+                            <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">No</th>
+                            <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Nama Siswa</th>
+                            <th class="px-4 py-3 text-center text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Nilai</th>
+                            <th class="px-4 py-3 text-center text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Feedback</th>
                         </tr>
                     </thead>
-                    <tbody id="grade-entry-body" class="bg-white divide-y divide-gray-200"></tbody>
+                    <tbody id="grade-entry-body" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"></tbody>
                 </table>
             </div>
         </div>
-        <div class="bg-gray-50 px-6 py-4 flex justify-between items-center rounded-b-2xl">
+        <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 flex justify-between items-center rounded-b-2xl">
             <button type="button" onclick="autoFillGrades()" class="px-4 py-2 text-theme bg-theme-light rounded-lg hover:bg-theme/10 transition-all text-sm font-bold">
                 ⚡ Isi Otomatis (Max)
             </button>
             <div class="flex space-x-3">
-                <button type="button" onclick="closeGradeEntryModal()" class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all font-semibold">Batal</button>
+                <button type="button" onclick="closeGradeEntryModal()" class="px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all font-semibold">Batal</button>
                 <button type="button" onclick="saveAllGrades()" class="px-4 py-2 bg-theme text-white rounded-lg hover:opacity-90 transition-all font-semibold">Simpan Semua</button>
             </div>
         </div>
@@ -294,29 +294,29 @@
 </div>
 
 <!-- IMPORT QUIZ MODAL -->
-<div id="import-quiz-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md animate-slide-up">
+<div id="import-quiz-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 z-50 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md animate-slide-up">
         <div class="modal-header-theme px-6 py-4">
             <h3 class="text-xl font-bold text-white">Import Quiz ke Buku Nilai</h3>
         </div>
         <form id="import-quiz-form" class="p-6 space-y-4">
             <input type="hidden" id="import-quiz-id">
             <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Kategori *</label>
-                <select id="import-category" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none">
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Kategori *</label>
+                <select id="import-category" required class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none">
                     <option value="">Pilih Kategori</option>
                 </select>
             </div>
             <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">TP (Opsional)</label>
-                <select id="import-tp" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none">
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">TP (Opsional)</label>
+                <select id="import-tp" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none">
                     <option value="">Tidak ada</option>
                 </select>
             </div>
-            <div id="import-error" class="hidden text-red-600 text-sm"></div>
+            <div id="import-error" class="hidden text-red-600 dark:text-red-400 text-sm"></div>
         </form>
-        <div class="bg-gray-50 px-6 py-4 flex justify-end space-x-3 rounded-b-2xl">
-            <button type="button" onclick="closeImportQuizModal()" class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all font-semibold">Batal</button>
+        <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 flex justify-end space-x-3 rounded-b-2xl">
+            <button type="button" onclick="closeImportQuizModal()" class="px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all font-semibold">Batal</button>
             <button type="button" onclick="confirmImportQuiz()" class="px-4 py-2 bg-theme text-white rounded-lg hover:opacity-90 transition-all font-semibold">Import</button>
         </div>
     </div>
@@ -332,7 +332,7 @@ function switchTab(tabName) {
     document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
     document.querySelectorAll('.tab-btn').forEach(el => {
         el.classList.remove('active');
-        el.classList.add('text-gray-600', 'hover:bg-gray-100');
+        el.classList.add('text-gray-600', 'dark:text-gray-400', 'hover:bg-gray-100', 'dark:hover:bg-gray-700');
     });
     
     document.getElementById('content-' + tabName).classList.remove('hidden');
@@ -436,7 +436,7 @@ async function loadGradeItems() {
 
 function createGradeItemCard(item) {
     const div = document.createElement('div');
-    div.className = 'bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-lg transition-all';
+    div.className = 'bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-all';
     
     const isAssignment = item.is_assignment && item.assignment_id;
     const previewButton = isAssignment 
@@ -450,19 +450,19 @@ function createGradeItemCard(item) {
             <div class="flex-1">
                 <div class="flex items-center space-x-2 mb-2">
                     <span class="px-2 py-1 bg-theme-light text-theme rounded text-xs font-bold">${item.quiz_id ? '🎯' : isAssignment ? '📝' : '📊'}</span>
-                    <h4 class="font-bold text-gray-900">${item.name}</h4>
+                    <h4 class="font-bold text-gray-900 dark:text-gray-100">${item.name}</h4>
                 </div>
-                <p class="text-sm text-gray-500">Max: ${item.max_score} | Bobot: ${item.weight}%</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Max: ${item.max_score} | Bobot: ${item.weight}%</p>
             </div>
         </div>
         <div class="flex items-center justify-between text-sm mb-4">
-            <span class="text-gray-500">${item.entries_count || 0} / ${students.length} siswa dinilai</span>
+            <span class="text-gray-500 dark:text-gray-400">${item.entries_count || 0} / ${students.length} siswa dinilai</span>
         </div>
         <div class="flex gap-2">
             <button onclick="openGradeEntryModal(${item.id})" class="flex-1 px-4 py-2.5 bg-theme text-white rounded-lg font-semibold hover:opacity-90 transition-all">
                 ✏️ Input Nilai
             </button>
-            <button onclick="editGradeItem(${item.id})" class="px-4 py-2.5 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition-all">
+            <button onclick="editGradeItem(${item.id})" class="px-4 py-2.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 transition-all">
                 Edit
             </button>
             ${previewButton}
@@ -484,11 +484,11 @@ async function loadRecap() {
             data.stats.grades.forEach((grade, idx) => {
                 const predikat = getPredikat(grade.final_grade);
                 tbody.innerHTML += `
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4 text-sm text-gray-900">${idx + 1}</td>
-                        <td class="px-6 py-4 text-sm font-semibold text-gray-900">${grade.student_name}</td>
-                        <td class="px-6 py-4 text-sm text-center text-gray-600">-</td>
-                        <td class="px-6 py-4 text-sm text-center text-gray-600">-</td>
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                        <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">${idx + 1}</td>
+                        <td class="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-gray-100">${grade.student_name}</td>
+                        <td class="px-6 py-4 text-sm text-center text-gray-600 dark:text-gray-400">-</td>
+                        <td class="px-6 py-4 text-sm text-center text-gray-600 dark:text-gray-400">-</td>
                         <td class="px-6 py-4 text-sm text-center font-bold text-theme">${grade.final_grade.toFixed(1)}</td>
                         <td class="px-6 py-4 text-sm text-center"><span class="px-3 py-1 rounded-full text-xs font-bold ${getPredikatClass(predikat)}">${predikat.split(' ')[0]}</span></td>
                     </tr>
@@ -509,11 +509,11 @@ function getPredikat(grade) {
 }
 
 function getPredikatClass(predikat) {
-    if (predikat.startsWith('A')) return 'bg-green-100 text-green-700';
-    if (predikat.startsWith('B')) return 'bg-blue-100 text-blue-700';
-    if (predikat.startsWith('C')) return 'bg-yellow-100 text-yellow-700';
-    if (predikat.startsWith('D')) return 'bg-orange-100 text-orange-700';
-    return 'bg-red-100 text-red-700';
+    if (predikat.startsWith('A')) return 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400';
+    if (predikat.startsWith('B')) return 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400';
+    if (predikat.startsWith('C')) return 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400';
+    if (predikat.startsWith('D')) return 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400';
+    return 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400';
 }
 
 function escapeHtml(text) {
@@ -539,11 +539,11 @@ async function loadAvailableQuizzes() {
             container.innerHTML = '';
             data.quizzes.forEach(quiz => {
                 const div = document.createElement('div');
-                div.className = 'bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between hover:shadow-md transition-all';
+                div.className = 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 flex items-center justify-between hover:shadow-md transition-all';
                 div.innerHTML = `
                     <div>
-                        <h4 class="font-bold text-gray-900">${quiz.name}</h4>
-                        <p class="text-sm text-gray-500">Max Points: ${quiz.points} | Submissions: ${quiz.submissions_count}</p>
+                        <h4 class="font-bold text-gray-900 dark:text-gray-100">${quiz.name}</h4>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Max Points: ${quiz.points} | Submissions: ${quiz.submissions_count}</p>
                     </div>
                     <button onclick="openImportQuizModal(${quiz.id})" class="px-4 py-2 bg-theme text-white rounded-lg text-sm font-semibold hover:opacity-90 transition-all">
                         Import
@@ -703,17 +703,17 @@ async function openGradeEntryModal(itemId) {
                     const entry = entriesMap[student.id];
                     tbody.innerHTML += `
                         <tr data-student-id="${student.id}">
-                            <td class="px-4 py-3 text-sm text-gray-900">${idx + 1}</td>
-                            <td class="px-4 py-3 text-sm font-semibold text-gray-900">${student.name}</td>
+                            <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">${idx + 1}</td>
+                            <td class="px-4 py-3 text-sm font-semibold text-gray-900 dark:text-gray-100">${student.name}</td>
                             <td class="px-4 py-3 text-center">
-                                <input type="number" step="0.1" data-score 
-                                    class="w-24 px-3 py-2 border border-gray-300 rounded-lg text-center focus:ring-2 focus-theme focus:border-theme outline-none"
+                                <input type="number" step="0.1" data-score
+                                    class="w-24 px-3 py-2 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg text-center focus:ring-2 focus-theme focus:border-theme outline-none"
                                     value="${entry ? entry.score : ''}"
                                     max="${item.max_score}">
                             </td>
                             <td class="px-4 py-3 text-center">
                                 <input type="text" data-feedback
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg text-center focus:ring-2 focus-theme focus:border-theme outline-none"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg text-center focus:ring-2 focus-theme focus:border-theme outline-none"
                                     value="${entry ? entry.feedback || '' : ''}"
                                     placeholder="Feedback...">
                             </td>
@@ -879,11 +879,11 @@ async function loadCTTAnalysis() {
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead>
-                        <tr class="border-b border-gray-200">
-                            <th class="text-left py-3 px-4 font-bold text-gray-700">Soal</th>
-                            <th class="text-center py-3 px-4 font-bold text-gray-700">p-value<br><span class="text-xs font-normal">(Kesukaran)</span></th>
-                            <th class="text-center py-3 px-4 font-bold text-gray-700">Daya Beda</th>
-                            <th class="text-center py-3 px-4 font-bold text-gray-700">Status</th>
+                        <tr class="border-b border-gray-200 dark:border-gray-700">
+                            <th class="text-left py-3 px-4 font-bold text-gray-700 dark:text-gray-300">Soal</th>
+                            <th class="text-center py-3 px-4 font-bold text-gray-700 dark:text-gray-300">p-value<br><span class="text-xs font-normal">(Kesukaran)</span></th>
+                            <th class="text-center py-3 px-4 font-bold text-gray-700 dark:text-gray-300">Daya Beda</th>
+                            <th class="text-center py-3 px-4 font-bold text-gray-700 dark:text-gray-300">Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -895,47 +895,47 @@ async function loadCTTAnalysis() {
             
             // Interpret p-value
             let difficulty = 'Sedang';
-            let difficultyColor = 'text-blue-600';
+            let difficultyColor = 'text-blue-600 dark:text-blue-400';
             if (pValue < 0.3) {
                 difficulty = 'Sukar';
-                difficultyColor = 'text-red-600';
+                difficultyColor = 'text-red-600 dark:text-red-400';
             } else if (pValue > 0.7) {
                 difficulty = 'Mudah';
-                difficultyColor = 'text-green-600';
+                difficultyColor = 'text-green-600 dark:text-green-400';
             }
             
             // Interpret point-biserial
             let discrimination = 'Cukup';
-            let discriminationColor = 'text-yellow-600';
+            let discriminationColor = 'text-yellow-600 dark:text-yellow-400';
             let status = '⚠️ Perlu Review';
-            let statusBg = 'bg-yellow-50';
-            
+            let statusBg = 'bg-yellow-50 dark:bg-yellow-900/30';
+
             if (pointBiserial >= 0.4) {
                 discrimination = 'Baik';
-                discriminationColor = 'text-green-600';
+                discriminationColor = 'text-green-600 dark:text-green-400';
                 status = '✅ Baik';
-                statusBg = 'bg-green-50';
+                statusBg = 'bg-green-50 dark:bg-green-900/30';
             } else if (pointBiserial >= 0.2) {
                 discrimination = 'Cukup';
-                discriminationColor = 'text-blue-600';
+                discriminationColor = 'text-blue-600 dark:text-blue-400';
                 status = '👍 Cukup';
-                statusBg = 'bg-blue-50';
+                statusBg = 'bg-blue-50 dark:bg-blue-900/30';
             } else if (pointBiserial < 0) {
                 discrimination = 'Buruk';
-                discriminationColor = 'text-red-600';
+                discriminationColor = 'text-red-600 dark:text-red-400';
                 status = '❌ Buruk';
-                statusBg = 'bg-red-50';
+                statusBg = 'bg-red-50 dark:bg-red-900/30';
             }
             
             html += `
-                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                <tr class="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
                     <td class="py-3 px-4">
-                        <p class="font-semibold text-gray-900">Soal ${index + 1}</p>
-                        <p class="text-xs text-gray-500">Benar: ${item.correct_count}/${item.total_students}</p>
+                        <p class="font-semibold text-gray-900 dark:text-gray-100">Soal ${index + 1}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Benar: ${item.correct_count}/${item.total_students}</p>
                     </td>
                     <td class="text-center py-3 px-4">
                         <span class="text-lg font-bold ${difficultyColor}">${pValue.toFixed(2)}</span>
-                        <p class="text-xs text-gray-500">${difficulty}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">${difficulty}</p>
                     </td>
                     <td class="text-center py-3 px-4">
                         <span class="text-lg font-bold ${discriminationColor}">${pointBiserial.toFixed(2)}</span>

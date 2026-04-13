@@ -3,18 +3,18 @@
 {% block title %}Pengaturan - Aldudu Academy{% endblock %}
 
 {% block body %}
-<div id="app-page" class="min-h-screen bg-gray-50 flex">
+<div id="app-page" class="min-h-screen bg-gray-50 dark:bg-gray-950 flex">
     {% include '_sidebar.html' %}
 
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <header class="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-8 sticky top-0 z-30">
+        <header class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 h-16 flex items-center justify-between px-8 sticky top-0 z-30">
             <div class="flex items-center space-x-4">
-                <a href="{{ url_for('main.dashboard') }}" class="p-2 text-gray-400 hover:text-primary-600 transition-colors">
+                <a href="{{ url_for('main.settings') }}" class="p-2 text-gray-400 dark:text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
                 </a>
-                <h2 class="text-lg font-bold text-gray-900 truncate">Pengaturan</h2>
+                <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100 truncate">Pengaturan</h2>
             </div>
         </header>
 
@@ -22,77 +22,77 @@
             <div class="max-w-2xl mx-auto space-y-8 animate-fade-in">
 
                 <!-- Profile Section -->
-                <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-                    <div class="px-8 py-6 border-b border-gray-100">
-                        <h3 class="text-lg font-black text-gray-900">Profil</h3>
-                        <p class="text-sm text-gray-500 mt-1">Informasi akun Anda</p>
+                <div class="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden">
+                    <div class="px-8 py-6 border-b border-gray-100 dark:border-gray-700">
+                        <h3 class="text-lg font-black text-gray-900 dark:text-gray-100">Profil</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Informasi akun Anda</p>
                     </div>
                     <div class="p-8 space-y-6">
                         <div>
-                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Nama Lengkap</label>
-                            <input type="text" id="settings-name" value="{{ current_user.name }}" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold transition-all" placeholder="Nama Anda">
+                            <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Nama Lengkap</label>
+                            <input type="text" id="settings-name" value="{{ current_user.name }}" class="w-full px-6 py-4 bg-gray-50 dark:bg-gray-700 border-2 border-gray-100 dark:border-gray-600 rounded-2xl focus:border-primary-500 outline-none font-bold transition-all text-gray-900 dark:text-gray-100" placeholder="Nama Anda">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Email</label>
-                            <input type="email" value="{{ current_user.email }}" class="w-full px-6 py-4 bg-gray-100 border-2 border-gray-100 rounded-2xl font-bold text-gray-500 cursor-not-allowed" disabled>
+                            <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Email</label>
+                            <input type="email" value="{{ current_user.email }}" class="w-full px-6 py-4 bg-gray-100 dark:bg-gray-600 border-2 border-gray-100 dark:border-gray-600 rounded-2xl font-bold text-gray-500 dark:text-gray-400 cursor-not-allowed" disabled>
                         </div>
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Role</label>
-                                <input type="text" value="{{ current_user.role.value | capitalize }}" class="w-full px-6 py-4 bg-gray-100 border-2 border-gray-100 rounded-2xl font-bold text-gray-500 cursor-not-allowed" disabled>
+                                <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Role</label>
+                                <input type="text" value="{{ current_user.role.value | capitalize }}" class="w-full px-6 py-4 bg-gray-100 dark:bg-gray-600 border-2 border-gray-100 dark:border-gray-600 rounded-2xl font-bold text-gray-500 dark:text-gray-400 cursor-not-allowed" disabled>
                             </div>
                             <div>
-                                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Sekolah</label>
-                                <input type="text" value="{{ current_user.school.name if current_user.school else '-' }}" class="w-full px-6 py-4 bg-gray-100 border-2 border-gray-100 rounded-2xl font-bold text-gray-500 cursor-not-allowed" disabled>
+                                <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Sekolah</label>
+                                <input type="text" value="{{ current_user.school.name if current_user.school else '-' }}" class="w-full px-6 py-4 bg-gray-100 dark:bg-gray-600 border-2 border-gray-100 dark:border-gray-600 rounded-2xl font-bold text-gray-500 dark:text-gray-400 cursor-not-allowed" disabled>
                             </div>
                         </div>
                         <div id="profile-message" class="hidden p-4 rounded-2xl text-sm font-bold text-center"></div>
-                        <button id="save-profile-btn" class="w-full py-4 bg-primary-600 text-white rounded-2xl font-bold shadow-lg shadow-primary-100 hover:bg-primary-700 transition-all active:scale-95">
+                        <button id="save-profile-btn" class="w-full py-4 bg-primary-600 text-white rounded-2xl font-bold shadow-lg shadow-primary-100 dark:shadow-primary-900/50 hover:bg-primary-700 transition-all active:scale-95">
                             Simpan Perubahan
                         </button>
                     </div>
                 </div>
 
                 <!-- Password Section -->
-                <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-                    <div class="px-8 py-6 border-b border-gray-100">
-                        <h3 class="text-lg font-black text-gray-900">Password</h3>
-                        <p class="text-sm text-gray-500 mt-1">Pastikan menggunakan password yang kuat</p>
+                <div class="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden">
+                    <div class="px-8 py-6 border-b border-gray-100 dark:border-gray-700">
+                        <h3 class="text-lg font-black text-gray-900 dark:text-gray-100">Password</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Pastikan menggunakan password yang kuat</p>
                     </div>
                     <div class="p-8 space-y-6">
                         <div>
-                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Password Lama</label>
-                            <input type="password" id="old-password" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold transition-all" placeholder="Masukkan password lama">
+                            <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Password Lama</label>
+                            <input type="password" id="old-password" class="w-full px-6 py-4 bg-gray-50 dark:bg-gray-700 border-2 border-gray-100 dark:border-gray-600 rounded-2xl focus:border-primary-500 outline-none font-bold transition-all text-gray-900 dark:text-gray-100" placeholder="Masukkan password lama">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Password Baru</label>
-                            <input type="password" id="new-password" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold transition-all" placeholder="Minimal 6 karakter">
+                            <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Password Baru</label>
+                            <input type="password" id="new-password" class="w-full px-6 py-4 bg-gray-50 dark:bg-gray-700 border-2 border-gray-100 dark:border-gray-600 rounded-2xl focus:border-primary-500 outline-none font-bold transition-all text-gray-900 dark:text-gray-100" placeholder="Minimal 6 karakter">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Konfirmasi Password Baru</label>
-                            <input type="password" id="confirm-password" class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold transition-all" placeholder="Ulangi password baru">
+                            <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Konfirmasi Password Baru</label>
+                            <input type="password" id="confirm-password" class="w-full px-6 py-4 bg-gray-50 dark:bg-gray-700 border-2 border-gray-100 dark:border-gray-600 rounded-2xl focus:border-primary-500 outline-none font-bold transition-all text-gray-900 dark:text-gray-100" placeholder="Ulangi password baru">
                         </div>
                         <div id="password-message" class="hidden p-4 rounded-2xl text-sm font-bold text-center"></div>
-                        <button id="change-password-btn" class="w-full py-4 bg-gray-900 text-white rounded-2xl font-bold shadow-lg hover:bg-gray-800 transition-all active:scale-95">
+                        <button id="change-password-btn" class="w-full py-4 bg-gray-900 dark:bg-gray-700 text-white rounded-2xl font-bold shadow-lg hover:bg-gray-800 dark:hover:bg-gray-600 transition-all active:scale-95">
                             Ganti Password
                         </button>
                     </div>
                 </div>
 
                 <!-- Language Section -->
-                <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-                    <div class="px-8 py-6 border-b border-gray-100">
-                        <h3 class="text-lg font-black text-gray-900" data-i18n="common.language">Bahasa</h3>
-                        <p class="text-sm text-gray-500 mt-1">Pilih bahasa antarmuka aplikasi</p>
+                <div class="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden">
+                    <div class="px-8 py-6 border-b border-gray-100 dark:border-gray-700">
+                        <h3 class="text-lg font-black text-gray-900 dark:text-gray-100" data-i18n="common.language">Bahasa</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Pilih bahasa antarmuka aplikasi</p>
                     </div>
                     <div class="p-8">
                         <div class="relative">
-                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">BAHASA</label>
+                            <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-3">BAHASA</label>
                             <div class="relative">
-                                <select 
+                                <select
                                     id="settings-language-dropdown"
                                     onchange="setLanguage(this.value)"
-                                    class="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-primary-500 outline-none font-bold text-gray-700 transition-all appearance-none cursor-pointer hover:border-primary-200"
+                                    class="w-full px-6 py-4 bg-gray-50 dark:bg-gray-700 border-2 border-gray-100 dark:border-gray-600 rounded-2xl focus:border-primary-500 outline-none font-bold text-gray-700 dark:text-gray-200 transition-all appearance-none cursor-pointer hover:border-primary-200 dark:hover:border-primary-600"
                                 >
                                     <option value="id" data-flag="🇮🇩">🇮🇩 Indonesia</option>
                                     <option value="en-US" data-flag="🇺🇸">🇺🇸 English (US)</option>
@@ -100,76 +100,127 @@
                                     <option value="su" data-flag="🇮🇩">🇮🇩 Sunda</option>
                                 </select>
                                 <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-5 h-5 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
                                     </svg>
                                 </div>
                             </div>
-                            <p class="text-xs text-gray-400 mt-3 font-medium">💡 Perubahan bahasa akan diterapkan segera</p>
+                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-3 font-medium">💡 Perubahan bahasa akan diterapkan segera</p>
                         </div>
                     </div>
                 </div>
 
+                <!-- Tema Section -->
+                <div class="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden">
+                    <div class="px-8 py-6 border-b border-gray-100 dark:border-gray-700">
+                        <h3 class="text-lg font-black text-gray-900 dark:text-gray-100">Tema</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Sesuaikan tampilan antarmuka</p>
+                    </div>
+                    <div class="p-8 space-y-6">
+                        <!-- Theme Options -->
+                        <div class="grid grid-cols-3 gap-4">
+                            <!-- Light Theme -->
+                            <button onclick="window.ThemeManager.setTheme('light')" id="theme-light-btn" class="theme-option-btn flex flex-col items-center p-4 rounded-2xl border-2 border-gray-200 dark:border-gray-700 hover:border-primary-400 dark:hover:border-primary-500 transition-all group">
+                                <div class="w-16 h-16 rounded-xl bg-gray-50 dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 flex items-center justify-center mb-3 group-hover:border-primary-300 dark:group-hover:border-primary-500 transition-all">
+                                    <svg class="w-8 h-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                                    </svg>
+                                </div>
+                                <span class="text-sm font-bold text-gray-700 dark:text-gray-300">Terang</span>
+                            </button>
+
+                            <!-- Dark Theme -->
+                            <button onclick="window.ThemeManager.setTheme('dark')" id="theme-dark-btn" class="theme-option-btn flex flex-col items-center p-4 rounded-2xl border-2 border-gray-200 dark:border-gray-700 hover:border-primary-400 dark:hover:border-primary-500 transition-all group">
+                                <div class="w-16 h-16 rounded-xl bg-gray-800 dark:bg-gray-900 border-2 border-gray-600 dark:border-gray-500 flex items-center justify-center mb-3 group-hover:border-primary-300 dark:group-hover:border-primary-500 transition-all">
+                                    <svg class="w-8 h-8 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                                    </svg>
+                                </div>
+                                <span class="text-sm font-bold text-gray-700 dark:text-gray-300">Gelap</span>
+                            </button>
+
+                            <!-- Claude Theme (Placeholder) -->
+                            <button id="theme-claude-btn" class="theme-option-btn flex flex-col items-center p-4 rounded-2xl border-2 border-gray-200 dark:border-gray-700 opacity-50 cursor-not-allowed relative" disabled>
+                                <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-orange-100 to-amber-100 dark:from-orange-900/30 dark:to-amber-900/30 border-2 border-orange-200 dark:border-orange-700 flex items-center justify-center mb-3">
+                                    <svg class="w-8 h-8 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                                    </svg>
+                                </div>
+                                <span class="text-sm font-bold text-gray-700 dark:text-gray-300">Claude</span>
+                                <span class="absolute -top-1 -right-1 px-2 py-0.5 bg-orange-500 text-white text-[8px] font-black uppercase rounded-full">Segera</span>
+                            </button>
+                        </div>
+
+                        <!-- Active theme indicator -->
+                        <div class="flex items-center justify-center space-x-2 p-4 bg-gray-50 dark:bg-gray-700 rounded-2xl">
+                            <div id="theme-active-dot" class="w-2 h-2 rounded-full bg-primary-600"></div>
+                            <p id="theme-active-text" class="text-sm font-bold text-gray-600 dark:text-gray-300">Tema aktif: Terang</p>
+                        </div>
+
+                        <p class="text-xs text-gray-400 dark:text-gray-500 text-center font-medium">💡 Tema Claude akan hadir dengan palet warna yang hangat dan elegan</p>
+                    </div>
+                </div>
+
                 <!-- Lainnya Section -->
-                <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-                    <div class="px-8 py-6 border-b border-gray-100">
-                        <h3 class="text-lg font-black text-gray-900">Lainnya</h3>
-                        <p class="text-sm text-gray-500 mt-1">Menu tambahan</p>
+                <div class="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden">
+                    <div class="px-8 py-6 border-b border-gray-100 dark:border-gray-700">
+                        <h3 class="text-lg font-black text-gray-900 dark:text-gray-100">Lainnya</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Menu tambahan</p>
                     </div>
                     <div class="p-8 space-y-3">
-                        <a href="{{ url_for('main.history') }}" class="flex items-center space-x-4 p-4 rounded-2xl border-2 border-gray-100 hover:border-primary-200 hover:bg-primary-50 transition-all group">
-                            <div class="w-10 h-10 rounded-xl bg-primary-50 text-primary-600 flex items-center justify-center group-hover:bg-primary-100 transition-all">
+                        <a href="{{ url_for('main.history') }}" class="flex items-center space-x-4 p-4 rounded-2xl border-2 border-gray-100 dark:border-gray-700 hover:border-primary-200 dark:hover:border-primary-700 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all group">
+                            <div class="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 flex items-center justify-center group-hover:bg-primary-100 dark:group-hover:bg-primary-900/50 transition-all">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
                             </div>
                             <div>
-                                <p class="font-bold text-gray-900">Riwayat</p>
-                                <p class="text-xs text-gray-500">Lihat riwayat aktivitas Anda</p>
+                                <p class="font-bold text-gray-900 dark:text-gray-100">Riwayat</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Lihat riwayat aktivitas Anda</p>
                             </div>
-                            <svg class="w-5 h-5 text-gray-300 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            <svg class="w-5 h-5 text-gray-300 dark:text-gray-600 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                         </a>
-                        <a href="{{ url_for('whats_new_view.view_whats_new') }}" class="flex items-center space-x-4 p-4 rounded-2xl border-2 border-gray-100 hover:border-primary-200 hover:bg-primary-50 transition-all group">
-                            <div class="w-10 h-10 rounded-xl bg-primary-50 text-primary-600 flex items-center justify-center group-hover:bg-primary-100 transition-all">
+                        <a href="{{ url_for('whats_new_view.view_whats_new') }}" class="flex items-center space-x-4 p-4 rounded-2xl border-2 border-gray-100 dark:border-gray-700 hover:border-primary-200 dark:hover:border-primary-700 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all group">
+                            <div class="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 flex items-center justify-center group-hover:bg-primary-100 dark:group-hover:bg-primary-900/50 transition-all">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                 </svg>
                             </div>
                             <div>
-                                <p class="font-bold text-gray-900">What's New</p>
-                                <p class="text-xs text-gray-500">Pengumuman terbaru dari platform</p>
+                                <p class="font-bold text-gray-900 dark:text-gray-100">What's New</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Pengumuman terbaru dari platform</p>
                             </div>
-                            <svg class="w-5 h-5 text-gray-300 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            <svg class="w-5 h-5 text-gray-300 dark:text-gray-600 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                         </a>
-                        <a href="{{ url_for('main.sponsor') }}" class="flex items-center space-x-4 p-4 rounded-2xl border-2 border-gray-100 hover:border-pink-200 hover:bg-pink-50 transition-all group">
-                            <div class="w-10 h-10 rounded-xl bg-pink-50 text-pink-500 flex items-center justify-center group-hover:bg-pink-100 transition-all">
+                        <a href="{{ url_for('main.sponsor') }}" class="flex items-center space-x-4 p-4 rounded-2xl border-2 border-gray-100 dark:border-gray-700 hover:border-pink-200 dark:hover:border-pink-700 hover:bg-pink-50 dark:hover:bg-pink-900/20 transition-all group">
+                            <div class="w-10 h-10 rounded-xl bg-pink-50 dark:bg-pink-900/30 text-pink-500 dark:text-pink-400 flex items-center justify-center group-hover:bg-pink-100 dark:group-hover:bg-pink-900/50 transition-all">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
                                 </svg>
                             </div>
                             <div>
-                                <p class="font-bold text-gray-900">Sponsor</p>
-                                <p class="text-xs text-gray-500">Dukung pengembangan Aldudu Academy</p>
+                                <p class="font-bold text-gray-900 dark:text-gray-100">Sponsor</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Dukung pengembangan Aldudu Academy</p>
                             </div>
-                            <svg class="w-5 h-5 text-gray-300 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            <svg class="w-5 h-5 text-gray-300 dark:text-gray-600 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                         </a>
                     </div>
                 </div>
 
                 <!-- Logout Section -->
-                <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-                    <div class="px-8 py-6 border-b border-gray-100 bg-gradient-to-r from-primary-50 to-white">
-                        <h3 class="text-lg font-black text-gray-900">Keluar dari Akun</h3>
-                        <p class="text-sm text-gray-500 mt-1">Akhiri sesi Anda dengan aman</p>
+                <div class="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden">
+                    <div class="px-8 py-6 border-b border-gray-100 dark:border-gray-700 bg-gradient-to-r from-primary-50 to-white dark:from-primary-900/20 dark:to-gray-800">
+                        <h3 class="text-lg font-black text-gray-900 dark:text-gray-100">Keluar dari Akun</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Akhiri sesi Anda dengan aman</p>
                     </div>
                     <div class="p-8">
-                        <button id="user-dropdown-logout" class="w-full flex items-center justify-center space-x-3 py-4 bg-primary-600 text-white rounded-2xl font-bold hover:bg-primary-700 transition-all active:scale-95 shadow-lg shadow-primary-200">
+                        <button id="user-dropdown-logout" class="w-full flex items-center justify-center space-x-3 py-4 bg-primary-600 text-white rounded-2xl font-bold hover:bg-primary-700 transition-all active:scale-95 shadow-lg shadow-primary-200 dark:shadow-primary-900/50">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                             </svg>
                             <span>Keluar dari Akun</span>
                         </button>
-                        <p class="text-xs text-gray-400 text-center mt-4 font-medium">
+                        <p class="text-xs text-gray-400 dark:text-gray-500 text-center mt-4 font-medium">
                             👋 Anda dapat login kembali kapan saja
                         </p>
                     </div>
@@ -236,7 +287,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function showMsg(el, text, type) {
         el.textContent = text;
-        el.className = `p-4 rounded-2xl text-sm font-bold text-center ${type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'}`;
+        el.className = `p-4 rounded-2xl text-sm font-bold text-center ${type === 'success' ? 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400' : 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400'}`;
         el.classList.remove('hidden');
         setTimeout(() => el.classList.add('hidden'), 4000);
     }
@@ -252,6 +303,40 @@ document.addEventListener('DOMContentLoaded', function() {
 
     renderSettingsLanguage();
     window.addEventListener('languageChanged', renderSettingsLanguage);
+
+    // Theme section UI updates
+    function updateThemeUI() {
+        const isDark = window.ThemeManager.isDark();
+        const lightBtn = document.getElementById('theme-light-btn');
+        const darkBtn = document.getElementById('theme-dark-btn');
+        const activeText = document.getElementById('theme-active-text');
+        const activeDot = document.getElementById('theme-active-dot');
+
+        if (!lightBtn || !darkBtn || !activeText) return;
+
+        // Reset both buttons
+        [lightBtn, darkBtn].forEach(btn => {
+            btn.classList.remove('border-primary-500', 'dark:border-primary-400', 'bg-primary-50', 'dark:bg-primary-900/20');
+            btn.classList.add('border-gray-200', 'dark:border-gray-700');
+        });
+
+        // Highlight active theme
+        if (isDark) {
+            darkBtn.classList.remove('border-gray-200', 'dark:border-gray-700');
+            darkBtn.classList.add('border-primary-500', 'dark:border-primary-400', 'bg-primary-50', 'dark:bg-primary-900/20');
+            activeText.textContent = 'Tema aktif: Gelap';
+        } else {
+            lightBtn.classList.remove('border-gray-200', 'dark:border-gray-700');
+            lightBtn.classList.add('border-primary-500', 'dark:border-primary-400', 'bg-primary-50', 'dark:bg-primary-900/20');
+            activeText.textContent = 'Tema aktif: Terang';
+        }
+    }
+
+    // Initial update
+    updateThemeUI();
+
+    // Listen for theme changes
+    window.addEventListener('theme:change', updateThemeUI);
 });
 </script>
 {% endblock %}

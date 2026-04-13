@@ -42,8 +42,8 @@
     <div class="sa-stat">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-2xl font-black text-slate-900" id="stat-cpu">-</p>
-                <p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold mt-0.5">CPU Usage</p>
+                <p class="text-2xl font-black text-slate-900 dark:text-gray-100" id="stat-cpu">-</p>
+                <p class="text-[10px] text-slate-400 dark:text-gray-500 uppercase tracking-widest font-bold mt-0.5">CPU Usage</p>
             </div>
             <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center">
                 <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
@@ -54,8 +54,8 @@
     <div class="sa-stat">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-2xl font-black text-slate-900" id="stat-memory">-</p>
-                <p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold mt-0.5">Memory Usage</p>
+                <p class="text-2xl font-black text-slate-900 dark:text-gray-100" id="stat-memory">-</p>
+                <p class="text-[10px] text-slate-400 dark:text-gray-500 uppercase tracking-widest font-bold mt-0.5">Memory Usage</p>
             </div>
             <div class="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center">
                 <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
@@ -66,8 +66,8 @@
     <div class="sa-stat">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-2xl font-black text-slate-900" id="stat-active-users">-</p>
-                <p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold mt-0.5">Active Users</p>
+                <p class="text-2xl font-black text-slate-900 dark:text-gray-100" id="stat-active-users">-</p>
+                <p class="text-[10px] text-slate-400 dark:text-gray-500 uppercase tracking-widest font-bold mt-0.5">Active Users</p>
             </div>
             <div class="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center">
                 <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -78,8 +78,8 @@
     <div class="sa-stat">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-2xl font-black text-slate-900" id="stat-courses">-</p>
-                <p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold mt-0.5">Total Courses</p>
+                <p class="text-2xl font-black text-slate-900 dark:text-gray-100" id="stat-courses">-</p>
+                <p class="text-[10px] text-slate-400 dark:text-gray-500 uppercase tracking-widest font-bold mt-0.5">Total Courses</p>
             </div>
             <div class="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center">
                 <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
@@ -92,32 +92,32 @@
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
     <!-- CPU & Memory Chart -->
     <div class="sa-card p-5">
-        <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">System Resources</h3>
+        <h3 class="text-xs font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest mb-4">System Resources</h3>
         <div class="space-y-4">
             <div>
                 <div class="flex justify-between mb-1">
-                    <span class="text-xs font-bold text-slate-600">CPU</span>
-                    <span class="text-xs font-bold text-slate-400" id="cpu-text">0%</span>
+                    <span class="text-xs font-bold text-slate-600 dark:text-gray-400">CPU</span>
+                    <span class="text-xs font-bold text-slate-400 dark:text-gray-500" id="cpu-text">0%</span>
                 </div>
-                <div class="w-full bg-slate-100 rounded-full h-3">
+                <div class="w-full bg-slate-100 dark:bg-gray-700 rounded-full h-3">
                     <div id="cpu-bar" class="bg-blue-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
                 </div>
             </div>
             <div>
                 <div class="flex justify-between mb-1">
-                    <span class="text-xs font-bold text-slate-600">Memory</span>
-                    <span class="text-xs font-bold text-slate-400" id="memory-text">0%</span>
+                    <span class="text-xs font-bold text-slate-600 dark:text-gray-400">Memory</span>
+                    <span class="text-xs font-bold text-slate-400 dark:text-gray-500" id="memory-text">0%</span>
                 </div>
-                <div class="w-full bg-slate-100 rounded-full h-3">
+                <div class="w-full bg-slate-100 dark:bg-gray-700 rounded-full h-3">
                     <div id="memory-bar" class="bg-purple-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
                 </div>
             </div>
             <div>
                 <div class="flex justify-between mb-1">
-                    <span class="text-xs font-bold text-slate-600">Disk</span>
-                    <span class="text-xs font-bold text-slate-400" id="disk-text">0%</span>
+                    <span class="text-xs font-bold text-slate-600 dark:text-gray-400">Disk</span>
+                    <span class="text-xs font-bold text-slate-400 dark:text-gray-500" id="disk-text">0%</span>
                 </div>
-                <div class="w-full bg-slate-100 rounded-full h-3">
+                <div class="w-full bg-slate-100 dark:bg-gray-700 rounded-full h-3">
                     <div id="disk-bar" class="bg-indigo-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
                 </div>
             </div>
@@ -126,7 +126,7 @@
 
     <!-- Users by Role -->
     <div class="sa-card p-5">
-        <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Users by Role</h3>
+        <h3 class="text-xs font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest mb-4">Users by Role</h3>
         <div id="users-by-role" class="space-y-3">
             <!-- Populated by JS -->
         </div>
@@ -136,21 +136,21 @@
 <!-- Business Metrics -->
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-6">
     <div class="sa-card p-5">
-        <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Schools</h3>
+        <h3 class="text-xs font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest mb-4">Schools</h3>
         <div id="schools-stats" class="space-y-2">
             <!-- Populated by JS -->
         </div>
     </div>
 
     <div class="sa-card p-5">
-        <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Business Metrics</h3>
+        <h3 class="text-xs font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest mb-4">Business Metrics</h3>
         <div id="business-stats" class="space-y-2">
             <!-- Populated by JS -->
         </div>
     </div>
 
     <div class="sa-card p-5">
-        <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Prometheus Info</h3>
+        <h3 class="text-xs font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest mb-4">Prometheus Info</h3>
         <div id="prometheus-info" class="space-y-2 text-sm">
             <!-- Populated by JS -->
         </div>
@@ -159,7 +159,7 @@
 
 <!-- Quick Actions -->
 <div class="sa-card p-5">
-    <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Quick Actions</h3>
+    <h3 class="text-xs font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest mb-4">Quick Actions</h3>
     <div class="flex flex-wrap gap-3">
         <a href="/metrics" target="_blank" class="px-4 py-2.5 bg-orange-600 hover:bg-orange-700 text-white text-sm font-bold rounded-lg transition-colors flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
@@ -216,14 +216,14 @@
                 // Users by role
                 const roleContainer = document.getElementById('users-by-role');
                 const roleColors = {
-                    'super_admin': 'bg-purple-100 text-purple-700',
-                    'admin': 'bg-slate-100 text-slate-700',
-                    'guru': 'bg-blue-100 text-blue-700',
-                    'murid': 'bg-green-100 text-green-700',
+                    'super_admin': 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400',
+                    'admin': 'bg-slate-100 dark:bg-gray-700 text-slate-700 dark:text-gray-300',
+                    'guru': 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400',
+                    'murid': 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400',
                 };
-                
+
                 roleContainer.innerHTML = Object.entries(m.users.by_role).map(([role, count]) => `
-                    <div class="flex items-center justify-between p-3 rounded-lg ${roleColors[role] || 'bg-gray-100 text-gray-700'}">
+                    <div class="flex items-center justify-between p-3 rounded-lg ${roleColors[role] || 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'}">
                         <span class="text-xs font-bold uppercase tracking-wider">${role.replace('_', ' ')}</span>
                         <span class="text-sm font-black">${count}</span>
                     </div>
@@ -232,13 +232,13 @@
                 // Schools stats
                 const schoolsContainer = document.getElementById('schools-stats');
                 const schoolColors = {
-                    'active': 'bg-emerald-50 text-emerald-700 border-emerald-200',
-                    'pending': 'bg-amber-50 text-amber-700 border-amber-200',
-                    'suspended': 'bg-red-50 text-red-700 border-red-200',
+                    'active': 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800',
+                    'pending': 'bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800',
+                    'suspended': 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800',
                 };
-                
+
                 schoolsContainer.innerHTML = Object.entries(m.schools.by_status).map(([status, count]) => `
-                    <div class="flex items-center justify-between p-3 rounded-lg border ${schoolColors[status] || 'bg-gray-50 text-gray-700 border-gray-200'}">
+                    <div class="flex items-center justify-between p-3 rounded-lg border ${schoolColors[status] || 'bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600'}">
                         <span class="text-xs font-bold uppercase tracking-wider">${status}</span>
                         <span class="text-sm font-black">${count}</span>
                     </div>
@@ -247,13 +247,13 @@
                 // Business stats
                 const businessContainer = document.getElementById('business-stats');
                 businessContainer.innerHTML = `
-                    <div class="flex justify-between p-2 border-b border-slate-100">
-                        <span class="text-slate-500 text-sm">Students Enrolled</span>
-                        <span class="font-bold text-slate-700">${m.business.students_enrolled}</span>
+                    <div class="flex justify-between p-2 border-b border-slate-100 dark:border-gray-700">
+                        <span class="text-slate-500 dark:text-gray-400 text-sm">Students Enrolled</span>
+                        <span class="font-bold text-slate-700 dark:text-gray-300">${m.business.students_enrolled}</span>
                     </div>
                     <div class="flex justify-between p-2">
-                        <span class="text-slate-500 text-sm">Quizzes Taken</span>
-                        <span class="font-bold text-slate-700">${m.business.quizzes_taken}</span>
+                        <span class="text-slate-500 dark:text-gray-400 text-sm">Quizzes Taken</span>
+                        <span class="font-bold text-slate-700 dark:text-gray-300">${m.business.quizzes_taken}</span>
                     </div>
                 `;
 
@@ -261,16 +261,16 @@
                 prometheusEnabled = m.prometheus.enabled;
                 const promContainer = document.getElementById('prometheus-info');
                 promContainer.innerHTML = `
-                    <div class="flex justify-between py-2 border-b border-slate-100">
-                        <span class="text-slate-500">Status</span>
-                        <span class="font-bold ${m.prometheus.enabled ? 'text-emerald-600' : 'text-amber-600'}">
+                    <div class="flex justify-between py-2 border-b border-slate-100 dark:border-gray-700">
+                        <span class="text-slate-500 dark:text-gray-400">Status</span>
+                        <span class="font-bold ${m.prometheus.enabled ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}">
                             ${m.prometheus.enabled ? '✓ Enabled' : '✗ Disabled'}
                         </span>
                     </div>
                     ${m.prometheus.endpoint ? `
                     <div class="flex justify-between py-2">
-                        <span class="text-slate-500">Endpoint</span>
-                        <a href="${m.prometheus.endpoint}" target="_blank" class="font-bold text-indigo-600 hover:underline">
+                        <span class="text-slate-500 dark:text-gray-400">Endpoint</span>
+                        <a href="${m.prometheus.endpoint}" target="_blank" class="font-bold text-indigo-600 dark:text-indigo-400 hover:underline">
                             ${m.prometheus.endpoint}
                         </a>
                     </div>

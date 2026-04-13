@@ -7,7 +7,7 @@
 <!-- System Health Checks -->
 <div class="mb-6">
     <div class="flex items-center justify-between mb-4">
-        <h3 class="text-sm font-black text-slate-700 uppercase tracking-wider">System Health</h3>
+        <h3 class="text-sm font-black text-slate-700 dark:text-gray-300 uppercase tracking-wider">System Health</h3>
         <button onclick="runHealthChecks()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
             Refresh Checks
@@ -24,8 +24,8 @@
     <div class="sa-stat">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-2xl font-black text-slate-900" id="stat-total-users">-</p>
-                <p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold mt-0.5">Total Users</p>
+                <p class="text-2xl font-black text-slate-900 dark:text-gray-100" id="stat-total-users">-</p>
+                <p class="text-[10px] text-slate-400 dark:text-gray-500 uppercase tracking-widest font-bold mt-0.5">Total Users</p>
             </div>
             <div class="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center">
                 <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -36,8 +36,8 @@
     <div class="sa-stat">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-2xl font-black text-emerald-600" id="stat-active-schools">-</p>
-                <p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold mt-0.5">Sekolah Aktif</p>
+                <p class="text-2xl font-black text-emerald-600 dark:text-emerald-400" id="stat-active-schools">-</p>
+                <p class="text-[10px] text-slate-400 dark:text-gray-500 uppercase tracking-widest font-bold mt-0.5">Sekolah Aktif</p>
             </div>
             <div class="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center">
                 <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
@@ -48,8 +48,8 @@
     <div class="sa-stat">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-2xl font-black text-amber-600" id="stat-pending-schools">-</p>
-                <p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold mt-0.5">Pending</p>
+                <p class="text-2xl font-black text-amber-600 dark:text-amber-400" id="stat-pending-schools">-</p>
+                <p class="text-[10px] text-slate-400 dark:text-gray-500 uppercase tracking-widest font-bold mt-0.5">Pending</p>
             </div>
             <div class="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center">
                 <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -60,8 +60,8 @@
     <div class="sa-stat">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-2xl font-black text-red-600" id="stat-suspended-schools">-</p>
-                <p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold mt-0.5">Suspended</p>
+                <p class="text-2xl font-black text-red-600 dark:text-red-400" id="stat-suspended-schools">-</p>
+                <p class="text-[10px] text-slate-400 dark:text-gray-500 uppercase tracking-widest font-bold mt-0.5">Suspended</p>
             </div>
             <div class="w-12 h-12 rounded-xl bg-red-50 flex items-center justify-center">
                 <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728-12.728A9 9 0 015.636 18.364"/></svg>
@@ -74,7 +74,7 @@
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
     <!-- Users by Role -->
     <div class="sa-card p-5">
-        <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Users by Role</h3>
+        <h3 class="text-xs font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest mb-4">Users by Role</h3>
         <div id="users-by-role" class="space-y-3">
             <!-- Populated by JS -->
         </div>
@@ -82,7 +82,7 @@
 
     <!-- Environment Info -->
     <div class="sa-card p-5">
-        <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Environment Info</h3>
+        <h3 class="text-xs font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest mb-4">Environment Info</h3>
         <div id="env-info" class="space-y-2 text-sm">
             <!-- Populated by JS -->
         </div>
@@ -91,7 +91,7 @@
 
 <!-- Quick Actions -->
 <div class="sa-card p-5">
-    <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Quick Actions</h3>
+    <h3 class="text-xs font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest mb-4">Quick Actions</h3>
     <div class="flex flex-wrap gap-3">
         <button onclick="testEmail()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-lg transition-colors flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
@@ -121,9 +121,9 @@
     };
 
     const statusColors = {
-        healthy: 'bg-emerald-50 border-emerald-100 text-emerald-700',
-        warning: 'bg-amber-50 border-amber-100 text-amber-700',
-        unhealthy: 'bg-red-50 border-red-100 text-red-700',
+        healthy: 'bg-emerald-50 dark:bg-emerald-900/30 border-emerald-100 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400',
+        warning: 'bg-amber-50 dark:bg-amber-900/30 border-amber-100 dark:border-amber-800 text-amber-700 dark:text-amber-400',
+        unhealthy: 'bg-red-50 dark:bg-red-900/30 border-red-100 dark:border-red-800 text-red-700 dark:text-red-400',
     };
 
     const statusLabels = {
@@ -152,7 +152,7 @@
                             <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${statusColors[check.status]}">${statusLabels[check.status]}</span>
                         </div>
                         <p class="text-sm font-medium mb-1">${check.message}</p>
-                        ${check.response_time ? `<p class="text-[10px] text-slate-400">Response: ${check.response_time}</p>` : ''}
+                        ${check.response_time ? `<p class="text-[10px] text-slate-400 dark:text-gray-500">Response: ${check.response_time}</p>` : ''}
                     </div>
                 `).join('');
             }
@@ -179,14 +179,14 @@
                 // Users by role
                 const roleContainer = document.getElementById('users-by-role');
                 const roleColors = {
-                    'super_admin': 'bg-purple-100 text-purple-700',
-                    'admin': 'bg-slate-100 text-slate-700',
-                    'guru': 'bg-blue-100 text-blue-700',
-                    'murid': 'bg-green-100 text-green-700',
+                    'super_admin': 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400',
+                    'admin': 'bg-slate-100 dark:bg-gray-700 text-slate-700 dark:text-gray-300',
+                    'guru': 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400',
+                    'murid': 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400',
                 };
-                
+
                 roleContainer.innerHTML = Object.entries(stats.users.by_role).map(([role, count]) => `
-                    <div class="flex items-center justify-between p-3 rounded-lg ${roleColors[role] || 'bg-gray-100 text-gray-700'}">
+                    <div class="flex items-center justify-between p-3 rounded-lg ${roleColors[role] || 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'}">
                         <span class="text-xs font-bold uppercase tracking-wider">${role.replace('_', ' ')}</span>
                         <span class="text-sm font-black">${count}</span>
                     </div>
@@ -195,21 +195,21 @@
                 // Environment info
                 const envContainer = document.getElementById('env-info');
                 envContainer.innerHTML = `
-                    <div class="flex justify-between py-2 border-b border-slate-100">
-                        <span class="text-slate-500">Python Version</span>
-                        <span class="font-mono text-slate-700 font-bold">${stats.system.python_version}</span>
+                    <div class="flex justify-between py-2 border-b border-slate-100 dark:border-gray-700">
+                        <span class="text-slate-500 dark:text-gray-400">Python Version</span>
+                        <span class="font-mono text-slate-700 dark:text-gray-300 font-bold">${stats.system.python_version}</span>
                     </div>
-                    <div class="flex justify-between py-2 border-b border-slate-100">
-                        <span class="text-slate-500">Platform</span>
-                        <span class="font-mono text-slate-700 font-bold">${stats.system.platform}</span>
+                    <div class="flex justify-between py-2 border-b border-slate-100 dark:border-gray-700">
+                        <span class="text-slate-500 dark:text-gray-400">Platform</span>
+                        <span class="font-mono text-slate-700 dark:text-gray-300 font-bold">${stats.system.platform}</span>
                     </div>
-                    <div class="flex justify-between py-2 border-b border-slate-100">
-                        <span class="text-slate-500">Total Schools</span>
-                        <span class="font-bold text-slate-700">${stats.schools.total}</span>
+                    <div class="flex justify-between py-2 border-b border-slate-100 dark:border-gray-700">
+                        <span class="text-slate-500 dark:text-gray-400">Total Schools</span>
+                        <span class="font-bold text-slate-700 dark:text-gray-300">${stats.schools.total}</span>
                     </div>
                     <div class="flex justify-between py-2">
-                        <span class="text-slate-500">Environment</span>
-                        <span class="font-bold text-slate-700">${window.location.hostname}</span>
+                        <span class="text-slate-500 dark:text-gray-400">Environment</span>
+                        <span class="font-bold text-slate-700 dark:text-gray-300">${window.location.hostname}</span>
                     </div>
                 `;
             }
