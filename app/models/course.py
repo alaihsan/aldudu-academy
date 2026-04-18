@@ -100,21 +100,23 @@ class Course(db.Model):
     teacher: Mapped['User'] = relationship('User', back_populates='courses_taught')
     students: Mapped[List['User']] = relationship('User', secondary=enrollments, lazy='subquery', back_populates='courses_enrolled')
 
-    quizzes: Mapped[List['Quiz']] = relationship('Quiz', back_populates='course', lazy='dynamic', cascade='all, delete-orphan')
-    assignments: Mapped[List['Assignment']] = relationship('Assignment', back_populates='course', lazy='dynamic', cascade='all, delete-orphan')
-    links: Mapped[List['Link']] = relationship('Link', back_populates='course', lazy='dynamic', cascade='all, delete-orphan')
-    files: Mapped[List['File']] = relationship('File', back_populates='course', lazy='dynamic', cascade='all, delete-orphan')
-    discussions: Mapped[List['Discussion']] = relationship('Discussion', back_populates='course', lazy='dynamic', cascade='all, delete-orphan')
-    kbm_notes: Mapped[List['KbmNote']] = relationship('KbmNote', back_populates='course', lazy='dynamic', cascade='all, delete-orphan')
-    content_folders: Mapped[List['ContentFolder']] = relationship('ContentFolder', back_populates='course', lazy='dynamic', cascade='all, delete-orphan')
+    # Use lazy='selectin' for eager loading compatibility, or lazy='dynamic' for query capabilities
+    # Changed from 'dynamic' to 'selectin' to support eager loading with selectinload()
+    quizzes: Mapped[List['Quiz']] = relationship('Quiz', back_populates='course', lazy='selectin', cascade='all, delete-orphan')
+    assignments: Mapped[List['Assignment']] = relationship('Assignment', back_populates='course', lazy='selectin', cascade='all, delete-orphan')
+    links: Mapped[List['Link']] = relationship('Link', back_populates='course', lazy='selectin', cascade='all, delete-orphan')
+    files: Mapped[List['File']] = relationship('File', back_populates='course', lazy='selectin', cascade='all, delete-orphan')
+    discussions: Mapped[List['Discussion']] = relationship('Discussion', back_populates='course', lazy='selectin', cascade='all, delete-orphan')
+    kbm_notes: Mapped[List['KbmNote']] = relationship('KbmNote', back_populates='course', lazy='selectin', cascade='all, delete-orphan')
+    content_folders: Mapped[List['ContentFolder']] = relationship('ContentFolder', back_populates='course', lazy='selectin', cascade='all, delete-orphan')
 
     # Gradebook relationships
-    grade_categories: Mapped[List['GradeCategory']] = relationship('GradeCategory', back_populates='course', lazy='dynamic', cascade='all, delete-orphan')
-    learning_objectives: Mapped[List['LearningObjective']] = relationship('LearningObjective', back_populates='course', lazy='dynamic', cascade='all, delete-orphan')
-    grade_items: Mapped[List['GradeItem']] = relationship('GradeItem', back_populates='course', lazy='dynamic', cascade='all, delete-orphan')
-    
+    grade_categories: Mapped[List['GradeCategory']] = relationship('GradeCategory', back_populates='course', lazy='selectin', cascade='all, delete-orphan')
+    learning_objectives: Mapped[List['LearningObjective']] = relationship('LearningObjective', back_populates='course', lazy='selectin', cascade='all, delete-orphan')
+    grade_items: Mapped[List['GradeItem']] = relationship('GradeItem', back_populates='course', lazy='selectin', cascade='all, delete-orphan')
+
     # Rasch Model relationship
-    rasch_analyses: Mapped[List['RaschAnalysis']] = relationship('RaschAnalysis', back_populates='course', lazy='dynamic', cascade='all, delete-orphan')
+    rasch_analyses: Mapped[List['RaschAnalysis']] = relationship('RaschAnalysis', back_populates='course', lazy='selectin', cascade='all, delete-orphan')
 
     def __repr__(self) -> str:
         return f'<Course {self.name}>'
