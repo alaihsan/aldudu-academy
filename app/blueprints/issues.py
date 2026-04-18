@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, abort
+from flask import Blueprint, request, jsonify, abort, current_app
 from flask_login import login_required, current_user
 from app.models import db, Issue, IssueStatus, IssuePriority, UserRole
 from app.helpers import sanitize_text
@@ -40,10 +40,11 @@ def create_issue():
     
     if not title or not description:
         return jsonify({'success': False, 'message': 'Judul dan deskripsi wajib diisi'}), 400
-        
+
     try:
         priority = IssuePriority[priority_str]
     except KeyError:
+        current_app.logger.warning(f"Invalid priority '{priority_str}', defaulting to MEDIUM")
         priority = IssuePriority.MEDIUM
         
     school_id = get_school_id_or_abort()
@@ -89,16 +90,16 @@ def update_issue(issue_id):
         issue.description = sanitize_text(data.get('description'))
     if 'priority' in data and is_owner:
         try:
-            issue.priority = IssuePriority[data.get('priority').upper()]
+            issue.priority = IssuePriority[data.get('priority', '').upper()]
         except KeyError:
-            pass
+            current_app.logger.warning(f"Invalid priority value: {data.get('priority')}")
     if 'status' in data:
         # Only Guru/Admin can resolve/progress issues
         if is_privileged:
             try:
-                issue.status = IssueStatus[data.get('status').upper()]
+                issue.status = IssueStatus[data.get('status', '').upper()]
             except KeyError:
-                pass
+                current_app.logger.warning(f"Invalid status value: {data.get('status')}")
         else:
             return jsonify({'success': False, 'message': 'Hanya Guru/Admin yang dapat memproses laporan'}), 403
             

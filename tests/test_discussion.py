@@ -2,7 +2,7 @@
 import json
 import pytest
 from app import create_app
-from models import db, User, Course, Discussion, Post, UserRole
+from app.models import db, User, Course, Discussion, Post, UserRole
 
 @pytest.fixture
 def client(tmp_path):

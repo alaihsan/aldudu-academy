@@ -3,7 +3,8 @@ Test Quiz Submission & Grading
 """
 import pytest
 from datetime import datetime
-from app.models import Quiz, QuizSubmission, QuizStatus, Question, SubmissionAnswer
+from app.models import Quiz, QuizSubmission, QuizStatus, Question, Answer, User
+from app.extensions import db
 
 
 class TestQuizSubmission:

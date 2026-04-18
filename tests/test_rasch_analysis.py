@@ -2,7 +2,8 @@
 Test Rasch Model Analysis
 """
 import pytest
-from app.models import Quiz, QuizSubmission, Question, SubmissionAnswer
+from app.models import Quiz, QuizSubmission, Question, Answer, User, UserRole
+from app.extensions import db
 
 
 class TestRaschAnalysis:

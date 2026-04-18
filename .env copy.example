@@ -1,5 +1,8 @@
 DATABASE_URL=mysql+pymysql://root:password@localhost:3306/aldudu_academy
-SECRET_KEY=your-secret-key-here
+
+# SECURITY: SECRET_KEY must be at least 32 characters for production
+# Generate a secure key: python -c "import secrets; print(secrets.token_urlsafe(48))"
+SECRET_KEY=your-secret-key-here-minimum-32-characters-long-for-security
 
 # Email (Mailtrap for development — get credentials from mailtrap.io)
 MAIL_SERVER=sandbox.smtp.mailtrap.io
@@ -18,7 +21,9 @@ SENTRY_TRACES_SAMPLE_RATE=0.1
 SENTRY_PROFILES_SAMPLE_RATE=0.1
 SENTRY_RELEASE=aldudu-academy@1.0.0
 
-# Celery/Redis
+# Celery/Redis (Required for background tasks like Rasch analysis)
+# Install Redis: https://redis.io/download
+# Start Redis: redis-server
 CELERY_BROKER_URL=redis://localhost:6379/0
 CELERY_RESULT_BACKEND=redis://localhost:6379/0
 
