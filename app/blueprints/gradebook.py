@@ -46,7 +46,7 @@ def course_gradebook(course_id):
     
     # Check permission - only teacher can access
     if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
-        return render_template('error/403.html'), 403
+        abort(403, description='Anda tidak memiliki izin untuk mengakses gradebook kelas ini')
     
     return render_template('gradebook/teacher_gradebook.html', course=course)
 
@@ -58,7 +58,7 @@ def course_setup(course_id):
     course = Course.query.get_or_404(course_id)
     
     if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
-        return render_template('error/403.html'), 403
+        abort(403, description='Anda tidak memiliki izin untuk mengakses setup gradebook kelas ini')
     
     return render_template('gradebook/course_setup.html', course=course)
 
@@ -85,7 +85,7 @@ def my_grades(course_id):
     is_teacher = course.teacher_id == current_user.id
     
     if not is_student and not is_teacher and current_user.role != UserRole.SUPER_ADMIN:
-        return render_template('error/403.html'), 403
+        abort(403, description='Anda tidak memiliki izin untuk mengakses nilai kelas ini')
     
     # Template loads grades via JS API call to get_student_grades_summary()
     # which uses the unified calculate_final_grade() function

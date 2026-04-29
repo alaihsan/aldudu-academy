@@ -146,7 +146,7 @@ class TestAuthorization:
 
     def test_unauthorized_access(self, client, app):
         """Test accessing protected endpoint without login"""
-        response = client.get('/api/profile')
+        response = client.put('/api/profile', json={'name': 'Unauthorized'})
         assert response.status_code in [302, 401]
 
     def test_teacher_access_gradebook(self, client, teacher_user, course):

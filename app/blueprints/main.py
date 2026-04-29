@@ -27,25 +27,41 @@ def dashboard():
 @main_bp.route('/kelas/<int:course_id>')
 @login_required
 def course_detail(course_id):
-    from app.models import Course, File, Link, Quiz, QuizStatus, Assignment, AssignmentStatus
+    from sqlalchemy.orm import selectinload
+    from app.models import Course, QuizStatus, AssignmentStatus
 
-    course = db.session.get(Course, course_id)
+    # Optimize with selectinload for all related content
+    course = db.session.query(Course).options(
+        selectinload(Course.quizzes),
+        selectinload(Course.assignments),
+        selectinload(Course.files),
+        selectinload(Course.links),
+        selectinload(Course.discussions)
+    ).filter(Course.id == course_id).first()
+    
     if course is None:
         abort(404)
 
     school_id = get_school_id_or_abort()
     verify_course_in_school(course, school_id)
     is_teacher = (current_user.id == course.teacher_id)
+    is_student = current_user in course.students
+    is_admin = current_user.role in (UserRole.ADMIN, UserRole.SUPER_ADMIN)
 
+    if not (is_teacher or is_student or is_admin):
+        abort(403, description='Anda tidak memiliki akses ke kelas ini.')
+
+    # Filter based on archived status and user role
     if is_teacher:
-        quizzes = Quiz.query.filter_by(course_id=course.id, is_archived=False).all()
-        assignments = Assignment.query.filter_by(course_id=course.id).all()
+        quizzes = [q for q in course.quizzes if not q.is_archived]
+        assignments = course.assignments
     else:
-        quizzes = Quiz.query.filter_by(course_id=course.id, status=QuizStatus.PUBLISHED).all()
-        assignments = Assignment.query.filter_by(course_id=course.id, status=AssignmentStatus.PUBLISHED).all()
-    links = Link.query.filter_by(course_id=course.id).all()
-    files = File.query.filter_by(course_id=course.id).all()
-    discussions = Discussion.query.filter_by(course_id=course.id).all()
+        quizzes = [q for q in course.quizzes if q.status == QuizStatus.PUBLISHED and not q.is_archived]
+        assignments = [a for a in course.assignments if a.status == AssignmentStatus.PUBLISHED]
+    
+    links = [l for l in course.links if not getattr(l, 'is_archived', False)]
+    files = [f for f in course.files if not getattr(f, 'is_archived', False)]
+    discussions = course.discussions
 
     topics = []
     for quiz in quizzes:
@@ -57,6 +73,7 @@ def course_detail(course_id):
             'created_at': quiz.created_at,
             'folder_id': quiz.folder_id
         })
+    # ... (rest of the processing logic remains the same)
     for assignment in assignments:
         topics.append({
             'id': assignment.id,
@@ -323,7 +340,7 @@ def api_get_course_students(course_id):
     if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
         return jsonify({'success': False, 'message': 'Unauthorized'}), 403
 
-    students = course.students.all()
+    students = list(course.students)
     return jsonify({
         'success': True,
         'students': [{
@@ -582,4 +599,7 @@ def course_archives(course_id):
 
 @main_bp.errorhandler(403)
 def forbidden(error):
-    return render_template('errors/403.html', error=error), 403
+    return {
+        'success': False,
+        'message': str(error.description) or 'Anda tidak memiliki izin',
+    }, 403

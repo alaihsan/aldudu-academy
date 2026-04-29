@@ -151,15 +151,23 @@ def create_app(test_config: Optional[Dict] = None) -> Flask:
         except (ValueError, TypeError):
             return None
 
-    # Register asset_hash Jinja2 helper for cache-busting static assets
+    # Cache for static asset hashes to avoid repeated disk I/O
+    _asset_hashes: Dict[str, str] = {}
+
     @app.template_global()
     def asset_hash(filename: str) -> str:
         """Return a short content-based hash for a static file (cache-busting)."""
+        # Return from cache if available and not in debug mode
+        if filename in _asset_hashes and not app.debug:
+            return _asset_hashes[filename]
+
         filepath = os.path.join(app.static_folder, filename)
         try:
             with open(filepath, 'rb') as f:
-                return hashlib.md5(f.read()).hexdigest()[:8]
-        except FileNotFoundError:
+                file_hash = hashlib.md5(f.read()).hexdigest()[:8]
+                _asset_hashes[filename] = file_hash
+                return file_hash
+        except (FileNotFoundError, PermissionError):
             return 'missing'
 
     # Register middleware

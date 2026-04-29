@@ -26,7 +26,13 @@
       "Bash($env:path *)",
       "Bash(where-object *)",
       "Bash(move *)",
-      "Bash(dir *)"
+      "Bash(dir *)",
+      "Bash(flask *)",
+      "Bash(del *)",
+      "Bash(rm *)",
+      "Bash(c:/users/iksan/dev/aldudu-academy/venv/scripts/activate)",
+      "Bash(pip install *)",
+      "Bash(c:/users/iksan/dev/aldudu-academy/venv/scripts/python.exe *)"
     ]
   },
   "$version": 3

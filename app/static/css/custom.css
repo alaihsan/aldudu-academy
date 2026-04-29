@@ -263,13 +263,7 @@ html.dark .sidebar-toggle-btn:hover {
 }
 
 @media (min-width: 1024px) {
-    .sidebar-collapsed {
-        margin-left: -18rem; /* Width of the sidebar (w-72) */
-    }
-    
-    .main-content-expanded {
-        margin-left: 0 !important;
-    }
+    /* Sidebar transition classes */
 }
 
 /* iPad/Tablet Overlay Style */

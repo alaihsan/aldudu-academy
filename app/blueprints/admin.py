@@ -3,7 +3,7 @@ import re
 import logging
 from flask_login import login_required, current_user
 from app.models import db, User, UserRole, ActivityLog, Course, AcademicYear, QuizSubmission, Quiz
-from app.helpers import log_activity, sanitize_text, is_valid_email, generate_random_password
+from app.helpers import log_activity, sanitize_text, is_valid_email, generate_random_password, validate_password
 from sqlalchemy import func
 from app.tenant import get_school_id_or_abort
 
@@ -12,32 +12,13 @@ logger = logging.getLogger(__name__)
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 
 
-def validate_password(password):
-    """
-    Validate password strength.
-    Returns (is_valid, error_message)
-    Requirements:
-    - Minimum 6 characters
-    - At least 1 uppercase letter
-    - At least 1 number
-    - At least 1 symbol
-    """
-    if len(password) < 6:
-        return False, 'Password minimal 6 karakter'
-    if not re.search(r'[A-Z]', password):
-        return False, 'Password harus mengandung minimal 1 huruf kapital'
-    if not re.search(r'\d', password):
-        return False, 'Password harus mengandung minimal 1 angka'
-    if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
-        return False, 'Password harus mengandung minimal 1 simbol (!@#$%^&*(),.?":{}|<>)'
-    return True, None
-
 @admin_bp.before_request
 @login_required
 def admin_required():
-    if current_user.role != UserRole.ADMIN:
+    if current_user.role.value not in ['admin', 'super_admin']:
         abort(403)
-    if not current_user.school_id:
+    # Only regular admin must have a school_id; superadmin can access all
+    if current_user.role == UserRole.ADMIN and not current_user.school_id:
         abort(403, description='Akun admin tidak terhubung ke sekolah')
 
 @admin_bp.route('/dashboard')

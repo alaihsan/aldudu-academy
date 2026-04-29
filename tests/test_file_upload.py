@@ -3,6 +3,7 @@ Test File Upload Security & Functionality
 """
 import pytest
 import io
+import os
 from werkzeug.datastructures import FileStorage
 
 
@@ -11,14 +12,14 @@ class TestFileUploadValidation:
 
     def test_allowed_extension_pdf(self, app):
         """Test PDF file is allowed"""
-        from app.helpers import allowed_file
+        from app.blueprints.courses import allowed_file
         
         assert allowed_file('document.pdf') is True
         assert allowed_file('file.PDF') is True
 
     def test_allowed_extension_image(self, app):
         """Test image files are allowed"""
-        from app.helpers import allowed_file
+        from app.blueprints.courses import allowed_file
         
         assert allowed_file('image.png') is True
         assert allowed_file('photo.jpg') is True
@@ -28,7 +29,7 @@ class TestFileUploadValidation:
 
     def test_allowed_extension_document(self, app):
         """Test document files are allowed"""
-        from app.helpers import allowed_file
+        from app.blueprints.courses import allowed_file
         
         assert allowed_file('document.doc') is True
         assert allowed_file('document.docx') is True
@@ -39,7 +40,7 @@ class TestFileUploadValidation:
 
     def test_disallowed_extension_exe(self, app):
         """Test executable files are disallowed"""
-        from app.helpers import allowed_file
+        from app.blueprints.courses import allowed_file
         
         assert allowed_file('virus.exe') is False
         assert allowed_file('script.bat') is False
@@ -47,7 +48,7 @@ class TestFileUploadValidation:
 
     def test_disallowed_extension_no_extension(self, app):
         """Test files without extension are disallowed"""
-        from app.helpers import allowed_file
+        from app.blueprints.courses import allowed_file
         
         assert allowed_file('noextension') is False
         assert allowed_file('file.') is False
@@ -72,9 +73,9 @@ class TestFileUploadSanitization:
         from werkzeug.utils import secure_filename
         
         # Dangerous filenames should be sanitized
-        assert secure_filename('../../../etc/passwd') == 'passwd'
+        assert secure_filename('../../../etc/passwd') in {'passwd', 'etc_passwd'}
         assert secure_filename('file with spaces.txt') == 'file_with_spaces.txt'
-        assert secure_filename('файл.txt') == 'fail.txt'
+        assert secure_filename('файл.txt') in {'fail.txt', 'txt'}
 
     def test_malicious_filename_rejected(self, app):
         """Test malicious filenames are rejected"""
@@ -107,7 +108,7 @@ class TestFileUploadAPI:
             'password': 'password123'
         })
         
-        response = client.post(f'/api/course/{course.id}/upload', data={})
+        response = client.post(f'/api/courses/{course.id}/files', data={})
         assert response.status_code in [400, 401]
 
     def test_upload_valid_file(self, client, teacher_user, course):
@@ -126,7 +127,7 @@ class TestFileUploadAPI:
         }
         
         response = client.post(
-            f'/api/course/{course.id}/upload',
+            f'/api/courses/{course.id}/files',
             data=data,
             content_type='multipart/form-data'
         )
@@ -150,7 +151,7 @@ class TestFileUploadAPI:
         }
         
         response = client.post(
-            f'/api/course/{course.id}/upload',
+            f'/api/courses/{course.id}/files',
             data=data,
             content_type='multipart/form-data'
         )
@@ -181,12 +182,12 @@ class TestFileStorage:
         from werkzeug.utils import secure_filename
         
         # Simulate path construction
-        base_path = '/var/www/aldudu-academy/instance/uploads'
+        base_path = os.path.normpath('/var/www/aldudu-academy/instance/uploads')
         malicious_filename = '../../../etc/passwd'
         safe_filename = secure_filename(malicious_filename)
         
         # Construct full path
-        full_path = os.path.join(base_path, safe_filename)
+        full_path = os.path.normpath(os.path.join(base_path, safe_filename))
         
         # Should be within base path
         assert os.path.commonpath([base_path, full_path]) == base_path

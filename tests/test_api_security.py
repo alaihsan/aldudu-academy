@@ -86,7 +86,7 @@ class TestInputValidation:
         xss_payload = '<script>alert("XSS")</script>'
         
         # Update course with XSS payload
-        response = client.put(f'/api/course/{course.id}', json={
+        response = client.put(f'/api/courses/{course.id}', json={
             'name': xss_payload
         })
         
@@ -159,7 +159,7 @@ class TestAuthorization:
         
         # Try to access another teacher's course (if exists)
         # This tests if proper ownership checks are in place
-        response = client.get(f'/api/course/{course.id}')
+        response = client.get(f'/kelas/{course.id}')
         
         # Should succeed only if teacher owns the course
         if course.teacher_id == teacher_user.id:

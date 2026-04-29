@@ -2,7 +2,7 @@ import re
 from flask import Blueprint, request, jsonify, render_template, redirect
 from flask_login import login_user, logout_user, current_user, login_required
 from app.models import User, UserRole, SchoolStatus, PasswordResetToken, School
-from app.helpers import is_valid_email, log_activity
+from app.helpers import is_valid_email, log_activity, validate_password
 from app.extensions import limiter, db
 from app.services.auth_service import (
     register_school, verify_email_token,
@@ -10,27 +10,6 @@ from app.services.auth_service import (
 )
 
 auth_bp = Blueprint('auth', __name__)
-
-
-def validate_password(password):
-    """
-    Validate password strength.
-    Returns (is_valid, error_message)
-    Requirements:
-    - Minimum 6 characters
-    - At least 1 uppercase letter
-    - At least 1 number
-    - At least 1 symbol
-    """
-    if len(password) < 6:
-        return False, 'Password minimal 6 karakter'
-    if not re.search(r'[A-Z]', password):
-        return False, 'Password harus mengandung minimal 1 huruf kapital'
-    if not re.search(r'\d', password):
-        return False, 'Password harus mengandung minimal 1 angka'
-    if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
-        return False, 'Password harus mengandung minimal 1 simbol (!@#$%^&*(),.?":{}|<>)'
-    return True, None
 
 
 # ─── Page Routes ────────────────────────────────────
@@ -80,6 +59,7 @@ def api_session():
         user_data = {
             'id': current_user.id,
             'name': current_user.name,
+            'email': current_user.email,
             'role': current_user.role.value,
             'school_id': current_user.school_id,
         }

@@ -50,7 +50,25 @@ def db(app):
 
 
 @pytest.fixture
-def teacher_user(app):
+def active_school(app):
+    """Create an active school for authenticated user tests"""
+    from app.extensions import db
+    from app.models import School, SchoolStatus
+
+    school = School(
+        name='Test School',
+        slug='test-school',
+        email='school@test.com',
+        admin_email='admin@test.com',
+        status=SchoolStatus.ACTIVE,
+    )
+    db.session.add(school)
+    db.session.commit()
+    return school
+
+
+@pytest.fixture
+def teacher_user(app, active_school):
     """Create a teacher user for testing"""
     from app.extensions import db
     from app.models import User, UserRole
@@ -58,7 +76,9 @@ def teacher_user(app):
     user = User(
         name='Test Teacher',
         email='teacher@test.com',
-        role=UserRole.GURU
+        role=UserRole.GURU,
+        email_verified=True,
+        school_id=active_school.id,
     )
     user.set_password('password123')
     db.session.add(user)
@@ -67,7 +87,7 @@ def teacher_user(app):
 
 
 @pytest.fixture
-def student_user(app):
+def student_user(app, active_school):
     """Create a student user for testing"""
     from app.extensions import db
     from app.models import User, UserRole
@@ -75,7 +95,9 @@ def student_user(app):
     user = User(
         name='Test Student',
         email='student@test.com',
-        role=UserRole.MURID
+        role=UserRole.MURID,
+        email_verified=True,
+        school_id=active_school.id,
     )
     user.set_password('password123')
     db.session.add(user)
@@ -84,7 +106,7 @@ def student_user(app):
 
 
 @pytest.fixture
-def course(app, teacher_user):
+def course(app, teacher_user, active_school):
     """Create a course for testing"""
     from app.extensions import db
     from app.models import Course, AcademicYear, User
@@ -92,7 +114,8 @@ def course(app, teacher_user):
     # Create academic year first (required foreign key)
     academic_year = AcademicYear(
         year=str(datetime.now().year),
-        is_active=True
+        is_active=True,
+        school_id=active_school.id,
     )
     db.session.add(academic_year)
     db.session.commit()
@@ -105,12 +128,6 @@ def course(app, teacher_user):
     )
     db.session.add(course)
     db.session.commit()
-    
-    # Enroll student - use the relationship properly
-    student = User.query.filter_by(email='student@test.com').first()
-    if student:
-        student.courses_enrolled.append(course)
-        db.session.commit()
     
     return course
 

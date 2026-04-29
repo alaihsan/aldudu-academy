@@ -45,26 +45,25 @@ def generate_secure_filename(original_filename):
 def api_initial_data():
     school_id = get_school_id_or_abort()
     
+    # Pre-fetch active year to avoid redundant queries
+    current_year = AcademicYear.query.filter_by(school_id=school_id, is_active=True).first()
+    
+    if not current_year:
+        # Check if 2025/2026 exists even if not active, or create it
+        current_year = AcademicYear.query.filter_by(year='2025/2026', school_id=school_id).first()
+        if not current_year:
+            current_year = AcademicYear(year='2025/2026', is_active=True, school_id=school_id)
+            db.session.add(current_year)
+            db.session.commit()
+        else:
+            current_year.is_active = True
+            db.session.commit()
+
     # For teachers: use -1 to show all their courses (no year filter)
     # For students: use active academic year
-    if current_user.role == UserRole.GURU:
-        year_id = -1  # Show all courses for teachers
-        current_year = AcademicYear.query.filter_by(school_id=school_id, is_active=True).first()
-        if not current_year:
-            current_year = AcademicYear(year='2025/2026', is_active=True, school_id=school_id)
-            db.session.add(current_year)
-            db.session.commit()
-    else:
-        # For students, use the active academic year
-        current_year = AcademicYear.query.filter_by(year='2025/2026', school_id=school_id, is_active=True).first()
-        if not current_year:
-            current_year = AcademicYear.query.filter_by(school_id=school_id, is_active=True).first()
-        if not current_year:
-            current_year = AcademicYear(year='2025/2026', is_active=True, school_id=school_id)
-            db.session.add(current_year)
-            db.session.commit()
-        year_id = current_year.id
+    year_id = -1 if current_user.role == UserRole.GURU else current_year.id
 
+    # get_courses_for_user already has some optimization, but we can ensure teacher is loaded
     courses_query = get_courses_for_user(current_user, year_id)
     courses = [format_course_data(c, current_user) for c in courses_query]
 

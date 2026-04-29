@@ -86,7 +86,7 @@ a:hover {
 
 /* --- Utility Classes --- */
 .hidden {
-  display: none !important;
+  display: none;
 }
 
 /* --- Dashboard Layout --- */

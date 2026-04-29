@@ -4,12 +4,33 @@ import secrets
 import re
 import html
 import logging
+from functools import wraps
 from datetime import datetime, timedelta, timezone
-from flask import request
+from flask import request, abort
+from flask_login import current_user
 from sqlalchemy import func
 from sqlalchemy.orm import joinedload
 
 logger = logging.getLogger(__name__)
+
+def role_required(roles):
+    """
+    Decorator to restrict access to specific roles.
+    Accepts a single role string or a list of role strings.
+    """
+    if isinstance(roles, str):
+        roles = [roles]
+    
+    def decorator(f):
+        @wraps(f)
+        def decorated_view(*args, **kwargs):
+            if not current_user.is_authenticated:
+                return abort(401)
+            if current_user.role.value not in roles:
+                return abort(403)
+            return f(*args, **kwargs)
+        return decorated_view
+    return decorator
 
 def get_jakarta_now():
     """Returns current time in Jakarta (WIB, UTC+7)."""
@@ -168,3 +189,23 @@ def is_valid_class_code(code: str) -> bool:
         return False
     c = code.strip().upper()
     return re.match(r'^[A-Z0-9]{4,8}$', c) is not None
+
+def validate_password(password: str):
+    """
+    Validate password strength.
+    Returns (is_valid, error_message)
+    Requirements:
+    - Minimum 6 characters
+    - At least 1 uppercase letter
+    - At least 1 number
+    - At least 1 symbol
+    """
+    if not password or len(password) < 6:
+        return False, 'Password minimal 6 karakter'
+    if not re.search(r'[A-Z]', password):
+        return False, 'Password harus mengandung minimal 1 huruf kapital'
+    if not re.search(r'\d', password):
+        return False, 'Password harus mengandung minimal 1 angka'
+    if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+        return False, 'Password harus mengandung minimal 1 simbol (!@#$%^&*(),.?":{}|<>)'
+    return True, None

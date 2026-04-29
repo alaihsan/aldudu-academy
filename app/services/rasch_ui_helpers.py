@@ -506,28 +506,28 @@ def generate_quiz_insights(
         insights.append(Insight(
             type=InsightType.STRENGTH,
             title='Reliabilitas Sangat Baik',
-            description=f'Cronbach's alpha {cronbach_alpha:.2f}. Kuis ini konsisten dan dapat diandalkan.',
+            description=f"Cronbach's alpha {cronbach_alpha:.2f}. Kuis ini konsisten dan dapat diandalkan.",
             priority=4
         ))
     elif cronbach_alpha >= 0.7:
         insights.append(Insight(
             type=InsightType.STRENGTH,
             title='Reliabilitas Baik',
-            description=f'Cronbach's alpha {cronbach_alpha:.2f}. Kuis ini cukup andal untuk penilaian.',
+            description=f"Cronbach's alpha {cronbach_alpha:.2f}. Kuis ini cukup andal untuk penilaian.",
             priority=3
         ))
     elif cronbach_alpha >= 0.6:
         insights.append(Insight(
             type=InsightType.WEAKNESS,
             title='Reliabilitas Cukup',
-            description=f'Cronbach's alpha {cronbach_alpha:.2f}. Pertimbangkan menambah atau memperbaiki soal.',
+            description=f"Cronbach's alpha {cronbach_alpha:.2f}. Pertimbangkan menambah atau memperbaiki soal.",
             priority=3
         ))
     else:
         insights.append(Insight(
             type=InsightType.WEAKNESS,
             title='Reliabilitas Rendah',
-            description=f'Cronbach's alpha {cronbach_alpha:.2f}. Kuis perlu direvisi signifikan.',
+            description=f"Cronbach's alpha {cronbach_alpha:.2f}. Kuis perlu direvisi signifikan.",
             priority=5
         ))
     

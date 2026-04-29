@@ -67,7 +67,7 @@ class TestEnrollment:
         })
 
         # Enroll using class code
-        response = client.post('/api/courses/enroll', json={
+        response = client.post('/api/enroll', json={
             'class_code': course.class_code
         })
 
@@ -87,7 +87,7 @@ class TestEnrollment:
         })
 
         # Try invalid code
-        response = client.post('/api/courses/enroll', json={
+        response = client.post('/api/enroll', json={
             'class_code': 'INVALID123'
         })
 
@@ -108,7 +108,7 @@ class TestCourseEnrollmentAPI:
             'password': 'password123'
         })
 
-        response = client.get('/api/courses/enrolled')
+        response = client.get('/api/courses')
 
         # Should return list of enrolled courses
         assert response.status_code == 200
@@ -123,7 +123,7 @@ class TestCourseEnrollmentAPI:
             'password': 'password123'
         })
 
-        response = client.get(f'/api/course/{course.id}/students')
+        response = client.get(f'/api/courses/{course.id}/students')
 
         # Should return list of students
         assert response.status_code == 200
@@ -162,16 +162,18 @@ class TestCourseAccess:
             'password': 'password123'
         })
 
-        response = client.get(f'/api/course/{course.id}')
+        response = client.get(f'/kelas/{course.id}')
         assert response.status_code == 200
 
-    def test_teacher_cannot_access_other_course(self, client, teacher_user):
+    def test_teacher_cannot_access_other_course(self, client, teacher_user, active_school):
         """Test teacher cannot access another teacher's course"""
         # Create another teacher and course
         other_teacher = User(
             name='Other Teacher',
             email='other.teacher@test.com',
-            role=UserRole.GURU
+            role=UserRole.GURU,
+            email_verified=True,
+            school_id=active_school.id,
         )
         other_teacher.set_password('password123')
         db.session.add(other_teacher)
@@ -179,7 +181,8 @@ class TestCourseAccess:
 
         academic_year = AcademicYear(
             year='2024',
-            is_active=True
+            is_active=True,
+            school_id=active_school.id,
         )
         db.session.add(academic_year)
         db.session.commit()
@@ -200,7 +203,7 @@ class TestCourseAccess:
         })
 
         # Try to access other teacher's course
-        response = client.get(f'/api/course/{other_course.id}')
+        response = client.get(f'/kelas/{other_course.id}')
 
         # Should be forbidden or not found
         assert response.status_code in [403, 404]
@@ -221,18 +224,20 @@ class TestCourseAccess:
             'password': 'password123'
         })
 
-        response = client.get(f'/api/course/{course.id}')
+        response = client.get(f'/kelas/{course.id}')
 
         # Should succeed (student is enrolled)
         assert response.status_code in [200, 403]
 
-    def test_non_enrolled_student_cannot_access_course(self, client, course):
+    def test_non_enrolled_student_cannot_access_course(self, client, course, active_school):
         """Test non-enrolled student cannot access course"""
         # Create non-enrolled student
         student = User(
             name='Non-enrolled Student',
             email='nonenrolled@test.com',
-            role=UserRole.MURID
+            role=UserRole.MURID,
+            email_verified=True,
+            school_id=active_school.id,
         )
         student.set_password('password123')
         db.session.add(student)
@@ -245,7 +250,7 @@ class TestCourseAccess:
         })
 
         # Try to access course
-        response = client.get(f'/api/course/{course.id}')
+        response = client.get(f'/kelas/{course.id}')
 
         # Should be forbidden or not found
         assert response.status_code in [403, 404]

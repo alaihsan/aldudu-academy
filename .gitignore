@@ -12,7 +12,11 @@ __pycache__/
 
 # Dependencies
 .venv/
+.venv313/  
 venv/
+.pytest_tmp/
+.pytest_basetemp/
+pytest_basetemp_plain/
 node_modules/
 dist/
 build/
@@ -20,6 +24,9 @@ target/
 .gradle/
 .mypy_cache/
 .pytest_cache/
+.claude_cache/
+.claude/
+.qwen/
 
 # Logs and temp files
 *.log
