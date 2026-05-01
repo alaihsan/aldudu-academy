@@ -10,10 +10,13 @@ from app.models import (
     QuizSubmission, Answer
 )
 from app.models.rasch import QuestionBloomTaxonomy, BloomLevel
-from app.helpers import sanitize_text, sanitize_rich_text
+from app.helpers import matching_pair, sanitize_text, sanitize_rich_text
+from app.services.quiz_docx_import_service import create_sample_docx_bytes, import_questions_from_docx
 import datetime
+import json
 import os
 import logging
+import zipfile
 from werkzeug.utils import secure_filename
 
 logger = logging.getLogger(__name__)
@@ -41,6 +44,17 @@ def get_question_or_abort(question_id, check_teacher=True):
     if check_teacher and question.quiz.course.teacher_id != current_user.id:
         abort(403, description="Anda tidak memiliki akses ke pertanyaan ini.")
     return question
+
+def parse_matching_pair(option_text):
+    return matching_pair(option_text)
+
+def get_matching_pairs(question):
+    pairs = []
+    for option in question.options.order_by(Option.order).all():
+        left, right = parse_matching_pair(option.option_text)
+        if left and right:
+            pairs.append((left, right))
+    return pairs
 
 # --- Routes ---
 
@@ -74,6 +88,8 @@ def api_add_question(quiz_id):
             question.options.append(Option(option_text="Opsi 1", order=1))
         elif q_type == QuestionType.TRUE_FALSE:
             question.options.extend([Option(option_text="Benar", order=1), Option(option_text="Salah", order=2)])
+        elif q_type == QuestionType.MATCHING:
+            question.options.append(Option(option_text="Istilah = Pasangan", order=1))
 
         db.session.add(question)
         db.session.commit()
@@ -85,6 +101,40 @@ def api_add_question(quiz_id):
         current_app.logger.error(f"Error adding question: {e}", exc_info=True)
         return jsonify({'success': False, 'error': str(e)}), 500
 
+
+@quiz_bp.route('/quiz/import-sample-format', methods=['GET'])
+@login_required
+def api_download_quiz_import_sample():
+    return current_app.response_class(
+        create_sample_docx_bytes(),
+        mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        headers={'Content-Disposition': 'attachment; filename=contoh-format-import-soal.docx'}
+    )
+
+
+@quiz_bp.route('/quiz/<int:quiz_id>/import-docx', methods=['POST'])
+@login_required
+def api_import_quiz_docx(quiz_id):
+    quiz = get_quiz_or_abort(quiz_id)
+    file = request.files.get('file')
+    if not file or not file.filename:
+        return jsonify({'success': False, 'message': 'File Word wajib dipilih.'}), 400
+
+    if not file.filename.lower().endswith('.docx'):
+        return jsonify({'success': False, 'message': 'Gunakan file Word berformat .docx.'}), 400
+
+    try:
+        result = import_questions_from_docx(file, quiz)
+    except zipfile.BadZipFile:
+        return jsonify({'success': False, 'message': 'File .docx tidak valid atau rusak.'}), 400
+    except Exception as exc:
+        db.session.rollback()
+        current_app.logger.error('Failed importing quiz docx: %s', exc, exc_info=True)
+        return jsonify({'success': False, 'message': 'Gagal mengimpor file Word.'}), 500
+
+    status = 200 if result.get('success') else 400
+    return jsonify(result), status
+
 @quiz_bp.route('/question/<int:question_id>/change-type', methods=['POST'])
 @login_required
 def api_change_question_type(question_id):
@@ -95,13 +145,13 @@ def api_change_question_type(question_id):
 
     current_text = request.form.get('question_text')
     if current_text is not None:
-        question.question_text = sanitize_text(current_text)
+        question.question_text = sanitize_rich_text(current_text)
 
     if question.question_type != new_type:
         old_type = question.question_type
         question.question_type = new_type
         
-        option_types = [QuestionType.MULTIPLE_CHOICE, QuestionType.DROPDOWN, QuestionType.CHECKBOX]
+        option_types = [QuestionType.MULTIPLE_CHOICE, QuestionType.DROPDOWN, QuestionType.CHECKBOX, QuestionType.MATCHING]
         
         # Only clear options if switching from/to types that are incompatible
         if (old_type in option_types and new_type not in option_types) or \
@@ -118,10 +168,12 @@ def api_change_question_type(question_id):
             Option.query.filter_by(question_id=question.id).delete()
             # ------------------------------------------------------------
             
-            if new_type in option_types:
+            if new_type in [QuestionType.MULTIPLE_CHOICE, QuestionType.DROPDOWN, QuestionType.CHECKBOX]:
                 db.session.add(Option(question_id=question.id, option_text="Opsi 1", order=1))
             elif new_type == QuestionType.TRUE_FALSE:
                 db.session.add_all([Option(question_id=question.id, option_text="Benar", order=1), Option(question_id=question.id, option_text="Salah", order=2)])
+            elif new_type == QuestionType.MATCHING:
+                db.session.add(Option(question_id=question.id, option_text="Istilah = Pasangan", order=1))
 
     # Initialize default upload settings if UPLOAD
     if question.question_type == QuestionType.UPLOAD:
@@ -174,11 +226,9 @@ def api_duplicate_question(question_id):
 @login_required
 def api_update_question(question_id):
     question = get_question_or_abort(question_id)
-    # Use sanitize_rich_text for potential HTML content from contenteditable
     question.question_text = sanitize_rich_text(request.form.get('question_text', ''))
     db.session.commit()
-    # Return contenteditable div with current text
-    return f'<div contenteditable="true" class="question-title-input font-bold text-xl w-full border-none focus:ring-0 bg-transparent p-0 placeholder-gray-300 resize-none overflow-hidden min-h-[40px]" data-placeholder="Pertanyaan Tanpa Judul" hx-put="/api/question/{question.id}/update" hx-trigger="blur" hx-ext="editable-submit" name="question_text" onmouseup="checkSelection(event)" onkeyup="checkSelection(event)" style="font-family: var(--font-q);">{question.question_text}</div>'
+    return render_template('_question_title_input.html', question=question)
 
 @quiz_bp.route('/question/<int:question_id>/update-points', methods=['PUT'])
 @login_required
@@ -203,7 +253,7 @@ def api_toggle_question_required(question_id):
 @login_required
 def api_set_correct(question_id):
     question = get_question_or_abort(question_id)
-    if question.question_type == QuestionType.CHECKBOX:
+    if question.question_type in [QuestionType.CHECKBOX, QuestionType.MATCHING]:
         selected_ids = [int(sid) for sid in request.form.getlist(f'correct_option_q{question.id}')]
         for opt in question.options: opt.is_correct = (opt.id in selected_ids)
     else:
@@ -216,6 +266,7 @@ def api_set_correct(question_id):
     options_html = ''
     for opt in question.options.order_by(Option.order).all():
         is_correct_class = 'border-primary-500 bg-primary-50 shadow-sm' if opt.is_correct else 'border-gray-100 bg-gray-50/30 hover:border-gray-200'
+        option_text = sanitize_rich_text(opt.option_text, max_len=500)
         options_html += f'''
             <label class="flex items-center p-5 rounded-3xl border-2 cursor-pointer transition-all active:scale-95 {is_correct_class}">
                 <input type="radio"
@@ -227,7 +278,7 @@ def api_set_correct(question_id):
                     hx-swap="innerHTML"
                     class="w-5 h-5 text-primary-600 focus:ring-0 border-gray-300"
                 >
-                <span class="ml-4 font-bold text-gray-700">{opt.option_text}</span>
+                <span class="ml-4 font-bold text-gray-700">{option_text}</span>
             </label>
         '''
 
@@ -254,9 +305,9 @@ def api_update_option(option_id):
     verify_course_in_school(option.question.quiz.course, school_id)
     if option.question.quiz.course.teacher_id != current_user.id:
         abort(403)
-    option.option_text = sanitize_text(request.form.get('option_text', ''))
+    option.option_text = sanitize_rich_text(request.form.get('option_text', ''), max_len=500)
     db.session.commit()
-    return f'<input type="text" class="option-input" value="{option.option_text}" name="option_text" hx-put="/api/option/{option.id}/update" hx-trigger="blur" hx-swap="outerHTML" placeholder="Opsi {option.order}" />'
+    return render_template('_option_text_input.html', option=option)
 
 @quiz_bp.route('/option/<int:option_id>/delete', methods=['DELETE'])
 @login_required
@@ -512,6 +563,11 @@ def api_update_quiz_settings(quiz_id):
             return jsonify({'success': False}), 400
     elif field == 'required_by_default':
         quiz.required_by_default = bool(value)
+    elif field == 'questions_per_page':
+        try:
+            quiz.questions_per_page = max(0, int(value or 0))
+        except (ValueError, TypeError):
+            return jsonify({'success': False}), 400
     elif field == 'quiz_password':
         val = str(value or '').strip()
         quiz.quiz_password = val if val else None
@@ -688,6 +744,13 @@ def api_submit_quiz(quiz_id):
             if set(opt_ids) == set(correct_opts):
                 earned_points += question.points
 
+        elif question.question_type == QuestionType.MATCHING:
+            matching = {str(k): str(v) for k, v in (ans_data.get('matching_answers') or {}).items()}
+            answer.answer_text = json.dumps(matching)
+            correct_pairs = {left: right for left, right in get_matching_pairs(question)}
+            if correct_pairs and matching == correct_pairs:
+                earned_points += question.points
+
         elif question.question_type == QuestionType.UPLOAD:
             file = request.files.get(f'file_{question.id}')
             if file and file.filename:
@@ -710,13 +773,16 @@ def api_submit_quiz(quiz_id):
         grade_item = GradeItem.query.filter_by(quiz_id=quiz.id).first()
         if not grade_item:
             # Find or create a category for quizzes
-            category = GradeCategory.query.filter_by(course_id=quiz.course_id).first()
+            category = GradeCategory.query.filter(
+                GradeCategory.course_id == quiz.course_id,
+                db.func.lower(GradeCategory.name) == 'quiz'
+            ).first()
             if not category:
                 category = GradeCategory(
-                    name="Kuis",
+                    name="Quiz",
                     course_id=quiz.course_id,
                     category_type=GradeCategoryType.FORMATIF,
-                    weight=100.0
+                    weight=0.0
                 )
                 db.session.add(category)
                 db.session.flush()
@@ -725,7 +791,7 @@ def api_submit_quiz(quiz_id):
                 name=f"Kuis: {quiz.name}",
                 description=quiz.description,
                 category_id=category.id,
-                max_score=float(total_possible_points) if total_possible_points > 0 else float(quiz.points),
+                max_score=100.0,
                 course_id=quiz.course_id,
                 quiz_id=quiz.id,
             )

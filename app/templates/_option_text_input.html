@@ -1,0 +1,13 @@
+<div
+    contenteditable="true"
+    class="option-input w-full"
+    name="option_text"
+    hx-put="/api/option/{{ option.id }}/update"
+    hx-trigger="blur"
+    hx-swap="outerHTML"
+    hx-ext="editable-submit"
+    data-placeholder="Opsi {{ option.order }}"
+    data-default-option="Opsi {{ option.order }}"
+    onmouseup="checkSelection(event)"
+    onkeyup="checkSelection(event)"
+>{{ option.option_text|rich_text|safe }}</div>

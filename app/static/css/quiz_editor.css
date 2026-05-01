@@ -9,6 +9,7 @@ body { background-color: var(--quiz-bg); min-height: 100vh; transition: backgrou
 
 .font-question { font-family: var(--font-q) !important; }
 .font-answer { font-family: var(--font-a) !important; }
+.question-title-input { font-weight: 400; }
 
 .quiz-container { max-width: 770px; margin: 0 auto; padding-top: 12px; position: relative; z-index: 1; }
 
@@ -22,8 +23,8 @@ body { background-color: var(--quiz-bg); min-height: 100vh; transition: backgrou
 }
 
 .form-card:focus-within {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    border-left: 6px solid var(--quiz-theme);
+    box-shadow: none;
+    border-color: #dadce0;
 }
 
 .form-header-strip {
@@ -43,6 +44,29 @@ body { background-color: var(--quiz-bg); min-height: 100vh; transition: backgrou
 }
 .quiz-desc-input:focus { border-bottom-color: #dadce0; color: #202124; }
 .quiz-desc-input[contenteditable]:empty:before {
+    content: attr(data-placeholder);
+    color: #9ca3af;
+    pointer-events: none;
+}
+
+.question-title-input,
+.option-input {
+    border-width: 0 0 2px 0 !important;
+    border-style: solid !important;
+    border-color: transparent !important;
+    outline: none;
+    transition: border-color 0.2s;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.question-title-input:focus,
+.option-input:focus {
+    border-bottom-color: var(--quiz-theme) !important;
+}
+
+.question-title-input[contenteditable]:empty:before,
+.option-input[contenteditable]:empty:before {
     content: attr(data-placeholder);
     color: #9ca3af;
     pointer-events: none;

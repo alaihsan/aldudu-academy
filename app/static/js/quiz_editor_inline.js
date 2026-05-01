@@ -93,6 +93,84 @@ async function updateSetting(field, value) {
     if (res.ok) showSaveIndicator();
 }
 
+function setQuestionsPerPageMode(value) {
+    const input = document.getElementById('questions-per-page-input');
+    if (!input) return;
+
+    if (value === 'custom') {
+        input.classList.remove('hidden');
+        updateQuestionsPerPage(input.value || 2);
+        input.focus();
+        input.select();
+        return;
+    }
+
+    input.classList.add('hidden');
+    updateQuestionsPerPage(value);
+}
+
+function updateQuestionsPerPage(value) {
+    const parsed = Math.max(0, parseInt(value || 0, 10));
+    updateSetting('questions_per_page', parsed);
+}
+
+async function importQuizDocx() {
+    const input = document.getElementById('quiz-docx-import-input');
+    const button = document.getElementById('quiz-docx-import-btn');
+    const status = document.getElementById('quiz-docx-import-status');
+    const file = input?.files?.[0];
+
+    if (!file) {
+        showImportStatus('Pilih file Word .docx terlebih dahulu.', 'error');
+        return;
+    }
+    if (!file.name.toLowerCase().endsWith('.docx')) {
+        showImportStatus('Format file harus .docx.', 'error');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    button.disabled = true;
+    button.textContent = 'Mengimpor...';
+    status?.classList.add('hidden');
+
+    try {
+        const res = await fetch(`/api/quiz/${window.quizId}/import-docx`, {
+            method: 'POST',
+            body: formData
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+            showImportStatus(data.message || 'Gagal mengimpor file Word.', 'error');
+            return;
+        }
+
+        const warningText = data.warnings?.length ? ` Catatan: ${data.warnings.join(' ')}` : '';
+        showImportStatus(`${data.imported_count} soal berhasil diimport.${warningText}`, 'success');
+        setTimeout(() => window.location.reload(), 1200);
+    } catch (error) {
+        console.error('Failed importing DOCX:', error);
+        showImportStatus('Gagal mengimpor file Word.', 'error');
+    } finally {
+        button.disabled = false;
+        button.textContent = 'Import';
+    }
+}
+
+function showImportStatus(message, type) {
+    const status = document.getElementById('quiz-docx-import-status');
+    if (!status) return;
+    status.textContent = message;
+    status.classList.remove('hidden', 'bg-green-50', 'text-green-700', 'bg-red-50', 'text-red-700');
+    if (type === 'success') {
+        status.classList.add('bg-green-50', 'text-green-700');
+    } else {
+        status.classList.add('bg-red-50', 'text-red-700');
+    }
+}
+
 // ===== Theme Panel =====
 function toggleThemePanel() {
     document.getElementById('theme-panel').classList.toggle('open');
@@ -148,6 +226,129 @@ function updateBgOpacity(value) {
     window._opacityTimer = setTimeout(() => updateQuizTheme(), 500);
 }
 
+// ===== Paste Multiple Options =====
+function parsePastedOptions(text) {
+    return text
+        .replace(/\u00a0/g, ' ')
+        .split(/\r?\n/)
+        .map(line => line
+            .trim()
+            .replace(/^[\s>*-]*([A-Za-z]|\d+)[.)、:]\s+/, '')
+            .replace(/^[\s>*-]*[•·◦▪▫-]\s+/, '')
+            .trim()
+        )
+        .filter(Boolean);
+}
+
+async function updateOptionText(input, value) {
+    input.textContent = value;
+    const updateUrl = input.getAttribute('hx-put');
+    if (!updateUrl) return;
+
+    const formData = new URLSearchParams();
+    formData.set(input.name || 'option_text', value);
+
+    const res = await fetch(updateUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+        body: formData
+    });
+
+    if (!res.ok) throw new Error('Failed to update option');
+}
+
+async function addOptionInput(questionId, list) {
+    const res = await fetch(`/api/question/${questionId}/option/add`, { method: 'POST' });
+    if (!res.ok) throw new Error('Failed to add option');
+
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = await res.text();
+    const row = wrapper.firstElementChild;
+    list.appendChild(row);
+    if (window.htmx) htmx.process(row);
+    return row.querySelector('.option-input');
+}
+
+document.addEventListener('paste', async (event) => {
+    const input = event.target.closest?.('.option-input');
+    if (!input) return;
+
+    const pastedText = event.clipboardData?.getData('text/plain') || '';
+    const pastedOptions = parsePastedOptions(pastedText);
+    if (pastedOptions.length < 2) return;
+
+    const questionCard = input.closest('.form-card[data-question-id]');
+    const optionRow = input.closest('.option-row');
+    const optionsList = optionRow?.parentElement;
+    if (!questionCard || !optionRow || !optionsList?.id?.startsWith('options-list-')) return;
+
+    event.preventDefault();
+
+    const questionId = questionCard.dataset.questionId;
+    const optionRows = Array.from(optionsList.querySelectorAll('.option-row'));
+    const startIndex = optionRows.indexOf(optionRow);
+    if (startIndex < 0) return;
+
+    try {
+        for (let i = 0; i < pastedOptions.length; i += 1) {
+            let targetInput = optionRows[startIndex + i]?.querySelector('.option-input');
+            if (!targetInput) {
+                targetInput = await addOptionInput(questionId, optionsList);
+                optionRows.push(targetInput.closest('.option-row'));
+            }
+            await updateOptionText(targetInput, pastedOptions[i]);
+        }
+        showSaveIndicator();
+    } catch (error) {
+        console.error('Failed to paste options:', error);
+        alert('Gagal menempel opsi jawaban. Silakan coba lagi.');
+    }
+});
+
+document.addEventListener('focusin', (event) => {
+    const input = event.target.closest?.('.option-input');
+    if (!input) return;
+
+    const defaultText = input.dataset.defaultOption;
+    if (defaultText && input.textContent.trim() === defaultText) {
+        input.textContent = '';
+    }
+});
+
+function insertPlainTextIntoEditable(editable, text) {
+    const selection = window.getSelection();
+    if (!selection || !selection.rangeCount) return;
+
+    const range = selection.getRangeAt(0);
+    if (!editable.contains(range.commonAncestorContainer)) return;
+
+    range.deleteContents();
+
+    const fragment = document.createDocumentFragment();
+    const lines = text.replace(/\r\n?/g, '\n').split('\n');
+    lines.forEach((line, index) => {
+        if (index > 0) fragment.appendChild(document.createElement('br'));
+        fragment.appendChild(document.createTextNode(line));
+    });
+
+    range.insertNode(fragment);
+    range.collapse(false);
+    selection.removeAllRanges();
+    selection.addRange(range);
+}
+
+document.addEventListener('paste', (event) => {
+    if (event.defaultPrevented) return;
+    const editable = event.target.closest?.('.question-title-input, .option-input');
+    if (!editable) return;
+
+    const pastedText = event.clipboardData?.getData('text/plain');
+    if (!pastedText) return;
+
+    event.preventDefault();
+    insertPlainTextIntoEditable(editable, pastedText);
+});
+
 // ===== Description - Contenteditable + Rich Text Toolbar =====
 function execCmd(command) {
     document.execCommand(command, false, null);
@@ -184,7 +385,7 @@ function checkSelection(event) {
             : range.commonAncestorContainer;
 
         const editable = container.closest('[contenteditable="true"]');
-        if (!editable || (!editable.classList.contains('quiz-desc-input') && !editable.classList.contains('question-title-input'))) {
+        if (!editable || (!editable.classList.contains('quiz-desc-input') && !editable.classList.contains('question-title-input') && !editable.classList.contains('option-input'))) {
             toolbar.style.display = 'none';
             return;
         }

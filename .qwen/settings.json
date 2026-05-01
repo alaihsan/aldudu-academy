@@ -32,7 +32,8 @@
       "Bash(rm *)",
       "Bash(c:/users/iksan/dev/aldudu-academy/venv/scripts/activate)",
       "Bash(pip install *)",
-      "Bash(c:/users/iksan/dev/aldudu-academy/venv/scripts/python.exe *)"
+      "Bash(c:/users/iksan/dev/aldudu-academy/venv/scripts/python.exe *)",
+      "Bash(c:/users/iksan/dev/aldudu-academy/.venv313/scripts/python.exe *)"
     ]
   },
   "$version": 3

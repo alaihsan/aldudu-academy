@@ -17,18 +17,7 @@
     <div class="flex flex-col md:flex-row gap-8 mb-4 items-start">
         <!-- Question Text (Full Width & Auto Expand) -->
         <div class="flex-1 w-full flex items-start justify-between group/q-input">
-            <div 
-                contenteditable="true"
-                class="question-title-input font-bold text-xl w-full border-none focus:ring-0 bg-transparent p-0 placeholder-gray-300 resize-none overflow-hidden min-h-[40px]" 
-                data-placeholder="Pertanyaan Tanpa Judul"
-                hx-put="/api/question/{{ question.id }}/update"
-                hx-trigger="blur"
-                hx-ext="editable-submit"
-                name="question_text"
-                onmouseup="checkSelection(event)"
-                onkeyup="checkSelection(event)"
-                style="font-family: var(--font-q);"
-            >{{ question.question_text|safe }}</div>
+            {% include '_question_title_input.html' %}
             
             <!-- Inline Image Upload Button (Positioned to the right) -->
             <label class="p-2 ml-4 text-gray-400 dark:text-gray-500 hover:text-primary-600 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all cursor-pointer flex-shrink-0" title="Tambah Gambar">
@@ -55,6 +44,7 @@
                     <option value="CHECKBOX" {% if question.question_type.name == 'CHECKBOX' %}selected{% endif %}>✅ Kotak Centang</option>
                     <option value="DROPDOWN" {% if question.question_type.name == 'DROPDOWN' %}selected{% endif %}>🔽 Dropdown</option>
                     <option value="TRUE_FALSE" {% if question.question_type.name == 'TRUE_FALSE' %}selected{% endif %}>🌗 Benar / Salah</option>
+                    <option value="MATCHING" {% if question.question_type.name == 'MATCHING' %}selected{% endif %}>🔗 Menjodohkan</option>
                     <option value="LONG_TEXT" {% if question.question_type.name == 'LONG_TEXT' %}selected{% endif %}>📝 Jawaban Singkat</option>
                     <option value="UPLOAD" {% if question.question_type.name == 'UPLOAD' %}selected{% endif %}>📤 Upload File</option>
                 </select>
@@ -86,7 +76,7 @@
 
     <!-- Options Container -->
     <div class="options-container mb-10 pl-2">
-        {% if question.question_type.name in ['MULTIPLE_CHOICE', 'DROPDOWN', 'CHECKBOX'] %}
+        {% if question.question_type.name in ['MULTIPLE_CHOICE', 'DROPDOWN', 'CHECKBOX', 'MATCHING'] %}
             <div id="options-list-{{ question.id }}" class="space-y-2">
                 {% for option in question.options.order_by(Option.order).all() %}
                     {% include '_option_form.html' %}
@@ -94,7 +84,9 @@
             </div>
             <div class="flex items-center space-x-4 mt-6 group/add">
                 <div class="w-6 flex justify-center text-gray-300">
-                    {% if question.question_type.name == 'CHECKBOX' %}
+                    {% if question.question_type.name == 'MATCHING' %}
+                        <span class="text-gray-300 text-xs font-black">=</span>
+                    {% elif question.question_type.name == 'CHECKBOX' %}
                         <div class="w-4.5 h-4.5 border-2 border-gray-200 rounded-md"></div>
                     {% elif question.question_type.name == 'MULTIPLE_CHOICE' %}
                         <div class="w-4.5 h-4.5 border-2 border-gray-200 rounded-full"></div>

@@ -51,27 +51,7 @@ def course_detail(course_id):
     if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
         abort(403)
     
-    # Initialize service
-    service = EvaluationTesService(course_id, current_user.id)
-    
-    # Get dashboard summary
-    summary = service.get_dashboard_summary()
-    
-    # Get score distribution
-    score_dist = service.get_score_distribution('all')
-    
-    # Get comparison chart data
-    comparison_data = service.get_comparison_chart_data()
-    
-    # Get recent evaluations
-    recent_evaluations = service.get_recent_evaluations(limit=5)
-    
-    return render_template('evaluation/course_detail.html',
-                         course=course,
-                         summary=summary,
-                         score_distribution=score_dist,
-                         comparison_data=comparison_data,
-                         recent_evaluations=recent_evaluations)
+    return render_template('evaluation/course_detail.html', course=course)
 
 
 @evaluation_bp.route('/course/<int:course_id>/evaluations')

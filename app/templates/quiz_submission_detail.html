@@ -54,12 +54,12 @@
     <div class="space-y-4">
         {% for answer in submission.answers %}
         {% set question = answer.question %}
-        <div class="answer-card {% if question.question_type.name in ['MULTIPLE_CHOICE', 'TRUE_FALSE', 'DROPDOWN', 'CHECKBOX'] %}
+        <div class="answer-card {% if question.question_type.name in ['MULTIPLE_CHOICE', 'TRUE_FALSE', 'DROPDOWN', 'CHECKBOX', 'MATCHING'] %}
             {% if answer.selected_option and answer.selected_option.is_correct %} correct {% else %} incorrect {% endif %}
             {% else %} manual-pending {% endif %}">
             
             <div class="flex items-start justify-between mb-4">
-                <p class="text-lg font-bold text-gray-800 flex-1">{{ loop.index }}. {{ question.question_text }}</p>
+                <p class="text-lg font-bold text-gray-800 flex-1">{{ loop.index }}. {{ question.question_text|rich_text|safe }}</p>
                 <div class="ml-4 flex items-center space-x-2">
                     <span class="text-xs font-black text-gray-400 uppercase tracking-widest">{{ question.points }} Poin</span>
                 </div>
@@ -78,7 +78,7 @@
                     <div class="flex items-center space-x-2">
                         {% if answer.selected_option %}
                             <span class="font-bold {% if answer.selected_option.is_correct %} text-green-600 {% else %} text-red-600 {% endif %}">
-                                {{ answer.selected_option.option_text }}
+                                {{ answer.selected_option.option_text|rich_text|safe }}
                             </span>
                             {% if answer.selected_option.is_correct %}
                                 <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
@@ -92,7 +92,7 @@
                     {% if not answer.selected_option or not answer.selected_option.is_correct %}
                         <p class="mt-2 text-xs text-gray-500">Kunci Jawaban: 
                             <span class="font-bold text-green-600">
-                                {% for opt in question.options %}{% if opt.is_correct %}{{ opt.option_text }}{% endif %}{% endfor %}
+                                {% for opt in question.options %}{% if opt.is_correct %}{{ opt.option_text|rich_text|safe }}{% endif %}{% endfor %}
                             </span>
                         </p>
                     {% endif %}
@@ -109,9 +109,18 @@
                                 {% else %}
                                     <div class="w-4 h-4 rounded border border-gray-300"></div>
                                 {% endif %}
-                                <span class="{% if opt.is_correct %} text-green-600 font-bold {% endif %}">{{ opt.option_text }}</span>
+                                <span class="{% if opt.is_correct %} text-green-600 font-bold {% endif %}">{{ opt.option_text|rich_text|safe }}</span>
                                 {% if opt.is_correct %}<span class="text-[10px] text-green-500 uppercase font-black">(Kunci)</span>{% endif %}
                             </div>
+                        {% endfor %}
+                    </div>
+
+                {% elif question.question_type.name == 'MATCHING' %}
+                    <div class="space-y-1 text-sm">
+                        {% for line in answer.answer_text|matching_answer_lines %}
+                        <div class="font-bold text-gray-700">{{ line }}</div>
+                        {% else %}
+                        <span class="text-gray-400 italic">Tidak dijawab</span>
                         {% endfor %}
                     </div>
 

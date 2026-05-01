@@ -3,6 +3,7 @@ import random
 import secrets
 import re
 import html
+import json
 import logging
 from functools import wraps
 from datetime import datetime, timedelta, timezone
@@ -156,18 +157,74 @@ def sanitize_rich_text(value: str, max_len: int = 5000) -> str:
     """Sanitize rich text HTML, allowing only safe formatting tags."""
     if value is None:
         return ''
-    s = value.strip()
+    s = html.unescape(value.strip())
     allowed_tags = {'b', 'i', 'u', 'strong', 'em', 'ol', 'ul', 'li', 'br', 'p', 'div'}
     def replace_tag(match):
         tag_content = match.group(1)
-        tag_name = re.match(r'/?(\w+)', tag_content)
-        if tag_name and tag_name.group(1).lower() in allowed_tags:
-            return match.group(0)
+        tag_name = re.match(r'\s*(/)?\s*(\w+)', tag_content)
+        if tag_name and tag_name.group(2).lower() in allowed_tags:
+            name = tag_name.group(2).lower()
+            if name == 'br':
+                return '<br>'
+            return f'</{name}>' if tag_name.group(1) else f'<{name}>'
         return ''
     s = re.sub(r'<([^>]*?)>', replace_tag, s)
     if len(s) > max_len:
         s = s[:max_len]
     return s
+
+def plain_text_from_html(value: str, max_len: int = 5000) -> str:
+    """Convert pasted/editor HTML into readable plain text."""
+    if value is None:
+        return ''
+
+    s = str(value).strip()
+    for _ in range(3):
+        decoded = html.unescape(s)
+        if decoded == s:
+            break
+        s = decoded
+
+    s = re.sub(r'<\s*br\s*/?\s*>', '\n', s, flags=re.IGNORECASE)
+    s = re.sub(r'</\s*(p|div|li)\s*>', '\n', s, flags=re.IGNORECASE)
+    s = re.sub(r'<[^>]*?>', '', s)
+    s = re.sub(r'[ \t\f\v]+', ' ', s)
+    s = re.sub(r'\n\s*\n+', '\n', s)
+    s = s.strip()
+
+    if len(s) > max_len:
+        s = s[:max_len]
+    return s
+
+def clean_rich_text(value: str, max_len: int = 5000) -> str:
+    """Render stored rich text safely, including legacy encoded HTML."""
+    return sanitize_rich_text(value, max_len=max_len)
+
+def matching_pair(value: str):
+    """Split a matching option into left/right pair text."""
+    plain = plain_text_from_html(value, max_len=500)
+    for separator in ('::', '=', '=>', '->', '|'):
+        if separator in plain:
+            left, right = plain.split(separator, 1)
+            return left.strip(), right.strip()
+    return plain.strip(), ''
+
+def matching_left(value: str) -> str:
+    return matching_pair(value)[0]
+
+def matching_right(value: str) -> str:
+    return matching_pair(value)[1]
+
+def matching_answer_lines(value: str):
+    if not value:
+        return []
+    try:
+        data = json.loads(value)
+    except (TypeError, ValueError):
+        return [str(value)]
+    if not isinstance(data, dict):
+        return [str(value)]
+    return [f'{left} = {right}' for left, right in data.items()]
 
 def is_valid_email(email: str) -> bool:
     from email_validator import validate_email, EmailNotValidError

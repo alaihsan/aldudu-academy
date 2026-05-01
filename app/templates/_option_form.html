@@ -22,19 +22,14 @@
             >
         {% elif question.question_type.name == 'DROPDOWN' %}
             <span class="text-gray-400 font-medium text-sm">{{ option.order }}.</span>
+        {% elif question.question_type.name == 'MATCHING' %}
+            <span class="text-gray-400 font-black text-sm">=</span>
         {% endif %}
     </div>
 
     <!-- Option Text Input -->
     <div class="flex-1">
-        <input type="text" 
-            class="option-input w-full" 
-            value="{{ option.option_text }}"
-            name="option_text"
-            hx-put="/api/option/{{ option.id }}/update"
-            hx-trigger="blur"
-            placeholder="Opsi {{ option.order }}"
-        >
+        {% include '_option_text_input.html' %}
     </div>
 
     <!-- Delete Option Button -->

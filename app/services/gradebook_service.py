@@ -42,6 +42,9 @@ def calculate_final_grade(student_id: int, course_id: int, use_category_weightin
         if not categories:
             # No categories defined, fall back to simple average
             use_category_weighting = False
+        elif sum(category.weight for category in categories) <= 0:
+            # Simplified gradebook categories are labels only; use all graded items equally.
+            use_category_weighting = False
 
     if not use_category_weighting:
         # Simple average of all graded items (student view fallback)
@@ -680,7 +683,7 @@ def bulk_save_grades(entries_data: List[Dict], graded_by: int, set_manual_overri
         feedback = entry_data.get('feedback')
         manual_override = entry_data.get('manual_override', set_manual_override)
 
-        if not all([grade_item_id, student_id, score is not None]):
+        if not all([grade_item_id, student_id]) or (score is None and feedback is None):
             continue
 
         # Get grade item to calculate percentage
@@ -688,7 +691,7 @@ def bulk_save_grades(entries_data: List[Dict], graded_by: int, set_manual_overri
         if not grade_item:
             continue
 
-        percentage = (score / grade_item.max_score * 100) if grade_item.max_score > 0 else 0
+        percentage = (score / grade_item.max_score * 100) if score is not None and grade_item.max_score > 0 else None
 
         # Find or create entry
         entry = GradeEntry.query.filter_by(
@@ -697,8 +700,9 @@ def bulk_save_grades(entries_data: List[Dict], graded_by: int, set_manual_overri
         ).first()
 
         if entry:
-            entry.score = score
-            entry.percentage = percentage
+            if score is not None:
+                entry.score = score
+                entry.percentage = percentage
             entry.feedback = feedback
             entry.graded_at = now
             entry.graded_by = graded_by

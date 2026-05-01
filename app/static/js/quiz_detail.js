@@ -12,6 +12,7 @@
 let timeRemaining = window.quizDuration ? window.quizDuration * 60 : 0;
 let timerInterval = null;
 let isQuizActive = false;
+let currentQuestionPage = 0;
 
 // Browser Close Protection (Default UI)
 window.addEventListener('beforeunload', function (e) {
@@ -166,7 +167,163 @@ document.addEventListener('DOMContentLoaded', function () {
       submitQuiz();
     });
   }
+
+  initQuestionNavigation();
 });
+
+function getQuestionCards() {
+  return Array.from(document.querySelectorAll('.question-card-student'));
+}
+
+function getQuestionsPerPage() {
+  const value = parseInt(window.questionsPerPage || 0, 10);
+  return Number.isFinite(value) && value > 0 ? value : 0;
+}
+
+function getTotalQuestionPages() {
+  const perPage = getQuestionsPerPage();
+  if (!perPage) return 1;
+  return Math.max(1, Math.ceil(getQuestionCards().length / perPage));
+}
+
+function initQuestionNavigation() {
+  const navButtons = Array.from(document.querySelectorAll('.question-nav-btn'));
+  const flagButtons = Array.from(document.querySelectorAll('.question-flag-btn'));
+  const prevBtn = document.getElementById('prev-page-btn');
+  const nextBtn = document.getElementById('next-page-btn');
+
+  navButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const questionIndex = parseInt(button.dataset.questionIndex, 10);
+      goToQuestion(questionIndex);
+    });
+  });
+
+  flagButtons.forEach((button) => {
+    button.setAttribute('aria-pressed', 'false');
+    button.addEventListener('click', () => {
+      const questionIndex = button.dataset.questionIndex;
+      const isFlagged = !button.classList.contains('flagged');
+      button.classList.toggle('flagged', isFlagged);
+      button.setAttribute('aria-pressed', String(isFlagged));
+      updateQuestionNavState(questionIndex);
+    });
+  });
+
+  prevBtn?.addEventListener('click', () => showQuestionPage(currentQuestionPage - 1));
+  nextBtn?.addEventListener('click', () => showQuestionPage(currentQuestionPage + 1));
+
+  document.getElementById('quiz-form')?.addEventListener('change', updateAnsweredQuestionNav);
+  document.getElementById('quiz-form')?.addEventListener('input', updateAnsweredQuestionNav);
+
+  showQuestionPage(0);
+  updateAnsweredQuestionNav();
+}
+
+function goToQuestion(questionIndex) {
+  const perPage = getQuestionsPerPage();
+  const cards = getQuestionCards();
+  const target = cards[questionIndex];
+  if (!target) return;
+
+  if (perPage) {
+    showQuestionPage(Math.floor(questionIndex / perPage));
+  }
+
+  target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  setActiveQuestionNav(questionIndex);
+}
+
+function showQuestionPage(pageIndex) {
+  const cards = getQuestionCards();
+  const perPage = getQuestionsPerPage();
+  const totalPages = getTotalQuestionPages();
+  currentQuestionPage = Math.min(Math.max(pageIndex, 0), totalPages - 1);
+
+  const paginationControls = document.getElementById('pagination-controls');
+  const submitBtn = document.getElementById('submit-quiz-btn');
+
+  if (!perPage) {
+    cards.forEach(card => card.classList.remove('hidden'));
+    paginationControls?.classList.add('hidden');
+    submitBtn?.classList.remove('hidden');
+    setActiveQuestionNav(0);
+    return;
+  }
+
+  const start = currentQuestionPage * perPage;
+  const end = start + perPage;
+  cards.forEach((card, index) => {
+    card.classList.toggle('hidden', index < start || index >= end);
+  });
+
+  paginationControls?.classList.remove('hidden');
+  paginationControls?.classList.add('flex');
+  document.getElementById('prev-page-btn').disabled = currentQuestionPage === 0;
+  document.getElementById('next-page-btn').classList.toggle('hidden', currentQuestionPage === totalPages - 1);
+  submitBtn?.classList.toggle('hidden', currentQuestionPage !== totalPages - 1);
+
+  const indicator = document.getElementById('page-indicator');
+  if (indicator) indicator.textContent = `Halaman ${currentQuestionPage + 1} dari ${totalPages}`;
+
+  setActiveQuestionNav(start);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function setActiveQuestionNav(questionIndex) {
+  document.querySelectorAll('.question-nav-btn').forEach((button) => {
+    button.classList.toggle('active', parseInt(button.dataset.questionIndex, 10) === questionIndex);
+  });
+}
+
+function updateAnsweredQuestionNav() {
+  getQuestionCards().forEach((card) => {
+    const index = card.dataset.questionIndex;
+    updateQuestionNavState(index);
+  });
+}
+
+function isQuestionAnswered(card) {
+  if (!card) return false;
+
+  const questionId = card.dataset.questionId;
+  const type = card.dataset.questionType;
+
+  if (type === 'MULTIPLE_CHOICE' || type === 'TRUE_FALSE') {
+    return Boolean(card.querySelector(`input[name="question_${questionId}"]:checked`));
+  }
+  if (type === 'CHECKBOX') {
+    return card.querySelectorAll(`input[name="question_${questionId}"]:checked`).length > 0;
+  }
+  if (type === 'DROPDOWN') {
+    return Boolean(card.querySelector(`select[name="question_${questionId}"]`)?.value);
+  }
+  if (type === 'MATCHING') {
+    const selects = Array.from(card.querySelectorAll('.matching-select'));
+    return selects.length > 0 && selects.every(select => Boolean(select.value));
+  }
+  if (type === 'LONG_TEXT') {
+    return Boolean(card.querySelector(`textarea[name="question_${questionId}"]`)?.value.trim());
+  }
+  if (type === 'UPLOAD') {
+    return (card.querySelector(`input[name="question_${questionId}"]`)?.files.length || 0) > 0;
+  }
+
+  return false;
+}
+
+function updateQuestionNavState(index) {
+  const card = document.querySelector(`.question-card-student[data-question-index="${index}"]`);
+  const navButton = document.querySelector(`.question-nav-btn[data-question-index="${index}"]`);
+  const flagButton = document.querySelector(`.question-flag-btn[data-question-index="${index}"]`);
+  if (!card || !navButton) return;
+
+  const flagged = Boolean(flagButton?.classList.contains('flagged'));
+  const answered = isQuestionAnswered(card);
+
+  navButton.classList.toggle('flagged', flagged);
+  navButton.classList.toggle('answered', !flagged && answered);
+}
 
 function submitQuiz(autoSubmit = false) {
   const answers = [];
@@ -196,6 +353,16 @@ function submitQuiz(autoSubmit = false) {
       const selected = card.querySelector(`select[name="question_${questionId}"]`).value;
       if (selected) {
         answers.push({ question_id: parseInt(questionId), selected_option_id: parseInt(selected) });
+        hasAnswer = true;
+      }
+    } else if (type === 'MATCHING') {
+      const selects = Array.from(card.querySelectorAll('.matching-select'));
+      const matchingAnswers = {};
+      selects.forEach(select => {
+        if (select.value) matchingAnswers[select.dataset.matchLeft] = select.value;
+      });
+      if (selects.length > 0 && Object.keys(matchingAnswers).length === selects.length) {
+        answers.push({ question_id: parseInt(questionId), matching_answers: matchingAnswers });
         hasAnswer = true;
       }
     } else if (type === 'LONG_TEXT') {

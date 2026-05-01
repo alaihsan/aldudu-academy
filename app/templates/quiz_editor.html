@@ -329,6 +329,25 @@
                         <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
                     </label>
                 </div>
+                <div class="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <p class="font-medium text-gray-700">Tampilan soal</p>
+                        <p class="text-xs text-gray-400">Atur jumlah soal yang tampil dalam satu halaman pengerjaan</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <select id="questions-page-mode" class="bg-gray-50 border border-gray-200 text-sm rounded-lg p-2 outline-none font-bold"
+                                onchange="setQuestionsPerPageMode(this.value)">
+                            <option value="0" {% if not quiz.questions_per_page %}selected{% endif %}>Semua soal</option>
+                            <option value="1" {% if quiz.questions_per_page == 1 %}selected{% endif %}>1 soal per halaman</option>
+                            <option value="custom" {% if quiz.questions_per_page and quiz.questions_per_page > 1 %}selected{% endif %}>Custom</option>
+                        </select>
+                        <input type="number" id="questions-per-page-input"
+                            min="2"
+                            value="{{ quiz.questions_per_page if quiz.questions_per_page and quiz.questions_per_page > 1 else 2 }}"
+                            class="w-20 bg-gray-50 border border-gray-200 rounded-lg p-2 text-center font-bold outline-none {% if not quiz.questions_per_page or quiz.questions_per_page <= 1 %}hidden{% endif %}"
+                            onblur="updateQuestionsPerPage(this.value)">
+                    </div>
+                </div>
                 <div class="p-6">
                     <p class="font-medium text-gray-700 mb-2">Pesan konfirmasi</p>
                     <input type="text" id="setting-confirmation-msg"
@@ -336,6 +355,36 @@
                         class="w-full text-sm text-gray-500 bg-gray-50 border border-gray-200 rounded-lg p-2.5 focus:ring-2 focus:ring-primary-500 focus:text-gray-800 outline-none"
                         onblur="updateSetting('confirmation_message', this.value)">
                 </div>
+            </div>
+        </div>
+
+        <!-- Import Word -->
+        <div class="form-card overflow-hidden">
+            <div class="p-6 border-b border-gray-100 bg-gray-50/30">
+                <h4 class="font-bold text-primary-600 uppercase tracking-widest text-[10px]">Import Soal</h4>
+                <p class="text-xs text-gray-400">Unggah file Word berisi soal, opsi jawaban, dan gambar soal</p>
+            </div>
+            <div class="p-6 space-y-4">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <p class="font-medium text-gray-700">Upload soal dari Word (.docx)</p>
+                        <p class="text-xs text-gray-400">Soal hasil import akan ditambahkan ke daftar soal yang sudah ada.</p>
+                    </div>
+                    <a href="/api/quiz/import-sample-format"
+                       class="text-sm font-bold text-primary-600 hover:underline">
+                        Download contoh format
+                    </a>
+                </div>
+                <div class="flex flex-col md:flex-row gap-3">
+                    <input type="file" id="quiz-docx-import-input" accept=".docx"
+                        class="flex-1 bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm outline-none">
+                    <button type="button" id="quiz-docx-import-btn"
+                        onclick="importQuizDocx()"
+                        class="px-6 py-3 bg-primary-600 text-white rounded-xl font-bold hover:bg-primary-700 transition-all">
+                        Import
+                    </button>
+                </div>
+                <div id="quiz-docx-import-status" class="hidden p-4 rounded-xl text-sm font-bold"></div>
             </div>
         </div>
 
@@ -396,7 +445,7 @@
 {% endblock %}
 
 {% block extra_scripts %}
-<script src="{{ url_for('static', filename='js/quiz-editor.js') }}?v={{ asset_hash('js/quiz-editor.js') }}"></script>
+<script src="{{ url_for('static', filename='quiz-editor.js') }}?v={{ asset_hash('quiz-editor.js') }}"></script>
 <script>
 // Pass template data to JavaScript globals
 window.quizId = {{ quiz.id }};

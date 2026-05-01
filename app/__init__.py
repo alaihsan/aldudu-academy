@@ -170,6 +170,13 @@ def create_app(test_config: Optional[Dict] = None) -> Flask:
         except (FileNotFoundError, PermissionError):
             return 'missing'
 
+    from .helpers import clean_rich_text, matching_answer_lines, matching_left, matching_right, plain_text_from_html
+    app.add_template_filter(plain_text_from_html, 'plain_text')
+    app.add_template_filter(clean_rich_text, 'rich_text')
+    app.add_template_filter(matching_left, 'matching_left')
+    app.add_template_filter(matching_right, 'matching_right')
+    app.add_template_filter(matching_answer_lines, 'matching_answer_lines')
+
     # Register middleware
     from .middleware import register_all_middleware
     register_all_middleware(app)

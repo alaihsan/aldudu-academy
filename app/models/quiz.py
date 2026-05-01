@@ -12,6 +12,7 @@ class QuestionType(enum.Enum):
     CHECKBOX = 'checkbox'
     LONG_TEXT = 'long_text'
     UPLOAD = 'upload'
+    MATCHING = 'matching'
 
 class QuizStatus(enum.Enum):
     DRAFT = 'draft'
@@ -53,6 +54,7 @@ class Quiz(db.Model):
     confirmation_message: Mapped[Optional[str]] = mapped_column(db.Text, nullable=True, default='Jawaban Anda telah direkam.')
     default_points: Mapped[int] = mapped_column(db.Integer, default=10, nullable=False)
     required_by_default: Mapped[bool] = mapped_column(db.Boolean, default=False, nullable=False)
+    questions_per_page: Mapped[int] = mapped_column(db.Integer, default=0, nullable=False)
 
     # Background opacity (0-100)
     bg_opacity: Mapped[int] = mapped_column(db.Integer, default=60, nullable=False)

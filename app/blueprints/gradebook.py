@@ -24,6 +24,26 @@ def invalidate_grade_cache(student_id: int, course_id: int):
     cache.delete(f'gradebook:final_grade:{student_id}:{course_id}:True')
     cache.delete(f'gradebook:final_grade:{student_id}:{course_id}:False')
 
+
+def get_or_create_grade_category(course_id: int, name: str, category_type: GradeCategoryType, weight: float = 0.0) -> GradeCategory:
+    """Return a course category, creating it when the simplified gradebook needs one."""
+    category = GradeCategory.query.filter(
+        GradeCategory.course_id == course_id,
+        db.func.lower(GradeCategory.name) == name.lower()
+    ).first()
+    if category:
+        return category
+
+    category = GradeCategory(
+        name=name,
+        category_type=category_type,
+        weight=weight,
+        course_id=course_id,
+    )
+    db.session.add(category)
+    db.session.flush()
+    return category
+
 gradebook_bp = Blueprint('gradebook', __name__, url_prefix='/gradebook')
 
 
@@ -412,6 +432,7 @@ def api_delete_learning_goal(goal_id):
 def api_get_grade_items():
     """Get all grade items for a course"""
     course_id = request.args.get('course_id', type=int)
+    category_id = request.args.get('category_id', type=int)
     if not course_id:
         return jsonify({'success': False, 'message': 'course_id required'}), 400
     
@@ -422,7 +443,10 @@ def api_get_grade_items():
     if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
         return jsonify({'success': False, 'message': 'Unauthorized'}), 403
     
-    items = GradeItem.query.filter_by(course_id=course_id).all()
+    query = GradeItem.query.filter_by(course_id=course_id)
+    if category_id:
+        query = query.filter_by(category_id=category_id)
+    items = query.order_by(GradeItem.created_at.asc()).all()
     
     items_data = []
     for item in items:
@@ -435,6 +459,23 @@ def api_get_grade_items():
         'success': True,
         'items': items_data
     })
+
+
+@gradebook_bp.route('/api/items/<int:item_id>', methods=['GET'])
+@login_required
+def api_get_grade_item(item_id):
+    """Get one grade item"""
+    item = GradeItem.query.get_or_404(item_id)
+    course = Course.query.get(item.course_id)
+
+    if not course or (course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN):
+        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+
+    item_data = item.to_dict()
+    item_data['is_assignment'] = item.assignment_id is not None
+    item_data['assignment_id'] = item.assignment_id
+    item_data['category_name'] = item.category.name if item.category else None
+    return jsonify({'success': True, 'item': item_data})
 
 
 @gradebook_bp.route('/api/items', methods=['POST'])
@@ -456,22 +497,30 @@ def api_create_grade_item():
     
     name = data.get('name', '').strip()
     category_id = data.get('category_id')
-    learning_objective_id = data.get('learning_objective_id')
-    learning_goal_id = data.get('learning_goal_id')
     max_score = data.get('max_score', 100.0)
     weight = data.get('weight', 0.0)
     description = data.get('description', '')
     due_date = data.get('due_date')
     
-    if not name or not category_id:
-        return jsonify({'success': False, 'message': 'Nama dan kategori wajib diisi'}), 400
+    if not name:
+        return jsonify({'success': False, 'message': 'Nama kolom wajib diisi'}), 400
+
+    if category_id:
+        category = GradeCategory.query.get(category_id)
+        if not category or category.course_id != course_id:
+            return jsonify({'success': False, 'message': 'Kategori tidak valid'}), 400
+    else:
+        category = get_or_create_grade_category(
+            course_id,
+            'Nilai Lainnya',
+            GradeCategoryType.FORMATIF,
+            0.0
+        )
     
     item = GradeItem(
         name=name,
         description=description,
-        category_id=category_id,
-        learning_objective_id=learning_objective_id,
-        learning_goal_id=learning_goal_id,
+        category_id=category.id,
         max_score=float(max_score),
         weight=float(weight),
         course_id=course_id,
@@ -670,6 +719,77 @@ def api_get_student_grades(student_id, course_id):
 
 
 # ─── API Routes - Quiz Integration ─────────────────────────────────────────────
+
+@gradebook_bp.route('/api/course/<int:course_id>/sync-quizzes', methods=['POST'])
+@login_required
+def api_sync_course_quizzes(course_id):
+    """Create/update gradebook columns for all quiz submissions in a course."""
+    course = Course.query.get_or_404(course_id)
+
+    if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
+        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+
+    category = get_or_create_grade_category(course_id, 'Quiz', GradeCategoryType.FORMATIF, 0.0)
+    quizzes = Quiz.query.filter_by(course_id=course_id).all()
+    created_items = 0
+    updated_entries = 0
+
+    for quiz in quizzes:
+        submissions = quiz.submissions.all()
+        if not submissions:
+            continue
+
+        grade_item = GradeItem.query.filter_by(quiz_id=quiz.id).first()
+        if not grade_item:
+            grade_item = GradeItem(
+                name=f"Quiz: {quiz.name}",
+                description=quiz.description,
+                category_id=category.id,
+                max_score=100.0,
+                weight=0.0,
+                course_id=course_id,
+                quiz_id=quiz.id,
+                due_date=quiz.created_at,
+            )
+            db.session.add(grade_item)
+            db.session.flush()
+            created_items += 1
+
+        for submission in submissions:
+            if submission.score is None:
+                continue
+
+            entry = GradeEntry.query.filter_by(
+                grade_item_id=grade_item.id,
+                student_id=submission.user_id,
+            ).first()
+
+            if entry and entry.manual_override:
+                continue
+
+            if not entry:
+                entry = GradeEntry(
+                    grade_item_id=grade_item.id,
+                    student_id=submission.user_id,
+                    manual_override=False,
+                )
+                db.session.add(entry)
+
+            entry.score = float(submission.score)
+            entry.percentage = float(submission.score)
+            entry.graded_at = submission.submitted_at
+            entry.graded_by = course.teacher_id
+            updated_entries += 1
+            invalidate_grade_cache(submission.user_id, course_id)
+
+    db.session.commit()
+
+    return jsonify({
+        'success': True,
+        'created_items': created_items,
+        'updated_entries': updated_entries,
+    })
+
 
 @gradebook_bp.route('/api/quizzes/<int:quiz_id>/import', methods=['POST'])
 @login_required

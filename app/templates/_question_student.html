@@ -36,7 +36,7 @@
     </div>
     
     <div class="question-content p-6">
-        <p class="text-gray-800 font-medium mb-6 text-base leading-relaxed">{{ question.text }}</p>
+        <p class="text-gray-800 mb-6 text-base leading-relaxed">{{ question.text|rich_text|safe }}</p>
         
         {% if question.image_url %}
         <div class="mb-6">
@@ -50,7 +50,7 @@
             <label class="option-item flex items-center space-x-4 p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-primary-500 hover:bg-blue-50/50 transition-all group">
                 <input type="radio" name="question_{{ question.id }}" value="{{ option.id }}" class="w-5 h-5 text-primary-600 focus:ring-primary-500 flex-shrink-0">
                 <span class="w-9 h-9 bg-gray-100 group-hover:bg-primary-100 text-gray-700 group-hover:text-primary-700 rounded-full flex items-center justify-center font-bold flex-shrink-0 transition-colors">{{ loop.index + 64 | chr }}</span>
-                <span class="flex-1 text-gray-800 group-hover:text-gray-900">{{ option.text }}</span>
+                <span class="flex-1 text-gray-800 group-hover:text-gray-900">{{ option.text|rich_text|safe }}</span>
             </label>
             {% endfor %}
         </div>

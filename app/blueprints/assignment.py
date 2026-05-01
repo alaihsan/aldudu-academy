@@ -200,11 +200,19 @@ def grade(assignment_id, submission_id):
         # Re-check with explicit query in case relationship cache is stale
         grade_item = GradeItem.query.filter_by(assignment_id=assignment.id).first()
     if not grade_item:
-        # Create a default GradeItem in the first category
-        category = assignment.course.grade_categories.first()
+        from app.models import GradeCategory, GradeCategoryType
+
+        category = GradeCategory.query.filter(
+            GradeCategory.course_id == assignment.course.id,
+            db.func.lower(GradeCategory.name) == 'tugas'
+        ).first()
         if not category:
-            from app.models import GradeCategory, GradeCategoryType
-            category = GradeCategory(name="Tugas", course_id=assignment.course.id, category_type=GradeCategoryType.FORMATIF, weight=100.0)
+            category = GradeCategory(
+                name="Tugas",
+                course_id=assignment.course.id,
+                category_type=GradeCategoryType.FORMATIF,
+                weight=0.0
+            )
             db.session.add(category)
             db.session.flush()
             

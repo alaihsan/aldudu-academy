@@ -74,25 +74,40 @@
         </div>
     </div>
 
-    <div class="quiz-container pt-8 pb-32">
-        <!-- Quiz Info Card -->
-        <div class="bg-white rounded-lg border border-gray-200 overflow-hidden mb-4">
-            <div class="form-header-strip"></div>
-            <div class="p-8">
-                <h1 class="text-3xl font-bold mb-4">{{ quiz.name }}</h1>
-                <div class="flex items-center space-x-4 text-gray-500 text-sm">
-                    <span>{{ quiz.course.name }}</span>
-                    <span>&bull;</span>
-                    <span>{{ questions|length }} Pertanyaan</span>
+    <div class="quiz-shell pt-8 pb-32">
+        <aside class="question-nav-panel" aria-label="Navigasi soal">
+            <h2 class="question-nav-title">Daftar Soal</h2>
+            <div class="question-nav-grid">
+                {% for question in questions %}
+                <button type="button" class="question-nav-btn" data-question-index="{{ loop.index0 }}">{{ loop.index }}</button>
+                {% endfor %}
+            </div>
+        </aside>
+
+        <div class="quiz-container">
+            <!-- Quiz Info Card -->
+            <div class="bg-white rounded-lg border border-gray-200 overflow-hidden mb-4">
+                <div class="form-header-strip"></div>
+                <div class="p-8">
+                    <h1 class="text-3xl font-bold mb-4">{{ quiz.name }}</h1>
+                    <div class="flex items-center space-x-4 text-gray-500 text-sm">
+                        <span>{{ quiz.course.name }}</span>
+                        <span>&bull;</span>
+                        <span>{{ questions|length }} Pertanyaan</span>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Questions -->
-        <div id="quiz-form" class="space-y-4">
-            {% for question in questions %}
-            <div class="question-card-student animate-fade-in" data-question-id="{{ question.id }}" data-question-type="{{ question.question_type.name }}" data-required="{{ 'true' if question.is_required else 'false' }}">
-                <p class="text-lg font-medium text-gray-900 mb-2 question-text">{{ loop.index }}. {{ question.question_text }} {% if question.is_required %}<span class="text-red-500">*</span>{% endif %}</p>
+            <!-- Questions -->
+            <div id="quiz-form" class="space-y-4">
+                {% for question in questions %}
+                <div class="question-card-student animate-fade-in" data-question-index="{{ loop.index0 }}" data-question-id="{{ question.id }}" data-question-type="{{ question.question_type.name }}" data-required="{{ 'true' if question.is_required else 'false' }}">
+                <div class="flex items-start gap-4 mb-2">
+                    <p class="text-lg text-gray-900 question-text flex-1">{{ loop.index }}. {{ question.question_text|rich_text|safe }} {% if question.is_required %}<span class="text-red-500">*</span>{% endif %}</p>
+                    <button type="button" class="question-flag-btn" data-question-index="{{ loop.index0 }}" title="Tandai soal">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M5 5v14M5 5h12l-2 5 2 5H5"/></svg>
+                    </button>
+                </div>
                 
                 {% if question.image %}
                 <div class="mb-6 rounded-xl overflow-hidden border border-gray-100 shadow-sm max-w-2xl">
@@ -111,7 +126,7 @@
                         {% for option in question.options.order_by(Option.order).all() %}
                         <label class="option-item border border-gray-100 hover:border-primary-200 answer-text">
                             <input type="radio" name="question_{{ question.id }}" value="{{ option.id }}" class="w-4 h-4 text-primary-600 focus:ring-primary-500">
-                            <span class="ml-3 text-gray-700">{{ option.option_text }}</span>
+                            <span class="ml-3 text-gray-700">{{ option.option_text|rich_text|safe }}</span>
                         </label>
                         {% endfor %}
                     </div>
@@ -120,7 +135,7 @@
                         {% for option in question.options.order_by(Option.order).all() %}
                         <label class="option-item border border-gray-100 hover:border-primary-200 answer-text">
                             <input type="checkbox" name="question_{{ question.id }}" value="{{ option.id }}" class="w-4 h-4 text-primary-600 rounded focus:ring-primary-500">
-                            <span class="ml-3 text-gray-700">{{ option.option_text }}</span>
+                            <span class="ml-3 text-gray-700">{{ option.option_text|rich_text|safe }}</span>
                         </label>
                         {% endfor %}
                     </div>
@@ -128,9 +143,26 @@
                     <select name="question_{{ question.id }}" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none answer-text">
                         <option value="">Pilih jawaban...</option>
                         {% for option in question.options.order_by(Option.order).all() %}
-                        <option value="{{ option.id }}">{{ option.option_text }}</option>
+                        <option value="{{ option.id }}">{{ option.option_text|plain_text }}</option>
                         {% endfor %}
                     </select>
+                {% elif question.question_type.name == 'MATCHING' %}
+                    {% set matching_options = question.options.order_by(Option.order).all() %}
+                    <div class="space-y-3 answer-text">
+                        {% for option in matching_options %}
+                        {% set left_text = option.option_text|matching_left %}
+                        <div class="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-3 md:items-center p-3 bg-gray-50 border border-gray-100 rounded-xl">
+                            <div class="font-bold text-gray-700">{{ left_text }}</div>
+                            <div class="hidden md:block text-gray-300 font-black">=</div>
+                            <select name="question_{{ question.id }}_match_{{ loop.index0 }}" data-match-left="{{ left_text }}" class="matching-select w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none">
+                                <option value="">Pilih pasangan...</option>
+                                {% for match_option in matching_options %}
+                                <option value="{{ match_option.option_text|matching_right }}">{{ match_option.option_text|matching_right }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% endfor %}
+                    </div>
                 {% elif question.question_type.name == 'LONG_TEXT' %}
                     <textarea name="question_{{ question.id }}" rows="4" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none answer-text" placeholder="Tulis jawaban Anda di sini..."></textarea>
                 {% elif question.question_type.name == 'UPLOAD' %}
@@ -155,14 +187,21 @@
                         </p>
                     </div>
                 {% endif %}            </div>
-            {% endfor %}
-        </div>
+                {% endfor %}
+            </div>
 
-        <!-- Submit Button -->
-        <div class="flex justify-end items-center mt-12">
-            <button id="submit-quiz-btn" class="px-12 py-5 bg-primary-600 text-white font-black rounded-2xl shadow-xl shadow-primary-200 hover:bg-primary-700 transform hover:-translate-y-1 active:scale-95 transition-all">
-                Kirim Jawaban
-            </button>
+            <div id="pagination-controls" class="hidden mt-8 items-center justify-between gap-4">
+                <button type="button" id="prev-page-btn" class="px-6 py-3 bg-white border border-gray-200 text-gray-600 font-bold rounded-xl hover:border-primary-300 hover:text-primary-600 transition-all">Sebelumnya</button>
+                <span id="page-indicator" class="text-sm font-bold text-gray-500"></span>
+                <button type="button" id="next-page-btn" class="px-6 py-3 bg-primary-600 text-white font-bold rounded-xl hover:bg-primary-700 transition-all">Berikutnya</button>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="flex justify-end items-center mt-12">
+                <button id="submit-quiz-btn" class="px-12 py-5 bg-primary-600 text-white font-black rounded-2xl shadow-xl shadow-primary-200 hover:bg-primary-700 transform hover:-translate-y-1 active:scale-95 transition-all">
+                    Kirim Jawaban
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -182,6 +221,7 @@
   window.quizId = {{ quiz.id }};
   window.quizThemeColor = '{{ quiz.theme_color or "#673ab7" }}';
   window.quizDuration = {{ quiz.duration * 60 if quiz.duration > 0 else 0 }};
+  window.questionsPerPage = {{ quiz.questions_per_page or 0 }};
   window.isPreview = {{ 'true' if is_preview else 'false' }};
   window.quizExitUrl = {{ (url_for('main.quiz_detail', quiz_id=quiz.id) if is_preview else url_for('main.course_detail', course_id=quiz.course_id)) | tojson }};
   window.quizEditorUrl = "{{ url_for('main.quiz_detail', quiz_id=quiz.id) }}";
