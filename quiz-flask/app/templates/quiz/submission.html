@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Submission - {{ quiz.title }}{% endblock %}
+{% block content %}
+<section class="content-panel">
+  <h1>{{ quiz.title }}</h1>
+  <p class="score">Skor: {{ "%.1f"|format(submission.score or 0) }}%</p>
+  <p class="muted">Dikirim oleh {{ submission.user.name }} pada {{ submission.submitted_at.strftime("%Y-%m-%d %H:%M") }}</p>
+  {% for answer in submission.answers %}
+  <article class="card">
+    <h2>{{ answer.question.question_text|safe }}</h2>
+    <p>{{ answer.answer_text or answer.answer_data }}</p>
+  </article>
+  {% endfor %}
+</section>
+{% endblock %}

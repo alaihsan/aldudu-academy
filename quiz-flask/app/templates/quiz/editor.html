@@ -1,0 +1,322 @@
+{% extends "base.html" %}
+{% block title %}Editor - {{ quiz.title }}{% endblock %}
+{% block header %}
+<header class="topbar forms-editor-top">
+  <div class="forms-editor-left">
+    <a class="back-button" href="{{ url_for('main.index') }}" title="Kembali ke dashboard" aria-label="Kembali ke dashboard">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11v2H7.8l5.6 5.6L12 20 4 12l8-8 1.4 1.4L7.8 11H20Z"/></svg>
+    </a>
+    <div class="forms-editor-title">
+      <input id="quiz-title-top" value="{{ quiz.title }}" aria-label="Judul kuis">
+      <span id="save-state">Perubahan tersimpan</span>
+    </div>
+  </div>
+  <div class="forms-editor-actions">
+    <button id="theme-panel-toggle" class="icon-button" type="button" title="Sesuaikan tema" aria-label="Sesuaikan tema">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 0 0 0 18h.8a2.4 2.4 0 0 0 1.7-4.1 1.1 1.1 0 0 1 .8-1.9H17a4 4 0 0 0 4-4c0-4.4-4-8-9-8ZM7.5 11A1.5 1.5 0 1 1 7.5 8a1.5 1.5 0 0 1 0 3Zm3-3A1.5 1.5 0 1 1 10.5 5a1.5 1.5 0 0 1 0 3Zm3 0A1.5 1.5 0 1 1 13.5 5a1.5 1.5 0 0 1 0 3Zm3 3A1.5 1.5 0 1 1 16.5 8a1.5 1.5 0 0 1 0 3Z"/></svg>
+    </button>
+    <a class="icon-button" target="_blank" href="{{ url_for('main.quiz_detail', quiz_id=quiz.id, preview='true') }}" title="Pratinjau" aria-label="Pratinjau">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c5 0 8.5 4.2 9.7 6.2a1.5 1.5 0 0 1 0 1.6C20.5 14.8 17 19 12 19s-8.5-4.2-9.7-6.2a1.5 1.5 0 0 1 0-1.6C3.5 9.2 7 5 12 5Zm0 2C8.2 7 5.4 10 4.3 12 5.4 14 8.2 17 12 17s6.6-3 7.7-5C18.6 10 15.8 7 12 7Zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6Z"/></svg>
+    </a>
+    <select id="quiz-status" title="Status publikasi">
+      <option value="draft" {% if quiz.status.value == "draft" %}selected{% endif %}>Draft</option>
+      <option value="published" {% if quiz.status.value == "published" %}selected{% endif %}>Published</option>
+      <option value="unpublished" {% if quiz.status.value == "unpublished" %}selected{% endif %}>Unpublished</option>
+    </select>
+    <details class="profile-menu">
+      <summary>
+        <span class="profile-avatar">{{ current_user.name[:1]|upper }}</span>
+      </summary>
+      <div class="profile-dropdown">
+        <strong>{{ current_user.name }}</strong>
+        <span class="muted">{{ current_user.email }}</span>
+        <form method="post" action="{{ url_for('auth.logout') }}">
+          <button class="link-button" type="submit">Keluar</button>
+        </form>
+      </div>
+    </details>
+  </div>
+</header>
+{% endblock %}
+{% block content %}
+<section class="editor-shell themed-surface"
+  data-quiz-id="{{ quiz.id }}"
+  data-theme-font="{{ quiz.theme_font }}"
+  data-theme-text-size="{{ quiz.theme_text_size }}"
+  data-theme-background="{{ quiz.theme_background }}"
+  data-theme-background-intensity="{{ quiz.theme_background_intensity }}"
+  data-theme-form-width="{{ quiz.theme_form_width }}"
+  data-theme-card-radius="{{ quiz.theme_card_radius }}"
+  data-theme-density="{{ quiz.theme_density }}">
+  <aside id="theme-panel" class="theme-panel hidden" aria-label="Panel personalisasi">
+    <div class="theme-panel-head">
+      <div>
+        <h2>Tema</h2>
+        <p class="muted">Personalisasi tampilan quiz.</p>
+      </div>
+      <button id="theme-panel-close" class="ghost-icon" type="button" aria-label="Tutup">x</button>
+    </div>
+
+    <section class="theme-section">
+      <h3>Warna</h3>
+      <label>Warna utama
+        <input id="theme-color" type="color" value="{{ quiz.theme_color }}">
+      </label>
+      <div class="color-presets" aria-label="Preset warna">
+        <button type="button" data-color="#673ab7" style="--swatch:#673ab7"></button>
+        <button type="button" data-color="#1a73e8" style="--swatch:#1a73e8"></button>
+        <button type="button" data-color="#188038" style="--swatch:#188038"></button>
+        <button type="button" data-color="#d93025" style="--swatch:#d93025"></button>
+        <button type="button" data-color="#f9ab00" style="--swatch:#f9ab00"></button>
+        <button type="button" data-color="#9334e6" style="--swatch:#9334e6"></button>
+      </div>
+    </section>
+
+    <section class="theme-section">
+      <h3>Tipografi</h3>
+      <label>Font pertanyaan
+        <select id="theme-font">
+          <option value="Inter" {% if quiz.theme_font == "Inter" %}selected{% endif %}>Inter</option>
+          <option value="Roboto" {% if quiz.theme_font == "Roboto" %}selected{% endif %}>Roboto</option>
+          <option value="Poppins" {% if quiz.theme_font == "Poppins" %}selected{% endif %}>Poppins</option>
+          <option value="Merriweather" {% if quiz.theme_font == "Merriweather" %}selected{% endif %}>Merriweather</option>
+        </select>
+      </label>
+      <label>Ukuran teks
+        <select id="theme-text-size">
+          <option value="normal" {% if quiz.theme_text_size == "normal" %}selected{% endif %}>Normal</option>
+          <option value="compact" {% if quiz.theme_text_size == "compact" %}selected{% endif %}>Kompak</option>
+          <option value="large" {% if quiz.theme_text_size == "large" %}selected{% endif %}>Besar</option>
+        </select>
+      </label>
+    </section>
+
+    <section class="theme-section">
+      <h3>Latar</h3>
+      <label>Gaya latar
+        <select id="theme-background">
+          <option value="plain" {% if quiz.theme_background == "plain" %}selected{% endif %}>Polos</option>
+          <option value="grid" {% if quiz.theme_background == "grid" %}selected{% endif %}>Grid halus</option>
+          <option value="wave" {% if quiz.theme_background == "wave" %}selected{% endif %}>Gelombang</option>
+          <option value="topography" {% if quiz.theme_background == "topography" %}selected{% endif %}>Topografi</option>
+          <option value="confetti" {% if quiz.theme_background == "confetti" %}selected{% endif %}>Konfeti</option>
+        </select>
+      </label>
+      <label>Intensitas latar
+        <input id="theme-background-intensity" type="range" min="0" max="100" value="{{ quiz.theme_background_intensity }}">
+      </label>
+    </section>
+
+    <section class="theme-section">
+      <h3>Kartu & Kontrol</h3>
+      <label>Lebar form
+        <select id="theme-form-width">
+          <option value="standard" {% if quiz.theme_form_width == "standard" %}selected{% endif %}>Standar</option>
+          <option value="narrow" {% if quiz.theme_form_width == "narrow" %}selected{% endif %}>Sempit</option>
+          <option value="wide" {% if quiz.theme_form_width == "wide" %}selected{% endif %}>Lebar</option>
+        </select>
+      </label>
+      <label>Radius kartu
+        <select id="theme-card-radius">
+          <option value="google" {% if quiz.theme_card_radius == "google" %}selected{% endif %}>Google Forms</option>
+          <option value="sharp" {% if quiz.theme_card_radius == "sharp" %}selected{% endif %}>Tegas</option>
+          <option value="soft" {% if quiz.theme_card_radius == "soft" %}selected{% endif %}>Lembut</option>
+        </select>
+      </label>
+      <label>Kepadatan tampilan
+        <select id="theme-density">
+          <option value="spacious" {% if quiz.theme_density == "spacious" %}selected{% endif %}>Lega</option>
+          <option value="normal" {% if quiz.theme_density == "normal" %}selected{% endif %}>Normal</option>
+          <option value="compact" {% if quiz.theme_density == "compact" %}selected{% endif %}>Padat</option>
+        </select>
+      </label>
+    </section>
+
+    <section class="theme-section">
+      <h3>Preview</h3>
+      <div class="theme-preview">
+        <div class="theme-preview-accent"></div>
+        <strong>Contoh Kartu Soal</strong>
+        <span>Pilihan jawaban akan mengikuti warna utama.</span>
+      </div>
+    </section>
+  </aside>
+
+  <nav class="forms-tabs" aria-label="Mode editor">
+    <button class="forms-tab active" type="button" data-tab="questions">Pertanyaan</button>
+    <button class="forms-tab" type="button" data-tab="responses">Jawaban</button>
+    <button class="forms-tab" type="button" data-tab="settings">Setelan</button>
+  </nav>
+
+  <div class="forms-workspace">
+    <aside class="forms-floating-toolbar" aria-label="Toolbar soal">
+      <button id="add-question" class="tool-button" type="button" title="Tambah pertanyaan" aria-label="Tambah pertanyaan">+</button>
+      <label class="tool-button file-tool" title="Tambah gambar ke soal aktif">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm0 2v9.2l3.5-3.5a1 1 0 0 1 1.4 0l2.1 2.1 3.6-4.1a1 1 0 0 1 1.5 0L19 12V6H5Zm0 12h14v-3l-2.7-3.1-3.5 4a1 1 0 0 1-1.5.1l-2.1-2.1L5 18Zm4-8a2 2 0 1 1 0-4 2 2 0 0 1 0 4Z"/></svg>
+        <input id="active-image-input" type="file" accept="image/*">
+      </label>
+      <button id="duplicate-active" class="tool-button" type="button" title="Duplikat pertanyaan" aria-label="Duplikat pertanyaan">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3h-1v1a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-6a3 3 0 0 1 3-3h1V7Zm2 1h3a3 3 0 0 1 3 3v3h1a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1h-6a1 1 0 0 0-1 1v1Zm-3 2a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-6a1 1 0 0 0-1-1H7Z"/></svg>
+      </button>
+      <button id="delete-active" class="tool-button danger" type="button" title="Hapus pertanyaan" aria-label="Hapus pertanyaan">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm-3 6h12l-.8 10.1A3 3 0 0 1 14.2 22H9.8a3 3 0 0 1-3-2.9L6 9Zm3.8 2 .4 8h1.7l-.3-8H9.8Zm4.4 0-.3 8h1.7l.4-8h-1.8Z"/></svg>
+      </button>
+    </aside>
+
+    <section class="forms-canvas" id="questions-panel">
+      <article class="form-title-card">
+        <div class="form-accent"></div>
+        <input id="quiz-title" class="form-title-input" value="{{ quiz.title }}" placeholder="Formulir tanpa judul">
+        <textarea id="quiz-description" class="form-description-input" rows="2" placeholder="Deskripsi formulir">{{ quiz.description or "" }}</textarea>
+      </article>
+
+      <div id="questions"></div>
+    </section>
+
+    <section class="forms-canvas hidden" id="responses-panel">
+      <article class="form-title-card compact">
+        <div class="form-accent"></div>
+        <h1>Jawaban</h1>
+        <p class="muted">Ringkasan hasil pengerjaan murid.</p>
+      </article>
+      <section class="results-panel">
+        <div class="section-head">
+          <h2>Statistik</h2>
+          <button id="load-stats" class="button" type="button">Muat Statistik</button>
+        </div>
+        <div id="stats"></div>
+      </section>
+    </section>
+
+    <section class="forms-canvas hidden" id="settings-panel">
+      <article class="form-title-card compact">
+        <div class="form-accent"></div>
+        <h1>Setelan</h1>
+        <p class="muted">Atur perilaku quiz dan tampilan siswa.</p>
+      </article>
+      <article class="settings-card">
+        <section class="settings-section">
+          <h2>Pengumpulan Respons</h2>
+          <div class="settings-grid">
+            <label>Durasi pengerjaan
+              <input id="duration" type="number" min="0" value="{{ quiz.duration_minutes }}">
+            </label>
+            <label>Batas attempt
+              <input id="max-attempts" type="number" min="0" value="{{ quiz.max_attempts }}">
+            </label>
+            <label>Password quiz
+              <input id="quiz-password" value="{{ quiz.quiz_password or "" }}" placeholder="Opsional">
+            </label>
+          </div>
+          <label class="settings-toggle">
+            <input type="checkbox" checked>
+            <span>
+              <strong>Kumpulkan alamat email</strong>
+              <small>Responden perlu login agar identitas jawaban tercatat.</small>
+            </span>
+          </label>
+          <label class="settings-toggle">
+            <input type="checkbox">
+            <span>
+              <strong>Batasi satu respons per akun</strong>
+              <small>Cocok untuk ujian resmi dan asesmen bernilai.</small>
+            </span>
+          </label>
+        </section>
+
+        <section class="settings-section">
+          <h2>Presentasi</h2>
+          <label class="settings-toggle">
+            <input id="shuffle" type="checkbox" {% if quiz.shuffle_questions %}checked{% endif %}>
+            <span>
+              <strong>Acak urutan soal</strong>
+              <small>Murid menerima urutan pertanyaan yang berbeda.</small>
+            </span>
+          </label>
+          <label class="settings-toggle">
+            <input type="checkbox">
+            <span>
+              <strong>Acak urutan opsi jawaban</strong>
+              <small>Opsi pilihan ganda, checkbox, dan dropdown diacak saat dikerjakan.</small>
+            </span>
+          </label>
+          <label class="settings-toggle">
+            <input type="checkbox">
+            <span>
+              <strong>Tampilkan progress bar</strong>
+              <small>Responden melihat progres pengerjaan quiz.</small>
+            </span>
+          </label>
+          <label class="settings-toggle">
+            <input type="checkbox">
+            <span>
+              <strong>Satu pertanyaan per halaman</strong>
+              <small>Mengurangi distraksi dan memudahkan fokus.</small>
+            </span>
+          </label>
+        </section>
+
+        <section class="settings-section">
+          <h2>Penilaian</h2>
+          <label class="settings-toggle">
+            <input type="checkbox" checked>
+            <span>
+              <strong>Jadikan sebagai quiz bernilai</strong>
+              <small>Aktifkan poin, kunci jawaban, dan auto grading.</small>
+            </span>
+          </label>
+          <label class="settings-toggle">
+            <input type="checkbox">
+            <span>
+              <strong>Rilis nilai otomatis setelah submit</strong>
+              <small>Murid langsung melihat skor setelah jawaban dikirim.</small>
+            </span>
+          </label>
+          <label class="settings-toggle">
+            <input type="checkbox">
+            <span>
+              <strong>Tampilkan jawaban benar</strong>
+              <small>Jawaban benar ditampilkan setelah nilai dirilis.</small>
+            </span>
+          </label>
+          <label class="settings-toggle">
+            <input type="checkbox">
+            <span>
+              <strong>Tampilkan poin per pertanyaan</strong>
+              <small>Murid dapat melihat bobot setiap soal saat mengerjakan.</small>
+            </span>
+          </label>
+        </section>
+
+        <section class="settings-section">
+          <h2>Keamanan Ujian</h2>
+          <label class="settings-toggle">
+            <input type="checkbox">
+            <span>
+              <strong>Kunci fullscreen saat pengerjaan</strong>
+              <small>UI meminta murid tetap berada di mode layar penuh.</small>
+            </span>
+          </label>
+          <label class="settings-toggle">
+            <input type="checkbox">
+            <span>
+              <strong>Peringatan saat pindah tab</strong>
+              <small>Sistem mencatat dan memberi peringatan ketika murid meninggalkan halaman.</small>
+            </span>
+          </label>
+          <label class="settings-toggle">
+            <input type="checkbox">
+            <span>
+              <strong>Nonaktifkan koreksi setelah submit</strong>
+              <small>Jawaban yang sudah dikirim tidak dapat diubah.</small>
+            </span>
+          </label>
+        </section>
+      </article>
+    </section>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/editor.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Quiz Flask{% endblock %}
+{% block content %}
+<section class="toolbar">
+  <div>
+    <h1>{% if current_user.is_teacher %}Kuis Saya{% else %}Kuis Tersedia{% endif %}</h1>
+    <p class="muted">Aplikasi quiz mandiri berbasis Flask.</p>
+  </div>
+  {% if current_user.is_teacher %}
+  <form method="post" action="{{ url_for('main.create_quiz') }}" class="create-form">
+    <input name="title" placeholder="Judul kuis baru">
+    <button class="primary" type="submit">Buat Kuis</button>
+  </form>
+  {% endif %}
+</section>
+
+<section class="grid">
+  {% for quiz in quizzes %}
+  <article class="card">
+    <div class="status {{ quiz.status.value }}">{{ quiz.status.value }}</div>
+    <h2>{{ quiz.title }}</h2>
+    <p>{{ quiz.description|plain_text if quiz.description else "Belum ada deskripsi." }}</p>
+    <div class="meta">
+      <span>{{ quiz.questions|length }} soal</span>
+      <span>{{ quiz.duration_minutes or "Tanpa batas" }}{% if quiz.duration_minutes %} menit{% endif %}</span>
+    </div>
+    <a class="button" href="{{ url_for('main.quiz_detail', quiz_id=quiz.id) }}">
+      {% if current_user.is_teacher %}Buka Editor{% else %}Kerjakan{% endif %}
+    </a>
+  </article>
+  {% else %}
+  <div class="empty">Belum ada kuis.</div>
+  {% endfor %}
+</section>
+{% endblock %}

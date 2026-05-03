@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Masuk - Quiz Flask{% endblock %}
+{% block content %}
+<section class="auth-panel">
+  <h1>Masuk</h1>
+  <form method="post" class="stack">
+    <label>Email
+      <input type="email" name="email" required>
+    </label>
+    <label>Password
+      <input type="password" name="password" required>
+    </label>
+    <button class="primary" type="submit">Masuk</button>
+  </form>
+  <p class="muted">Belum punya akun? <a href="{{ url_for('auth.register') }}">Daftar</a></p>
+</section>
+{% endblock %}

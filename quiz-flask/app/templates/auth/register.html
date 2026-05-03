@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Daftar - Quiz Flask{% endblock %}
+{% block content %}
+<section class="auth-panel">
+  <h1>Daftar</h1>
+  <form method="post" class="stack">
+    <label>Nama
+      <input type="text" name="name" required>
+    </label>
+    <label>Email
+      <input type="email" name="email" required>
+    </label>
+    <label>Password
+      <input type="password" name="password" minlength="6" required>
+    </label>
+    <label>Peran
+      <select name="role">
+        <option value="teacher">Guru</option>
+        <option value="student">Murid</option>
+      </select>
+    </label>
+    <button class="primary" type="submit">Buat Akun</button>
+  </form>
+</section>
+{% endblock %}
