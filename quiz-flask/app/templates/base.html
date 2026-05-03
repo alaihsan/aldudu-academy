@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}Quiz Flask{% endblock %}</title>
+  <title>{% block title %}Alsen Forms{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
 </head>
 <body>
   {% block header %}
   <header class="topbar">
-    <a class="brand" href="{{ url_for('main.index') }}">Quiz Flask</a>
+    <a class="brand" href="{{ url_for('main.index') }}">Alsen Forms</a>
     <nav>
       {% if current_user.is_authenticated %}
         <details class="profile-menu">
@@ -39,6 +39,9 @@
     {% endwith %}
     {% block content %}{% endblock %}
   </main>
+  <footer class="site-footer">
+    <span>Alsen Forms dibuat oleh TIM IT Alsen 22 with love ❤️</span>
+  </footer>
   {% block scripts %}{% endblock %}
 </body>
 </html>

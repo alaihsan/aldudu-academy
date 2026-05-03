@@ -7,6 +7,12 @@ let state = null;
 let activeQuestionId = null;
 let settingsTimer = null;
 let questionTimer = null;
+const LIKERT_DEFAULT_LABELS = ["Sangat tidak setuju", "Tidak setuju", "Netral", "Setuju", "Sangat setuju"];
+const UPLOAD_TYPE_LABELS = {
+  document: "Dokumen",
+  image: "Gambar",
+  video: "Video",
+};
 
 async function api(path, options = {}) {
   const response = await fetch(path, options);
@@ -32,6 +38,7 @@ function questionTypes() {
     ["DROPDOWN", "Dropdown", "▾", "Pilih dari daftar"],
     ["TRUE_FALSE", "Benar / Salah", "✓", "Dua pilihan tetap"],
     ["MATCHING", "Menjodohkan", "↔", "Pasangkan pertanyaan dan jawaban"],
+    ["LIKERT_SCALE", "Skala Likert", "★", "Rating 5 bintang"],
     ["LONG_TEXT", "Jawaban Singkat", "≡", "Jawaban teks/manual"],
     ["UPLOAD", "Upload File", "⇧", "Jawaban berupa file"],
   ];
@@ -51,6 +58,13 @@ function defaultOptionsForType(type) {
   }
   if (type === "MATCHING") {
     return [{ text: "Istilah = Pasangan", is_correct: true, order: 1 }];
+  }
+  if (type === "LIKERT_SCALE") {
+    return LIKERT_DEFAULT_LABELS.map((label, index) => ({
+      text: label,
+      is_correct: false,
+      order: index + 1,
+    }));
   }
   if (["MULTIPLE_CHOICE", "CHECKBOX", "DROPDOWN"].includes(type)) {
     return [{ text: "Opsi 1", is_correct: false, order: 1 }];
@@ -103,7 +117,7 @@ function fillThemeControls(theme) {
 }
 
 function typeNeedsOptions(type) {
-  return ["MULTIPLE_CHOICE", "CHECKBOX", "DROPDOWN", "TRUE_FALSE", "MATCHING"].includes(type);
+  return ["MULTIPLE_CHOICE", "CHECKBOX", "DROPDOWN", "TRUE_FALSE", "MATCHING", "LIKERT_SCALE"].includes(type);
 }
 
 function correctInputType(type) {
@@ -112,6 +126,65 @@ function correctInputType(type) {
 
 function preservesChoiceOptions(type) {
   return ["MULTIPLE_CHOICE", "CHECKBOX", "DROPDOWN"].includes(type);
+}
+
+function uploadCategories(value) {
+  const aliases = {
+    dokumen: "document",
+    document: "document",
+    documents: "document",
+    pdf: "document",
+    doc: "document",
+    xls: "document",
+    ppt: "document",
+    txt: "document",
+    gambar: "image",
+    image: "image",
+    images: "image",
+    jpg: "image",
+    jpeg: "image",
+    png: "image",
+    heic: "image",
+    heif: "image",
+    video: "video",
+    videos: "video",
+    mp4: "video",
+    avi: "video",
+    mov: "video",
+    hevc: "video",
+    "h.265": "video",
+    h265: "video",
+  };
+  const categories = String(value || "document")
+    .split(/[;,]/)
+    .map((item) => aliases[item.trim().toLowerCase()])
+    .filter(Boolean);
+  return [...new Set(categories)].length ? [...new Set(categories)] : ["document"];
+}
+
+function uploadMaxFiles(value) {
+  const found = String(value || "")
+    .split(/[;,]/)
+    .map((item) => item.trim().toLowerCase())
+    .find((item) => item.startsWith("max_files=") || item.startsWith("jumlah_file="));
+  const amount = parseInt((found || "").split("=")[1] || "1", 10);
+  return Math.min(10, Math.max(1, Number.isNaN(amount) ? 1 : amount));
+}
+
+function uploadConfigValue(card) {
+  const categories = Array.from(card.querySelectorAll(".question-file-type-check:checked")).map((input) => input.value);
+  const maxFiles = parseInt(card.querySelector(".question-max-files")?.value || "1", 10);
+  return `${(categories.length ? categories : uploadCategories(card.querySelector(".question-file-types").value)).join(",")};max_files=${Math.min(10, Math.max(1, Number.isNaN(maxFiles) ? 1 : maxFiles))}`;
+}
+
+function uploadChecklistHtml(value) {
+  const selected = uploadCategories(value);
+  return Object.entries(UPLOAD_TYPE_LABELS).map(([category, label]) => `
+    <label class="upload-type-check">
+      <input class="question-file-type-check" type="checkbox" value="${category}" ${selected.includes(category) ? "checked" : ""}>
+      <span>${label}</span>
+    </label>
+  `).join("");
 }
 
 function optionRowHtml(questionId, type, option = {}, index = 0) {
@@ -134,6 +207,16 @@ function optionRowHtml(questionId, type, option = {}, index = 0) {
       </div>
     `;
   }
+  if (type === "LIKERT_SCALE") {
+    return `
+      <div class="option-row likert-option-row" data-option-id="${option.id || ""}">
+        <span class="likert-star" aria-hidden="true">★</span>
+        <input class="option-text" value="${escapeHtml(option.text || LIKERT_DEFAULT_LABELS[index] || "")}" placeholder="Nama pilihan">
+        <input class="option-correct" type="hidden" value="false">
+        <input class="option-order" type="hidden" value="${option.order || index + 1}">
+      </div>
+    `;
+  }
   return `
     <div class="option-row${isStandby ? " standby-option" : ""}" data-option-id="${option.id || ""}" ${isStandby ? 'data-standby="true"' : ""}>
       <label class="correct-choice" title="Jawaban benar">
@@ -144,6 +227,14 @@ function optionRowHtml(questionId, type, option = {}, index = 0) {
       <input class="option-order" type="hidden" value="${option.order || index + 1}">
     </div>
   `;
+}
+
+function questionMediaHtml(question) {
+  if (!question.image) return "";
+  if (question.media_type === "video") {
+    return `<video class="question-image question-video" src="${question.image_url}" controls preload="metadata"></video>`;
+  }
+  return `<img class="question-image" src="${question.image_url}" alt="Gambar soal">`;
 }
 
 function parseMatchingText(value) {
@@ -187,15 +278,23 @@ function renderQuestion(question, index) {
       </span>
     </button>
   `).join("");
-  const options = (question.options || []).map((option, optionIndex) =>
+  const visibleOptions = question.type === "LIKERT_SCALE" ? (question.options || []).slice(0, 5) : (question.options || []);
+  const options = visibleOptions.map((option, optionIndex) =>
     optionRowHtml(question.id, question.type, option, optionIndex)
   ).join("");
-  const standbyOption = typeNeedsOptions(question.type)
+  const standbyOption = typeNeedsOptions(question.type) && question.type !== "LIKERT_SCALE"
     ? optionRowHtml(question.id, question.type, { standby: true }, (question.options || []).length)
     : "";
+  const likertControls = question.type === "LIKERT_SCALE" ? `
+    <div class="likert-config" aria-label="Rentang Skala Likert">
+      <span>Default 5 bintang</span>
+    </div>
+  ` : "";
   const activeClass = activeQuestionId === question.id ? " active" : "";
   const help = question.type === "MATCHING"
     ? "Gunakan format kiri = kanan untuk setiap pasangan."
+    : question.type === "LIKERT_SCALE"
+      ? "Ubah nama setiap pilihan sesuai kebutuhan."
     : question.type === "LONG_TEXT"
       ? "Jawaban panjang disimpan untuk penilaian manual."
       : question.type === "UPLOAD"
@@ -216,16 +315,20 @@ function renderQuestion(question, index) {
         </div>
       </div>
       <textarea class="question-description" rows="2" placeholder="Deskripsi atau petunjuk jawaban">${escapeHtml(question.description)}</textarea>
-      ${question.image ? `<img class="question-image" src="${question.image_url}" alt="Gambar soal">` : ""}
+      ${questionMediaHtml(question)}
       <div class="question-meta-row ${question.type === "UPLOAD" ? "" : "hidden"}">
         <label>Maks file MB <input class="question-max-file" type="number" min="1" value="${question.max_file_size || 10}"></label>
-        <label>Jenis file
-          <input class="question-file-types" value="${escapeHtml(question.allowed_file_types || "")}" placeholder="pdf,image,document">
-        </label>
+        <label>Jumlah file <input class="question-max-files" type="number" min="1" max="10" value="${uploadMaxFiles(question.allowed_file_types)}"></label>
+        <fieldset class="upload-types-field">
+          <legend>Jenis file</legend>
+          <div class="upload-types-list">${uploadChecklistHtml(question.allowed_file_types)}</div>
+          <input class="question-file-types" type="hidden" value="${escapeHtml(uploadCategories(question.allowed_file_types).join(","))};max_files=${uploadMaxFiles(question.allowed_file_types)}">
+        </fieldset>
       </div>
       <input class="question-max-file ${question.type === "UPLOAD" ? "hidden" : ""}" type="hidden" value="${question.max_file_size || 10}">
       <input class="question-file-types ${question.type === "UPLOAD" ? "hidden" : ""}" type="hidden" value="${escapeHtml(question.allowed_file_types || "")}">
       <div class="options-block ${typeNeedsOptions(question.type) ? "" : "hidden"}">
+        ${likertControls}
         <div class="options">${options}${standbyOption}</div>
       </div>
       <p class="question-help muted">${help}</p>
@@ -253,7 +356,7 @@ function readQuestion(card) {
     points: parseInt(card.querySelector(".question-points").value || "0", 10),
     is_required: card.querySelector(".question-required").checked,
     max_file_size: parseInt(card.querySelector(".question-max-file").value || "10", 10),
-    allowed_file_types: card.querySelector(".question-file-types").value,
+    allowed_file_types: type === "UPLOAD" ? uploadConfigValue(card) : card.querySelector(".question-file-types").value,
     options: typeNeedsOptions(type) ? Array.from(card.querySelectorAll(".option-row")).map((row, index) => {
       const isMatching = row.classList.contains("matching-option-row");
       const left = isMatching ? row.querySelector(".option-match-left").value.trim() : "";
@@ -274,7 +377,9 @@ async function loadQuiz() {
   fillThemeControls(state);
   applyTheme(state);
   document.getElementById("quiz-title-top").value = state.title;
+  document.getElementById("confirmation-message").value = state.confirmation_message || "Terima kasih telah mengerjakan, jawaban kamu sudah direkam.";
   render();
+  loadResponses().catch(() => {});
 }
 
 async function saveSettings() {
@@ -288,6 +393,7 @@ async function saveSettings() {
       duration_minutes: parseInt(document.getElementById("duration").value || "0", 10),
       max_attempts: parseInt(document.getElementById("max-attempts").value || "1", 10),
       quiz_password: document.getElementById("quiz-password").value,
+      confirmation_message: document.getElementById("confirmation-message").value,
       ...getThemePayload(),
       shuffle_questions: document.getElementById("shuffle").checked,
     }),
@@ -322,6 +428,38 @@ function setActiveCard(card) {
   activeQuestionId = parseInt(card.dataset.questionId, 10);
   document.querySelectorAll(".question-editor").forEach((item) => item.classList.toggle("active", item === card));
 }
+
+function insertDescriptionMarkup(format) {
+  const editor = document.getElementById("quiz-description-editor");
+  editor.focus();
+  const commands = {
+    bold: ["bold"],
+    italic: ["italic"],
+    underline: ["underline"],
+    numbered: ["insertOrderedList"],
+    bullet: ["insertUnorderedList"],
+    checklist: ["insertHTML", "<ul><li>☐ Tugas pertama</li></ul>"],
+  };
+  const [command, value = null] = commands[format] || commands.bold;
+  document.execCommand(command, false, value);
+  syncDescriptionValue();
+  scheduleSettingsSave();
+}
+
+document.querySelectorAll(".description-toolbar button").forEach((button) => {
+  button.addEventListener("click", () => insertDescriptionMarkup(button.dataset.format));
+});
+
+function syncDescriptionValue() {
+  const editor = document.getElementById("quiz-description-editor");
+  const textarea = document.getElementById("quiz-description");
+  textarea.value = editor.innerHTML.trim();
+}
+
+document.getElementById("quiz-description-editor").addEventListener("input", () => {
+  syncDescriptionValue();
+  scheduleSettingsSave();
+});
 
 document.getElementById("quiz-title-top").addEventListener("input", (event) => {
   document.getElementById("quiz-title").value = event.target.value;
@@ -375,7 +513,7 @@ document.querySelectorAll(".color-presets button").forEach((button) => {
   });
 });
 
-["quiz-status", "duration", "max-attempts", "quiz-password", "shuffle"].forEach((id) => {
+["quiz-status", "duration", "max-attempts", "quiz-password", "confirmation-message", "shuffle"].forEach((id) => {
   const element = document.getElementById(id);
   element.addEventListener("input", scheduleSettingsSave);
   element.addEventListener("change", scheduleSettingsSave);
@@ -388,6 +526,9 @@ document.querySelectorAll(".forms-tab").forEach((tab) => {
       document.getElementById(`${name}-panel`).classList.toggle("hidden", tab.dataset.tab !== name);
     }
     document.querySelector(".forms-floating-toolbar").classList.toggle("hidden", tab.dataset.tab !== "questions");
+    if (tab.dataset.tab === "responses") {
+      loadResponses().catch((error) => setSaveState(error.message));
+    }
   });
 });
 
@@ -489,6 +630,8 @@ questionsEl.addEventListener("change", (event) => {
       qtype === "MATCHING" ||
       oldType === "MATCHING" ||
       qtype === "TRUE_FALSE" ||
+      qtype === "LIKERT_SCALE" ||
+      oldType === "LIKERT_SCALE" ||
       !preservesChoiceOptions(oldType) ||
       !preservesChoiceOptions(qtype);
 
@@ -497,7 +640,7 @@ questionsEl.addEventListener("change", (event) => {
         .map((option, index) => optionRowHtml(card.dataset.questionId, qtype, option, index))
         .join("");
     }
-    if (typeNeedsOptions(qtype) && !card.querySelector(".standby-option")) {
+    if (typeNeedsOptions(qtype) && qtype !== "LIKERT_SCALE" && !card.querySelector(".standby-option")) {
       card.querySelector(".options").insertAdjacentHTML(
         "beforeend",
         optionRowHtml(card.dataset.questionId, qtype, { standby: true }, card.querySelectorAll(".option-row").length)
@@ -549,23 +692,128 @@ document.getElementById("active-image-input").addEventListener("change", async (
   setSaveState("Perubahan tersimpan");
 });
 
-document.getElementById("load-stats").addEventListener("click", async () => {
+document.getElementById("active-video-input").addEventListener("change", async (event) => {
+  const file = event.target.files[0];
+  if (!activeQuestionId || !file) return;
+  const formData = new FormData();
+  formData.append("video", file);
+  const response = await fetch(`/api/questions/${activeQuestionId}/upload-video`, { method: "POST", body: formData });
+  const result = await response.json();
+  if (!response.ok || result.success === false) {
+    setSaveState(result.message || "Gagal mengunggah video");
+    event.target.value = "";
+    return;
+  }
+  const index = state.questions.findIndex((item) => item.id === result.question.id);
+  state.questions[index] = result.question;
+  activeQuestionId = result.question.id;
+  render();
+  event.target.value = "";
+  setSaveState("Perubahan tersimpan");
+});
+
+async function loadResponses() {
   const stats = await api(`/api/quizzes/${quizId}/stats`);
+  document.getElementById("responses-count").textContent = stats.total_submissions;
   document.getElementById("stats").innerHTML = `
-    <div class="meta">
-      <span>Total: ${stats.total_submissions}</span>
-      <span>Rata-rata: ${stats.average_score}%</span>
-      <span>Tertinggi: ${stats.max_score}%</span>
-      <span>Terendah: ${stats.min_score}%</span>
+    <div class="responses-summary">
+      <article><span>Total Respons</span><strong>${stats.total_submissions}</strong></article>
+      <article><span>Rata-rata</span><strong>${stats.average_score}%</strong></article>
+      <article><span>Tertinggi</span><strong>${stats.max_score}%</strong></article>
+      <article><span>Terendah</span><strong>${stats.min_score}%</strong></article>
     </div>
-    ${stats.submissions.map((item) => `
-      <div class="card">
-        <strong>${escapeHtml(item.student_name)}</strong>
-        <span>${item.score}%</span>
-        <a href="/quiz/${quizId}/submissions/${item.id}">Detail</a>
+    <div class="responses-actions">
+      <a class="button" href="${stats.download_url}">Download XLSX</a>
+    </div>
+    <section class="responses-block">
+      <h3>Ringkasan Pertanyaan</h3>
+      <div class="question-response-list">
+        ${stats.questions.map((question, index) => `
+          <article>
+            <span>${index + 1}</span>
+            <strong>${escapeHtml(question.text)}</strong>
+            <small>${question.answered} jawaban</small>
+          </article>
+        `).join("") || `<p class="muted">Belum ada pertanyaan.</p>`}
       </div>
-    `).join("")}
+    </section>
+    <section class="responses-block">
+      <h3>Respons Murid</h3>
+      <div class="submission-list">
+        ${stats.submissions.map((item) => `
+          <details class="submission-response-card">
+            <summary>
+              <span>
+                <strong>${escapeHtml(item.student_name)}</strong>
+                <small>${escapeHtml(item.student_email)} · ${item.submitted_at}</small>
+              </span>
+              <b>${item.score}%</b>
+            </summary>
+            <div class="submission-answers">
+              ${item.answers.map((answer) => `
+                <article>
+                  <strong>${escapeHtml(answer.question)}</strong>
+                  <p>${escapeHtml(answer.answer || "-")}</p>
+                  ${(answer.attachments || []).length ? `
+                    <div class="response-file-list">
+                      ${answer.attachments.map((file) => `
+                        <span>
+                          <strong>${escapeHtml(file.name)}</strong>
+                          <a href="${file.url}" target="_blank">Lihat</a>
+                          <a href="${file.download_url}">Download</a>
+                        </span>
+                      `).join("")}
+                    </div>
+                  ` : ""}
+                </article>
+              `).join("")}
+              <a href="/quiz/${quizId}/submissions/${item.id}">Buka detail</a>
+            </div>
+          </details>
+        `).join("") || `<p class="muted">Belum ada jawaban murid.</p>`}
+      </div>
+    </section>
+    <section class="responses-block">
+      <div class="section-head sheet-head">
+        <div>
+          <h3>Preview Sheets</h3>
+          <p class="muted">Tabel ini mengikuti format file XLSX yang bisa diunduh.</p>
+        </div>
+      </div>
+      <div class="sheet-preview">
+        <table>
+          <thead><tr>${stats.sheet.headers.map((header) => `<th>${escapeHtml(header)}</th>`).join("")}</tr></thead>
+          <tbody>
+            ${stats.sheet.rows.map((row) => `<tr>${row.map((cell) => `<td>${escapeHtml(cell)}</td>`).join("")}</tr>`).join("") || `<tr><td colspan="${stats.sheet.headers.length}">Belum ada data.</td></tr>`}
+          </tbody>
+        </table>
+      </div>
+    </section>
   `;
+}
+
+document.getElementById("load-stats").addEventListener("click", () => loadResponses().catch((error) => setSaveState(error.message)));
+
+document.getElementById("docx-import-button").addEventListener("click", async () => {
+  const input = document.getElementById("docx-import-input");
+  const resultEl = document.getElementById("docx-import-result");
+  const file = input.files[0];
+  if (!file) {
+    resultEl.textContent = "Pilih file .docx terlebih dahulu.";
+    return;
+  }
+  const formData = new FormData();
+  formData.append("file", file);
+  resultEl.textContent = "Mengimpor soal...";
+  try {
+    const result = await api(`/api/quizzes/${quizId}/import-docx`, { method: "POST", body: formData });
+    resultEl.textContent = `${result.imported_count} soal berhasil diimpor.${(result.warnings || []).length ? ` Catatan: ${result.warnings.join(" ")}` : ""}`;
+    input.value = "";
+    await loadQuiz();
+    document.querySelector('[data-tab="questions"]').click();
+  } catch (error) {
+    resultEl.textContent = error.message;
+  }
 });
 
 loadQuiz().catch((error) => alert(error.message));

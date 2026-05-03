@@ -8,7 +8,24 @@
   {% for answer in submission.answers %}
   <article class="card">
     <h2>{{ answer.question.question_text|safe }}</h2>
-    <p>{{ answer.answer_text or answer.answer_data }}</p>
+    {% if answer.question.question_type.name == "UPLOAD" %}
+      {% set upload_names = answer.answer_data.get("filenames", []) if answer.answer_data else [] %}
+      <div class="uploaded-file-list">
+        {% for filename in upload_names %}
+        <div class="uploaded-file-item">
+          <strong>{{ filename }}</strong>
+          <span>
+            <a href="{{ url_for('main.uploaded_file', filename=filename) }}" target="_blank">Lihat</a>
+            <a href="{{ url_for('main.uploaded_file', filename=filename, download='true') }}">Download</a>
+          </span>
+        </div>
+        {% else %}
+        <p>{{ answer.answer_text or "Tidak ada file." }}</p>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>{{ answer.answer_text or answer.answer_data }}</p>
+    {% endif %}
   </article>
   {% endfor %}
 </section>

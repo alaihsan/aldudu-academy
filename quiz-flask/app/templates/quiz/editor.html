@@ -144,7 +144,7 @@
 
   <nav class="forms-tabs" aria-label="Mode editor">
     <button class="forms-tab active" type="button" data-tab="questions">Pertanyaan</button>
-    <button class="forms-tab" type="button" data-tab="responses">Jawaban</button>
+    <button class="forms-tab" type="button" data-tab="responses">Jawaban <span id="responses-count" class="tab-count">0</span></button>
     <button class="forms-tab" type="button" data-tab="settings">Setelan</button>
   </nav>
 
@@ -154,6 +154,10 @@
       <label class="tool-button file-tool" title="Tambah gambar ke soal aktif">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm0 2v9.2l3.5-3.5a1 1 0 0 1 1.4 0l2.1 2.1 3.6-4.1a1 1 0 0 1 1.5 0L19 12V6H5Zm0 12h14v-3l-2.7-3.1-3.5 4a1 1 0 0 1-1.5.1l-2.1-2.1L5 18Zm4-8a2 2 0 1 1 0-4 2 2 0 0 1 0 4Z"/></svg>
         <input id="active-image-input" type="file" accept="image/*">
+      </label>
+      <label class="tool-button file-tool" title="Tambah video ke soal aktif">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h7A2.5 2.5 0 0 1 16 6.5v1.2l3.2-2A1.2 1.2 0 0 1 21 6.7v10.6a1.2 1.2 0 0 1-1.8 1l-3.2-2v1.2a2.5 2.5 0 0 1-2.5 2.5h-7A2.5 2.5 0 0 1 4 17.5v-11Zm2.5-.5a.5.5 0 0 0-.5.5v11a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5v-11a.5.5 0 0 0-.5-.5h-7Zm9.5 4v4l3 1.9V8.1L16 10Z"/></svg>
+        <input id="active-video-input" type="file" accept="video/mp4,video/x-msvideo,video/quicktime,.mp4,.avi,.mov,.hevc,.h265,.h.265">
       </label>
       <button id="duplicate-active" class="tool-button" type="button" title="Duplikat pertanyaan" aria-label="Duplikat pertanyaan">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3h-1v1a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-6a3 3 0 0 1 3-3h1V7Zm2 1h3a3 3 0 0 1 3 3v3h1a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1h-6a1 1 0 0 0-1 1v1Zm-3 2a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-6a1 1 0 0 0-1-1H7Z"/></svg>
@@ -167,7 +171,16 @@
       <article class="form-title-card">
         <div class="form-accent"></div>
         <input id="quiz-title" class="form-title-input" value="{{ quiz.title }}" placeholder="Formulir tanpa judul">
-        <textarea id="quiz-description" class="form-description-input" rows="2" placeholder="Deskripsi formulir">{{ quiz.description or "" }}</textarea>
+        <div class="description-toolbar" aria-label="Format deskripsi formulir">
+          <button type="button" data-format="bold" title="Tebal"><strong>B</strong></button>
+          <button type="button" data-format="italic" title="Miring"><em>I</em></button>
+          <button type="button" data-format="underline" title="Garis bawah"><u>U</u></button>
+          <button type="button" data-format="numbered" title="Daftar bernomor">1.</button>
+          <button type="button" data-format="bullet" title="Daftar bullet">•</button>
+          <button type="button" data-format="checklist" title="Checklist">☑</button>
+        </div>
+        <div id="quiz-description-editor" class="form-description-input rich-description-input" contenteditable="true" data-placeholder="Deskripsi formulir">{{ quiz.description|safe if quiz.description else "" }}</div>
+        <textarea id="quiz-description" class="hidden">{{ quiz.description or "" }}</textarea>
       </article>
 
       <div id="questions"></div>
@@ -196,6 +209,22 @@
       </article>
       <article class="settings-card">
         <section class="settings-section">
+          <h2>Impor Quiz</h2>
+          <div class="import-docx-panel">
+            <div>
+              <strong>Impor dari Word (.docx)</strong>
+              <small>Format fleksibel: nomor soal, opsi A/B/C, bullet/list Word, tag tipe seperti [checkbox], [dropdown], [menjodohkan], [skala likert], dan Kunci: A.</small>
+            </div>
+            <div class="import-docx-actions">
+              <input id="docx-import-input" type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+              <button id="docx-import-button" class="button" type="button">Impor DOCX</button>
+              <a class="button" href="{{ url_for('quiz.download_quiz_import_sample') }}">Contoh Format</a>
+            </div>
+            <p id="docx-import-result" class="muted"></p>
+          </div>
+        </section>
+
+        <section class="settings-section">
           <h2>Pengumpulan Respons</h2>
           <div class="settings-grid">
             <label>Durasi pengerjaan
@@ -208,6 +237,9 @@
               <input id="quiz-password" value="{{ quiz.quiz_password or "" }}" placeholder="Opsional">
             </label>
           </div>
+          <label>Ucapan setelah submit
+            <textarea id="confirmation-message" rows="3" placeholder="Terima kasih telah mengerjakan, jawaban kamu sudah direkam.">{{ quiz.confirmation_message or "Terima kasih telah mengerjakan, jawaban kamu sudah direkam." }}</textarea>
+          </label>
           <label class="settings-toggle">
             <input type="checkbox" checked>
             <span>

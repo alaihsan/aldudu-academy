@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Ujian Selesai - Alsen Forms{% endblock %}
+{% block content %}
+<section class="completion-panel">
+  <div class="completion-mark" aria-hidden="true">✓</div>
+  <span class="eyebrow">Ujian telah selesai</span>
+  <h1>{{ quiz.title }}</h1>
+  <div class="quiz-description-panel completion-message">
+    {{ (quiz.confirmation_message or "Terima kasih telah mengerjakan, jawaban kamu sudah direkam.")|safe }}
+  </div>
+  <div class="completion-meta">
+    <span>Submit: {{ submission.submitted_at.strftime("%Y-%m-%d %H:%M") }}</span>
+    <span>Attempt {{ submission.attempt_number }}</span>
+  </div>
+  <a class="primary" href="{{ url_for('main.index') }}">Kembali ke Dashboard</a>
+</section>
+{% endblock %}

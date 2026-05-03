@@ -1,14 +1,97 @@
 import json
 import os
+import zipfile
+from io import BytesIO
+from xml.sax.saxutils import escape as xml_escape
 from flask import Blueprint, abort, current_app, jsonify, request, url_for
 from flask_login import current_user, login_required
 from werkzeug.utils import secure_filename
 from app.extensions import db
-from app.helpers import matching_pair, sanitize_rich_text, sanitize_text
+from app.helpers import matching_pair, plain_text, sanitize_rich_text, sanitize_text
 from app.models import Answer, Option, Question, QuestionType, Quiz, QuizStatus, QuizSubmission
 from app.services.grading_service import grade_answer, total_possible_points
+from app.services.quiz_docx_import_service import create_sample_docx_bytes, import_questions_from_docx
 
 quiz_bp = Blueprint("quiz", __name__)
+
+LIKERT_DEFAULT_LABELS = ["Sangat tidak setuju", "Tidak setuju", "Netral", "Setuju", "Sangat setuju"]
+UPLOAD_FILE_CATEGORIES = {
+    "document": {"pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "txt"},
+    "image": {"jpg", "jpeg", "png", "heic", "heif"},
+    "video": {"mp4", "avi", "mov", "hevc", "h265"},
+}
+QUESTION_VIDEO_EXTENSIONS = {"mp4", "avi", "mov", "hevc", "h265"}
+
+
+def normalize_upload_categories(value):
+    raw_items = [item.strip().lower() for item in str(value or "").replace(";", ",").split(",")]
+    aliases = {
+        "dokumen": "document",
+        "document": "document",
+        "documents": "document",
+        "pdf": "document",
+        "doc": "document",
+        "xls": "document",
+        "ppt": "document",
+        "txt": "document",
+        "gambar": "image",
+        "image": "image",
+        "images": "image",
+        "jpg": "image",
+        "jpeg": "image",
+        "png": "image",
+        "heic": "image",
+        "heif": "image",
+        "video": "video",
+        "videos": "video",
+        "mp4": "video",
+        "avi": "video",
+        "mov": "video",
+        "hevc": "video",
+        "h.265": "video",
+        "h265": "video",
+    }
+    categories = []
+    for item in raw_items:
+        category = aliases.get(item)
+        if category and category not in categories:
+            categories.append(category)
+    return categories or ["document"]
+
+
+def upload_extensions_for_categories(value):
+    extensions = set()
+    for category in normalize_upload_categories(value):
+        extensions.update(UPLOAD_FILE_CATEGORIES[category])
+    return extensions
+
+
+def upload_max_files_from_value(value):
+    for part in str(value or "").replace(";", ",").split(","):
+        key, _, raw_value = part.strip().partition("=")
+        if key.strip().lower() in {"max_files", "max-file", "maxfile", "jumlah_file"}:
+            try:
+                return min(10, max(1, int(raw_value or 1)))
+            except (TypeError, ValueError):
+                return 1
+    return 1
+
+
+def upload_file_error(question, file):
+    max_bytes = int(question.max_file_size or 10) * 1024 * 1024
+    file.stream.seek(0, os.SEEK_END)
+    size = file.stream.tell()
+    file.stream.seek(0)
+    if size > max_bytes:
+        return f"File untuk pertanyaan {question.order} melebihi batas {question.max_file_size} MB."
+
+    filename = (file.filename or "").lower()
+    extension = "h265" if filename.endswith(".h.265") else os.path.splitext(filename)[1].lstrip(".")
+    if extension == "h.265":
+        extension = "h265"
+    if extension not in upload_extensions_for_categories(question.allowed_file_types):
+        return f"Tipe file untuk pertanyaan {question.order} tidak sesuai ketentuan."
+    return None
 
 
 def require_owner(quiz_id):
@@ -28,6 +111,9 @@ def serialize_option(option, include_correct=True):
 
 
 def serialize_question(question, include_correct=True):
+    media_extension = os.path.splitext(question.image or "")[1].lower().lstrip(".")
+    if (question.image or "").lower().endswith(".h.265"):
+        media_extension = "h265"
     return {
         "id": question.id,
         "quiz_id": question.quiz_id,
@@ -36,6 +122,7 @@ def serialize_question(question, include_correct=True):
         "description": question.description,
         "image": question.image,
         "image_url": url_for("main.uploaded_file", filename=question.image) if question.image else None,
+        "media_type": "video" if media_extension in QUESTION_VIDEO_EXTENSIONS else "image",
         "order": question.order,
         "points": question.points,
         "is_required": question.is_required,
@@ -43,6 +130,141 @@ def serialize_question(question, include_correct=True):
         "allowed_file_types": question.allowed_file_types,
         "options": [serialize_option(option, include_correct) for option in question.options],
     }
+
+
+def answer_display_text(answer):
+    question = answer.question
+    payload = answer.answer_data or {}
+    if isinstance(payload, str):
+        try:
+            payload = json.loads(payload)
+        except (TypeError, ValueError):
+            payload = {}
+
+    if question.question_type in (QuestionType.MULTIPLE_CHOICE, QuestionType.TRUE_FALSE, QuestionType.DROPDOWN, QuestionType.LIKERT_SCALE):
+        option_id = payload.get("selected_option_id") or answer.selected_option_id
+        option = next((item for item in question.options if item.id == option_id), None)
+        return plain_text(option.option_text) if option else ""
+
+    if question.question_type == QuestionType.CHECKBOX:
+        selected_ids = set(payload.get("selected_option_ids") or [])
+        return ", ".join(plain_text(option.option_text) for option in question.options if option.id in selected_ids)
+
+    if question.question_type == QuestionType.MATCHING:
+        pairs = payload.get("matching_answers") or {}
+        return "; ".join(f"{plain_text(left)} = {plain_text(right)}" for left, right in pairs.items())
+
+    if question.question_type == QuestionType.LONG_TEXT:
+        return plain_text(payload.get("answer_text") or answer.answer_text or "")
+
+    if question.question_type == QuestionType.UPLOAD:
+        filenames = payload.get("filenames")
+        if not filenames and answer.answer_text:
+            try:
+                filenames = json.loads(answer.answer_text)
+            except (TypeError, ValueError):
+                filenames = [answer.answer_text]
+        return ", ".join(filenames or [])
+
+    return plain_text(answer.answer_text or "")
+
+
+def answer_attachments(answer):
+    if answer.question.question_type != QuestionType.UPLOAD:
+        return []
+    payload = answer.answer_data or {}
+    if isinstance(payload, str):
+        try:
+            payload = json.loads(payload)
+        except (TypeError, ValueError):
+            payload = {}
+    filenames = payload.get("filenames")
+    if not filenames and answer.answer_text:
+        try:
+            filenames = json.loads(answer.answer_text)
+        except (TypeError, ValueError):
+            filenames = [answer.answer_text]
+    return [
+        {
+            "name": filename,
+            "url": url_for("main.uploaded_file", filename=filename),
+            "download_url": url_for("main.uploaded_file", filename=filename, download="true"),
+        }
+        for filename in (filenames or [])
+    ]
+
+
+def response_sheet_rows(quiz):
+    questions = list(quiz.questions)
+    headers = ["Waktu Submit", "Nama Murid", "Email", "Skor (%)"] + [
+        f"{index}. {plain_text(question.question_text) or 'Pertanyaan'}"
+        for index, question in enumerate(questions, start=1)
+    ]
+    rows = []
+    submissions = sorted(quiz.submissions, key=lambda item: item.submitted_at, reverse=True)
+    for submission in submissions:
+        answer_lookup = {answer.question_id: answer for answer in submission.answers}
+        rows.append([
+            submission.submitted_at.strftime("%Y-%m-%d %H:%M"),
+            submission.user.name,
+            submission.user.email,
+            round(submission.score or 0, 1),
+            *[answer_display_text(answer_lookup[question.id]) if question.id in answer_lookup else "" for question in questions],
+        ])
+    return headers, rows
+
+
+def build_xlsx(headers, rows):
+    sheet_rows = [headers, *rows]
+
+    def cell_ref(row_index, col_index):
+        letters = ""
+        value = col_index
+        while value:
+            value, remainder = divmod(value - 1, 26)
+            letters = chr(65 + remainder) + letters
+        return f"{letters}{row_index}"
+
+    row_xml = []
+    for row_index, row in enumerate(sheet_rows, start=1):
+        cells = []
+        for col_index, value in enumerate(row, start=1):
+            text = xml_escape(str(value if value is not None else ""))
+            cells.append(f'<c r="{cell_ref(row_index, col_index)}" t="inlineStr"><is><t>{text}</t></is></c>')
+        row_xml.append(f'<row r="{row_index}">{"".join(cells)}</row>')
+
+    sheet_xml = f'''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+  <sheetData>{"".join(row_xml)}</sheetData>
+</worksheet>'''
+    workbook_xml = '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+  <sheets><sheet name="Jawaban" sheetId="1" r:id="rId1"/></sheets>
+</workbook>'''
+    rels_xml = '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>
+</Relationships>'''
+    workbook_rels_xml = '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>
+</Relationships>'''
+    content_types_xml = '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>
+  <Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>
+</Types>'''
+    output = BytesIO()
+    with zipfile.ZipFile(output, "w", zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr("[Content_Types].xml", content_types_xml)
+        archive.writestr("_rels/.rels", rels_xml)
+        archive.writestr("xl/workbook.xml", workbook_xml)
+        archive.writestr("xl/_rels/workbook.xml.rels", workbook_rels_xml)
+        archive.writestr("xl/worksheets/sheet1.xml", sheet_xml)
+    output.seek(0)
+    return output.getvalue()
 
 
 def serialize_theme(quiz):
@@ -95,12 +317,17 @@ def apply_question_payload(question, payload):
     if "max_file_size" in payload:
         question.max_file_size = max(1, int(payload.get("max_file_size") or 10))
     if "allowed_file_types" in payload:
-        question.allowed_file_types = sanitize_text(payload.get("allowed_file_types", ""), 200)
+        raw_file_types = payload.get("allowed_file_types", "")
+        question.allowed_file_types = ",".join(normalize_upload_categories(raw_file_types))
+        question.allowed_file_types += f";max_files={upload_max_files_from_value(raw_file_types)}"
 
     if "options" in payload:
+        option_payload = payload.get("options") or []
+        if question.question_type == QuestionType.LIKERT_SCALE:
+            option_payload = option_payload[:5]
         existing = {option.id: option for option in question.options}
         seen_ids = set()
-        for index, item in enumerate(payload.get("options") or [], start=1):
+        for index, item in enumerate(option_payload, start=1):
             option_id = item.get("id")
             option = existing.get(option_id) if option_id else None
             if option is None:
@@ -112,7 +339,7 @@ def apply_question_payload(question, payload):
             if option.id:
                 seen_ids.add(option.id)
         for option_id, option in existing.items():
-            if option_id not in seen_ids and not any((item.get("id") == option_id) for item in payload.get("options") or []):
+            if option_id not in seen_ids and not any((item.get("id") == option_id) for item in option_payload):
                 db.session.delete(option)
 
 
@@ -193,9 +420,42 @@ def add_question(quiz_id):
         question.options.extend([Option(option_text="Benar", order=1), Option(option_text="Salah", order=2)])
     elif qtype == QuestionType.MATCHING:
         question.options.append(Option(option_text="Istilah = Pasangan", order=1, is_correct=True))
+    elif qtype == QuestionType.LIKERT_SCALE:
+        question.points = 0
+        question.options.extend([Option(option_text=label, order=index) for index, label in enumerate(LIKERT_DEFAULT_LABELS, start=1)])
     db.session.add(question)
     db.session.commit()
     return jsonify({"success": True, "question": serialize_question(question)})
+
+
+@quiz_bp.route("/quizzes/import-sample-format")
+@login_required
+def download_quiz_import_sample():
+    return current_app.response_class(
+        create_sample_docx_bytes(),
+        mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        headers={"Content-Disposition": 'attachment; filename="contoh-format-import-soal.docx"'},
+    )
+
+
+@quiz_bp.route("/quizzes/<int:quiz_id>/import-docx", methods=["POST"])
+@login_required
+def import_quiz_docx(quiz_id):
+    quiz = require_owner(quiz_id)
+    file = request.files.get("file")
+    if not file or not file.filename:
+        return jsonify({"success": False, "message": "File Word wajib dipilih."}), 400
+    if not file.filename.lower().endswith(".docx"):
+        return jsonify({"success": False, "message": "Gunakan file Word berformat .docx."}), 400
+    try:
+        result = import_questions_from_docx(file, quiz)
+    except zipfile.BadZipFile:
+        return jsonify({"success": False, "message": "File .docx tidak valid atau rusak."}), 400
+    except Exception as exc:
+        db.session.rollback()
+        current_app.logger.error("Failed importing quiz docx: %s", exc, exc_info=True)
+        return jsonify({"success": False, "message": "Gagal mengimpor file Word."}), 500
+    return jsonify(result), 200 if result.get("success") else 400
 
 
 @quiz_bp.route("/questions/<int:question_id>", methods=["PUT"])
@@ -281,6 +541,27 @@ def upload_question_image(question_id):
     return jsonify({"success": True, "question": serialize_question(question)})
 
 
+@quiz_bp.route("/questions/<int:question_id>/upload-video", methods=["POST"])
+@login_required
+def upload_question_video(question_id):
+    question = db.session.get(Question, question_id)
+    if not question:
+        abort(404)
+    require_owner(question.quiz_id)
+    file = request.files.get("video")
+    if not file or not file.filename:
+        return jsonify({"success": False, "message": "File video wajib dipilih."}), 400
+    filename_lower = file.filename.lower()
+    extension = "h265" if filename_lower.endswith(".h.265") else os.path.splitext(filename_lower)[1].lstrip(".")
+    if extension not in QUESTION_VIDEO_EXTENSIONS:
+        return jsonify({"success": False, "message": "Gunakan video MP4, AVI, MOV, HEVC, atau H.265."}), 400
+    filename = secure_filename(f"q{question.id}_{file.filename}")
+    file.save(os.path.join(current_app.config["UPLOAD_FOLDER"], filename))
+    question.image = filename
+    db.session.commit()
+    return jsonify({"success": True, "question": serialize_question(question)})
+
+
 @quiz_bp.route("/quizzes/<int:quiz_id>/verify-password", methods=["POST"])
 @login_required
 def verify_password(quiz_id):
@@ -324,25 +605,39 @@ def submit_quiz(quiz_id):
             continue
         answer = Answer(submission=submission, question=question, answer_data=item)
         db.session.add(answer)
-        if question.question_type in (QuestionType.MULTIPLE_CHOICE, QuestionType.TRUE_FALSE, QuestionType.DROPDOWN):
+        if question.question_type in (QuestionType.MULTIPLE_CHOICE, QuestionType.TRUE_FALSE, QuestionType.DROPDOWN, QuestionType.LIKERT_SCALE):
             answer.selected_option_id = item.get("selected_option_id")
         elif question.question_type == QuestionType.LONG_TEXT:
             answer.answer_text = item.get("answer_text")
         elif question.question_type in (QuestionType.CHECKBOX, QuestionType.MATCHING):
             answer.answer_text = json.dumps(item, ensure_ascii=True)
         elif question.question_type == QuestionType.UPLOAD:
-            file = request.files.get(f"file_{question.id}")
-            if file and file.filename:
-                filename = secure_filename(f"sub{submission.id}_q{question.id}_{file.filename}")
+            files = [file for file in request.files.getlist(f"file_{question.id}") if file and file.filename]
+            max_files = upload_max_files_from_value(question.allowed_file_types)
+            if len(files) > max_files:
+                return jsonify({"success": False, "message": f"Pertanyaan {question.order} maksimal menerima {max_files} file."}), 400
+            saved_files = []
+            for file_index, file in enumerate(files, start=1):
+                error = upload_file_error(question, file)
+                if error:
+                    return jsonify({"success": False, "message": error}), 400
+                filename = secure_filename(f"sub{submission.id}_q{question.id}_{file_index}_{file.filename}")
                 file.save(os.path.join(current_app.config["UPLOAD_FOLDER"], filename))
-                answer.answer_text = filename
-                item["filename"] = filename
+                saved_files.append(filename)
+            if saved_files:
+                answer.answer_text = json.dumps(saved_files, ensure_ascii=True)
+                item["filenames"] = saved_files
         earned += grade_answer(question, item)
 
     submission.earned_points = earned
     submission.score = (earned / total_points * 100) if total_points else 0
     db.session.commit()
-    return jsonify({"success": True, "score": submission.score, "submission_id": submission.id})
+    return jsonify({
+        "success": True,
+        "score": submission.score,
+        "submission_id": submission.id,
+        "completion_url": url_for("main.quiz_completed", quiz_id=quiz.id, submission_id=submission.id),
+    })
 
 
 @quiz_bp.route("/quizzes/<int:quiz_id>/stats")
@@ -351,6 +646,12 @@ def stats(quiz_id):
     quiz = require_owner(quiz_id)
     submissions = sorted(quiz.submissions, key=lambda item: item.submitted_at, reverse=True)
     scores = [item.score or 0 for item in submissions]
+    sheet_headers, sheet_rows = response_sheet_rows(quiz)
+    answer_counts = {question.id: 0 for question in quiz.questions}
+    for submission in submissions:
+        for answer in submission.answers:
+            if answer.question_id in answer_counts and answer_display_text(answer):
+                answer_counts[answer.question_id] += 1
     return jsonify(
         {
             "success": True,
@@ -358,14 +659,49 @@ def stats(quiz_id):
             "average_score": round(sum(scores) / len(scores), 1) if scores else 0,
             "max_score": round(max(scores), 1) if scores else 0,
             "min_score": round(min(scores), 1) if scores else 0,
+            "download_url": url_for("quiz.download_responses_xlsx", quiz_id=quiz.id),
+            "questions": [
+                {
+                    "id": question.id,
+                    "text": plain_text(question.question_text) or f"Pertanyaan {index}",
+                    "type": question.question_type.name,
+                    "answered": answer_counts.get(question.id, 0),
+                }
+                for index, question in enumerate(quiz.questions, start=1)
+            ],
+            "sheet": {"headers": sheet_headers, "rows": sheet_rows},
             "submissions": [
                 {
                     "id": item.id,
                     "student_name": item.user.name,
+                    "student_email": item.user.email,
                     "score": round(item.score or 0, 1),
                     "submitted_at": item.submitted_at.strftime("%Y-%m-%d %H:%M"),
+                    "answers": [
+                        {
+                            "question_id": answer.question_id,
+                            "question": plain_text(answer.question.question_text) or "Pertanyaan",
+                            "answer": answer_display_text(answer),
+                            "attachments": answer_attachments(answer),
+                        }
+                        for answer in sorted(item.answers, key=lambda answer: answer.question.order)
+                    ],
                 }
                 for item in submissions
             ],
         }
+    )
+
+
+@quiz_bp.route("/quizzes/<int:quiz_id>/responses.xlsx")
+@login_required
+def download_responses_xlsx(quiz_id):
+    quiz = require_owner(quiz_id)
+    headers, rows = response_sheet_rows(quiz)
+    content = build_xlsx(headers, rows)
+    filename = secure_filename(f"{quiz.title or 'quiz'}-jawaban.xlsx") or "jawaban.xlsx"
+    return current_app.response_class(
+        content,
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
     )

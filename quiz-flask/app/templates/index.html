@@ -1,10 +1,11 @@
 {% extends "base.html" %}
-{% block title %}Dashboard - Quiz Flask{% endblock %}
+{% block title %}Dashboard - Alsen Forms{% endblock %}
 {% block content %}
 <section class="toolbar">
   <div>
+    <span class="eyebrow">Dashboard</span>
     <h1>{% if current_user.is_teacher %}Kuis Saya{% else %}Kuis Tersedia{% endif %}</h1>
-    <p class="muted">Aplikasi quiz mandiri berbasis Flask.</p>
+    <p class="muted">Kelola kuis, draft, dan publikasi dari satu tempat.</p>
   </div>
   {% if current_user.is_teacher %}
   <form method="post" action="{{ url_for('main.create_quiz') }}" class="create-form">
@@ -14,22 +15,83 @@
   {% endif %}
 </section>
 
-<section class="grid">
+{% if current_user.is_teacher %}
+{% set published_quizzes = quizzes|selectattr("status.value", "equalto", "published")|list %}
+{% set draft_quizzes = quizzes|selectattr("status.value", "equalto", "draft")|list %}
+{% set unpublished_quizzes = quizzes|selectattr("status.value", "equalto", "unpublished")|list %}
+<section class="dashboard-summary" aria-label="Ringkasan kuis">
+  <a class="summary-card summary-feature dashboard-filter active" href="#" data-filter="all">
+    <span class="summary-label">Terakhir dibuka</span>
+    {% if quizzes %}
+    {% set recent = quizzes[0] %}
+    <h2>{{ recent.title }}</h2>
+    <p>{{ recent.description|plain_text if recent.description else "Belum ada deskripsi." }}</p>
+    {% else %}
+    <h2>Belum ada kuis</h2>
+    <p>Buat kuis pertama untuk mulai menyusun soal.</p>
+    {% endif %}
+  </a>
+  <button class="summary-card dashboard-filter" type="button" data-filter="published">
+    <strong>{{ published_quizzes|length }}</strong>
+    <span>Published</span>
+  </button>
+  <button class="summary-card dashboard-filter" type="button" data-filter="draft">
+    <strong>{{ draft_quizzes|length }}</strong>
+    <span>Draft</span>
+  </button>
+  <button class="summary-card dashboard-filter" type="button" data-filter="unpublished">
+    <strong>{{ unpublished_quizzes|length }}</strong>
+    <span>Belum dipublikasikan</span>
+  </button>
+</section>
+{% endif %}
+
+<section class="section-head dashboard-list-head">
+  <div>
+    <h2 id="dashboard-list-title">{% if current_user.is_teacher %}Semua Kuis{% else %}Pilihan Kuis{% endif %}</h2>
+    <p class="muted">{% if current_user.is_teacher %}Diurutkan dari aktivitas terbaru.{% else %}Kuis yang sudah dipublikasikan oleh guru.{% endif %}</p>
+  </div>
+</section>
+
+<section class="grid quiz-grid">
   {% for quiz in quizzes %}
-  <article class="card">
-    <div class="status {{ quiz.status.value }}">{{ quiz.status.value }}</div>
+  <a class="card quiz-card" href="{{ url_for('main.quiz_detail', quiz_id=quiz.id) }}" data-status="{{ quiz.status.value }}">
+    <div class="quiz-card-top">
+      <div class="status {{ quiz.status.value }}">
+        {% if quiz.status.value == "published" %}Published{% elif quiz.status.value == "draft" %}Draft{% else %}Belum dipublikasikan{% endif %}
+      </div>
+      <span class="quiz-date">{{ quiz.updated_at.strftime("%d %b %Y") if quiz.updated_at else "" }}</span>
+    </div>
     <h2>{{ quiz.title }}</h2>
     <p>{{ quiz.description|plain_text if quiz.description else "Belum ada deskripsi." }}</p>
     <div class="meta">
       <span>{{ quiz.questions|length }} soal</span>
       <span>{{ quiz.duration_minutes or "Tanpa batas" }}{% if quiz.duration_minutes %} menit{% endif %}</span>
     </div>
-    <a class="button" href="{{ url_for('main.quiz_detail', quiz_id=quiz.id) }}">
-      {% if current_user.is_teacher %}Buka Editor{% else %}Kerjakan{% endif %}
-    </a>
-  </article>
+  </a>
   {% else %}
   <div class="empty">Belum ada kuis.</div>
   {% endfor %}
 </section>
+{% if current_user.is_teacher %}
+<script>
+document.querySelectorAll(".dashboard-filter").forEach((button) => {
+  button.addEventListener("click", (event) => {
+    event.preventDefault();
+    const filter = button.dataset.filter;
+    const labels = {
+      all: "Semua Kuis",
+      published: "Kuis Published",
+      draft: "Kuis Draft",
+      unpublished: "Kuis Belum Dipublikasikan",
+    };
+    document.querySelectorAll(".dashboard-filter").forEach((item) => item.classList.toggle("active", item === button));
+    document.getElementById("dashboard-list-title").textContent = labels[filter] || "Semua Kuis";
+    document.querySelectorAll(".quiz-card").forEach((card) => {
+      card.classList.toggle("hidden", filter !== "all" && card.dataset.status !== filter);
+    });
+  });
+});
+</script>
+{% endif %}
 {% endblock %}

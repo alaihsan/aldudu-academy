@@ -29,4 +29,4 @@ def grade_answer(question, payload):
 
 
 def total_possible_points(questions):
-    return sum(float(question.points or 0) for question in questions)
+    return sum(float(question.points or 0) for question in questions if question.question_type != QuestionType.LIKERT_SCALE)

@@ -3,7 +3,7 @@ import secrets
 from flask import Blueprint, abort, current_app, redirect, render_template, request, send_from_directory, url_for
 from flask_login import current_user, login_required
 from app.extensions import db
-from app.models import Quiz, QuizStatus, UserRole
+from app.models import Quiz, QuizStatus, QuizSubmission, UserRole
 
 main_bp = Blueprint("main", __name__)
 
@@ -76,11 +76,25 @@ def submission_detail(quiz_id, submission_id):
     return render_template("quiz/submission.html", quiz=quiz, submission=submission)
 
 
+@main_bp.route("/quiz/<int:quiz_id>/completed/<int:submission_id>")
+@login_required
+def quiz_completed(quiz_id, submission_id):
+    quiz = db.session.get(Quiz, quiz_id)
+    if not quiz:
+        abort(404)
+    submission = db.session.get(QuizSubmission, submission_id)
+    if not submission or submission.quiz_id != quiz.id:
+        abort(404)
+    if quiz.created_by != current_user.id and submission.user_id != current_user.id:
+        abort(403)
+    return render_template("quiz/completed.html", quiz=quiz, submission=submission)
+
+
 @main_bp.route("/uploads/<path:filename>")
 @login_required
 def uploaded_file(filename):
     upload_folder = current_app.config["UPLOAD_FOLDER"]
-    return send_from_directory(upload_folder, filename, as_attachment=False)
+    return send_from_directory(upload_folder, filename, as_attachment=request.args.get("download") == "true")
 
 
 @main_bp.route("/health")

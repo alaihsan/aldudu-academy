@@ -11,6 +11,7 @@ class QuestionType(enum.Enum):
     LONG_TEXT = "long_text"
     UPLOAD = "upload"
     MATCHING = "matching"
+    LIKERT_SCALE = "likert_scale"
 
 
 class QuizStatus(enum.Enum):
