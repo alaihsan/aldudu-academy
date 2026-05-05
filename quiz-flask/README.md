@@ -23,7 +23,23 @@ flask init-db
 flask run
 ```
 
-Default database memakai SQLite di `instance/quiz.sqlite3`. Untuk PostgreSQL/MySQL, set `QUIZ_DATABASE_URL` di `.env`.
+Untuk akses dari device lain di jaringan lokal, jalankan server dengan host `0.0.0.0`:
+
+```powershell
+$env:FLASK_RUN_HOST="0.0.0.0"
+$env:FLASK_RUN_PORT="5001"
+flask run
+```
+
+Lalu buka `http://IP-KOMPUTER:5001` dari device lain yang tersambung ke intranet yang sama.
+
+Default database memakai MySQL:
+
+```text
+mysql+pymysql://root:passwd@127.0.0.1:3306/db_alsenform?charset=utf8mb4
+```
+
+Konfigurasi bisa diubah lewat `MYSQL_HOST`, `MYSQL_PORT`, `MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD`, dan `MYSQL_CHARSET` di `.env`. Jika perlu koneksi penuh yang berbeda, set `QUIZ_DATABASE_URL`.
 
 ## Skema Database
 

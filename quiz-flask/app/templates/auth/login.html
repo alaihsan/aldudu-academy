@@ -1,17 +1,50 @@
 {% extends "base.html" %}
 {% block title %}Masuk - Alsen Forms{% endblock %}
 {% block content %}
-<section class="auth-panel">
-  <h1>Masuk</h1>
-  <form method="post" class="stack">
-    <label>Email
-      <input type="email" name="email" required>
-    </label>
-    <label>Password
-      <input type="password" name="password" required>
-    </label>
-    <button class="primary" type="submit">Masuk</button>
-  </form>
-  <p class="muted">Belum punya akun? <a href="{{ url_for('auth.register') }}">Daftar</a></p>
+<section class="auth-shell">
+  <div class="auth-showcase" aria-hidden="true">
+    <span class="auth-badge">Alsen Forms</span>
+    <h1>Kelola kuis kelas dengan tampilan yang ringan dan rapi.</h1>
+    <div class="auth-preview">
+      <div class="auth-preview-top">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <div class="auth-preview-body">
+        <div class="auth-preview-title"></div>
+        <div class="auth-preview-line wide"></div>
+        <div class="auth-preview-line"></div>
+        <div class="auth-preview-options">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </div>
+    <div class="auth-highlights">
+      <span>Quiz</span>
+      <span>Respons</span>
+      <span>Nilai</span>
+    </div>
+  </div>
+
+  <div class="auth-panel login-panel">
+    <div class="auth-heading">
+      <span class="eyebrow">Selamat datang</span>
+      <h1>Masuk ke akun Anda</h1>
+      <p class="muted">Gunakan akun guru atau murid untuk melanjutkan.</p>
+    </div>
+    <form method="post" class="stack auth-form">
+      <label>Email
+        <input type="email" name="email" autocomplete="email" placeholder="nama@email.com" required>
+      </label>
+      <label>Password
+        <input type="password" name="password" autocomplete="current-password" placeholder="Masukkan password" required>
+      </label>
+      <button class="primary auth-submit" type="submit">Masuk</button>
+    </form>
+    <p class="auth-switch muted">Belum punya akun? <a href="{{ url_for('auth.register') }}">Daftar sekarang</a></p>
+  </div>
 </section>
 {% endblock %}
