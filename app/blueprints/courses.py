@@ -60,8 +60,9 @@ def api_initial_data():
             db.session.commit()
 
     # For teachers: use -1 to show all their courses (no year filter)
+    # For teachers & admins: use -1 to show all classes (no year filter)
     # For students: use active academic year
-    year_id = -1 if current_user.role == UserRole.GURU else current_year.id
+    year_id = -1 if current_user.role in (UserRole.GURU, UserRole.ADMIN, UserRole.SUPER_ADMIN) else current_year.id
 
     # get_courses_for_user already has some optimization, but we can ensure teacher is loaded
     courses_query = get_courses_for_user(current_user, year_id)

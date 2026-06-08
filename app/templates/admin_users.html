@@ -4,122 +4,161 @@
 {% block title %}Manajemen User - Aldudu Academy{% endblock %}
 
 {% block body %}
-<div id="app-page" class="min-h-screen bg-gray-50 dark:bg-gray-950 flex">
+<div id="app-page" class="min-h-screen bg-white dark:bg-gray-950 flex">
     {% include '_sidebar.html' %}
 
-    <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <header class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 h-16 flex items-center justify-between px-8 sticky top-0 z-30">
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden sidebar-transition">
+        <header class="bg-white dark:bg-gray-900 border-b-2 border-slate-100 dark:border-gray-800 h-20 flex items-center justify-between px-8 sticky top-0 z-30">
             <div class="flex items-center space-x-4">
-                <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100">Manajemen Pengguna</h2>
+                <h2 class="text-2xl font-black text-[#4b4b4b] dark:text-white tracking-tight">Manajemen Pengguna</h2>
             </div>
             <div class="flex space-x-3">
-                <button onclick="toggleModal('import-modal', true)" class="px-6 py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-indigo-100 dark:shadow-indigo-900/50 hover:bg-indigo-700 transition-all active:scale-95 flex items-center space-x-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                    <span>Impor dari Excel</span>
+                <button onclick="toggleModal('create-class-modal', true)" class="btn-duo btn-duo-green h-12 text-xs">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                    <span>BUAT KELAS</span>
+                </button>
+                <button onclick="toggleModal('import-modal', true)" class="btn-duo btn-duo-blue h-12 text-xs">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"/></svg>
+                    <span>IMPOR EXCEL</span>
                 </button>
             </div>
         </header>
 
-        <main class="flex-1 overflow-y-auto p-8 animate-premium-entrance">
-            <div class="max-w-7xl mx-auto space-y-12">
-                
-                <!-- TABEL GURU -->
-                <section class="space-y-4">
+        <main class="flex-1 overflow-y-auto p-8 sm:p-12">
+            <div class="max-w-7xl mx-auto space-y-16 animate-fade-in">
+
+                <!-- DAFTAR KELAS -->
+                <section class="space-y-6">
                     <div class="flex items-center justify-between">
-                        <h3 class="text-xl font-black text-gray-900 dark:text-gray-100 flex items-center space-x-3">
-                            <span class="w-2 h-8 bg-blue-600 rounded-full"></span>
-                            <span>Daftar Guru (Pengajar)</span>
-                        </h3>
-                        <span class="px-4 py-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-full text-xs font-bold">{{ gurus|length }} Guru</span>
+                        <div class="flex items-center gap-3">
+                            <div class="w-2 h-8 bg-[#58cc02] rounded-full"></div>
+                            <h3 class="text-2xl font-black text-[#4b4b4b] dark:text-white tracking-tight">Daftar Kelas</h3>
+                        </div>
+                        <span class="px-5 py-2 bg-[#dcfce7] text-[#58cc02] rounded-2xl text-[11px] font-black uppercase tracking-widest">{{ courses|length }} KELAS</span>
                     </div>
-                    <div class="bg-white dark:bg-gray-800 rounded-[2.5rem] border border-gray-100 dark:border-gray-700 shadow-premium overflow-hidden">
-                        <table class="w-full">
-                            <thead class="bg-gray-50/50 dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
-                                <tr>
-                                    <th class="px-8 py-4 text-left text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">Nama & Email</th>
-                                    <th class="px-8 py-4 text-left text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">Status</th>
-                                    <th class="px-8 py-4 text-right text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-50 dark:divide-gray-700">
-                                {% for user in gurus %}
-                                <tr class="hover:bg-gray-50/30 dark:hover:bg-gray-700/30 transition-colors">
-                                    <td class="px-8 py-5">
-                                        <p id="user-name-{{ user.id }}" class="text-sm font-bold text-gray-900 dark:text-gray-100">{{ user.name }}</p>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ user.email }}</p>
-                                    </td>
-                                    <td class="px-8 py-5">
-                                        {% if user.is_active %}
-                                        <span class="inline-flex items-center px-3 py-1 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full text-[10px] font-bold">AKTIF</span>
-                                        {% else %}
-                                        <span class="inline-flex items-center px-3 py-1 bg-red-50 dark:bg-red-900/30 text-red-400 dark:text-red-400 rounded-full text-[10px] font-bold">NONAKTIF</span>
-                                        {% endif %}
-                                    </td>
-                                    <td class="px-8 py-5 text-right space-x-2">
-                                        <button onclick="Admin.handleRename({{ user.id }}, {{ user.name | tojson }})" class="p-2 text-gray-400 dark:text-gray-500 hover:text-amber-500 dark:hover:text-amber-400 transition-colors" title="Ubah Nama">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                                        </button>
-                                        <button onclick="openResetModal({{ user.id }}, {{ user.name | tojson }})" class="p-2 text-gray-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors" title="Reset Password">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
-                                        </button>
-                                        <button onclick="Admin.toggleStatus({{ user.id }})" class="p-2 {% if user.is_active %}text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400{% else %}text-green-500 dark:text-green-400{% endif %} transition-colors">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
-                                        </button>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                    {% if courses %}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                        {% for course in courses %}
+                        <div class="card-duo p-6 flex items-center justify-between gap-4">
+                            <div class="min-w-0">
+                                <p class="text-lg font-black text-[#4b4b4b] dark:text-white truncate">{{ course.name }}</p>
+                                <p class="text-xs font-bold text-[#afafaf] mt-1">Kode: <span class="font-mono">{{ course.class_code }}</span></p>
+                            </div>
+                            <span class="shrink-0 inline-flex flex-col items-center px-4 py-2 bg-[#ddf4ff] text-[#1cb0f6] rounded-2xl">
+                                <span class="text-lg font-black leading-none">{{ course.students|length }}</span>
+                                <span class="text-[9px] font-black uppercase tracking-widest mt-0.5">Siswa</span>
+                            </span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="card-duo p-10 text-center">
+                        <p class="text-sm font-bold text-[#afafaf]">Belum ada kelas. Klik <span class="text-[#58cc02] font-black">BUAT KELAS</span> untuk menambahkan.</p>
+                    </div>
+                    {% endif %}
+                </section>
+
+                <!-- TABEL GURU -->
+                <section class="space-y-6">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-2 h-8 bg-[#1cb0f6] rounded-full"></div>
+                            <h3 class="text-2xl font-black text-[#4b4b4b] dark:text-white tracking-tight">Daftar Guru</h3>
+                        </div>
+                        <span class="px-5 py-2 bg-[#ddf4ff] text-[#1cb0f6] rounded-2xl text-[11px] font-black uppercase tracking-widest">{{ gurus|length }} GURU</span>
+                    </div>
+                    <div class="card-duo p-0 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-[#f7f7f7] dark:bg-gray-900 border-b-2 border-slate-100 dark:border-gray-800">
+                                    <tr>
+                                        <th class="px-8 py-5 text-left text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em]">Nama & Email</th>
+                                        <th class="px-8 py-5 text-left text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em]">Status</th>
+                                        <th class="px-8 py-5 text-right text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em]">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y-2 divide-slate-50 dark:divide-gray-800">
+                                    {% for user in gurus %}
+                                    <tr class="hover:bg-slate-50/50 dark:hover:bg-gray-800/30 transition-all">
+                                        <td class="px-8 py-6">
+                                            <p id="user-name-{{ user.id }}" class="text-base font-black text-[#4b4b4b] dark:text-white">{{ user.name }}</p>
+                                            <p class="text-xs font-bold text-[#afafaf] mt-0.5">{{ user.email }}</p>
+                                        </td>
+                                        <td class="px-8 py-6">
+                                            {% if user.is_active %}
+                                            <span class="inline-flex items-center px-4 py-1.5 bg-[#dcfce7] text-[#58cc02] rounded-xl text-[10px] font-black uppercase tracking-widest">AKTIF</span>
+                                            {% else %}
+                                            <span class="inline-flex items-center px-4 py-1.5 bg-red-50 text-[#ff4b4b] rounded-xl text-[10px] font-black uppercase tracking-widest">NONAKTIF</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="px-8 py-6 text-right space-x-1">
+                                            <button onclick="Admin.handleRename({{ user.id }}, {{ user.name | tojson }})" class="p-3 text-[#afafaf] hover:text-[#ff9600] hover:bg-[#f7f7f7] rounded-xl transition-all active:scale-90" title="Ubah Nama">
+                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                            </button>
+                                            <button onclick="openResetModal({{ user.id }}, {{ user.name | tojson }})" class="p-3 text-[#afafaf] hover:text-[#1cb0f6] hover:bg-[#f7f7f7] rounded-xl transition-all active:scale-90" title="Reset Password">
+                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+                                            </button>
+                                            <button onclick="Admin.toggleStatus({{ user.id }})" class="p-3 {% if user.is_active %}text-[#afafaf] hover:text-[#ff4b4b]{% else %}text-[#58cc02]{% endif %} hover:bg-[#f7f7f7] rounded-xl transition-all active:scale-90">
+                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </section>
 
                 <!-- TABEL MURID -->
-                <section class="space-y-4">
+                <section class="space-y-6">
                     <div class="flex items-center justify-between">
-                        <h3 class="text-xl font-black text-gray-900 dark:text-gray-100 flex items-center space-x-3">
-                            <span class="w-2 h-8 bg-green-600 rounded-full"></span>
-                            <span>Daftar Murid (Siswa)</span>
-                        </h3>
-                        <span class="px-4 py-1.5 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-xs font-bold">{{ murids|length }} Murid</span>
+                        <div class="flex items-center gap-3">
+                            <div class="w-2 h-8 bg-[#58cc02] rounded-full"></div>
+                            <h3 class="text-2xl font-black text-[#4b4b4b] dark:text-white tracking-tight">Daftar Murid</h3>
+                        </div>
+                        <span class="px-5 py-2 bg-[#dcfce7] text-[#58cc02] rounded-2xl text-[11px] font-black uppercase tracking-widest">{{ murids|length }} MURID</span>
                     </div>
-                    <div class="bg-white dark:bg-gray-800 rounded-[2.5rem] border border-gray-100 dark:border-gray-700 shadow-premium overflow-hidden">
-                        <table class="w-full">
-                            <thead class="bg-gray-50/50 dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
-                                <tr>
-                                    <th class="px-8 py-4 text-left text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">Nama & Email</th>
-                                    <th class="px-8 py-4 text-left text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">Status</th>
-                                    <th class="px-8 py-4 text-right text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-50 dark:divide-gray-700">
-                                {% for user in murids %}
-                                <tr class="hover:bg-gray-50/30 dark:hover:bg-gray-700/30 transition-colors">
-                                    <td class="px-8 py-5">
-                                        <p id="user-name-{{ user.id }}" class="text-sm font-bold text-gray-900 dark:text-gray-100">{{ user.name }}</p>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ user.email }}</p>
-                                    </td>
-                                    <td class="px-8 py-5">
-                                        {% if user.is_active %}
-                                        <span class="inline-flex items-center px-3 py-1 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full text-[10px] font-bold">AKTIF</span>
-                                        {% else %}
-                                        <span class="inline-flex items-center px-3 py-1 bg-red-50 dark:bg-red-900/30 text-red-400 dark:text-red-400 rounded-full text-[10px] font-bold">NONAKTIF</span>
-                                        {% endif %}
-                                    </td>
-                                    <td class="px-8 py-5 text-right space-x-2">
-                                        <button onclick="Admin.handleRename({{ user.id }}, {{ user.name | tojson }})" class="p-2 text-gray-400 dark:text-gray-500 hover:text-amber-500 dark:hover:text-amber-400 transition-colors" title="Ubah Nama">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                                        </button>
-                                        <button onclick="openResetModal({{ user.id }}, {{ user.name | tojson }})" class="p-2 text-gray-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors" title="Reset Password">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
-                                        </button>
-                                        <button onclick="Admin.toggleStatus({{ user.id }})" class="p-2 {% if user.is_active %}text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400{% else %}text-green-500 dark:text-green-400{% endif %} transition-colors">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
-                                        </button>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                    <div class="card-duo p-0 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-[#f7f7f7] dark:bg-gray-900 border-b-2 border-slate-100 dark:border-gray-800">
+                                    <tr>
+                                        <th class="px-8 py-5 text-left text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em]">Nama & Email</th>
+                                        <th class="px-8 py-5 text-left text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em]">Status</th>
+                                        <th class="px-8 py-5 text-right text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em]">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y-2 divide-slate-50 dark:divide-gray-800">
+                                    {% for user in murids %}
+                                    <tr class="hover:bg-slate-50/50 dark:hover:bg-gray-800/30 transition-all">
+                                        <td class="px-8 py-6">
+                                            <p id="user-name-{{ user.id }}" class="text-base font-black text-[#4b4b4b] dark:text-white">{{ user.name }}</p>
+                                            <p class="text-xs font-bold text-[#afafaf] mt-0.5">{{ user.email }}</p>
+                                        </td>
+                                        <td class="px-8 py-6">
+                                            {% if user.is_active %}
+                                            <span class="inline-flex items-center px-4 py-1.5 bg-[#dcfce7] text-[#58cc02] rounded-xl text-[10px] font-black uppercase tracking-widest">AKTIF</span>
+                                            {% else %}
+                                            <span class="inline-flex items-center px-4 py-1.5 bg-red-50 text-[#ff4b4b] rounded-xl text-[10px] font-black uppercase tracking-widest">NONAKTIF</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="px-8 py-6 text-right space-x-1">
+                                            <button onclick="Admin.handleRename({{ user.id }}, {{ user.name | tojson }})" class="p-3 text-[#afafaf] hover:text-[#ff9600] hover:bg-[#f7f7f7] rounded-xl transition-all active:scale-90">
+                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                            </button>
+                                            <button onclick="openResetModal({{ user.id }}, {{ user.name | tojson }})" class="p-3 text-[#afafaf] hover:text-[#1cb0f6] hover:bg-[#f7f7f7] rounded-xl transition-all active:scale-90">
+                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+                                            </button>
+                                            <button onclick="Admin.toggleStatus({{ user.id }})" class="p-3 {% if user.is_active %}text-[#afafaf] hover:text-[#ff4b4b]{% else %}text-[#58cc02]{% endif %} hover:bg-[#f7f7f7] rounded-xl transition-all active:scale-90">
+                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </section>
             </div>
@@ -127,66 +166,102 @@
     </div>
 </div>
 
-<!-- MODAL IMPORT EXCEL -->
-<div id="import-modal" class="modal fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white dark:bg-gray-800 rounded-[2.5rem] shadow-2xl dark:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] w-full max-w-2xl overflow-hidden animate-slide-up border border-indigo-50 dark:border-gray-700">
+<!-- MODAL IMPORT SISWA (paste dari Excel: NIS, Nama Lengkap, Jenis Kelamin, Kelas) -->
+<div id="import-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="card-duo w-full max-w-2xl overflow-hidden animate-slide-up p-0 border-none shadow-2xl">
         <form id="bulk-import-form">
-            <div class="bg-gradient-to-br from-indigo-600 to-indigo-800 px-8 py-8 text-white">
-                <h3 class="text-2xl font-black">Impor User Massal</h3>
-                <p class="text-indigo-100 text-sm mt-1">Copy data dari Excel (Kolom A: Nama, Kolom B: Email) lalu paste di sini.</p>
+            <div class="bg-[#1cb0f6] px-8 py-8 text-white">
+                <h3 class="text-2xl font-black">Impor Siswa dari Excel</h3>
+                <p class="text-white/80 text-sm font-bold mt-1">Blok &amp; salin 4 kolom dari Excel, lalu tempel di bawah.</p>
             </div>
             <div class="p-8 space-y-6">
-                <div>
-                    <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Role Akun</label>
-                    <select id="import-role" class="w-full px-6 py-4 bg-gray-50 dark:bg-gray-700 border-2 border-gray-100 dark:border-gray-600 rounded-2xl focus:border-indigo-500 outline-none font-bold bg-white dark:bg-gray-700 transition-all text-gray-900 dark:text-gray-100">
-                        <option value="murid">Murid (Siswa)</option>
-                        <option value="guru">Guru (Pengajar)</option>
-                    </select>
+                <div id="import-controls" class="space-y-5">
+                    <div class="p-4 bg-[#e0f2fe] rounded-2xl text-xs font-bold text-[#0369a1] leading-relaxed">
+                        Urutan kolom: <b>NIS</b> · <b>Nama Lengkap</b> · <b>Jenis Kelamin</b> (L/P) · <b>Kelas</b> (opsional).<br>
+                        Bila kolom <b>Kelas</b> dikosongkan, siswa masuk ke <b>Kelas Tujuan</b> di bawah. Login siswa memakai <b>NIS</b>, password default <b>passwd</b>.
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2">Kelas Tujuan (untuk baris tanpa kolom Kelas)</label>
+                        <select id="import-target-class" class="w-full px-5 py-4 bg-[#f7f7f7] border-2 border-[#e5e5e5] rounded-2xl font-black text-[#4b4b4b] outline-none focus:border-[#1cb0f6]">
+                            <option value="">— Pakai kolom Kelas di tiap baris —</option>
+                            {% for c in courses %}
+                            <option value="{{ c.id }}">{{ c.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2">Tempel Data Siswa</label>
+                        <textarea id="raw-data" rows="10"
+                            placeholder="12345&#9;Budi Santoso&#9;L&#9;7A&#10;12346&#9;Siti Aminah&#9;P&#9;7A&#10;12347&#9;Andi Wijaya&#9;L&#9;7B"
+                            class="w-full px-5 py-4 bg-[#f7f7f7] border-2 border-[#e5e5e5] rounded-2xl font-mono text-sm text-[#4b4b4b] outline-none focus:border-[#1cb0f6] transition-all"></textarea>
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Paste Data Excel Di Sini</label>
-                    <textarea id="raw-data" class="w-full px-6 py-4 bg-gray-50 dark:bg-gray-700 border-2 border-gray-100 dark:border-gray-600 rounded-2xl focus:border-indigo-500 outline-none font-mono text-xs transition-all text-gray-900 dark:text-gray-100" rows="10" placeholder="Muhamad Ikhsan   iksan@email.com&#10;John Doe   john@email.com"></textarea>
-                </div>
-                <div id="import-error" class="hidden p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl text-xs font-bold text-center"></div>
 
-                <!-- Hasil Password Tergenerate -->
                 <div id="import-results" class="hidden space-y-4">
-                    <p class="text-sm font-bold text-green-600 dark:text-green-400">Berhasil mengimpor! Silakan simpan daftar password berikut:</p>
-                    <div class="max-h-40 overflow-y-auto bg-gray-900 text-green-400 p-4 rounded-2xl font-mono text-[10px]">
+                    <div class="p-4 bg-[#dcfce7] border-2 border-[#58cc02]/20 rounded-2xl">
+                        <p id="import-summary" class="text-sm font-black text-[#58cc02] text-center"></p>
+                    </div>
+                    <div class="max-h-60 overflow-y-auto bg-gray-900 p-5 rounded-2xl font-mono text-[11px] text-[#58cc02]">
                         <table class="w-full">
                             <tbody id="results-body"></tbody>
                         </table>
                     </div>
-                    <button type="button" onclick="window.location.reload()" class="w-full py-4 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-2xl font-bold hover:bg-gray-200 dark:hover:bg-gray-600 transition-all">Selesai & Refresh Halaman</button>
+                    <button type="button" onclick="window.location.reload()" class="btn-duo btn-duo-primary w-full h-14 text-sm">SELESAI &amp; REFRESH</button>
                 </div>
+
+                <div id="import-error" class="hidden p-4 bg-red-50 text-[#ff4b4b] rounded-2xl text-xs font-black text-center"></div>
             </div>
-            <div id="import-footer" class="px-8 pb-8 flex space-x-3">
-                <button type="button" onclick="toggleModal('import-modal', false)" class="flex-1 px-6 py-4 text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded-2xl font-bold hover:bg-gray-200 dark:hover:bg-gray-600 transition-all">Batal</button>
-                <button type="submit" class="flex-[2] px-6 py-4 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg shadow-indigo-200 dark:shadow-indigo-900/50 hover:bg-indigo-700 transition-all active:scale-95">Proses Impor</button>
+            <div id="import-footer" class="px-8 pb-8 flex flex-col gap-3">
+                <button type="submit" class="btn-duo btn-duo-blue h-14 text-sm">PROSES IMPOR</button>
+                <button type="button" onclick="toggleModal('import-modal', false)" class="btn-duo btn-duo-ghost h-14 text-sm">BATAL</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL BUAT KELAS -->
+<div id="create-class-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="card-duo w-full max-w-md overflow-hidden animate-slide-up p-0 border-none shadow-2xl">
+        <form id="create-class-form">
+            <div class="bg-[#58cc02] px-8 py-8 text-white">
+                <h3 class="text-2xl font-black">Buat Kelas</h3>
+                <p class="text-white/80 text-sm font-bold mt-1">Tambah kelas baru untuk sekolah Anda.</p>
+            </div>
+            <div class="p-8 space-y-6">
+                <div>
+                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2">Nama Kelas</label>
+                    <input type="text" id="class-name-input" name="name" placeholder="Contoh: 7A, VIII-B, IX IPA 1"
+                        class="w-full px-6 py-4 bg-[#f7f7f7] border-2 border-[#e5e5e5] rounded-2xl focus:border-[#58cc02] outline-none font-black text-[#4b4b4b]" required>
+                </div>
+                <div id="create-class-error" class="hidden p-4 bg-red-50 text-[#ff4b4b] rounded-2xl text-xs font-black text-center"></div>
+            </div>
+            <div class="px-8 pb-8 flex flex-col gap-3">
+                <button type="submit" class="btn-duo btn-duo-green h-14 text-sm">SIMPAN KELAS</button>
+                <button type="button" onclick="toggleModal('create-class-modal', false)" class="btn-duo btn-duo-ghost h-14 text-sm">BATAL</button>
             </div>
         </form>
     </div>
 </div>
 
 <!-- MODAL RESET PASSWORD -->
-<div id="reset-modal" class="modal fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white dark:bg-gray-800 rounded-[2.5rem] shadow-2xl dark:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] w-full max-w-md overflow-hidden animate-slide-up border border-indigo-50 dark:border-gray-700">
+<div id="reset-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="card-duo w-full max-w-md overflow-hidden animate-slide-up p-0 border-none shadow-2xl">
         <form id="reset-password-form">
             <input type="hidden" id="reset-user-id">
-            <div class="bg-gradient-to-br from-indigo-600 to-indigo-800 px-8 py-8 text-white">
+            <div class="bg-[#ce82ff] px-8 py-8 text-white">
                 <h3 class="text-2xl font-black">Reset Password</h3>
-                <p id="reset-user-name" class="text-indigo-100 text-sm mt-1">Mengubah password untuk User.</p>
+                <p id="reset-user-name" class="text-white/80 text-sm font-bold mt-1">Mengubah password untuk pengguna.</p>
             </div>
             <div class="p-8 space-y-6">
                 <div>
-                    <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Password Baru (Min. 6 Karakter)</label>
-                    <input type="password" id="new-password" class="w-full px-6 py-4 bg-gray-50 dark:bg-gray-700 border-2 border-gray-100 dark:border-gray-600 rounded-2xl focus:border-indigo-500 outline-none font-bold transition-all text-gray-900 dark:text-gray-100" required>
+                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2">Password Baru</label>
+                    <input type="password" id="new-password-input" name="new_password" class="w-full px-6 py-4 bg-[#f7f7f7] border-2 border-[#e5e5e5] rounded-2xl focus:border-[#ce82ff] outline-none font-black text-[#4b4b4b]" placeholder="Minimal 6 karakter" required>
                 </div>
-                <div id="reset-error" class="hidden p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl text-xs font-bold text-center"></div>
+                <div id="reset-error" class="hidden p-4 bg-red-50 text-[#ff4b4b] rounded-2xl text-xs font-black text-center"></div>
             </div>
-            <div class="px-8 pb-8 flex space-x-3">
-                <button type="button" onclick="toggleModal('reset-modal', false)" class="flex-1 px-6 py-4 text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded-2xl font-bold hover:bg-gray-200 dark:hover:bg-gray-600 transition-all">Batal</button>
-                <button type="submit" class="flex-[2] px-6 py-4 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg shadow-indigo-200 dark:shadow-indigo-900/50 hover:bg-indigo-700 transition-all active:scale-95">Simpan Password</button>
+            <div class="px-8 pb-8 flex flex-col gap-3">
+                <button type="submit" class="btn-duo btn-duo-purple h-14 text-sm">SIMPAN PASSWORD</button>
+                <button type="button" onclick="toggleModal('reset-modal', false)" class="btn-duo btn-duo-ghost h-14 text-sm">BATAL</button>
             </div>
         </form>
     </div>

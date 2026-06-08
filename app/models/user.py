@@ -19,6 +19,10 @@ class User(UserMixin, db.Model):
     id: Mapped[int] = mapped_column(db.Integer, primary_key=True)
     name: Mapped[str] = mapped_column(db.String(100), nullable=False)
     email: Mapped[str] = mapped_column(db.String(100), unique=True, nullable=False, index=True)
+    # Nomor Induk Siswa - dipakai siswa untuk login (selain email). NULL untuk non-siswa.
+    nis: Mapped[Optional[str]] = mapped_column(db.String(30), unique=True, nullable=True, index=True)
+    # Jenis kelamin siswa: 'L' (Laki-laki) atau 'P' (Perempuan). NULL bila tidak diisi.
+    gender: Mapped[Optional[str]] = mapped_column(db.String(1), nullable=True)
     password_hash: Mapped[str] = mapped_column(db.String(256), nullable=False)
     role: Mapped[UserRole] = mapped_column(db.Enum(UserRole), nullable=False, default=UserRole.MURID)
     is_active: Mapped[bool] = mapped_column(db.Boolean, nullable=False, default=True)
@@ -41,6 +45,8 @@ class User(UserMixin, db.Model):
         return {
             'id': self.id,
             'name': self.name,
+            'nis': self.nis,
+            'gender': self.gender,
             'role': self.role.value,
             'school_id': self.school_id,
             'preferred_language': self.preferred_language or 'id',

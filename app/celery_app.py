@@ -2,7 +2,6 @@
 Celery Configuration for Aldudu Academy
 
 Digunakan untuk background processing:
-- Rasch Model Analysis
 - Email notifications
 - Report generation
 """
@@ -22,9 +21,7 @@ def make_celery(app: Flask) -> Celery:
         app.import_name,
         broker=app.config.get('CELERY_BROKER_URL', 'redis://localhost:6379/0'),
         backend=app.config.get('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0'),
-        include=[
-            'app.workers.rasch_worker',
-        ]
+        include=[]
     )
     
     # Celery configuration

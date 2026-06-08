@@ -4,178 +4,221 @@
 
 {% block body %}
 <!-- LOGIN PAGE -->
-<div id="login-page" class="{% if current_user.is_authenticated %}hidden{% endif %} min-h-screen bg-gradient-to-br from-primary-50 via-white to-primary-100 flex items-center justify-center p-4">
-    <div class="w-full max-w-md">
-        <!-- Logo & Header -->
-        <div class="text-center mb-8 animate-fade-in">
-            <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary-500 to-primary-700 rounded-2xl shadow-lg mb-4">
-                <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                </svg>
-            </div>
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">Aldudu Academy</h1>
-            <p class="text-gray-600">Selamat datang! Silakan login untuk melanjutkan.</p>
-        </div>
+<div id="login-page" class="{% if current_user.is_authenticated %}hidden{% endif %} ald-login-shell min-h-screen overflow-hidden">
+    <div class="ald-login-bg" aria-hidden="true">
+        <span class="ald-blob ald-blob-green"></span>
+        <span class="ald-blob ald-blob-yellow"></span>
+        <span class="ald-blob ald-blob-blue"></span>
+    </div>
 
-        <!-- Login Card -->
-        <div id="login-card" class="bg-white rounded-2xl shadow-xl p-8 animate-slide-up">
-            <form id="login-form" class="space-y-6">
-                <div>
-                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                    <input type="email" id="email" name="email" placeholder="Masukkan email" required
-                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 outline-none">
-                </div>
-
-                <div>
-                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                    <input type="password" id="password" name="password" placeholder="Masukkan password" required
-                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 outline-none">
-                </div>
-
-                <div class="flex justify-end">
-                    <a href="/forgot-password" class="text-xs text-primary-500 hover:text-primary-700 font-semibold hover:underline transition-colors">Lupa password?</a>
-                </div>
-
-                <div id="login-error" class="hidden p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm"></div>
-
-                <button type="submit" id="login-btn"
-                    class="w-full bg-gradient-to-r from-primary-500 to-primary-700 text-white py-4 px-6 rounded-2xl font-bold shadow-xl shadow-primary-200 hover:shadow-2xl hover:from-primary-600 hover:to-primary-800 transform hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group">
-                    <span class="btn-text inline-flex items-center transition-all duration-300 group-hover:tracking-widest">Login ke Akun</span>
-                    <div class="loader-container hidden absolute inset-0 flex items-center justify-center bg-inherit backdrop-blur-sm">
-                        <svg class="animate-spin h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+    <div class="relative z-10 min-h-screen flex items-center justify-center px-4 py-8 sm:px-6">
+        <div class="ald-login-grid w-full max-w-6xl">
+            <section class="ald-play-panel">
+                <div class="flex items-center gap-3">
+                    <div class="ald-brand-mark">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                         </svg>
                     </div>
-                </button>
-            </form>
-            <div class="mt-6 text-center">
-                <p class="text-sm text-gray-500">Belum punya akun? <a href="#" onclick="toggleAuthMode(event, 'register')" class="text-primary-600 font-bold hover:underline">Daftar sekarang</a></p>
-            </div>
-        </div>
+                    <div>
+                        <p class="text-xs font-black uppercase tracking-[0.18em] text-emerald-700">Aldudu Academy</p>
+                        <h1 class="text-2xl sm:text-3xl font-black text-slate-950">Belajar terasa ringan</h1>
+                    </div>
+                </div>
 
-        <!-- Register Card -->
-        <div id="register-card" class="hidden bg-white rounded-2xl shadow-xl p-8 animate-slide-up">
-            <form id="register-form" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
-                    <input type="text" name="name" required class="w-full px-4 py-3 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-primary-500">
+                <div class="ald-mascot-card" aria-hidden="true">
+                    <div class="ald-mascot">
+                        <div class="ald-mascot-face">
+                            <span class="ald-eye ald-eye-left"></span>
+                            <span class="ald-eye ald-eye-right"></span>
+                            <span class="ald-smile"></span>
+                        </div>
+                        <span class="ald-wing ald-wing-left"></span>
+                        <span class="ald-wing ald-wing-right"></span>
+                    </div>
+                    <div class="ald-path">
+                        <span class="ald-path-dot is-done"></span>
+                        <span class="ald-path-dot is-active"></span>
+                        <span class="ald-path-dot"></span>
+                        <span class="ald-path-dot is-star"></span>
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                    <input type="email" name="email" required class="w-full px-4 py-3 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-primary-500">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                    <input type="password" name="password" required class="w-full px-4 py-3 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-primary-500">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Daftar Sebagai</label>
-                    <select name="role" class="w-full px-4 py-3 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-primary-500 bg-white font-bold">
-                        <option value="murid">Murid (Siswa)</option>
-                        <option value="guru">Guru (Pengajar)</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Pilih Sekolah</label>
-                    <select name="school_id" id="register-school" class="w-full px-4 py-3 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-primary-500 bg-white font-bold" required>
-                        <option value="">Pilih sekolah Anda...</option>
-                    </select>
-                    <p class="text-xs text-gray-400 mt-1">Pastikan memilih sekolah yang benar untuk enroll otomatis</p>
-                </div>
-                <div id="register-error" class="hidden p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs"></div>
-                <button type="submit" class="w-full bg-primary-600 text-white py-4 rounded-xl font-bold hover:bg-primary-700 transition-all shadow-lg">Daftar Akun</button>
-            </form>
-            <div class="mt-6 text-center">
-                <p class="text-sm text-gray-500">Sudah punya akun? <a href="#" onclick="toggleAuthMode(event, 'login')" class="text-primary-600 font-bold hover:underline">Masuk di sini</a></p>
-            </div>
-        </div>
 
-        <!-- Footer -->
-        <p class="text-center text-gray-500 text-sm mt-6">&copy; 2025 Aldudu Academy. All rights reserved.</p>
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="ald-stat-pill bg-white/85">
+                        <span class="text-xl font-black text-emerald-600">5m</span>
+                        <span class="text-[10px] font-black uppercase tracking-wider text-slate-500">Mulai</span>
+                    </div>
+                    <div class="ald-stat-pill bg-white/85">
+                        <span class="text-xl font-black text-amber-500">XP</span>
+                        <span class="text-[10px] font-black uppercase tracking-wider text-slate-500">Progres</span>
+                    </div>
+                    <div class="ald-stat-pill bg-white/85">
+                        <span class="text-xl font-black text-sky-600">✓</span>
+                        <span class="text-[10px] font-black uppercase tracking-wider text-slate-500">Tuntas</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="ald-auth-panel">
+                <div class="text-center mb-7">
+                    <p class="text-xs font-black uppercase tracking-[0.22em] text-emerald-600 mb-2">Masuk kelas</p>
+                    <h2 class="text-3xl sm:text-4xl font-black text-slate-950 tracking-tight">Siap lanjut?</h2>
+                    <p class="text-slate-500 font-semibold mt-2">Gunakan akun sekolahmu untuk masuk.</p>
+                </div>
+
+                <!-- Login Card -->
+                <div id="login-card" class="animate-slide-up">
+                    <form id="login-form" class="space-y-4">
+                        <div>
+                            <label for="email" class="block text-sm font-black text-slate-700 mb-2">Email atau NIS</label>
+                            <input type="text" id="email" name="email" placeholder="nama@email.com atau NIS" required
+                                class="ald-auth-input">
+                        </div>
+
+                        <div>
+                            <label for="password" class="block text-sm font-black text-slate-700 mb-2">Password</label>
+                            <input type="password" id="password" name="password" placeholder="Password akun" required
+                                class="ald-auth-input">
+                        </div>
+
+                        <div class="flex justify-end">
+                            <a href="/forgot-password" class="text-xs text-emerald-600 hover:text-emerald-700 font-black hover:underline transition-colors">Lupa password?</a>
+                        </div>
+
+                        <div id="login-error" class="hidden p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm"></div>
+
+                        <button type="submit" id="login-btn"
+                            class="btn-duo btn-duo-primary w-full h-14 text-lg">
+                            <span class="btn-text inline-flex items-center justify-center gap-2">
+                                <span>MASUK SEKARANG</span>
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                                </svg>
+                            </span>
+                            <div class="loader-container hidden absolute inset-0 flex items-center justify-center bg-inherit">
+                                <svg class="animate-spin h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            </div>
+                        </button>
+                    </form>
+                    <div class="mt-6 text-center">
+                        <p class="text-sm text-slate-500 font-semibold">Belum punya akun? <a href="#" onclick="toggleAuthMode(event, 'register')" class="text-emerald-600 font-black hover:underline">Daftar sekarang</a></p>
+                    </div>
+                </div>
+
+                <!-- Register Card -->
+                <div id="register-card" class="hidden animate-slide-up">
+                    <form id="register-form" class="space-y-3">
+                        <div>
+                            <label class="block text-sm font-black text-slate-700 mb-1">Nama Lengkap</label>
+                            <input type="text" name="name" required class="ald-auth-input ald-auth-input-compact">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-black text-slate-700 mb-1">Email</label>
+                            <input type="email" name="email" required class="ald-auth-input ald-auth-input-compact">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-black text-slate-700 mb-1">Password</label>
+                            <input type="password" name="password" required class="ald-auth-input ald-auth-input-compact">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-black text-slate-700 mb-1">Daftar Sebagai</label>
+                            <select name="role" class="ald-auth-input ald-auth-input-compact bg-white font-black">
+                                <option value="murid">Murid (Siswa)</option>
+                                <option value="guru">Guru (Pengajar)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-black text-slate-700 mb-1">Pilih Sekolah</label>
+                            <select name="school_id" id="register-school" class="ald-auth-input ald-auth-input-compact bg-white font-black" required>
+                                <option value="">Pilih sekolah Anda...</option>
+                            </select>
+                            <p class="text-xs text-slate-400 mt-1 font-semibold">Pastikan memilih sekolah yang benar.</p>
+                        </div>
+                        <div id="register-error" class="hidden p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs"></div>
+                        <button type="submit" class="ald-login-button">Daftar Akun</button>
+                    </form>
+                    <div class="mt-5 text-center">
+                        <p class="text-sm text-slate-500 font-semibold">Sudah punya akun? <a href="#" onclick="toggleAuthMode(event, 'login')" class="text-emerald-600 font-black hover:underline">Masuk di sini</a></p>
+                    </div>
+                </div>
+            </section>
+        </div>
     </div>
 </div>
 
 <!-- APP PAGE -->
-<div id="app-page" class="{% if not current_user.is_authenticated %}hidden{% endif %} h-screen h-[100dvh] bg-gray-50 dark:bg-gray-950 flex overflow-hidden">
+<div id="app-page" class="{% if not current_user.is_authenticated %}hidden{% endif %} h-screen h-[100dvh] bg-white dark:bg-gray-950 flex overflow-hidden">
     <!-- Sidebar -->
     {% include '_sidebar.html' %}
 
     <!-- Main Content Area -->
-    <div id="main-content" class="flex-1 flex flex-col min-w-0 sidebar-transition h-full">
+    <div id="main-content" class="flex-1 flex flex-col min-w-0 sidebar-transition h-full bg-white dark:bg-gray-950">
         <!-- Top Header -->
-        <header class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 h-16 flex items-center pl-4 pr-0 sticky top-0 z-30">
+        <header class="bg-white dark:bg-gray-900 border-b-2 border-slate-100 dark:border-gray-800 h-20 flex items-center pl-4 pr-0 sticky top-0 z-30">
             <div class="flex items-center">
                 <!-- Desktop/Tablet Unhide Toggle -->
-                <button id="sidebar-unhide-btn" onclick="SidebarManager.toggle()" class="mr-4 sidebar-toggle-btn hidden" title="Tampilkan Sidebar">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                <button id="sidebar-unhide-btn" onclick="SidebarManager.toggle()" class="mr-4 p-3 rounded-xl bg-slate-50 text-slate-400 hover:bg-slate-100 hidden transition-all" title="Tampilkan Sidebar">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"/>
                     </svg>
                 </button>
 
                 <div class="flex items-center lg:hidden">
-                    <!-- Hamburger Menu Hidden on Mobile as we use Bottom Nav -->
-                    <button class="p-2 text-gray-600 hidden md:block">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                        </svg>
-                    </button>
-                    <div class="flex items-center space-x-2 md:ml-2">
-                        <div class="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-700 rounded-lg flex items-center justify-center shadow-md">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    <div class="flex items-center space-x-3 md:ml-2">
+                        <div class="w-10 h-10 bg-[#58cc02] rounded-xl flex items-center justify-center shadow-[0_3px_0_#46a302]">
+                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
                             </svg>
                         </div>
-                        <span class="text-lg font-black bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">Aldudu</span>
+                        <span class="text-xl font-black text-[#4b4b4b] dark:text-white">Aldudu</span>
                     </div>
                 </div>
             </div>
             
-            <!-- Tahun Ajaran Flush to the right edge -->
+            <!-- Tahun Ajaran -->
             <div class="ml-auto h-full flex items-center">
-                <div class="flex items-center space-x-2 bg-primary-50 pl-4 pr-6 py-2.5 rounded-l-2xl border-y border-l border-primary-100 shadow-premium whitespace-nowrap">
-                    <span class="text-[10px] sm:text-xs font-black text-primary-400 uppercase tracking-widest">Tahun Ajaran</span>
-                    <span class="text-xs sm:text-sm font-bold text-primary-700">2025/2026</span>
+                <div class="flex items-center space-x-3 bg-[#f7f7f7] dark:bg-gray-800 px-6 py-3 rounded-l-2xl border-y-2 border-l-2 border-slate-100 dark:border-gray-800 shadow-sm">
+                    <span class="text-[11px] font-black text-[#afafaf] uppercase tracking-[0.15em]">Tahun Ajaran</span>
+                    <span class="text-sm font-black text-[#4b4b4b] dark:text-white">2025/2026</span>
                 </div>
             </div>
         </header>
 
         <!-- Main Scrollable Area -->
-        <main class="flex-1 overflow-y-auto p-4 sm:p-8">
-            <div class="max-w-6xl mx-auto space-y-8">
+        <main class="flex-1 overflow-y-auto p-8 sm:p-12">
+            <div class="max-w-6xl mx-auto space-y-12">
                 <!-- Welcome & Stats -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div class="md:col-span-2 bg-gradient-to-br from-primary-600 to-primary-800 rounded-3xl p-6 sm:p-8 text-white relative overflow-hidden shadow-xl shadow-primary-200">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="md:col-span-2 bg-[#1cb0f6] rounded-[2.5rem] p-10 text-white relative overflow-hidden shadow-[0_8px_0_#1899d6]">
                         <div class="relative z-10">
-                            <h1 id="welcome-title" class="text-2xl sm:text-3xl font-bold mb-2">Selamat Datang!</h1>
-                            <p id="dynamic-quote" class="text-primary-100 opacity-90 max-w-md text-sm sm:text-base min-h-[3rem] flex items-center">
+                            <h1 id="welcome-title" class="text-3xl sm:text-4xl font-black mb-4">Selamat Datang! 👋</h1>
+                            <p id="dynamic-quote" class="text-white/90 max-w-lg text-lg font-bold leading-relaxed">
                                 <span class="typing-text">Lanjutkan perjalanan belajarmu hari ini. Kamu memiliki beberapa aktivitas yang menunggu.</span>
                             </p>
                         </div>
-                        <div class="absolute right-0 bottom-0 opacity-10 pointer-events-none transform translate-y-1/4 translate-x-1/4 hidden sm:block">
-                            <svg class="w-64 h-64" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                            </svg>
-                        </div>
                     </div>
                     
-                    <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col justify-between">
+                    <div class="card-duo flex flex-col justify-between">
                         <div class="flex items-center justify-between mb-4">
-                            <span class="text-sm font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Ringkasan</span>
-                            <div class="p-2 bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 rounded-xl">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                            <span class="text-xs font-black text-[#afafaf] uppercase tracking-[0.2em]">Ringkasan</span>
+                            <div class="p-3 bg-[#ddf4ff] text-[#1cb0f6] rounded-2xl">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
                                 </svg>
                             </div>
                         </div>
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <p id="total-classes" class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">0</p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400 font-medium mt-1">Total Kelas</p>
+                                <p id="total-classes" class="text-4xl font-black text-[#4b4b4b] dark:text-white">0</p>
+                                <p class="text-[11px] text-[#afafaf] font-black uppercase tracking-wider mt-1">Kelas</p>
                             </div>
                             <div>
-                                <p id="total-students" class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">0</p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400 font-medium mt-1">Total Murid</p>
+                                <p id="total-students" class="text-4xl font-black text-[#4b4b4b] dark:text-white">0</p>
+                                <p class="text-[11px] text-[#afafaf] font-black uppercase tracking-wider mt-1">Murid</p>
                             </div>
                         </div>
                     </div>
@@ -256,16 +299,16 @@
                     <div id="class-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"></div>
 
                     <!-- Empty State -->
-                    <div id="empty-state" class="hidden bg-white dark:bg-gray-800 rounded-3xl p-12 text-center border-2 border-dashed border-gray-200 dark:border-gray-700">
-                        <div class="w-20 h-20 bg-gray-50 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <svg class="w-10 h-10 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                    <div id="empty-state" class="hidden card-duo p-16 text-center border-dashed border-4 border-[#e5e5e5]">
+                        <div class="w-24 h-24 bg-[#f7f7f7] rounded-full flex items-center justify-center mx-auto mb-8">
+                            <svg class="w-12 h-12 text-[#afafaf]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
                             </svg>
                         </div>
-                        <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">Belum ada kelas</h3>
-                        <p class="text-gray-500 dark:text-gray-400 mb-8 max-w-sm mx-auto">Minta kode kelas dari guru Anda untuk bergabung dengan kelas.</p>
-                        <button id="empty-create-btn" class="px-8 py-3 bg-primary-600 text-white rounded-2xl font-bold shadow-lg shadow-primary-200 dark:shadow-primary-900/50">
-                            Buat Kelas Pertama
+                        <h3 class="text-2xl font-black text-[#4b4b4b] mb-3">Belum ada kelas</h3>
+                        <p class="text-[#afafaf] font-bold mb-10 max-w-sm mx-auto">Mulai perjalanan belajarmu dengan bergabung atau membuat kelas pertama.</p>
+                        <button id="empty-create-btn" class="btn-duo btn-duo-primary h-16 px-12 text-lg">
+                            BUAT KELAS PERTAMA
                         </button>
                     </div>
                 </section>
@@ -299,7 +342,7 @@
                     <!-- Archive Selection Modal -->
                     <div id="archive-select-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
                         <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden animate-slide-up">
-                            <div class="bg-gradient-to-br from-amber-500 to-amber-700 px-8 py-6 text-white">
+                            <div class="bg-amber-500 px-8 py-6 text-white">
                                 <div class="flex items-center gap-3">
                                     <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
                                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -362,177 +405,97 @@
 </div>
 
 <!-- ADD CLASS MODAL -->
-<div id="add-class-modal" class="modal fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-slide-up">
+<div id="add-class-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="card-duo w-full max-w-md overflow-hidden animate-slide-up p-0 border-none shadow-2xl">
         <form id="add-class-form">
-            <div class="bg-gradient-to-r from-primary-500 to-primary-700 px-6 py-4">
-                <h3 class="text-xl font-bold text-white">Buat Kelas Baru</h3>
-                <p class="text-primary-100 text-sm mt-1">Buat kelas baru untuk tahun ajaran yang sedang aktif.</p>
-            </div>
-            <div class="p-6">
-                <div class="mb-6">
-                    <label for="course-name" class="block text-sm font-medium text-gray-700 mb-2">Nama Kelas</label>
-                    <input type="text" id="course-name" name="course-name" required placeholder="Contoh: Kimia XII - IPA 1" 
-                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all">
+            <div class="bg-[#1cb0f6] px-8 py-8 text-white relative overflow-hidden">
+                <div class="relative z-10">
+                    <h3 class="text-2xl font-black">Buat Kelas Baru</h3>
+                    <p class="text-white/80 text-sm font-bold mt-1">Buat identitas unik untuk kelasmu.</p>
                 </div>
-                <div class="mb-4">
-                    <label for="add-color-input" class="block text-sm font-medium text-gray-700 mb-3">Pilih Warna Kartu</label>
-                    <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                        <input type="color" id="add-color-input" name="color" value="#3b82f6" 
-                            class="w-16 h-16 rounded-xl cursor-pointer border-none bg-transparent">
-                        <div>
-                            <p class="text-xs font-black text-gray-400 uppercase tracking-widest">Custom Color</p>
-                            <p class="text-sm text-gray-500">Pilih warna sesuka hati untuk identitas kelas ini.</p>
-                        </div>
+            </div>
+            <div class="p-8 space-y-6">
+                <div>
+                    <label for="course-name" class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2">Nama Kelas</label>
+                    <input type="text" id="course-name" name="course-name" required placeholder="Contoh: Kimia XII - IPA 1" 
+                        class="w-full px-6 py-4 bg-[#f7f7f7] border-2 border-[#e5e5e5] rounded-2xl focus:border-[#1cb0f6] outline-none transition-all font-black text-[#4b4b4b]">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-3">Pilih Warna Kelas</label>
+                    <div class="flex flex-wrap gap-3">
+                        <input type="hidden" id="add-color-input" name="color" value="#58cc02">
+                        <button type="button" onclick="Dashboard.selectColor(this, '#58cc02')" class="color-dot w-10 h-10 rounded-full bg-[#58cc02] border-4 border-white shadow-md active:scale-95 transition-all ring-2 ring-[#58cc02]"></button>
+                        <button type="button" onclick="Dashboard.selectColor(this, '#1cb0f6')" class="color-dot w-10 h-10 rounded-full bg-[#1cb0f6] border-4 border-white shadow-sm active:scale-95 transition-all"></button>
+                        <button type="button" onclick="Dashboard.selectColor(this, '#ff9600')" class="color-dot w-10 h-10 rounded-full bg-[#ff9600] border-4 border-white shadow-sm active:scale-95 transition-all"></button>
+                        <button type="button" onclick="Dashboard.selectColor(this, '#ff4b4b')" class="color-dot w-10 h-10 rounded-full bg-[#ff4b4b] border-4 border-white shadow-sm active:scale-95 transition-all"></button>
+                        <button type="button" onclick="Dashboard.selectColor(this, '#ce82ff')" class="color-dot w-10 h-10 rounded-full bg-[#ce82ff] border-4 border-white shadow-sm active:scale-95 transition-all"></button>
                     </div>
                 </div>
-                <div id="add-modal-error" class="hidden mt-2 text-red-600 text-sm"></div>
+                <div id="add-modal-error" class="hidden mt-2 text-[#ff4b4b] text-sm font-black"></div>
             </div>
-            <div class="bg-gray-50 px-6 py-4 flex justify-end space-x-3">
-                <button type="button" id="add-cancel-button" 
-                    class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                    Batal
-                </button>
-                <button type="submit" 
-                    class="px-4 py-2 bg-gradient-to-r from-primary-500 to-primary-700 text-white rounded-lg font-medium shadow hover:shadow-md transition-all">
-                    Simpan Kelas
-                </button>
+            <div class="px-8 pb-8 flex flex-col gap-3">
+                <button type="submit" class="btn-duo btn-duo-primary h-14 text-sm">SIMPAN KELAS</button>
+                <button type="button" id="add-cancel-button" class="btn-duo btn-duo-ghost h-14 text-sm">BATAL</button>
             </div>
         </form>
     </div>
 </div>
 
 <!-- SHOW CODE MODAL -->
-<div id="show-code-modal" class="modal fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md text-center animate-slide-up">
-        <div class="p-6">
-            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+<div id="show-code-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="card-duo w-full max-w-sm text-center animate-slide-up p-0 border-none shadow-2xl">
+        <div class="p-10">
+            <div class="w-20 h-20 bg-[#dcfce7] rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-[inset_0_-4px_0_rgba(0,0,0,0.05)]">
+                <svg class="w-10 h-10 text-[#58cc02]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
                 </svg>
             </div>
-            <h3 class="text-xl font-bold text-gray-900 mb-2">Kelas Berhasil Dibuat!</h3>
-            <p class="text-gray-600 mb-6">Bagikan kode berikut kepada murid Anda untuk bergabung.</p>
-            <div id="generated-class-code" class="bg-gray-100 rounded-xl p-4 mb-4">
-                <span class="text-2xl font-mono font-bold text-gray-900 tracking-wider"></span>
+            <h3 class="text-2xl font-black text-[#4b4b4b] mb-2">Kelas Siap! 🚀</h3>
+            <p class="text-[#afafaf] font-bold mb-8">Bagikan kode ini kepada muridmu.</p>
+            <div id="generated-class-code" class="bg-[#f7f7f7] border-2 border-[#e5e5e5] rounded-2xl p-6 mb-8">
+                <span class="text-3xl font-mono font-black text-[#1cb0f6] tracking-[0.2em]"></span>
             </div>
-            <p id="copy-feedback" class="text-sm text-gray-500"></p>
-        </div>
-        <div class="bg-gray-50 px-6 py-4">
-            <button type="button" id="close-code-modal-button" 
-                class="w-full px-4 py-2 bg-gradient-to-r from-primary-500 to-primary-700 text-white rounded-lg font-medium shadow hover:shadow-md transition-all">
-                Selesai
+            <button type="button" id="close-code-modal-button" class="btn-duo btn-duo-primary w-full h-14 text-sm">
+                SELESAI
             </button>
         </div>
     </div>
 </div>
 
 <!-- EDIT CLASS MODAL -->
-<div id="edit-class-modal" class="modal fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-slide-up">
+<div id="edit-class-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="card-duo w-full max-w-md overflow-hidden animate-slide-up p-0 border-none shadow-2xl">
         <form id="edit-class-form">
-            <div class="bg-gradient-to-r from-primary-500 to-primary-700 px-6 py-4">
-                <h3 class="text-xl font-bold text-white">Edit Kelas</h3>
-                <p class="text-primary-100 text-sm mt-1">Ubah nama dan warna latar belakang untuk kelas ini.</p>
+            <div class="bg-[#ff9600] px-8 py-8 text-white">
+                <h3 class="text-2xl font-black">Edit Kelas</h3>
+                <p class="text-white/80 text-sm font-bold mt-1">Sesuaikan kembali detail kelasmu.</p>
             </div>
-            <div class="p-6">
-                <div class="mb-4">
-                    <label for="edit-course-name" class="block text-sm font-medium text-gray-700 mb-2">Nama Kelas</label>
+            <div class="p-8 space-y-6">
+                <div>
+                    <label for="edit-course-name" class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2">Nama Kelas</label>
                     <input type="text" id="edit-course-name" 
-                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none">
+                        class="w-full px-6 py-4 bg-[#f7f7f7] border-2 border-[#e5e5e5] rounded-2xl focus:border-[#ff9600] outline-none transition-all font-black text-[#4b4b4b]">
                 </div>
-                <div class="mb-4">
-                    <label for="edit-color-input" class="block text-sm font-medium text-gray-700 mb-3">Warna Latar</label>
-                    <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                        <input type="color" id="edit-color-input" name="color" 
-                            class="w-16 h-16 rounded-xl cursor-pointer border-none bg-transparent">
-                        <div>
-                            <p class="text-xs font-black text-gray-400 uppercase tracking-widest">Custom Color</p>
-                            <p class="text-sm text-gray-500">Ubah nuansa warna untuk kelas ini.</p>
-                        </div>
+                <div>
+                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-3">Warna Latar</label>
+                    <div class="flex flex-wrap gap-3">
+                        <input type="hidden" id="edit-color-input" name="color" value="#58cc02">
+                        <button type="button" data-color="#58cc02" onclick="Dashboard.selectColor(this, '#58cc02')" class="color-dot w-10 h-10 rounded-full bg-[#58cc02] border-4 border-white shadow-sm active:scale-95 transition-all"></button>
+                        <button type="button" data-color="#1cb0f6" onclick="Dashboard.selectColor(this, '#1cb0f6')" class="color-dot w-10 h-10 rounded-full bg-[#1cb0f6] border-4 border-white shadow-sm active:scale-95 transition-all"></button>
+                        <button type="button" data-color="#ff9600" onclick="Dashboard.selectColor(this, '#ff9600')" class="color-dot w-10 h-10 rounded-full bg-[#ff9600] border-4 border-white shadow-sm active:scale-95 transition-all"></button>
+                        <button type="button" data-color="#ff4b4b" onclick="Dashboard.selectColor(this, '#ff4b4b')" class="color-dot w-10 h-10 rounded-full bg-[#ff4b4b] border-4 border-white shadow-sm active:scale-95 transition-all"></button>
+                        <button type="button" data-color="#ce82ff" onclick="Dashboard.selectColor(this, '#ce82ff')" class="color-dot w-10 h-10 rounded-full bg-[#ce82ff] border-4 border-white shadow-sm active:scale-95 transition-all"></button>
                     </div>
                 </div>
-                <div id="edit-modal-error" class="hidden text-red-600 text-sm"></div>
+                <div id="edit-modal-error" class="hidden text-[#ff4b4b] text-sm font-black"></div>
             </div>
-            <div class="bg-gray-50 px-6 py-4 flex justify-between items-center">
-                <button type="button" onclick="Dashboard.openDeleteModal()" 
-                    class="px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg font-bold transition-all flex items-center space-x-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                    </svg>
-                    <span>Hapus Kelas</span>
-                </button>
-                <div class="flex space-x-3">
-                    <button type="button" id="edit-cancel-button" 
-                        class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                        Batal
-                    </button>
-                    <button type="submit" 
-                        class="px-4 py-2 bg-gradient-to-r from-primary-500 to-primary-700 text-white rounded-lg font-medium shadow hover:shadow-md transition-all">
-                        Simpan Perubahan
-                    </button>
-                </div>
+            <div class="px-8 pb-8 flex flex-col gap-3">
+                <button type="submit" class="btn-duo btn-duo-yellow h-14 text-sm text-white">SIMPAN PERUBAHAN</button>
+                <button type="button" id="edit-cancel-button" class="btn-duo btn-duo-ghost h-14 text-sm">BATAL</button>
             </div>
         </form>
     </div>
 </div>
-
-<!-- DELETE CLASS MODAL -->
-<div id="delete-class-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden animate-slide-up border border-red-50">
-        <div class="bg-gradient-to-br from-red-600 to-red-800 px-8 py-10 text-center relative overflow-hidden">
-            <div class="absolute inset-0 opacity-10">
-                <svg class="w-full h-full" fill="currentColor" viewBox="0 0 100 100" preserveAspectRatio="none">
-                    <path d="M0 0 L100 100 L100 0 Z" />
-                </svg>
-            </div>
-            <div class="relative z-10">
-                <div class="w-24 h-24 bg-white/20 rounded-[2rem] flex items-center justify-center mx-auto mb-6 backdrop-blur-md shadow-inner border border-white/30">
-                    <svg class="w-12 h-12 text-white animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                    </svg>
-                </div>
-                <h3 class="text-3xl font-black text-white mb-2 tracking-tight">Hapus Kelas?</h3>
-                <div class="inline-block px-4 py-1.5 bg-red-900/30 rounded-full border border-red-400/30">
-                    <p class="text-red-100 text-xs font-black uppercase tracking-widest">Aksi Tidak Dapat Diurungkan</p>
-                </div>
-            </div>
-        </div>
-        <div class="p-8">
-            <div class="bg-red-50 border-l-4 border-red-500 p-6 rounded-2xl mb-8">
-                <p class="text-red-800 text-sm font-bold leading-relaxed">
-                    PERHATIAN: Menghapus kelas ini akan mengakibatkan seluruh data murid berupa <span class="underline">nilai</span>, <span class="underline">tugas</span>, dan <span class="underline">ulangan</span> hilang secara permanen dari sistem.
-                </p>
-            </div>
-            
-            <div class="space-y-4">
-                <p class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] text-center">Konfirmasi penghapusan</p>
-                <div class="relative group">
-                    <input type="text" id="delete-confirm-input" placeholder="Ketik 'setuju' di sini..." 
-                        class="w-full px-6 py-5 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-red-500 focus:bg-white focus:ring-4 focus:ring-red-500/10 text-center font-black text-xl transition-all outline-none placeholder:text-gray-300 placeholder:font-bold">
-                    <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none opacity-0 group-focus-within:opacity-100 transition-opacity">
-                        <svg class="w-6 h-6 text-red-200" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-                    </div>
-                </div>
-            </div>
-            
-            <div id="delete-modal-error" class="hidden mt-4 text-red-600 text-sm font-bold text-center bg-red-50 p-3 rounded-xl animate-shake"></div>
-        </div>
-        <div class="px-8 pb-8 grid grid-cols-2 gap-4">
-            <button type="button" id="delete-cancel-btn" 
-                class="px-6 py-4 text-gray-500 bg-gray-100 rounded-2xl hover:bg-gray-200 font-black text-sm uppercase tracking-widest transition-all active:scale-95">
-                Batal
-            </button>
-            <button type="button" id="delete-final-btn" disabled
-                class="px-6 py-4 bg-red-600 text-white rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl shadow-red-200 transition-all opacity-50 cursor-not-allowed hover:bg-red-700 hover:shadow-red-300 active:scale-95 disabled:hover:translate-y-0">
-                Hapus Sekarang
-            </button>
-        </div>
-    </div>
-</div>
-
-<!-- UNDO NOTIFICATION TOAST -->
-<div id="delete-toast-container" class="fixed bottom-8 right-8 z-[100] flex flex-col space-y-4 pointer-events-none"></div>
 
 {% endblock %}
 

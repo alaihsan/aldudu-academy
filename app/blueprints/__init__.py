@@ -13,10 +13,7 @@ def create_blueprints():
     from .tickets import tickets_bp
     from .gradebook import gradebook_bp
     from .assignment import assignment_bp
-    from .rasch import rasch_bp
-    from .rasch_dashboard import rasch_dashboard_bp
     from .whats_new_view import whats_new_view_bp
-    from .evaluation import evaluation_bp
 
     return [
         main_bp,
@@ -30,8 +27,5 @@ def create_blueprints():
         tickets_bp,
         gradebook_bp,
         assignment_bp,
-        rasch_bp,
-        rasch_dashboard_bp,
-        whats_new_view_bp,
-        evaluation_bp
+        whats_new_view_bp
     ]

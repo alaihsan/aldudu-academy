@@ -104,7 +104,7 @@ def generate_class_code(length=6):
             return code
 
 def get_courses_for_user(user, year_id):
-    from app.models import Course, User, UserRole, UserCourseOrder
+    from app.models import Course, User, UserRole, UserCourseOrder, AcademicYear
     if not year_id:
         return []
 
@@ -123,6 +123,11 @@ def get_courses_for_user(user, year_id):
             query = query.filter(Course.teacher_id == user.id)
         else:
             query = query.filter(Course.teacher_id == user.id, Course.academic_year_id == year_id)
+    elif user.role in (UserRole.ADMIN, UserRole.SUPER_ADMIN):
+        # For admins, show ALL classes in their school (overview)
+        query = query.join(AcademicYear, Course.academic_year_id == AcademicYear.id)
+        if user.role == UserRole.ADMIN and user.school_id:
+            query = query.filter(AcademicYear.school_id == user.school_id)
     else:
         # For students, show enrolled courses
         query = query.join(Course.students).filter(User.id == user.id, Course.academic_year_id == year_id)

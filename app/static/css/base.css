@@ -1,4 +1,162 @@
-/* base.css - Extracted from base.html */
+/* Duolingo Fresh Style Utilities */
+
+/* Buttons */
+.btn-duo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border-radius: 1rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: all 0.1s ease;
+    cursor: pointer;
+    border: none;
+    position: relative;
+    user-select: none;
+}
+
+.btn-duo:active {
+    transform: translateY(4px);
+}
+
+.btn-duo-primary {
+    background-color: #58cc02;
+    color: #fff;
+    box-shadow: 0 4px 0 #46a302;
+}
+.btn-duo-primary:hover { background-color: #61e002; }
+.btn-duo-primary:active { box-shadow: 0 0px 0 #46a302; }
+
+.btn-duo-blue {
+    background-color: #1cb0f6;
+    color: #fff;
+    box-shadow: 0 4px 0 #1899d6;
+}
+.btn-duo-blue:hover { background-color: #2bc1ff; }
+.btn-duo-blue:active { box-shadow: 0 0px 0 #1899d6; }
+
+.btn-duo-red {
+    background-color: #ff4b4b;
+    color: #fff;
+    box-shadow: 0 4px 0 #d33131;
+}
+.btn-duo-red:hover { background-color: #ff5e5e; }
+.btn-duo-red:active { box-shadow: 0 0px 0 #d33131; }
+
+.btn-duo-yellow {
+    background-color: #ff9600;
+    color: #fff;
+    box-shadow: 0 4px 0 #d97e00;
+}
+.btn-duo-yellow:hover { background-color: #ffa629; }
+.btn-duo-yellow:active { box-shadow: 0 0px 0 #d97e00; }
+
+.btn-duo-ghost {
+    background-color: #fff;
+    color: #afafaf;
+    border: 2px solid #e5e5e5;
+    box-shadow: 0 4px 0 #e5e5e5;
+}
+.btn-duo-ghost:hover { background-color: #f7f7f7; }
+.btn-duo-ghost:active { box-shadow: 0 0px 0 #e5e5e5; }
+
+/* Green (alias warna primary, agar konsisten dipakai di seluruh app) */
+.btn-duo-green {
+    background-color: #58cc02;
+    color: #fff;
+    box-shadow: 0 4px 0 #46a302;
+}
+.btn-duo-green:hover { background-color: #61e002; }
+.btn-duo-green:active { box-shadow: 0 0px 0 #46a302; }
+
+/* Purple */
+.btn-duo-purple {
+    background-color: #ce82ff;
+    color: #fff;
+    box-shadow: 0 4px 0 #af60f0;
+}
+.btn-duo-purple:hover { background-color: #d896ff; }
+.btn-duo-purple:active { box-shadow: 0 0px 0 #af60f0; }
+
+/* Grey (solid, flat) */
+.btn-duo-grey, .btn-duo-gray {
+    background-color: #e5e5e5;
+    color: #4b4b4b;
+    box-shadow: 0 4px 0 #cfcfcf;
+}
+.btn-duo-grey:hover, .btn-duo-gray:hover { background-color: #eee; }
+.btn-duo-grey:active, .btn-duo-gray:active { box-shadow: 0 0px 0 #cfcfcf; }
+
+/* Cards */
+.card-duo {
+    background: #fff;
+    border: 2px solid #e5e5e5;
+    border-radius: 1.5rem;
+    box-shadow: 0 4px 0 #e5e5e5;
+    padding: 1.5rem;
+    transition: all 0.1s ease;
+}
+
+.card-duo:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 #e5e5e5;
+}
+
+/* Sidebar Specific (Duolingo Style) */
+.nav-link-duo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 800;
+    color: #777777;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: all 0.1s ease;
+    border: 2px solid transparent;
+}
+
+.nav-link-duo:hover {
+    background: #f7f7f7;
+    color: #4b4b4b;
+}
+
+.nav-link-duo.active {
+    background: #ddf4ff;
+    color: #1cb0f6;
+    border: 2px solid #84d8ff;
+}
+
+.nav-icon-duo {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    color: #ffffff;
+    flex-shrink: 0;
+    box-shadow: inset 0 -3px 0 rgba(0,0,0,0.2);
+}
+
+.nav-link-duo.active .nav-icon-duo {
+    box-shadow: inset 0 -3px 0 rgba(0,0,0,0.1);
+}
+
+/* Dark mode support for duo styles */
+html.dark .card-duo, html.dark .btn-duo-ghost {
+    background: #131f24;
+    border-color: #37464f;
+    box-shadow: 0 4px 0 #37464f;
+}
+html.dark .nav-link-duo:hover { background: #202f36; }
+html.dark .nav-link-duo.active { background: #131f24; border-color: #1cb0f6; }
+
+/* Original base.css content below */
 
 [x-cloak] { display: none !important; }
 

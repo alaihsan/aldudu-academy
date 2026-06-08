@@ -3,7 +3,14 @@ import secrets
 
 
 class Config:
-    SECRET_KEY = os.environ.get('FLASK_SECRET_KEY', secrets.token_hex(32))
+    # Baca SECRET_KEY dari .env (nama variabel: SECRET_KEY). Fallback ke
+    # FLASK_SECRET_KEY untuk kompatibilitas. Hanya generate acak bila keduanya
+    # tidak ada — wajib di-set agar sesi konsisten antar worker gunicorn.
+    SECRET_KEY = (
+        os.environ.get('SECRET_KEY')
+        or os.environ.get('FLASK_SECRET_KEY')
+        or secrets.token_hex(32)
+    )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = 'Lax'

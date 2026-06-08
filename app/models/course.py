@@ -38,8 +38,8 @@ class KbmNote(db.Model):
     notes: Mapped[Optional[str]] = mapped_column(db.Text, nullable=True)  # Catatan tambahan (refleksi, dll)
     
     # Metadata
-    created_at: Mapped[datetime] = mapped_column(db.DateTime, default=get_jakarta_now)
-    updated_at: Mapped[datetime] = mapped_column(db.DateTime, default=get_jakarta_now, onupdate=get_jakarta_now)
+    created_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=get_jakarta_now)
+    updated_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=get_jakarta_now, onupdate=get_jakarta_now)
 
     # Relationships
     course = relationship('Course', back_populates='kbm_notes')
@@ -114,9 +114,6 @@ class Course(db.Model):
     grade_categories: Mapped[List['GradeCategory']] = relationship('GradeCategory', back_populates='course', lazy='selectin', cascade='all, delete-orphan')
     learning_objectives: Mapped[List['LearningObjective']] = relationship('LearningObjective', back_populates='course', lazy='selectin', cascade='all, delete-orphan')
     grade_items: Mapped[List['GradeItem']] = relationship('GradeItem', back_populates='course', lazy='selectin', cascade='all, delete-orphan')
-
-    # Rasch Model relationship
-    rasch_analyses: Mapped[List['RaschAnalysis']] = relationship('RaschAnalysis', back_populates='course', lazy='selectin', cascade='all, delete-orphan')
 
     def __repr__(self) -> str:
         return f'<Course {self.name}>'

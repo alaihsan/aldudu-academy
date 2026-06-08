@@ -89,7 +89,6 @@ const Dashboard = {
             addClassModal: document.getElementById('add-class-modal'),
             editClassModal: document.getElementById('edit-class-modal'),
             showCodeModal: document.getElementById('show-code-modal'),
-            deleteClassModal: document.getElementById('delete-class-modal'),
             
             addClassForm: document.getElementById('add-class-form'),
             addColorInput: document.getElementById('add-color-input'),
@@ -100,15 +99,8 @@ const Dashboard = {
             editColorInput: document.getElementById('edit-color-input'),
             editCancelBtn: document.getElementById('edit-cancel-button'),
             
-            deleteConfirmInput: document.getElementById('delete-confirm-input'),
-            deleteFinalBtn: document.getElementById('delete-final-btn'),
-            deleteCancelBtn: document.getElementById('delete-cancel-btn'),
-            deleteModalError: document.getElementById('delete-modal-error'),
-            
             generatedCode: document.querySelector('#generated-class-code span'),
-            closeCodeBtn: document.getElementById('close-code-modal-button'),
-
-            deleteToastContainer: document.getElementById('delete-toast-container')
+            closeCodeBtn: document.getElementById('close-code-modal-button')
         };
     },
 
@@ -136,7 +128,6 @@ const Dashboard = {
         
         this.elements.addCancelBtn?.addEventListener('click', () => this.elements.addClassModal.classList.add('hidden'));
         this.elements.editCancelBtn?.addEventListener('click', () => this.elements.editClassModal.classList.add('hidden'));
-        this.elements.deleteCancelBtn?.addEventListener('click', () => this.elements.deleteClassModal.classList.add('hidden'));
         this.elements.closeCodeBtn?.addEventListener('click', () => this.elements.showCodeModal.classList.add('hidden'));
         
         this.elements.addClassForm?.addEventListener('submit', (e) => this.handleCreateClass(e));
@@ -154,15 +145,6 @@ const Dashboard = {
                 }
             }
         });
-        
-        this.elements.deleteConfirmInput?.addEventListener('input', (e) => {
-            const isValid = e.target.value.toLowerCase().trim() === 'setuju';
-            this.elements.deleteFinalBtn.disabled = !isValid;
-            this.elements.deleteFinalBtn.classList.toggle('opacity-50', !isValid);
-            this.elements.deleteFinalBtn.classList.toggle('cursor-not-allowed', !isValid);
-        });
-        
-        this.elements.deleteFinalBtn?.addEventListener('click', () => this.handleDeleteClass());
 
         // Archive button handler - show modal with class selection for teachers
         document.querySelectorAll('.archive-btn').forEach(btn => {
@@ -356,29 +338,29 @@ const Dashboard = {
             this.elements.emptyState?.classList.add('hidden');
 
             this.elements.classGrid.innerHTML = DOMPurify.sanitize(courses.map(c => `
-                <div data-id="${c.id}" style="view-transition-name: course-${c.id}" class="group bg-white rounded-[2.5rem] border border-gray-100 shadow-premium hover:shadow-2xl transition-all duration-500 overflow-hidden flex flex-col h-full transform hover:-translate-y-3">
-                    <div class="h-40 relative overflow-hidden flex items-center justify-center p-8" style="background-color: ${c.color || '#0284c7'}">
-                        <div class="absolute inset-0 opacity-20 group-hover:scale-150 transition-transform duration-1000 ease-in-out">
+                <div data-id="${c.id}" style="view-transition-name: course-${c.id}" class="card-duo group overflow-hidden flex flex-col h-full transform transition-all duration-300">
+                    <div class="h-40 relative overflow-hidden flex items-center justify-center p-8 -m-6 mb-6" style="background-color: ${c.color || '#0284c7'}">
+                        <div class="absolute inset-0 opacity-20">
                             <svg class="w-full h-full" fill="currentColor" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0 100 C 20 0 50 0 100 100 Z" /></svg>
                         </div>
-                        <h3 class="relative z-10 text-2xl font-black text-white text-center leading-tight drop-shadow-md group-hover:scale-105 transition-transform duration-500">${escapeHtml(c.name)}</h3>
-                        ${this.state.isTeacher ? `<button type="button" onclick="event.preventDefault(); Dashboard.openEditClass(${c.id})" class="absolute top-5 right-5 p-2.5 bg-white/20 hover:bg-white text-white hover:text-gray-900 rounded-2xl backdrop-blur-md shadow-lg transition-all duration-300 z-20"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>` : ''}
+                        <h3 class="relative z-10 text-2xl font-black text-white text-center leading-tight drop-shadow-md">${escapeHtml(c.name)}</h3>
+                        ${this.state.isTeacher ? `<button type="button" onclick="event.preventDefault(); Dashboard.openEditClass(${c.id})" class="absolute top-5 right-5 p-2.5 bg-white/20 hover:bg-white text-white hover:text-gray-900 rounded-2xl backdrop-blur-md shadow-lg transition-all duration-300 z-20"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>` : ''}
                     </div>
-                    <div class="p-10 flex-1 flex flex-col space-y-8">
+                    <div class="flex-1 flex flex-col space-y-6">
                         <div class="flex items-center justify-between">
-                            <div class="flex items-center space-x-4">
-                                <div class="w-12 h-12 rounded-2xl bg-primary-50 flex items-center justify-center text-primary-600 group-hover:bg-primary-600 group-hover:text-white transition-all duration-500"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg></div>
-                                <div class="min-w-0"><p class="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1.5">Pengajar</p><p class="text-sm font-bold text-gray-700 truncate">${escapeHtml(c.teacher.name)}</p></div>
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 rounded-xl bg-[#f7f7f7] flex items-center justify-center text-[#afafaf] group-hover:text-[#1cb0f6] transition-all"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg></div>
+                                <div class="min-w-0"><p class="text-[10px] font-black text-[#afafaf] uppercase tracking-widest leading-none mb-1">Pengajar</p><p class="text-sm font-black text-[#4b4b4b] truncate">${escapeHtml(c.teacher.name)}</p></div>
                             </div>
-                            <div class="px-5 py-2.5 bg-green-50 text-green-600 rounded-2xl text-[11px] font-black uppercase tracking-widest border border-green-100/50 shadow-sm">${c.studentCount} Murid</div>
+                            <div class="px-4 py-2 bg-[#dcfce7] text-[#58cc02] rounded-xl text-[10px] font-black uppercase tracking-widest border-2 border-[#e5e5e5]/10">${c.studentCount} Murid</div>
                         </div>
-                        <div class="flex items-center p-5 bg-gray-50/50 rounded-2xl border border-gray-100 group-hover:border-primary-100 transition-all duration-500">
-                            <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm mr-4"><svg class="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg></div>
-                            <div><p class="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1.5">Kode Akses</p><p class="text-base font-mono font-black text-primary-600">${escapeHtml(c.classCode)}</p></div>
+                        <div class="flex items-center p-4 bg-[#f7f7f7] rounded-xl border-2 border-[#e5e5e5]">
+                            <div class="w-8 h-8 rounded-lg bg-white flex items-center justify-center shadow-sm mr-3 text-[#1cb0f6]"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg></div>
+                            <div><p class="text-[10px] font-black text-[#afafaf] uppercase tracking-widest leading-none mb-1">Kode Akses</p><p class="text-sm font-black text-[#1cb0f6] tracking-widest font-mono">${escapeHtml(c.classCode)}</p></div>
                         </div>
-                        <div class="mt-auto flex items-center space-x-4 pt-6 border-t border-gray-50">
-                            <a href="/kelas/${c.id}" class="flex-1 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white py-5 rounded-[1.75rem] text-center font-bold text-sm transition-all shadow-xl shadow-primary-200 active:scale-95 btn-shine">Buka Kelas</a>
-                            <button type="button" onclick="event.preventDefault(); Dashboard.copyCode('${c.classCode}')" class="p-5 bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-primary-600 rounded-[1.75rem] transition-all active:scale-90 group/btn"><svg class="w-6 h-6 transition-transform group-hover/btn:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m-7 10h7m-7-4h7"/></svg></button>
+                        <div class="mt-auto flex items-center gap-3 pt-4 border-t-2 border-[#f7f7f7]">
+                            <a href="/kelas/${c.id}" class="btn-duo btn-duo-blue flex-1 h-12 text-sm">BUKA KELAS</a>
+                            <button type="button" onclick="event.preventDefault(); Dashboard.copyCode('${c.classCode}')" class="btn-duo btn-duo-ghost w-12 h-12 p-0"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m-7 10h7m-7-4h7"/></svg></button>
                         </div>
                     </div>
                 </div>
@@ -610,8 +592,36 @@ const Dashboard = {
         if (!course) return;
         this.state.editingCourseId = id;
         this.elements.editCourseName.value = course.name;
-        this.elements.editColorInput.value = course.color || '#0284c7';
+        
+        // Handle color dots
+        const color = course.color || '#58cc02';
+        this.elements.editColorInput.value = color;
+        
+        const dots = this.elements.editClassModal.querySelectorAll('.color-dot');
+        dots.forEach(dot => {
+            const isMatch = dot.getAttribute('data-color') === color;
+            dot.classList.toggle('ring-2', isMatch);
+            dot.classList.toggle('ring-[#1cb0f6]', isMatch);
+            dot.classList.toggle('shadow-md', isMatch);
+            dot.classList.toggle('shadow-sm', !isMatch);
+        });
+        
         this.elements.editClassModal.classList.remove('hidden');
+    },
+
+    selectColor(btn, color) {
+        // Update hidden input
+        const container = btn.parentElement;
+        const input = container.querySelector('input[type="hidden"]');
+        if (input) input.value = color;
+
+        // Update visual selection
+        container.querySelectorAll('.color-dot').forEach(dot => {
+            dot.classList.remove('ring-2', 'ring-[#1cb0f6]', 'shadow-md');
+            dot.classList.add('shadow-sm');
+        });
+        btn.classList.add('ring-2', 'ring-[#1cb0f6]', 'shadow-md');
+        btn.classList.remove('shadow-sm');
     },
 
     async handleUpdateClass(e) {
@@ -624,169 +634,6 @@ const Dashboard = {
             });
             if (res.ok) { this.elements.editClassModal.classList.add('hidden'); await this.loadInitialData(); }
         } catch (err) { console.error('Update error', err); }
-    },
-
-    openDeleteModal() {
-        this.elements.editClassModal.classList.add('hidden');
-        this.elements.deleteConfirmInput.value = '';
-        this.elements.deleteFinalBtn.disabled = true;
-        this.elements.deleteFinalBtn.classList.add('opacity-50', 'cursor-not-allowed');
-        this.elements.deleteClassModal.classList.remove('hidden');
-    },
-
-    async handleDeleteClass() {
-        if (this.elements.deleteConfirmInput.value.toLowerCase().trim() !== 'setuju') return;
-        
-        const courseId = this.state.editingCourseId;
-        const course = this.state.courses.find(c => c.id === courseId);
-        if (!course) return;
-
-        // Visual feedback on button
-        this.elements.deleteFinalBtn.disabled = true;
-        this.elements.deleteFinalBtn.innerHTML = `
-            <svg class="animate-spin h-5 w-5 mr-3 inline text-white" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            Memproses...
-        `;
-
-        // 1. Close Modal
-        this.elements.deleteClassModal.classList.add('hidden');
-        
-        // 2. Hide from UI immediately
-        this.state.pendingDeletes[courseId] = {
-            courseData: course,
-            timeout: setTimeout(() => this.finalizeDeletion(courseId), 30000)
-        };
-        this.renderCourses();
-        this.updateStats();
-
-        // 3. Show Undo Toast
-        this.showUndoToast(courseId, course.name);
-        
-        // Reset button state for next time
-        this.elements.deleteFinalBtn.innerHTML = 'Hapus Sekarang';
-        this.elements.deleteFinalBtn.disabled = true;
-    },
-
-    showUndoToast(courseId, courseName) {
-        const toastId = `toast-${courseId}`;
-        const toast = document.createElement('div');
-        toast.id = toastId;
-        toast.className = 'pointer-events-auto bg-gray-900/95 backdrop-blur-xl text-white p-8 rounded-[2.5rem] shadow-2xl border border-white/10 flex flex-col space-y-6 min-w-[480px] animate-slide-up-premium';
-        
-        toast.innerHTML = `
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-5 min-w-0">
-                    <div class="relative flex-shrink-0">
-                        <div class="w-14 h-14 bg-red-500/20 text-red-400 rounded-2xl flex items-center justify-center border border-red-500/20">
-                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                        </div>
-                        <div class="absolute -top-2 -right-2 w-8 h-8 bg-primary-600 rounded-full border-4 border-gray-900 flex items-center justify-center shadow-lg">
-                            <span id="countdown-${courseId}" class="text-[10px] font-black text-white">30</span>
-                        </div>
-                    </div>
-                    <div class="min-w-0">
-                        <p class="text-base font-black tracking-tight leading-none mb-1 truncate">Kelas Berhasil Dihapus</p>
-                        <p class="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] truncate">${courseName}</p>
-                    </div>
-                </div>
-                <button onclick="Dashboard.undoDelete(${courseId})" class="flex-shrink-0 ml-6 text-primary-500 hover:text-white font-black text-[11px] uppercase tracking-[0.25em] transition-all active:scale-90 underline underline-offset-8 decoration-2 decoration-primary-500/30 hover:decoration-white">
-                    Batal
-                </button>
-            </div>
-            <div class="space-y-3">
-                <div class="flex justify-between items-center text-[9px] font-black uppercase tracking-[0.2em] text-gray-500 px-1">
-                    <span class="flex items-center"><span class="w-1 h-1 bg-red-500 rounded-full mr-2 animate-pulse"></span>Proses Penghapusan Permanen</span>
-                    <span id="time-text-${courseId}" class="text-primary-500">30 Detik Tersisa</span>
-                </div>
-                <div class="h-1.5 bg-white/5 rounded-full overflow-hidden border border-white/5">
-                    <div id="progress-${courseId}" class="h-full bg-gradient-to-r from-primary-600 to-primary-400 rounded-full transition-all duration-100 ease-linear shadow-[0_0_15px_rgba(59,130,246,0.3)]" style="width: 100%"></div>
-                </div>
-            </div>
-        `;
-
-        this.elements.deleteToastContainer.appendChild(toast);
-
-        // Progress bar and countdown animation
-        let timeLeft = 30000;
-        const interval = 100;
-        const progressBar = document.getElementById(`progress-${courseId}`);
-        const countdownEl = document.getElementById(`countdown-${courseId}`);
-        const timeTextEl = document.getElementById(`time-text-${courseId}`);
-        
-        const timer = setInterval(() => {
-            timeLeft -= interval;
-            const secondsLeft = Math.ceil(timeLeft / 1000);
-            
-            if (countdownEl) countdownEl.textContent = secondsLeft > 0 ? secondsLeft : 0;
-            if (timeTextEl) timeTextEl.textContent = `${secondsLeft > 0 ? secondsLeft : 0} Detik Tersisa`;
-
-            if (timeLeft <= 0) {
-                clearInterval(timer);
-                if (progressBar) progressBar.style.width = '0%';
-            } else {
-                if (progressBar) progressBar.style.width = `${(timeLeft / 30000) * 100}%`;
-            }
-        }, interval);
-    },
-
-    undoDelete(courseId) {
-        const pending = this.state.pendingDeletes[courseId];
-        if (!pending) return;
-
-        // Clear timeout
-        clearTimeout(pending.timeout);
-        
-        // Remove from pending
-        delete this.state.pendingDeletes[courseId];
-        
-        // Remove Toast
-        const toast = document.getElementById(`toast-${courseId}`);
-        if (toast) {
-            toast.classList.add('animate-slide-down-premium', 'opacity-0');
-            setTimeout(() => toast.remove(), 500);
-        }
-
-        // Restore UI
-        this.renderCourses();
-        this.updateStats();
-        
-        // Success feedback
-        const undoNotice = document.createElement('div');
-        undoNotice.className = 'fixed top-8 left-1/2 -translate-x-1/2 z-[200] bg-green-600 text-white px-8 py-4 rounded-2xl font-black text-sm shadow-2xl animate-toast-float';
-        undoNotice.textContent = 'Penghapusan Kelas Dibatalkan';
-        document.body.appendChild(undoNotice);
-        setTimeout(() => undoNotice.remove(), 3000);
-    },
-
-    async finalizeDeletion(courseId) {
-        try {
-            const res = await fetch(`/api/courses/${courseId}`, { method: 'DELETE' });
-            if (res.ok) {
-                // Remove from pending and permanent state
-                delete this.state.pendingDeletes[courseId];
-                this.state.courses = this.state.courses.filter(c => c.id !== courseId);
-                
-                // Final Toast Removal
-                const toast = document.getElementById(`toast-${courseId}`);
-                if (toast) {
-                    toast.classList.add('opacity-0', 'scale-95');
-                    setTimeout(() => toast.remove(), 500);
-                }
-                
-                this.updateStats();
-            } else {
-                const data = await res.json();
-                throw new Error(data.message || 'Gagal menghapus kelas');
-            }
-        } catch (err) {
-            console.error('Finalize deletion failed', err);
-            // Restore on failure
-            this.undoDelete(courseId);
-            alert(`Gagal menghapus kelas: ${err.message}. Data telah dipulihkan.`);
-        }
     },
 
     async handleEnroll(e) {

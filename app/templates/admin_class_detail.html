@@ -1,0 +1,240 @@
+<!-- eslint-disable -->
+{% extends "base.html" %}
+
+{% block title %}{{ course.name }} - Manajemen Kelas{% endblock %}
+
+{% block body %}
+<div id="app-page" class="min-h-screen bg-white dark:bg-gray-950 flex">
+    {% include '_sidebar.html' %}
+
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden sidebar-transition">
+        <header class="bg-white dark:bg-gray-900 border-b-2 border-slate-100 dark:border-gray-800 h-20 flex items-center justify-between px-8 sticky top-0 z-30">
+            <div class="flex items-center gap-4 min-w-0">
+                <a href="{{ url_for('admin.classes_management') }}" class="text-[#afafaf] hover:text-[#4b4b4b] font-black">←</a>
+                <h2 id="class-title" class="text-2xl font-black text-[#4b4b4b] dark:text-white tracking-tight truncate">{{ course.name }}</h2>
+                <span class="px-3 py-1 bg-[#f7f7f7] text-[#afafaf] rounded-xl text-[10px] font-mono font-black">{{ course.class_code }}</span>
+            </div>
+            <div class="flex space-x-3">
+                <button onclick="toggleModal('rename-class-modal', true)" class="btn-duo btn-duo-ghost h-12 text-xs">EDIT NAMA</button>
+                <button onclick="toggleModal('import-modal', true)" class="btn-duo btn-duo-blue h-12 text-xs">IMPOR SISWA</button>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-8 sm:p-12">
+            <div class="max-w-5xl mx-auto space-y-6 animate-fade-in">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-2 h-8 bg-[#1cb0f6] rounded-full"></div>
+                        <h3 class="text-xl font-black text-[#4b4b4b] dark:text-white">Daftar Siswa</h3>
+                    </div>
+                    <span class="px-5 py-2 bg-[#ddf4ff] text-[#1cb0f6] rounded-2xl text-[11px] font-black uppercase tracking-widest">{{ students|length }} SISWA</span>
+                </div>
+
+                <div class="card-duo p-0 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-[#f7f7f7] dark:bg-gray-900 border-b-2 border-slate-100 dark:border-gray-800">
+                                <tr>
+                                    <th class="px-6 py-5 text-left text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em]">No</th>
+                                    <th class="px-6 py-5 text-left text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em]">NIS</th>
+                                    <th class="px-6 py-5 text-left text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em]">Nama Lengkap</th>
+                                    <th class="px-6 py-5 text-left text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em]">L/P</th>
+                                    <th class="px-6 py-5 text-right text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em]">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y-2 divide-slate-50 dark:divide-gray-800">
+                                {% for s in students %}
+                                <tr class="hover:bg-slate-50/50 dark:hover:bg-gray-800/30 transition-all">
+                                    <td class="px-6 py-5 text-sm font-bold text-[#afafaf]">{{ loop.index }}</td>
+                                    <td class="px-6 py-5 text-sm font-mono font-black text-[#4b4b4b] dark:text-white">{{ s.nis or '-' }}</td>
+                                    <td class="px-6 py-5 text-sm font-black text-[#4b4b4b] dark:text-white">{{ s.name }}</td>
+                                    <td class="px-6 py-5 text-sm font-bold text-[#afafaf]">
+                                        {% if s.gender == 'L' %}Laki-laki{% elif s.gender == 'P' %}Perempuan{% else %}-{% endif %}
+                                    </td>
+                                    <td class="px-6 py-5 text-right">
+                                        <button onclick="openTransfer({{ s.id }}, {{ s.name | tojson }})"
+                                                class="btn-duo btn-duo-ghost h-10 text-[11px] px-4">MUTASI</button>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr><td colspan="5" class="px-6 py-12 text-center text-sm font-bold text-[#afafaf]">Belum ada siswa. Klik <span class="text-[#1cb0f6] font-black">IMPOR SISWA</span>.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- MODAL EDIT NAMA KELAS -->
+<div id="rename-class-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="card-duo w-full max-w-md overflow-hidden animate-slide-up p-0 border-none shadow-2xl">
+        <form id="rename-class-form">
+            <div class="bg-[#ff9600] px-8 py-8 text-white">
+                <h3 class="text-2xl font-black">Edit Nama Kelas</h3>
+            </div>
+            <div class="p-8 space-y-6">
+                <input type="text" id="rename-input" value="{{ course.name }}"
+                    class="w-full px-6 py-4 bg-[#f7f7f7] border-2 border-[#e5e5e5] rounded-2xl focus:border-[#ff9600] outline-none font-black text-[#4b4b4b]" required>
+                <div id="rename-error" class="hidden p-4 bg-red-50 text-[#ff4b4b] rounded-2xl text-xs font-black text-center"></div>
+            </div>
+            <div class="px-8 pb-8 flex flex-col gap-3">
+                <button type="submit" class="btn-duo btn-duo-blue h-14 text-sm !bg-[#ff9600] !shadow-[#e08600]">SIMPAN</button>
+                <button type="button" onclick="toggleModal('rename-class-modal', false)" class="btn-duo btn-duo-ghost h-14 text-sm">BATAL</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL MUTASI -->
+<div id="transfer-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="card-duo w-full max-w-md overflow-hidden animate-slide-up p-0 border-none shadow-2xl">
+        <form id="transfer-form">
+            <div class="bg-[#ce82ff] px-8 py-8 text-white">
+                <h3 class="text-2xl font-black">Mutasi Siswa</h3>
+                <p id="transfer-name" class="text-white/80 text-sm font-bold mt-1"></p>
+            </div>
+            <div class="p-8 space-y-6">
+                <div>
+                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2">Pindahkan ke Kelas</label>
+                    <select id="transfer-target" class="w-full px-5 py-4 bg-[#f7f7f7] border-2 border-[#e5e5e5] rounded-2xl font-black text-[#4b4b4b] outline-none focus:border-[#ce82ff]">
+                        {% for c in other_classes %}
+                        <option value="{{ c.id }}">{{ c.name }}</option>
+                        {% endfor %}
+                    </select>
+                    {% if not other_classes %}
+                    <p class="text-xs text-amber-600 mt-2 font-bold">Belum ada kelas lain sebagai tujuan mutasi.</p>
+                    {% endif %}
+                </div>
+                <div id="transfer-error" class="hidden p-4 bg-red-50 text-[#ff4b4b] rounded-2xl text-xs font-black text-center"></div>
+            </div>
+            <div class="px-8 pb-8 flex flex-col gap-3">
+                <button type="submit" class="btn-duo btn-duo-purple h-14 text-sm">PINDAHKAN</button>
+                <button type="button" onclick="toggleModal('transfer-modal', false)" class="btn-duo btn-duo-ghost h-14 text-sm">BATAL</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL IMPOR SISWA (kelas ini) -->
+<div id="import-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="card-duo w-full max-w-2xl overflow-hidden animate-slide-up p-0 border-none shadow-2xl">
+        <form id="bulk-import-form">
+            <div class="bg-[#1cb0f6] px-8 py-8 text-white">
+                <h3 class="text-2xl font-black">Impor Siswa ke {{ course.name }}</h3>
+                <p class="text-white/80 text-sm font-bold mt-1">Tempel data dari Excel. Siswa langsung masuk ke kelas ini.</p>
+            </div>
+            <div class="p-8 space-y-6">
+                <div id="import-controls" class="space-y-5">
+                    <div class="p-4 bg-[#e0f2fe] rounded-2xl text-xs font-bold text-[#0369a1] leading-relaxed">
+                        Urutan kolom: <b>NIS</b> · <b>Nama Lengkap</b> · <b>Jenis Kelamin</b> (L/P). Kolom <b>Kelas</b> opsional — kosongkan agar masuk ke kelas <b>{{ course.name }}</b>. Login siswa pakai <b>NIS</b>, password default <b>passwd</b>.
+                    </div>
+                    <textarea id="raw-data" rows="10"
+                        placeholder="12345&#9;Budi Santoso&#9;L&#10;12346&#9;Siti Aminah&#9;P"
+                        class="w-full px-5 py-4 bg-[#f7f7f7] border-2 border-[#e5e5e5] rounded-2xl font-mono text-sm text-[#4b4b4b] outline-none focus:border-[#1cb0f6]"></textarea>
+                </div>
+                <div id="import-results" class="hidden space-y-4">
+                    <div class="p-4 bg-[#dcfce7] border-2 border-[#58cc02]/20 rounded-2xl">
+                        <p id="import-summary" class="text-sm font-black text-[#58cc02] text-center"></p>
+                    </div>
+                    <div class="max-h-60 overflow-y-auto bg-gray-900 p-5 rounded-2xl font-mono text-[11px] text-[#58cc02]">
+                        <table class="w-full"><tbody id="results-body"></tbody></table>
+                    </div>
+                    <button type="button" onclick="window.location.reload()" class="btn-duo btn-duo-primary w-full h-14 text-sm">SELESAI &amp; REFRESH</button>
+                </div>
+                <div id="import-error" class="hidden p-4 bg-red-50 text-[#ff4b4b] rounded-2xl text-xs font-black text-center"></div>
+            </div>
+            <div id="import-footer" class="px-8 pb-8 flex flex-col gap-3">
+                <button type="submit" class="btn-duo btn-duo-blue h-14 text-sm">PROSES IMPOR</button>
+                <button type="button" onclick="toggleModal('import-modal', false)" class="btn-duo btn-duo-ghost h-14 text-sm">BATAL</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+const COURSE_ID = {{ course.id }};
+
+function openTransfer(studentId, name) {
+    document.getElementById('transfer-name').innerText = name;
+    document.getElementById('transfer-form').dataset.studentId = studentId;
+    document.getElementById('transfer-error').classList.add('hidden');
+    toggleModal('transfer-modal', true);
+}
+
+(function () {
+    // Edit nama kelas
+    document.getElementById('rename-class-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const err = document.getElementById('rename-error');
+        const name = document.getElementById('rename-input').value.trim();
+        err.classList.add('hidden');
+        const res = await fetch(`/admin/api/classes/${COURSE_ID}`, {
+            method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name })
+        });
+        const data = await res.json();
+        if (data.success) { window.location.reload(); }
+        else { err.innerText = data.message; err.classList.remove('hidden'); }
+    });
+
+    // Mutasi siswa
+    document.getElementById('transfer-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const err = document.getElementById('transfer-error');
+        const studentId = e.target.dataset.studentId;
+        const toId = document.getElementById('transfer-target').value;
+        if (!toId) { err.innerText = 'Pilih kelas tujuan.'; err.classList.remove('hidden'); return; }
+        err.classList.add('hidden');
+        const res = await fetch(`/admin/api/students/${studentId}/transfer`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ from_course_id: COURSE_ID, to_course_id: parseInt(toId, 10) })
+        });
+        const data = await res.json();
+        if (data.success) { window.location.reload(); }
+        else { err.innerText = data.message; err.classList.remove('hidden'); }
+    });
+
+    // Impor siswa ke kelas ini
+    document.getElementById('bulk-import-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = e.target.querySelector('button[type="submit"]');
+        const err = document.getElementById('import-error');
+        const raw = document.getElementById('raw-data').value;
+        if (!raw.trim()) { err.innerText = 'Data masih kosong.'; err.classList.remove('hidden'); return; }
+        btn.disabled = true; btn.innerText = 'Memproses...'; err.classList.add('hidden');
+        try {
+            const res = await fetch('/admin/api/students/bulk-import', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ raw_data: raw, course_id: COURSE_ID })
+            });
+            const data = await res.json();
+            if (data.success) {
+                document.getElementById('import-summary').innerText =
+                    `${data.created_students} siswa baru · ${data.enrolled} didaftarkan · password: ${data.default_password}`;
+                document.getElementById('results-body').innerHTML = data.results.map(u => `
+                    <tr class="border-b border-gray-800">
+                        <td class="py-2 pr-4">${u.nis}</td>
+                        <td class="py-2 pr-4 text-white">${u.name}</td>
+                        <td class="py-2 pr-4">${u.kelas}</td>
+                        <td class="py-2 font-bold">${u.status}</td>
+                    </tr>`).join('');
+                document.getElementById('import-controls').classList.add('hidden');
+                document.getElementById('import-footer').classList.add('hidden');
+                document.getElementById('import-results').classList.remove('hidden');
+            } else {
+                err.innerText = data.message; err.classList.remove('hidden');
+                btn.disabled = false; btn.innerText = 'Proses Impor';
+            }
+        } catch (e) {
+            err.innerText = 'Terjadi kesalahan koneksi.'; err.classList.remove('hidden');
+            btn.disabled = false; btn.innerText = 'Proses Impor';
+        }
+    });
+})();
+</script>
+{% endblock %}

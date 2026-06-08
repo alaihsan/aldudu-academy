@@ -9,7 +9,7 @@ from app.models import (
     Question, Option, QuestionType,
     QuizSubmission, Answer
 )
-from app.models.rasch import QuestionBloomTaxonomy, BloomLevel
+from app.models.quiz import QuestionBloomTaxonomy, BloomLevel
 from app.helpers import matching_pair, sanitize_text, sanitize_rich_text
 from app.services.quiz_docx_import_service import create_sample_docx_bytes, import_questions_from_docx
 import datetime
@@ -819,24 +819,6 @@ def api_submit_quiz(quiz_id):
         db.session.rollback()
         logger.error(f"[WARN] Gradebook sync failed for quiz {quiz.id}: {e}", exc_info=True)
 
-    # ── Auto-trigger Rasch analysis threshold check ───────────────────
-    try:
-        from app.services.rasch_threshold_service import RaschThresholdService
-
-        threshold_service = RaschThresholdService()
-        threshold_met, message = threshold_service.check_and_trigger(
-            quiz_id=quiz.id,
-            submission_id=submission.id,
-            check_type='auto'
-        )
-
-        if threshold_met:
-            logger.info(f"[INFO] Rasch analysis triggered for quiz {quiz.id}: {message}")
-    except Exception as e:
-        # Don't fail submission if Rasch check fails
-        logger.warning(f"[WARN] Rasch threshold check failed: {e}", exc_info=True)
-    # ───────────────────────────────────────────────────────────────────
-    
     db.session.commit()
 
     return jsonify({'success': True, 'score': submission.score, 'message': 'Kuis berhasil dikirim.'})

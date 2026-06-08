@@ -2,22 +2,45 @@
 Test script untuk simulasi koneksi MySQL dengan password
 """
 
+import os
 import pymysql
+from dotenv import load_dotenv
 
-# Test dengan password yang Anda berikan
+# Load .env if exists
+load_dotenv()
+
+# Get config from env or defaults
+db_url = os.environ.get('DATABASE_URL', '')
+if db_url.startswith('mysql+pymysql://'):
+    # Parse URL
+    db_url = db_url.replace('mysql+pymysql://', '')
+    parts = db_url.split('/')
+    database = parts[1] if len(parts) > 1 else 'aldudu_academy'
+    auth_host = parts[0].split('@')
+    host_port = auth_host[1].split(':') if len(auth_host) > 1 else ['localhost', '3306']
+    host = host_port[0]
+    user_pass = auth_host[0].split(':')
+    user = user_pass[0]
+    password = user_pass[1] if len(user_pass) > 1 else ''
+else:
+    host = os.environ.get('MYSQL_HOST', 'localhost')
+    user = os.environ.get('MYSQL_USER', 'root')
+    password = os.environ.get('MYSQL_PASSWORD', 'passwd')
+    database = os.environ.get('MYSQL_DATABASE', 'aldudu_academy')
+
 print("Testing MySQL connection...")
-print("Host: localhost")
-print("User: root")
-print("Password: passwd")
-print("Database: aldudu_academy")
+print(f"Host: {host}")
+print(f"User: {user}")
+print(f"Password: {'*' * len(password)}")
+print(f"Database: {database}")
 print()
 
 try:
     connection = pymysql.connect(
-        host='localhost',
-        user='root',
-        password='passwd',  # Password yang Anda berikan
-        database='aldudu_academy',
+        host=host,
+        user=user,
+        password=password,
+        database=database,
         charset='utf8mb4',
         cursorclass=pymysql.cursors.DictCursor,
         autocommit=False
@@ -35,19 +58,7 @@ try:
     cursor.execute("SELECT VERSION() as mysql_version")
     result = cursor.fetchone()
     print(f"MySQL version: {result['mysql_version']}")
-    
-    cursor.execute("SHOW TABLES LIKE 'rasch_%'")
-    tables = cursor.fetchall()
-    print(f"\nRasch tables found: {len(tables)}")
-    for table in tables:
-        print(f"  - {table['Tables_in_aldudu_academy (rasch_%)']}")
-    
-    cursor.execute("SHOW COLUMNS FROM grade_items LIKE '%rasch%'")
-    columns = cursor.fetchall()
-    print(f"\nGrade items Rasch columns: {len(columns)}")
-    for col in columns:
-        print(f"  - {col['Field']} ({col['Type']})")
-    
+
     cursor.close()
     connection.close()
     

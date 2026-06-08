@@ -1,0 +1,74 @@
+<!-- eslint-disable -->
+{% extends "base.html" %}
+
+{% block title %}Manajemen Kelas - Aldudu Academy{% endblock %}
+
+{% block body %}
+<div id="app-page" class="min-h-screen bg-white dark:bg-gray-950 flex">
+    {% include '_sidebar.html' %}
+
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden sidebar-transition">
+        <header class="bg-white dark:bg-gray-900 border-b-2 border-slate-100 dark:border-gray-800 h-20 flex items-center justify-between px-8 sticky top-0 z-30">
+            <h2 class="text-2xl font-black text-[#4b4b4b] dark:text-white tracking-tight">Manajemen Kelas</h2>
+            <button onclick="toggleModal('create-class-modal', true)" class="btn-duo btn-duo-green h-12 text-xs">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                <span>BUAT KELAS</span>
+            </button>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-8 sm:p-12">
+            <div class="max-w-7xl mx-auto animate-fade-in">
+                {% if courses %}
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                    {% for course in courses %}
+                    <a href="{{ url_for('admin.class_detail', course_id=course.id) }}"
+                       class="card-duo p-6 flex items-center justify-between gap-4 hover:-translate-y-1 transition-transform">
+                        <div class="min-w-0">
+                            <p class="text-lg font-black text-[#4b4b4b] dark:text-white truncate">{{ course.name }}</p>
+                            <p class="text-xs font-bold text-[#afafaf] mt-1">Kode: <span class="font-mono">{{ course.class_code }}</span></p>
+                        </div>
+                        <span class="shrink-0 inline-flex flex-col items-center px-4 py-2 bg-[#ddf4ff] text-[#1cb0f6] rounded-2xl">
+                            <span class="text-lg font-black leading-none">{{ course.students|length }}</span>
+                            <span class="text-[9px] font-black uppercase tracking-widest mt-0.5">Siswa</span>
+                        </span>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="card-duo p-12 text-center">
+                    <p class="text-sm font-bold text-[#afafaf]">Belum ada kelas. Klik <span class="text-[#58cc02] font-black">BUAT KELAS</span> untuk menambahkan.</p>
+                </div>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- MODAL BUAT KELAS -->
+<div id="create-class-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="card-duo w-full max-w-md overflow-hidden animate-slide-up p-0 border-none shadow-2xl">
+        <form id="create-class-form">
+            <div class="bg-[#58cc02] px-8 py-8 text-white">
+                <h3 class="text-2xl font-black">Buat Kelas</h3>
+                <p class="text-white/80 text-sm font-bold mt-1">Tambah kelas baru untuk sekolah Anda.</p>
+            </div>
+            <div class="p-8 space-y-6">
+                <div>
+                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2">Nama Kelas</label>
+                    <input type="text" id="class-name-input" name="name" placeholder="Contoh: 7A, VIII-B, IX IPA 1"
+                        class="w-full px-6 py-4 bg-[#f7f7f7] border-2 border-[#e5e5e5] rounded-2xl focus:border-[#58cc02] outline-none font-black text-[#4b4b4b]" required>
+                </div>
+                <div id="create-class-error" class="hidden p-4 bg-red-50 text-[#ff4b4b] rounded-2xl text-xs font-black text-center"></div>
+            </div>
+            <div class="px-8 pb-8 flex flex-col gap-3">
+                <button type="submit" class="btn-duo btn-duo-green h-14 text-sm">SIMPAN KELAS</button>
+                <button type="button" onclick="toggleModal('create-class-modal', false)" class="btn-duo btn-duo-ghost h-14 text-sm">BATAL</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/admin.js') }}?v={{ asset_hash('js/admin.js') }}"></script>
+{% endblock %}

@@ -31,8 +31,11 @@ def create_app(test_config: Optional[Dict] = None) -> Flask:
     # Override with instance config if present
     app.config.from_pyfile('config.py', silent=True)
 
-    # Override with env vars
-    secret = os.environ.get('FLASK_SECRET_KEY')
+    # Override with env vars (dijalankan SETELAH load_dotenv, jadi nilai .env
+    # pasti terbaca). .env memakai nama SECRET_KEY; FLASK_SECRET_KEY sbg fallback.
+    # Ini penting agar semua worker gunicorn memakai SECRET_KEY yang sama,
+    # supaya sesi login tidak hilang saat pindah worker.
+    secret = os.environ.get('SECRET_KEY') or os.environ.get('FLASK_SECRET_KEY')
     if secret:
         app.config['SECRET_KEY'] = secret
 

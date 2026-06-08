@@ -75,15 +75,20 @@ def api_session():
 @limiter.limit("10 per minute; 50 per hour")
 def api_login():
     data = request.get_json() or {}
-    email = data.get('email')
+    identifier = (data.get('email') or '').strip()
     password = data.get('password')
 
-    if not email or not password or not is_valid_email(email):
-        return jsonify({'success': False, 'message': 'Email atau password tidak valid'}), 400
+    if not identifier or not password:
+        return jsonify({'success': False, 'message': 'Email/NIS atau password tidak valid'}), 400
 
-    user = User.query.filter_by(email=email.strip()).first()
+    # Siswa login pakai NIS, lainnya pakai email
+    if is_valid_email(identifier):
+        user = User.query.filter_by(email=identifier).first()
+    else:
+        user = User.query.filter_by(nis=identifier).first()
+
     if not user:
-        return jsonify({'success': False, 'message': 'Email tidak terdaftar', 'field': 'email'}), 401
+        return jsonify({'success': False, 'message': 'Email/NIS tidak terdaftar', 'field': 'email'}), 401
     if not user.check_password(password):
         return jsonify({'success': False, 'message': 'Password salah', 'field': 'password'}), 401
 

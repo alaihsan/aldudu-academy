@@ -16,7 +16,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from app import create_app, db
-from app.models import User, UserRole, School
+from app.models import User, UserRole, School, SchoolStatus
 
 app = create_app()
 
@@ -31,7 +31,7 @@ with app.app_context():
             slug='alsen22',
             email='info@alsen22.sch.id',
             admin_email='admin@alsen22.sch.id',
-            status='active'
+            status=SchoolStatus.ACTIVE
         )
         db.session.add(school)
         db.session.commit()

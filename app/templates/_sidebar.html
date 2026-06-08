@@ -1,143 +1,125 @@
 <!-- Sidebar Partial -->
-<aside id="main-sidebar" class="w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex max-lg:hidden flex-col sticky top-0 h-screen sidebar-transition z-40">
-    <div class="p-6 border-b border-gray-100 dark:border-gray-800 relative">
-        <a href="{{ url_for('main.dashboard') }}" class="flex items-center space-x-3 group">
-            <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center shadow-lg shadow-primary-200 dark:shadow-primary-900/50 flex-shrink-0 group-hover:scale-105 transition-transform">
-                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+<aside id="main-sidebar" class="w-72 bg-white dark:bg-gray-950 border-r-2 border-slate-200 dark:border-gray-800 flex max-lg:hidden flex-col sticky top-0 h-screen sidebar-transition z-40">
+    <div class="p-8">
+        <a href="{{ url_for('main.dashboard') }}" class="flex items-center gap-3 group">
+            <div class="w-12 h-12 bg-[#58cc02] rounded-2xl flex items-center justify-center shadow-[0_4px_0_#46a302] group-hover:translate-y-[2px] group-hover:shadow-[0_2px_0_#46a302] transition-all duration-150">
+                <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
                 </svg>
             </div>
-            <span class="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-gray-100 dark:to-gray-300 bg-clip-text text-transparent sidebar-logo-text">Aldudu</span>
+            <span class="text-2xl font-black text-[#4b4b4b] dark:text-white tracking-tight sidebar-logo-text">Aldudu</span>
         </a>
-
-        <!-- Sidebar Toggle Button (Hide/Show) -->
-        <button class="sidebar-toggle-btn absolute -right-4 top-1/2 -translate-y-1/2 hidden lg:flex w-8 h-8 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full items-center justify-center shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-all" title="Toggle Sidebar">
-            <svg class="w-4 h-4 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
-            </svg>
-        </button>
     </div>
 
-    <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+    <nav class="flex-1 px-4 py-2 space-y-2 overflow-y-auto">
         <!-- Home Dashboard Link -->
-        <a href="{{ url_for('main.dashboard') }}" class="flex items-center px-4 py-3 rounded-xl transition-all duration-200 {% if request.endpoint == 'main.dashboard' %}bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 font-semibold shadow-sm shadow-primary-100{% else %}text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:translate-x-1{% endif %}" hx-boost="false">
-            <svg class="w-5 h-5 flex-shrink-0 {% if request.endpoint == 'main.dashboard' %}text-primary-600 dark:text-primary-400{% else %}text-gray-400 dark:text-gray-500{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-            </svg>
-            <span class="sidebar-hide ml-3 whitespace-nowrap font-medium">Dashboard</span>
+        <a href="{{ url_for('main.dashboard') }}" class="nav-link-duo {% if request.endpoint == 'main.dashboard' %}active{% endif %}">
+            <div class="nav-icon-duo bg-[#1cb0f6]">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                </svg>
+            </div>
+            Dashboard
         </a>
 
         {% if current_user.is_authenticated and current_user.role.value in ['admin', 'super_admin'] %}
-        <div class="pt-4 space-y-1">
-            <p class="px-4 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 sidebar-hide">Panel Control</p>
-            <a href="{{ url_for('admin.dashboard') }}" class="flex items-center px-4 py-3 rounded-xl transition-all {% if 'admin.dashboard' in request.endpoint %}bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 font-semibold{% else %}text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800{% endif %}">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z"/></svg>
-                <span class="sidebar-hide ml-3 whitespace-nowrap">Admin Panel</span>
+        <div class="pt-6">
+            <p class="px-4 pb-2 text-[11px] font-black text-[#afafaf] uppercase tracking-[0.15em] sidebar-hide">Panel Control</p>
+            <a href="{{ url_for('admin.dashboard') }}" class="nav-link-duo {% if 'admin.dashboard' in request.endpoint %}active{% endif %}">
+                <div class="nav-icon-duo bg-[#2b70c9]">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z"/></svg>
+                </div>
+                Admin Panel
             </a>
-            <a href="{{ url_for('admin.user_management') }}" class="flex items-center px-4 py-3 rounded-xl transition-all {% if 'admin.user_management' in request.endpoint %}bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 font-semibold{% else %}text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800{% endif %}">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-                <span class="sidebar-hide ml-3 whitespace-nowrap">Manajemen User</span>
+            <a href="{{ url_for('admin.user_management') }}" class="nav-link-duo {% if 'admin.user_management' in request.endpoint %}active{% endif %}">
+                <div class="nav-icon-duo bg-[#ff9600]">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                </div>
+                Manajemen User
+            </a>
+            <a href="{{ url_for('admin.classes_management') }}" class="nav-link-duo {% if request.endpoint in ['admin.classes_management', 'admin.class_detail'] %}active{% endif %}">
+                <div class="nav-icon-duo bg-[#58cc02]">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                </div>
+                Manajemen Kelas
             </a>
         </div>
         {% endif %}
 
         {% if course %}
-        <div class="pt-4 space-y-1">
-            <p class="px-4 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 sidebar-hide">Navigasi Kelas</p>
+        <div class="pt-6">
+            <p class="px-4 pb-2 text-[11px] font-black text-[#afafaf] uppercase tracking-[0.15em] sidebar-hide">Navigasi Kelas</p>
 
             <a href="{{ url_for('main.course_detail', course_id=course.id) }}"
-               class="nav-link-course flex items-center px-4 py-3 rounded-xl transition-all {% if request.endpoint == 'main.course_detail' %}active{% endif %}">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                </svg>
-                <span class="sidebar-hide ml-3 whitespace-nowrap">Materi & Tugas</span>
+               class="nav-link-duo {% if request.endpoint == 'main.course_detail' %}active{% endif %}">
+                <div class="nav-icon-duo bg-[#58cc02]">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                </div>
+                Materi & Tugas
             </a>
 
             {% if current_user.role.value in ['guru', 'admin', 'super_admin'] %}
-            <a href="{{ url_for('main.course_detail', course_id=course.id) }}#kbm-section"
-               onclick="activateKbmTab(); return false;"
-               class="nav-link-kbm flex items-center px-4 py-3 rounded-xl transition-all">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                </svg>
-                <span class="sidebar-hide ml-3 whitespace-nowrap">Catatan KBM</span>
-            </a>
-
             <a href="{{ url_for('gradebook.course_gradebook', course_id=course.id) }}"
-               class="nav-link-gradebook flex items-center px-4 py-3 rounded-xl transition-all {% if 'gradebook' in request.endpoint|default('') %}active{% endif %}">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                </svg>
-                <span class="sidebar-hide ml-3 whitespace-nowrap">Buku Nilai</span>
+               class="nav-link-duo {% if 'gradebook' in request.endpoint|default('') %}active{% endif %}">
+                <div class="nav-icon-duo bg-[#ff9600]">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                </div>
+                Buku Nilai
             </a>
 
-            <!-- Evaluasi Test (Labs) Menu -->
-            <a href="{{ url_for('evaluation.course_detail', course_id=course.id) }}"
-               class="nav-link-evaluation flex items-center px-4 py-3 rounded-xl transition-all {% if 'evaluation' in request.endpoint|default('') %}bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 font-semibold{% else %}text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800{% endif %}">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                </svg>
-                <span class="sidebar-hide ml-3 whitespace-nowrap">🧪 Evaluasi Test (Labs)</span>
-            </a>
-
-            <a href="{{ url_for('main.course_archives', course_id=course.id) }}"
-               class="nav-link-archives flex items-center px-4 py-3 rounded-xl transition-all {% if 'course_archives' in request.endpoint|default('') %}active{% endif %}">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
-                </svg>
-                <span class="sidebar-hide ml-3 whitespace-nowrap">Arsip Kelas</span>
-            </a>
             {% endif %}
 
-            {% if current_user.role.value == 'murid' %}
             <a href="{{ url_for('main.course_archives', course_id=course.id) }}"
-               class="nav-link-archives flex items-center px-4 py-3 rounded-xl transition-all {% if 'course_archives' in request.endpoint|default('') %}active{% endif %}">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
-                </svg>
-                <span class="sidebar-hide ml-3 whitespace-nowrap">Arsip Kelas</span>
+               class="nav-link-duo {% if 'course_archives' in request.endpoint|default('') %}active{% endif %}">
+                <div class="nav-icon-duo bg-[#afafaf]">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                    </svg>
+                </div>
+                Arsip Kelas
             </a>
-            <a href="{{ url_for('gradebook.my_grades_index') }}"
-               class="nav-link-grades flex items-center px-4 py-3 rounded-xl transition-all {% if request.endpoint == 'gradebook.my_grades_index' or request.endpoint == 'gradebook.my_grades' %}active bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 font-semibold{% else %}text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800{% endif %}">
-                <svg class="w-5 h-5 flex-shrink-0 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                </svg>
-                <span class="sidebar-hide ml-3 whitespace-nowrap">Nilai Saya</span>
-            </a>
-            {% endif %}
         </div>
         {% endif %}
 
         <!-- Bantuan & Masalah -->
-        <div class="pt-4 space-y-1">
-            <p class="px-4 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 sidebar-hide">Bantuan & Masalah</p>
-            <a href="{{ url_for('main.issues') }}" class="flex items-center px-4 py-3 rounded-xl transition-all duration-200 {% if request.endpoint == 'main.issues' %}bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 font-semibold shadow-sm shadow-primary-100{% else %}text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:translate-x-1{% endif %}">
-                <svg class="w-5 h-5 flex-shrink-0 {% if request.endpoint == 'main.issues' %}text-primary-600 dark:text-primary-400{% else %}text-gray-400 dark:text-gray-500{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                </svg>
-                <span class="sidebar-hide ml-3 whitespace-nowrap font-medium">Manajemen Masalah</span>
+        <div class="pt-6">
+            <p class="px-4 pb-2 text-[11px] font-black text-[#afafaf] uppercase tracking-[0.15em] sidebar-hide">Bantuan</p>
+            <a href="{{ url_for('main.issues') }}" class="nav-link-duo {% if request.endpoint == 'main.issues' %}active{% endif %}">
+                <div class="nav-icon-duo bg-[#ff4b4b]">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                </div>
+                Laporan Masalah
             </a>
         </div>
     </nav>
 
-    <!-- User Profile Section with Settings Gear -->
-    <div class="p-4 border-t border-gray-100 dark:border-gray-800">
-        <div class="flex items-center space-x-3 p-3">
-            <div class="w-10 h-10 rounded-xl bg-primary-600 text-white flex items-center justify-center font-bold text-lg shadow-lg shadow-primary-100 dark:shadow-primary-900/50 flex-shrink-0">
-                {{ current_user.name[0] | upper if current_user.is_authenticated else 'A' }}
+    <!-- User Profile Section -->
+    <div class="p-6 border-t-2 border-slate-100 dark:border-gray-800">
+        <div class="flex items-center gap-3 mb-4 p-2 rounded-2xl bg-slate-50 dark:bg-gray-800/50">
+            <div class="w-12 h-12 rounded-xl bg-primary-100 dark:bg-primary-900/30 border-2 border-primary-200 dark:border-primary-800 flex items-center justify-center">
+                <span class="text-primary-600 dark:text-primary-400 font-black text-lg">{{ current_user.name[0]|upper if current_user.is_authenticated else 'U' }}</span>
             </div>
-            <div class="flex-1 min-w-0 text-left">
-                <p class="text-sm font-bold text-gray-900 dark:text-gray-100 truncate">{{ current_user.name if current_user.is_authenticated else 'User' }}</p>
-                <p class="text-[10px] text-gray-400 dark:text-gray-500 uppercase font-black tracking-widest leading-none">{{ current_user.role.value if current_user.is_authenticated else 'Role' }}</p>
+            <div class="flex-1 min-w-0">
+                <p class="text-[#4b4b4b] dark:text-white text-sm font-black truncate">{{ current_user.name if current_user.is_authenticated else 'User' }}</p>
+                <p class="text-[#afafaf] text-[10px] font-black uppercase tracking-wider">{{ current_user.role.value if current_user.is_authenticated else 'Guest' }}</p>
             </div>
-            <!-- Settings Gear Icon -->
-            <a href="{{ url_for('main.settings') }}" class="p-2 rounded-xl text-gray-400 dark:text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/30 transition-all active:scale-90" title="Pengaturan">
+            <a href="{{ url_for('main.settings') }}" class="p-2 rounded-xl text-gray-400 hover:text-primary-600 hover:bg-white transition-all active:scale-90 shadow-sm border border-transparent hover:border-slate-200">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                 </svg>
             </a>
         </div>
+        <button onclick="showLogoutModal()" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-red-50 text-red-500 hover:bg-red-100 transition-all text-xs font-black uppercase tracking-wider border-2 border-red-100">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+            Keluar
+        </button>
     </div>
 </aside>
 
@@ -145,7 +127,7 @@
 <div id="logout-modal" class="fixed inset-0 bg-gray-900/60 dark:bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4 hidden">
     <div class="bg-white dark:bg-gray-800 rounded-[2.5rem] shadow-2xl dark:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] w-full max-w-sm overflow-hidden animate-slide-up border border-gray-100 dark:border-gray-700">
         <div class="p-10 text-center">
-            <div class="w-20 h-20 bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/50 dark:to-primary-800/50 text-primary-600 dark:text-primary-400 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-inner">
+            <div class="w-20 h-20 bg-primary-50 dark:bg-primary-900/50 text-primary-600 dark:text-primary-400 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-inner">
                 <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                 </svg>

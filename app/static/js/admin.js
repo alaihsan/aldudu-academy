@@ -10,7 +10,9 @@ const Admin = {
 
     cacheDOM() {
         this.importForm = document.getElementById('bulk-import-form');
+        this.classForm = document.getElementById('create-class-form');
         this.resetForm = document.getElementById('reset-password-form');
+        this.importControls = document.getElementById('import-controls');
         this.importResults = document.getElementById('import-results');
         this.resultsBody = document.getElementById('results-body');
         this.importFooter = document.getElementById('import-footer');
@@ -19,6 +21,9 @@ const Admin = {
     bindEvents() {
         if (this.importForm) {
             this.importForm.addEventListener('submit', (e) => this.handleBulkImport(e));
+        }
+        if (this.classForm) {
+            this.classForm.addEventListener('submit', (e) => this.handleCreateClass(e));
         }
         if (this.resetForm) {
             this.resetForm.addEventListener('submit', (e) => this.handleResetPassword(e));
@@ -30,36 +35,46 @@ const Admin = {
         const submitBtn = e.target.querySelector('button[type="submit"]');
         const errorDiv = document.getElementById('import-error');
         const rawData = document.getElementById('raw-data').value;
-        const role = document.getElementById('import-role').value;
 
-        if (!rawData.trim()) return;
+        if (!rawData.trim()) {
+            errorDiv.innerText = 'Data siswa masih kosong.';
+            errorDiv.classList.remove('hidden');
+            return;
+        }
 
         submitBtn.disabled = true;
         submitBtn.innerText = 'Memproses...';
         errorDiv.classList.add('hidden');
 
+        const targetClass = document.getElementById('import-target-class');
+        const payload = { raw_data: rawData };
+        if (targetClass && targetClass.value) payload.course_id = parseInt(targetClass.value, 10);
+
         try {
-            const res = await fetch('/admin/api/users/bulk-import', {
+            const res = await fetch('/admin/api/students/bulk-import', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ raw_data: rawData, role: role })
+                body: JSON.stringify(payload)
             });
             const data = await res.json();
 
             if (data.success) {
-                // Tampilkan hasil password
-                this.importForm.querySelector('textarea').classList.add('hidden');
-                this.importForm.querySelector('select').parentElement.classList.add('hidden');
-                this.importFooter.classList.add('hidden');
-                
+                const classesNote = data.created_classes.length
+                    ? ` · ${data.created_classes.length} kelas baru` : '';
+                document.getElementById('import-summary').innerText =
+                    `${data.created_students} siswa baru · ${data.enrolled} didaftarkan${classesNote} · password: ${data.default_password}`;
+
                 this.resultsBody.innerHTML = data.results.map(u => `
                     <tr class="border-b border-gray-800">
-                        <td class="py-2 pr-4">${u.name}</td>
-                        <td class="py-2 pr-4">${u.email}</td>
-                        <td class="py-2 text-white font-bold">${u.password}</td>
+                        <td class="py-2 pr-4">${u.nis}</td>
+                        <td class="py-2 pr-4 text-white">${u.name}</td>
+                        <td class="py-2 pr-4">${u.kelas}</td>
+                        <td class="py-2 font-bold">${u.status}</td>
                     </tr>
                 `).join('');
-                
+
+                this.importControls.classList.add('hidden');
+                this.importFooter.classList.add('hidden');
                 this.importResults.classList.remove('hidden');
             } else {
                 errorDiv.innerText = data.message;
@@ -72,6 +87,46 @@ const Admin = {
             errorDiv.classList.remove('hidden');
             submitBtn.disabled = false;
             submitBtn.innerText = 'Proses Impor';
+        }
+    },
+
+    async handleCreateClass(e) {
+        e.preventDefault();
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        const errorDiv = document.getElementById('create-class-error');
+        const name = document.getElementById('class-name-input').value.trim();
+
+        if (name.length < 2) {
+            errorDiv.innerText = 'Nama kelas minimal 2 karakter.';
+            errorDiv.classList.remove('hidden');
+            return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'Menyimpan...';
+        errorDiv.classList.add('hidden');
+
+        try {
+            const res = await fetch('/admin/api/classes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                window.location.reload();
+            } else {
+                errorDiv.innerText = data.message;
+                errorDiv.classList.remove('hidden');
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'Simpan Kelas';
+            }
+        } catch (err) {
+            errorDiv.innerText = 'Gagal membuat kelas.';
+            errorDiv.classList.remove('hidden');
+            submitBtn.disabled = false;
+            submitBtn.innerText = 'Simpan Kelas';
         }
     },
 

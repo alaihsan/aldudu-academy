@@ -7,7 +7,7 @@ from app.models import (
     QuizSubmission, Answer, Discussion, QuizStatus, ActivityLog,
     Assignment, AssignmentStatus
 )
-from app.models.rasch import BloomLevel
+from app.models.quiz import BloomLevel
 from app.helpers import get_jakarta_now
 from app.tenant import get_school_id_or_abort, verify_course_in_school
 

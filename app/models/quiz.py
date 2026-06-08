@@ -14,6 +14,15 @@ class QuestionType(enum.Enum):
     UPLOAD = 'upload'
     MATCHING = 'matching'
 
+class BloomLevel(enum.Enum):
+    """Bloom's Revised Taxonomy Levels"""
+    REMEMBER = 'remember'  # Mengingat informasi
+    UNDERSTAND = 'understand'  # Memahami konsep
+    APPLY = 'apply'  # Menerapkan konsep
+    ANALYZE = 'analyze'  # Menganalisis informasi
+    EVALUATE = 'evaluate'  # Mengevaluasi/menilai
+    CREATE = 'create'  # Mencipta/menghasilkan
+
 class QuizStatus(enum.Enum):
     DRAFT = 'draft'
     PUBLISHED = 'published'
@@ -73,7 +82,6 @@ class Quiz(db.Model):
     folder = relationship('ContentFolder', back_populates='quizzes', foreign_keys=[folder_id])
     questions: Mapped[List['Question']] = relationship('Question', back_populates='quiz', lazy='dynamic', cascade="all, delete-orphan")
     submissions: Mapped[List['QuizSubmission']] = relationship('QuizSubmission', back_populates='quiz', cascade='all, delete-orphan')
-    rasch_analyses: Mapped[List['RaschAnalysis']] = relationship('RaschAnalysis', back_populates='quiz', lazy='dynamic', cascade='all, delete-orphan')
 
 class Question(db.Model):
     __tablename__ = 'questions'
@@ -92,11 +100,62 @@ class Question(db.Model):
     quiz: Mapped[Quiz] = relationship('Quiz', back_populates='questions')
     options: Mapped[List['Option']] = relationship('Option', back_populates='question', lazy='dynamic', cascade='all, delete-orphan')
     bloom_taxonomy: Mapped[Optional['QuestionBloomTaxonomy']] = relationship(
-        'QuestionBloomTaxonomy', 
-        back_populates='question', 
-        uselist=False, 
+        'QuestionBloomTaxonomy',
+        back_populates='question',
+        uselist=False,
         cascade='all, delete-orphan'
     )
+
+class QuestionBloomTaxonomy(db.Model):
+    """
+    Mapping taksonomi Bloom (C1-C6) untuk setiap soal.
+
+    Digunakan untuk:
+    - Validitas konstruk: memastikan quiz mengukur berbagai level kognitif
+    - Reporting: distribusi soal per level Bloom
+    """
+    __tablename__ = 'question_bloom_taxonomy'
+
+    id: Mapped[int] = mapped_column(db.Integer, primary_key=True)
+    question_id: Mapped[int] = mapped_column(
+        db.Integer,
+        db.ForeignKey('questions.id', ondelete='CASCADE'),
+        nullable=False,
+        unique=True
+    )
+
+    # Bloom's Revised Taxonomy
+    bloom_level: Mapped[str] = mapped_column(db.Enum(BloomLevel), nullable=False)
+    bloom_description: Mapped[Optional[str]] = mapped_column(db.Text, nullable=True)
+
+    # Verification
+    verified_by: Mapped[Optional[int]] = mapped_column(
+        db.Integer, db.ForeignKey('users.id'), nullable=True
+    )
+    verified_at: Mapped[Optional[datetime.datetime]] = mapped_column(db.DateTime, nullable=True)
+
+    # Timestamps
+    created_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=get_jakarta_now)
+    updated_at: Mapped[datetime.datetime] = mapped_column(
+        db.DateTime, default=get_jakarta_now, onupdate=get_jakarta_now
+    )
+
+    # Relationships
+    question: Mapped[Question] = relationship('Question', back_populates='bloom_taxonomy')
+    verifier = relationship('User', foreign_keys=[verified_by])
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'question_id': self.question_id,
+            'bloom_level': self.bloom_level.value,
+            'bloom_description': self.bloom_description,
+            'verified_by': self.verified_by,
+            'verified_at': self.verified_at.isoformat() if self.verified_at else None,
+        }
+
+    def __repr__(self) -> str:
+        return f'<QuestionBloomTaxonomy Q{self.question_id}: {self.bloom_level.value}>'
 
 class Option(db.Model):
     __tablename__ = 'options'
