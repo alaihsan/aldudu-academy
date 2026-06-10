@@ -80,6 +80,7 @@ def course_detail(course_id):
             'name': assignment.title,
             'type': 'Tugas',
             'url': url_for('assignment.detail', assignment_id=assignment.id),
+            'description': assignment.description or '',
             'created_at': assignment.created_at,
             'folder_id': assignment.folder_id
         })
@@ -98,6 +99,8 @@ def course_detail(course_id):
             'name': file.name,
             'type': 'Berkas',
             'url': url_for('main.serve_file', file_id=file.id),
+            'filename': file.filename,
+            'description': file.description or '',
             'created_at': file.created_at,
             'folder_id': getattr(file, 'folder_id', None)
         })
@@ -340,13 +343,15 @@ def api_get_course_students(course_id):
     if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
         return jsonify({'success': False, 'message': 'Unauthorized'}), 403
 
-    students = list(course.students)
+    students = sorted(course.students, key=lambda s: (s.name or '').lower())
     return jsonify({
         'success': True,
         'students': [{
             'id': s.id,
             'name': s.name,
             'email': s.email,
+            'nis': s.nis,
+            'gender': s.gender,
         } for s in students]
     })
 

@@ -1,12 +1,8 @@
-{% extends "base.html" %}
+{% extends layout %}
 
 {% block title %}Issue Management - Aldudu Academy{% endblock %}
 
-{% block body %}
-<div id="app-page" class="min-h-screen bg-gray-50 dark:bg-gray-950 flex">
-    <!-- Sidebar -->
-    {% include '_sidebar.html' %}
-
+{% block content %}
     <!-- Main Content Area -->
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
         <!-- Top Header -->
@@ -26,10 +22,10 @@
             <div class="max-w-6xl mx-auto space-y-8 animate-fade-in">
                 
                 <!-- Hero Section -->
-                <div class="bg-indigo-600 rounded-[2.5rem] p-10 text-white relative overflow-hidden shadow-2xl shadow-indigo-100">
+                <div class="bg-[#ff4b4b] rounded-[2rem] p-10 text-white relative overflow-hidden border-2 border-[#d33131] shadow-[0_4px_0_#d33131]">
                     <div class="relative z-10">
-                        <h1 class="text-3xl font-black mb-3">Pusat Bantuan & Laporan</h1>
-                        <p class="text-indigo-100 opacity-90 max-w-xl">Laporkan kendala teknis atau berikan saran untuk pengembangan Aldudu Academy yang lebih baik.</p>
+                        <h1 class="text-3xl font-black mb-3">Pusat Bantuan &amp; Laporan</h1>
+                        <p class="text-white/80 font-bold max-w-xl">Laporkan kendala teknis atau berikan saran untuk pengembangan Aldudu Academy yang lebih baik.</p>
                     </div>
                     <!-- Decor -->
                     <div class="absolute right-0 bottom-0 opacity-10 pointer-events-none transform translate-y-1/4 translate-x-1/4">
@@ -41,25 +37,25 @@
 
                 <!-- Stats & Actions -->
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                    <div class="flex space-x-1 bg-white dark:bg-gray-800 p-1.5 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm self-start {% if current_user.role.value == 'murid' %}hidden{% endif %}">
-                        <button data-filter="all" class="issue-filter-btn active px-6 py-2.5 bg-primary-600 text-white rounded-xl font-bold text-sm transition-all">Semua</button>
-                        <button data-filter="active" class="issue-filter-btn px-6 py-2.5 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl font-bold text-sm transition-all">Aktif</button>
-                        <button data-filter="resolved" class="issue-filter-btn px-6 py-2.5 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl font-bold text-sm transition-all">Selesai</button>
+                    <div class="flex space-x-1 bg-white dark:bg-gray-800 p-1.5 rounded-2xl border-2 border-[#e5e5e5] dark:border-gray-700 self-start {% if current_user.role.value == 'murid' %}hidden{% endif %}">
+                        <button data-filter="all" class="issue-filter-btn active px-6 py-2.5 bg-[#1cb0f6] text-white rounded-xl font-black text-sm transition-all">Semua</button>
+                        <button data-filter="active" class="issue-filter-btn px-6 py-2.5 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl font-black text-sm transition-all">Aktif</button>
+                        <button data-filter="resolved" class="issue-filter-btn px-6 py-2.5 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl font-black text-sm transition-all">Selesai</button>
                     </div>
                     {% if current_user.role.value == 'murid' %}
-                    <div class="bg-indigo-50 dark:bg-indigo-900/20 px-6 py-3 rounded-2xl border border-indigo-100 dark:border-indigo-800">
-                        <p class="text-indigo-700 dark:text-indigo-300 font-bold text-sm flex items-center">
+                    <div class="bg-[#e0f2fe] dark:bg-gray-800 px-6 py-3 rounded-2xl border-2 border-[#bae6fd] dark:border-gray-700">
+                        <p class="text-[#0369a1] dark:text-[#1cb0f6] font-bold text-sm flex items-center">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             Menampilkan laporan yang Anda buat
                         </p>
                     </div>
                     {% endif %}
 
-                    <button id="open-create-issue-modal" class="px-8 py-3.5 bg-indigo-600 text-white rounded-2xl font-black text-sm flex items-center space-x-2 hover:bg-indigo-700 transition-all active:scale-95 shadow-lg shadow-indigo-100 dark:shadow-indigo-900/50">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <button id="open-create-issue-modal" class="btn-duo btn-duo-blue h-14 text-sm">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"/>
                         </svg>
-                        <span>Buat Laporan Baru</span>
+                        <span>BUAT LAPORAN BARU</span>
                     </button>
                 </div>
 
@@ -76,25 +72,24 @@
             </div>
         </main>
     </div>
-</div>
 
 <!-- CREATE ISSUE MODAL -->
 <div id="create-issue-modal" class="modal fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white dark:bg-gray-800 rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden animate-slide-up border border-indigo-50 dark:border-gray-700">
+    <div class="bg-white dark:bg-gray-900 rounded-[2rem] border-2 border-[#e5e5e5] dark:border-gray-700 shadow-2xl w-full max-w-lg overflow-hidden animate-slide-up">
         <form id="create-issue-form">
-            <div class="bg-indigo-600 px-8 py-8 text-white">
+            <div class="bg-[#1cb0f6] px-8 py-8 text-white">
                 <h3 class="text-2xl font-black">Laporan Masalah Baru</h3>
-                <p class="text-indigo-100 text-sm mt-1">Detailkan kendala yang Anda alami.</p>
+                <p class="text-white/80 text-sm font-bold mt-1">Detailkan kendala yang Anda alami.</p>
             </div>
             <div class="p-8 space-y-6">
                 <div>
                     <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Judul Laporan</label>
-                    <input type="text" id="issue-title" class="w-full px-6 py-4 bg-gray-50 dark:bg-gray-700 border-2 border-gray-100 dark:border-gray-600 rounded-2xl focus:border-indigo-500 outline-none font-bold transition-all text-gray-900 dark:text-gray-100" required placeholder="Contoh: Gagal mengunggah file PDF">
+                    <input type="text" id="issue-title" class="w-full px-6 py-4 bg-gray-50 dark:bg-gray-700 border-2 border-gray-100 dark:border-gray-600 rounded-2xl focus:border-[#1cb0f6] outline-none font-bold transition-all text-gray-900 dark:text-gray-100" required placeholder="Contoh: Gagal mengunggah file PDF">
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Prioritas</label>
-                        <select id="issue-priority" class="w-full px-6 py-4 bg-gray-50 dark:bg-gray-700 border-2 border-gray-100 dark:border-gray-600 rounded-2xl focus:border-indigo-500 outline-none font-bold bg-white dark:bg-gray-700 transition-all text-gray-900 dark:text-gray-100">
+                        <select id="issue-priority" class="w-full px-6 py-4 bg-gray-50 dark:bg-gray-700 border-2 border-gray-100 dark:border-gray-600 rounded-2xl focus:border-[#1cb0f6] outline-none font-bold bg-white dark:bg-gray-700 transition-all text-gray-900 dark:text-gray-100">
                             <option value="LOW">Rendah (Low)</option>
                             <option value="MEDIUM" selected>Sedang (Medium)</option>
                             <option value="HIGH">Tinggi (High)</option>
@@ -104,19 +99,19 @@
                 </div>
                 <div>
                     <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Deskripsi Masalah</label>
-                    <textarea id="issue-description" class="w-full px-6 py-4 bg-gray-50 dark:bg-gray-700 border-2 border-gray-100 dark:border-gray-600 rounded-2xl focus:border-indigo-500 outline-none font-bold transition-all text-gray-900 dark:text-gray-100" rows="4" required placeholder="Jelaskan langkah-langkah kejadiannya..."></textarea>
+                    <textarea id="issue-description" class="w-full px-6 py-4 bg-gray-50 dark:bg-gray-700 border-2 border-gray-100 dark:border-gray-600 rounded-2xl focus:border-[#1cb0f6] outline-none font-bold transition-all text-gray-900 dark:text-gray-100" rows="4" required placeholder="Jelaskan langkah-langkah kejadiannya..."></textarea>
                 </div>
                 <div id="issue-modal-error" class="hidden p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl text-xs font-bold text-center"></div>
             </div>
-            <div class="px-8 pb-8 flex space-x-3">
-                <button type="button" id="close-issue-modal" class="flex-1 px-6 py-4 text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded-2xl font-bold hover:bg-gray-200 dark:hover:bg-gray-600 transition-all active:scale-95">Batal</button>
-                <button type="submit" class="flex-[2] px-6 py-4 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg shadow-indigo-200 dark:shadow-indigo-900/50 hover:bg-indigo-700 transition-all active:scale-95">Kirim Laporan</button>
+            <div class="px-8 pb-8 flex gap-3">
+                <button type="button" id="close-issue-modal" class="btn-duo btn-duo-ghost flex-1 h-14 text-sm">BATAL</button>
+                <button type="submit" class="btn-duo btn-duo-blue flex-[2] h-14 text-sm">KIRIM LAPORAN</button>
             </div>
         </form>
     </div>
 </div>
 {% endblock %}
 
-{% block extra_scripts %}
+{% block page_scripts %}
 <script src="{{ url_for('static', filename='js/issues.js') }}?v={{ asset_hash('js/issues.js') }}"></script>
 {% endblock %}

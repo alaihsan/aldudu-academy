@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+function initSettingsPage() {
     const state = {
         courses: [],
         deletingCourseId: null
@@ -195,4 +195,7 @@ document.addEventListener('DOMContentLoaded', function() {
         else if (window.showLogoutModal) window.showLogoutModal();
         else window.location.href = '/logout';
     });
-});
+}
+// init-on-ready: jalan saat full load & re-eksekusi setelah swap htmx
+if (document.readyState !== 'loading') initSettingsPage();
+else document.addEventListener('DOMContentLoaded', initSettingsPage);

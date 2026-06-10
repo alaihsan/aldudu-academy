@@ -1,0 +1,6 @@
+{# Fragment layout: dipakai saat request htmx-boost (HX-Request).
+   Mengembalikan HANYA konten + skrip halaman, tanpa shell/sidebar,
+   supaya htmx menukar isi #app-content saja. #}
+{% block content %}{% endblock %}
+{% block page_scripts %}{% endblock %}
+<span id="spa-page-title" data-title="{% block title %}Aldudu Academy{% endblock %}" hidden></span>

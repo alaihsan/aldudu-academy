@@ -285,3 +285,19 @@
     background-color: #f3f4f6;
     color: #4b5563;
 }
+
+/* Folder sebagai target drop (gaya Duolingo): sorot saat materi diseret ke atasnya */
+.folder-item.drag-over {
+    border-color: #ce82ff !important;
+    background: #faf5ff !important;
+    box-shadow: 0 0 0 3px rgba(206, 130, 255, 0.35);
+    transform: scale(1.01);
+}
+html.dark .folder-item.drag-over {
+    background: #2a2233 !important;
+    border-color: #ce82ff !important;
+}
+/* Item yang sedang diseret */
+.material-item.dragging, .folder-item.dragging {
+    opacity: 0.5;
+}

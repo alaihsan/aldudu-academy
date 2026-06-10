@@ -222,6 +222,7 @@
   window.quizThemeColor = '{{ quiz.theme_color or "#673ab7" }}';
   window.quizDuration = {{ quiz.duration * 60 if quiz.duration > 0 else 0 }};
   window.questionsPerPage = {{ quiz.questions_per_page or 0 }};
+  window.quizDescription = {{ (quiz.description or '') | tojson }};
   window.isPreview = {{ 'true' if is_preview else 'false' }};
   window.quizExitUrl = {{ (url_for('main.quiz_detail', quiz_id=quiz.id) if is_preview else url_for('main.course_detail', course_id=quiz.course_id)) | tojson }};
   window.quizEditorUrl = "{{ url_for('main.quiz_detail', quiz_id=quiz.id) }}";

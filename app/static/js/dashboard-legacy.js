@@ -20,7 +20,7 @@ function escapeHtml(str) {
     return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-const Dashboard = {
+var Dashboard = {
     state: {
         currentUser: null,
         isTeacher: false,
@@ -344,7 +344,6 @@ const Dashboard = {
                             <svg class="w-full h-full" fill="currentColor" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0 100 C 20 0 50 0 100 100 Z" /></svg>
                         </div>
                         <h3 class="relative z-10 text-2xl font-black text-white text-center leading-tight drop-shadow-md">${escapeHtml(c.name)}</h3>
-                        ${this.state.isTeacher ? `<button type="button" onclick="event.preventDefault(); Dashboard.openEditClass(${c.id})" class="absolute top-5 right-5 p-2.5 bg-white/20 hover:bg-white text-white hover:text-gray-900 rounded-2xl backdrop-blur-md shadow-lg transition-all duration-300 z-20"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>` : ''}
                     </div>
                     <div class="flex-1 flex flex-col space-y-6">
                         <div class="flex items-center justify-between">
@@ -800,4 +799,5 @@ function closeArchiveModal() {
 }
 
 // Initial run
-document.addEventListener('DOMContentLoaded', () => Dashboard.init());
+if (document.readyState !== 'loading') Dashboard.init();
+else document.addEventListener('DOMContentLoaded', () => Dashboard.init());

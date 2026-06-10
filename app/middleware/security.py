@@ -23,6 +23,8 @@ def register_security_middleware(app):
     def add_security_headers(response):
         """Add security headers to all responses."""
         response.headers['X-Content-Type-Options'] = 'nosniff'
-        response.headers['X-Frame-Options'] = 'DENY'
+        # SAMEORIGIN (bukan DENY) supaya halaman kita boleh menyematkan berkas
+        # milik sendiri di iframe (mis. PDF viewer). Situs lain tetap diblokir.
+        response.headers['X-Frame-Options'] = 'SAMEORIGIN'
         response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
         return response

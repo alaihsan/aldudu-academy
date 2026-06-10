@@ -53,11 +53,12 @@
 
             <div class="flex items-center space-x-3">
                 {% if is_teacher %}
-                <!-- Theme Color Picker Button -->
-                <button onclick="openColorPicker()" class="p-2 text-gray-500 dark:text-gray-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-gray-700 rounded-lg transition-all" title="Ganti Warna Tema">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
+                <!-- Edit Kelas Button (rename + warna) -->
+                <button onclick="openEditClass()" class="btn-duo btn-duo-ghost h-10 text-xs px-4" title="Edit Kelas">
+                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                     </svg>
+                    EDIT KELAS
                 </button>
                 {% endif %}
                 <a href="{{ url_for('main.issues') }}" class="p-2 text-primary-600 hover:bg-primary-50 rounded-lg transition-colors" title="Manajemen Masalah">
@@ -98,6 +99,12 @@
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                                 <span class="font-black text-sm">{{ course.students | length }} Peserta</span>
                             </div>
+                            {% if is_teacher %}
+                            <button onclick="openStudentRoster()" class="flex items-center gap-2 bg-white/20 hover:bg-white/30 px-4 py-2 rounded-xl border border-white/20 transition-colors active:scale-95">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                                <span class="font-black text-sm">Daftar Siswa</span>
+                            </button>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -357,6 +364,8 @@
 // Pass template data to JavaScript globals (used by course_detail.js)
 window.courseId = {{ course.id }};
 window.isTeacher = {{ 'true' if is_teacher else 'false' }};
+window.courseName = {{ course.name | tojson }};
+window.courseColor = {{ (course.color or '#1cb0f6') | tojson }};
 window.topicsData = {{ topics_json | tojson }};
 </script>
 
@@ -372,8 +381,8 @@ window.topicsData = {{ topics_json | tojson }};
                         </svg>
                     </div>
                     <div>
-                        <h3 class="text-xl font-black">Warna Tema</h3>
-                        <p class="text-white/80 text-sm font-bold mt-0.5">Personalisasi kelasmu</p>
+                        <h3 class="text-xl font-black">Edit Kelas</h3>
+                        <p class="text-white/80 text-sm font-bold mt-0.5">Ubah nama &amp; warna kelas</p>
                     </div>
                 </div>
                 <button onclick="closeColorPicker()" class="text-white/80 hover:text-white transition-colors">
@@ -383,20 +392,81 @@ window.topicsData = {{ topics_json | tojson }};
                 </button>
             </div>
         </div>
-        <div class="p-8">
-            <p class="text-[#4b4b4b] font-black text-sm uppercase tracking-widest mb-6">Pilih warna favoritmu:</p>
-
-            <!-- Color Grid -->
-            <div class="grid grid-cols-5 gap-4 mb-8">
-                <button onclick="selectColor('#58cc02')" class="w-14 h-14 rounded-2xl shadow-[0_4px_0_#46a302] hover:translate-y-[-2px] hover:shadow-[0_6px_0_#46a302] active:translate-y-[2px] active:shadow-[0_2px_0_#46a302] transition-all" style="background-color: #58cc02;" title="Hijau"></button>
-                <button onclick="selectColor('#1cb0f6')" class="w-14 h-14 rounded-2xl shadow-[0_4px_0_#1899d6] hover:translate-y-[-2px] hover:shadow-[0_6px_0_#1899d6] active:translate-y-[2px] active:shadow-[0_2px_0_#1899d6] transition-all" style="background-color: #1cb0f6;" title="Biru"></button>
-                <button onclick="selectColor('#ff9600')" class="w-14 h-14 rounded-2xl shadow-[0_4px_0_#d97e00] hover:translate-y-[-2px] hover:shadow-[0_6px_0_#d97e00] active:translate-y-[2px] active:shadow-[0_2px_0_#d97e00] transition-all" style="background-color: #ff9600;" title="Kuning"></button>
-                <button onclick="selectColor('#ff4b4b')" class="w-14 h-14 rounded-2xl shadow-[0_4px_0_#d33131] hover:translate-y-[-2px] hover:shadow-[0_6px_0_#d33131] active:translate-y-[2px] active:shadow-[0_2px_0_#d33131] transition-all" style="background-color: #ff4b4b;" title="Merah"></button>
-                <button onclick="selectColor('#ce82ff')" class="w-14 h-14 rounded-2xl shadow-[0_4px_0_#af60f0] hover:translate-y-[-2px] hover:shadow-[0_6px_0_#af60f0] active:translate-y-[2px] active:shadow-[0_2px_0_#af60f0] transition-all" style="background-color: #ce82ff;" title="Ungu"></button>
+        <div class="p-8 space-y-6">
+            <div>
+                <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-widest mb-2">Nama Kelas</label>
+                <input id="edit-class-name" type="text" maxlength="150"
+                    class="w-full px-5 py-4 bg-[#f7f7f7] dark:bg-gray-800 border-2 border-[#e5e5e5] dark:border-gray-700 rounded-2xl font-black text-[#4b4b4b] dark:text-white outline-none focus:border-[#1cb0f6]" placeholder="Nama kelas">
             </div>
 
-            <button onclick="closeColorPicker()" class="btn-duo btn-duo-ghost w-full h-14 text-sm">BATAL</button>
+            <div>
+                <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-widest mb-3">Warna Kelas</label>
+                <div class="grid grid-cols-5 gap-3">
+                    <button type="button" data-color="#ff4b4b" onclick="selectColor('#ff4b4b')" class="color-swatch w-14 h-14 rounded-2xl shadow-[0_4px_0_#d33131] transition-all" style="background-color:#ff4b4b" title="Merah"></button>
+                    <button type="button" data-color="#1cb0f6" onclick="selectColor('#1cb0f6')" class="color-swatch w-14 h-14 rounded-2xl shadow-[0_4px_0_#1899d6] transition-all" style="background-color:#1cb0f6" title="Biru"></button>
+                    <button type="button" data-color="#ffc800" onclick="selectColor('#ffc800')" class="color-swatch w-14 h-14 rounded-2xl shadow-[0_4px_0_#e0ab00] transition-all" style="background-color:#ffc800" title="Kuning"></button>
+                    <button type="button" data-color="#ff9600" onclick="selectColor('#ff9600')" class="color-swatch w-14 h-14 rounded-2xl shadow-[0_4px_0_#d97e00] transition-all" style="background-color:#ff9600" title="Jingga"></button>
+                    <button type="button" data-color="#58cc02" onclick="selectColor('#58cc02')" class="color-swatch w-14 h-14 rounded-2xl shadow-[0_4px_0_#46a302] transition-all" style="background-color:#58cc02" title="Hijau"></button>
+                </div>
+            </div>
+
+            <div id="edit-class-error" class="hidden p-3 bg-red-50 text-[#ff4b4b] rounded-xl text-xs font-black text-center"></div>
+
+            <div class="flex gap-3 pt-1">
+                <button type="button" onclick="closeColorPicker()" class="btn-duo btn-duo-ghost flex-1 h-14 text-sm">BATAL</button>
+                <button type="button" onclick="saveClassEdit()" class="btn-duo btn-duo-green flex-[2] h-14 text-sm">SIMPAN</button>
+            </div>
         </div>
+    </div>
+</div>
+
+<!-- Student Roster Modal -->
+<div id="student-roster-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="card-duo w-full max-w-2xl overflow-hidden animate-slide-up p-0 border-none shadow-2xl">
+        <div class="bg-[#1cb0f6] px-8 py-6 text-white flex items-center justify-between">
+            <div>
+                <h3 class="text-xl font-black">Daftar Siswa</h3>
+                <p id="roster-count" class="text-white/80 text-sm font-bold mt-0.5">Memuat…</p>
+            </div>
+            <button onclick="closeStudentRoster()" class="text-white/80 hover:text-white transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <div class="p-6 max-h-[70vh] overflow-y-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="text-left text-[#afafaf] border-b-2 border-slate-100 dark:border-gray-800">
+                        <th class="py-3 pr-4 text-[11px] font-black uppercase tracking-widest">No</th>
+                        <th class="py-3 pr-4 text-[11px] font-black uppercase tracking-widest">NIS</th>
+                        <th class="py-3 pr-4 text-[11px] font-black uppercase tracking-widest">Nama</th>
+                        <th class="py-3 text-[11px] font-black uppercase tracking-widest">L/P</th>
+                    </tr>
+                </thead>
+                <tbody id="roster-body" class="divide-y divide-slate-50 dark:divide-gray-800 text-[#4b4b4b] dark:text-gray-200"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- PDF Viewer (gaya WhatsApp Desktop) -->
+<div id="pdf-viewer-modal" class="hidden fixed inset-0 z-[60] flex flex-col" style="background-color: #0b141a;">
+    <div class="h-16 flex items-center justify-between px-6 shrink-0" style="background-color: #202c33;">
+        <div class="flex items-center gap-3 min-w-0">
+            <svg class="w-6 h-6 text-[#8696a0] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <p id="pdf-viewer-title" class="text-white font-bold truncate"></p>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+            <a id="pdf-viewer-download" href="#" download class="flex items-center gap-2 px-4 py-2 rounded-lg text-[#e9edef] hover:bg-white/10 transition-colors text-sm font-bold" title="Unduh">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                <span class="hidden sm:inline">Unduh</span>
+            </a>
+            <button onclick="closePdfViewer()" class="flex items-center justify-center w-10 h-10 rounded-lg text-[#e9edef] hover:bg-white/10 transition-colors" title="Tutup">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+    </div>
+    <div class="flex-1 overflow-hidden flex items-center justify-center p-2 sm:p-6">
+        <iframe id="pdf-viewer-frame" src="" class="w-full h-full max-w-5xl rounded-lg shadow-2xl bg-white" title="PDF Viewer"></iframe>
     </div>
 </div>
 {% endblock %}

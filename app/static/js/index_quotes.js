@@ -1,5 +1,5 @@
 // Dynamic Educational Quotes with Typing Effect
-const educationalQuotes = [
+var educationalQuotes = [
     "Lanjutkan perjalanan belajarmu hari ini. Kamu memiliki beberapa aktivitas yang menunggu.",
     "Pendidikan adalah senjata paling mematikan di dunia, karena dengan pendidikan Anda dapat mengubah dunia.",
     "Perjalanan ribuan mil dimulai dengan satu langkah. Mulailah belajar hari ini!",
@@ -23,9 +23,9 @@ const educationalQuotes = [
 ];
 
 // localStorage keys
-const QUOTE_INDEX_KEY = 'aldudu_quote_index';
-const QUOTE_TIMESTAMP_KEY = 'aldudu_quote_timestamp';
-const QUOTE_INTERVAL = 10000; // 10 seconds
+var QUOTE_INDEX_KEY = 'aldudu_quote_index';
+var QUOTE_TIMESTAMP_KEY = 'aldudu_quote_timestamp';
+var QUOTE_INTERVAL = 10000; // 10 seconds
 
 // Get current quote index from localStorage or start fresh
 function getCurrentQuoteIndex() {
@@ -123,7 +123,7 @@ function checkQuoteUpdate() {
 }
 
 // Initialize dynamic quotes
-let quoteCheckInterval;
+var quoteCheckInterval;
 
 document.addEventListener('DOMContentLoaded', function() {
     // Initial quote

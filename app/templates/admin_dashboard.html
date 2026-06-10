@@ -1,12 +1,8 @@
-{% extends "base.html" %}
+{% extends layout %}
 
 {% block title %}Admin Dashboard - Aldudu Academy{% endblock %}
 
-{% block body %}
-<div id="app-page" class="min-h-screen bg-gray-50 dark:bg-gray-950 flex">
-    <!-- Sidebar -->
-    {% include '_sidebar.html' %}
-
+{% block content %}
     <!-- Main Content Area -->
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
         <!-- Top Header -->
@@ -138,5 +134,4 @@
             </div>
         </main>
     </div>
-</div>
 {% endblock %}

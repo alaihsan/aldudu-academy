@@ -5,10 +5,10 @@ function switchTab(type) {
 
     tabs.forEach(tab => {
         if (tab.dataset.tab === type) {
-            tab.classList.add('active', 'border-amber-600', 'text-amber-600');
+            tab.classList.add('active', 'border-[#ff9600]', 'text-[#ff9600]');
             tab.classList.remove('border-transparent', 'text-gray-500');
         } else {
-            tab.classList.remove('active', 'border-amber-600', 'text-amber-600');
+            tab.classList.remove('active', 'border-[#ff9600]', 'text-[#ff9600]');
             tab.classList.add('border-transparent', 'text-gray-500');
         }
     });

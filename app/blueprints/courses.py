@@ -7,7 +7,7 @@ from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 from sqlalchemy.orm import joinedload, selectinload
 from app.models import db, Course, AcademicYear, UserRole, Link, File, Discussion, Post, Like, UserCourseOrder, KbmNote, KbmActivityType, Quiz, GradeType, QuizStatus, ContentFolder, Assignment
-from app.helpers import sanitize_text, is_valid_color, is_valid_class_code, generate_class_code, get_courses_for_user, format_course_data, log_activity
+from app.helpers import sanitize_text, sanitize_rich_text, is_valid_color, is_valid_class_code, generate_class_code, get_courses_for_user, format_course_data, log_activity
 from app.tenant import get_school_id_or_abort, verify_course_in_school, verify_academic_year_in_school
 
 logger = logging.getLogger(__name__)
@@ -1180,7 +1180,7 @@ def api_move_folder(folder_id):
     return jsonify({'success': True})
 
 
-@courses_bp.route('/api/link/<int:link_id>/archive', methods=['POST'])
+@courses_bp.route('/link/<int:link_id>/archive', methods=['POST'])
 @login_required
 def api_archive_link(link_id):
     """Archive a link"""
@@ -1199,7 +1199,7 @@ def api_archive_link(link_id):
     return jsonify({'success': True, 'message': 'Link berhasil diarsipkan'})
 
 
-@courses_bp.route('/api/link/<int:link_id>/restore', methods=['POST'])
+@courses_bp.route('/link/<int:link_id>/restore', methods=['POST'])
 @login_required
 def api_restore_link(link_id):
     """Restore an archived link"""
@@ -1218,7 +1218,7 @@ def api_restore_link(link_id):
     return jsonify({'success': True, 'message': 'Link berhasil dipulihkan'})
 
 
-@courses_bp.route('/api/link/<int:link_id>', methods=['DELETE'])
+@courses_bp.route('/link/<int:link_id>', methods=['DELETE'])
 @login_required
 def api_delete_link(link_id):
     """Delete a link permanently from archive"""
@@ -1235,3 +1235,77 @@ def api_delete_link(link_id):
     db.session.commit()
 
     return jsonify({'success': True, 'message': 'Link berhasil dihapus permanen'})
+
+
+# ─── Edit materi (judul & isi) ───────────────────────────────────────────────
+
+def _verify_material_owner(course):
+    """Pastikan kelas valid & pemiliknya guru saat ini."""
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(course, school_id)
+    if course.teacher_id != current_user.id:
+        return False
+    return True
+
+
+@courses_bp.route('/link/<int:link_id>', methods=['PUT'])
+@login_required
+def api_update_link(link_id):
+    """Edit judul (name) & isi (url) sebuah link."""
+    link = Link.query.get_or_404(link_id)
+    course = Course.query.get(link.course_id)
+    if not _verify_material_owner(course):
+        return jsonify({'success': False, 'message': 'Tidak memiliki izin'}), 403
+    data = request.get_json() or {}
+    if 'name' in data:
+        name = sanitize_text(data.get('name'), max_len=200)
+        if not name:
+            return jsonify({'success': False, 'message': 'Judul tidak boleh kosong'}), 400
+        link.name = name
+    if 'url' in data:
+        url = (data.get('url') or '').strip()
+        if not url:
+            return jsonify({'success': False, 'message': 'URL tidak boleh kosong'}), 400
+        link.url = url[:500]
+    db.session.commit()
+    return jsonify({'success': True, 'message': 'Link diperbarui'})
+
+
+@courses_bp.route('/file/<int:file_id>', methods=['PUT'])
+@login_required
+def api_update_file(file_id):
+    """Edit judul (name) & deskripsi (isi) sebuah berkas."""
+    f = File.query.get_or_404(file_id)
+    course = Course.query.get(f.course_id)
+    if not _verify_material_owner(course):
+        return jsonify({'success': False, 'message': 'Tidak memiliki izin'}), 403
+    data = request.get_json() or {}
+    if 'name' in data:
+        name = sanitize_text(data.get('name'), max_len=200)
+        if not name:
+            return jsonify({'success': False, 'message': 'Judul tidak boleh kosong'}), 400
+        f.name = name
+    if 'description' in data:
+        f.description = sanitize_rich_text(data.get('description') or '', max_len=5000) or None
+    db.session.commit()
+    return jsonify({'success': True, 'message': 'Berkas diperbarui'})
+
+
+@courses_bp.route('/assignment/<int:assignment_id>', methods=['PUT'])
+@login_required
+def api_update_assignment(assignment_id):
+    """Edit judul (title) & isi (description) sebuah tugas."""
+    a = Assignment.query.get_or_404(assignment_id)
+    course = Course.query.get(a.course_id)
+    if not _verify_material_owner(course):
+        return jsonify({'success': False, 'message': 'Tidak memiliki izin'}), 403
+    data = request.get_json() or {}
+    if 'title' in data:
+        title = sanitize_text(data.get('title'), max_len=200)
+        if not title:
+            return jsonify({'success': False, 'message': 'Judul tidak boleh kosong'}), 400
+        a.title = title
+    if 'description' in data:
+        a.description = sanitize_rich_text(data.get('description') or '', max_len=5000) or None
+    db.session.commit()
+    return jsonify({'success': True, 'message': 'Tugas diperbarui'})

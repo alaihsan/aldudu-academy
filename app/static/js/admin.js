@@ -2,7 +2,7 @@
  * Aldudu Academy - Admin Management Script
  */
 
-const Admin = {
+var Admin = {
     init() {
         this.cacheDOM();
         this.bindEvents();
@@ -221,4 +221,7 @@ const Admin = {
     },
 };
 
-document.addEventListener('DOMContentLoaded', () => Admin.init());
+// init-on-ready: jalan saat full load DAN saat skrip re-eksekusi setelah swap htmx
+if (document.readyState !== 'loading') Admin.init();
+else document.addEventListener('DOMContentLoaded', () => Admin.init());
+window.Admin = Admin;

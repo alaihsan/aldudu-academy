@@ -104,9 +104,17 @@ function confirmStart() {
 }
 
 function showStartConfirmation() {
+  var desc = (window.quizDescription || '').trim();
+  var safeDesc = desc ? (window.DOMPurify ? DOMPurify.sanitize(desc) : desc) : '';
+  var note = 'Waktu akan mulai berjalan setelah Anda menekan tombol mulai.';
+  var html =
+    (safeDesc
+      ? '<div class="quiz-confirm-desc" style="text-align:left;max-height:40vh;overflow:auto;margin-bottom:14px;color:#374151;font-size:0.95rem;line-height:1.55;">' + safeDesc + '</div>'
+      : '') +
+    '<p style="font-size:0.85rem;color:#6b7280;">' + note + '</p>';
   Swal.fire({
     title: 'Mulai Kuis?',
-    text: 'Waktu akan mulai berjalan setelah Anda menekan tombol mulai.',
+    html: html,
     icon: 'question',
     showCancelButton: true,
     confirmButtonText: 'Ya, Mulai!',

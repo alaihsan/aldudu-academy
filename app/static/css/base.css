@@ -156,6 +156,22 @@ html.dark .card-duo, html.dark .btn-duo-ghost {
 html.dark .nav-link-duo:hover { background: #202f36; }
 html.dark .nav-link-duo.active { background: #131f24; border-color: #1cb0f6; }
 
+/* Dark mode: teks gelap (hitam/abu tua) yang BELUM punya varian dark:text-
+   dipaksa jadi terang agar jelas di latar gelap.
+   :not([class*="dark:text-"]) menjaga elemen yang sudah mengatur warna dark
+   sendiri (mis. text-gray-900 dark:text-indigo-400) agar tidak ikut diubah. */
+html.dark .text-\[\#4b4b4b\]:not([class*="dark:text-"]),
+html.dark .text-black:not([class*="dark:text-"]),
+html.dark .text-gray-900:not([class*="dark:text-"]),
+html.dark .text-gray-800:not([class*="dark:text-"]),
+html.dark .text-gray-700:not([class*="dark:text-"]),
+html.dark .text-slate-950:not([class*="dark:text-"]),
+html.dark .text-slate-900:not([class*="dark:text-"]),
+html.dark .text-slate-800:not([class*="dark:text-"]),
+html.dark .text-slate-700:not([class*="dark:text-"]) {
+    color: #e5e7eb;
+}
+
 /* Original base.css content below */
 
 [x-cloak] { display: none !important; }
@@ -327,6 +343,22 @@ html.dark .swal2-html-container {
     0% { width: 0%; left: 0%; }
     50% { width: 70%; left: 15%; }
     100% { width: 100%; left: 100%; }
+}
+
+/* Navigasi SPA: ganti konten INSTAN tanpa fade/kedip (gaya Google Drive).
+   Animasi fade-in di dalam #app-content dimatikan supaya swap terasa langsung.
+   (Animasi modal .animate-slide-up TIDAK dimatikan agar tetap mulus.) */
+#app-content .animate-fade-in,
+#app-content .page-transition {
+    animation: none !important;
+    opacity: 1 !important;
+}
+/* Pastikan target swap sendiri tidak ikut beranimasi/transisi opacity */
+#app-content.htmx-swapping,
+#app-content.htmx-settling,
+#app-content > .animate-fade-in {
+    opacity: 1 !important;
+    transition: none !important;
 }
 
 /* Custom scrollbar */

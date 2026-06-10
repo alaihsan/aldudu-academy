@@ -2,7 +2,7 @@
  * Aldudu Academy - Issue Management Script
  */
 
-const Issues = {
+var Issues = {
     currentFilter: 'all',
     currentUser: null,
 
@@ -47,10 +47,10 @@ const Issues = {
         }
         this.filterBtns.forEach(btn => {
             btn.addEventListener('click', (e) => {
-                this.filterBtns.forEach(b => b.classList.remove('active', 'bg-primary-600', 'text-white'));
+                this.filterBtns.forEach(b => b.classList.remove('active', 'bg-[#1cb0f6]', 'text-white'));
                 this.filterBtns.forEach(b => b.classList.add('text-gray-500'));
                 
-                btn.classList.add('active', 'bg-primary-600', 'text-white');
+                btn.classList.add('active', 'bg-[#1cb0f6]', 'text-white');
                 btn.classList.remove('text-gray-500');
                 
                 this.currentFilter = btn.dataset.filter;
@@ -130,7 +130,7 @@ const Issues = {
         const isAdmin = this.currentUser && this.currentUser.role === 'admin';
 
         return `
-            <div class="group bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all border-l-4 ${issue.priority === 'Urgent' ? 'border-l-red-500' : 'border-l-indigo-500'}">
+            <div class="group bg-white dark:bg-gray-900 rounded-3xl p-6 border-2 border-[#e5e5e5] dark:border-gray-700 hover:-translate-y-0.5 transition-all border-l-4 ${issue.priority === 'Urgent' ? 'border-l-red-500' : 'border-l-[#1cb0f6]'}">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div class="flex-1">
                         <div class="flex items-center space-x-3 mb-2">
@@ -281,6 +281,6 @@ const Issues = {
     }
 };
 
-document.addEventListener('DOMContentLoaded', () => Issues.init());
-// Re-init for HTMX if needed
-document.body.addEventListener('htmx:afterSwap', () => Issues.init());
+// init-on-ready: jalan saat full load & saat skrip re-eksekusi setelah swap htmx
+if (document.readyState !== 'loading') Issues.init();
+else document.addEventListener('DOMContentLoaded', () => Issues.init());

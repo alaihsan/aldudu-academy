@@ -64,6 +64,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// Global modal toggle (dipakai banyak halaman: admin, dll)
+function toggleModal(id, show) {
+    const m = document.getElementById(id);
+    if (!m) return;
+    if (show) m.classList.remove('hidden');
+    else m.classList.add('hidden');
+}
+
 // Global Logout Function
 async function handleGlobalLogout() {
     try {
@@ -144,12 +152,52 @@ window.ask = async function(title, message, icon = 'question') {
     return result.isConfirmed;
 };
 
-// Force refresh dashboard/page logic on HTMX swaps
-document.body.addEventListener('htmx:afterSwap', function(evt) {
-    if (window.Dashboard && typeof window.Dashboard.init === 'function') {
-        window.Dashboard.init();
-    }
-    if (window.CourseDetail && typeof window.CourseDetail.init === 'function') {
-        window.CourseDetail.init();
+// ─── Orkestrasi navigasi SPA (htmx) ──────────────────────────────────────────
+// Skrip ini dimuat sekali (tidak ikut di-swap), jadi aman pasang listener global.
+
+function spaUpdateActiveNav() {
+    const path = window.location.pathname;
+    document.querySelectorAll('#main-sidebar a.nav-link-duo[href]').forEach((a) => {
+        const href = a.getAttribute('href');
+        const active = href && href !== '#' && (path === href || path.startsWith(href + '/'));
+        a.classList.toggle('active', !!active);
+    });
+}
+
+function spaUpdateTitle() {
+    const el = document.getElementById('spa-page-title');
+    if (el && el.dataset.title) document.title = el.dataset.title.trim();
+}
+
+function spaScrollTop() {
+    const main = document.querySelector('#app-content main');
+    if (main) main.scrollTop = 0;
+    window.scrollTo(0, 0);
+}
+
+// Safety net: bila navigasi boost mengembalikan halaman PENUH (halaman yang
+// belum dikonversi SPA), jangan di-swap (akan rusak/nested) — lakukan navigasi
+// biasa (full load). Ini menangani semua link ke halaman legacy secara otomatis.
+document.body.addEventListener('htmx:beforeSwap', function (evt) {
+    try {
+        const xhr = evt.detail && evt.detail.xhr;
+        if (!xhr) return;
+        const ct = (xhr.getResponseHeader('Content-Type') || '');
+        if (ct.indexOf('text/html') !== -1 && /<html[\s>]/i.test(xhr.responseText || '')) {
+            evt.detail.shouldSwap = false;
+            const url = (evt.detail.requestConfig && evt.detail.requestConfig.path) || xhr.responseURL;
+            if (url) window.location.assign(url);
+        }
+    } catch (e) {}
+});
+
+// Setelah konten ter-swap & settle: rapikan judul, link aktif, scroll, i18n.
+document.body.addEventListener('htmx:afterSettle', function () {
+    spaUpdateTitle();
+    spaUpdateActiveNav();
+    spaScrollTop();
+    if (typeof initLanguage === 'function') {
+        try { initLanguage(); } catch (e) {}
     }
 });
+

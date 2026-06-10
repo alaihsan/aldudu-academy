@@ -43,6 +43,30 @@ def create_app(test_config: Optional[Dict] = None) -> Flask:
     if database_url:
         app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 
+    # Override konfigurasi email dari .env (dijalankan SETELAH load_dotenv agar
+    # nilai .env benar-benar terpakai — config.py dievaluasi sebelum .env dimuat).
+    if os.environ.get('MAIL_SERVER'):
+        app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER')
+    if os.environ.get('MAIL_PORT'):
+        app.config['MAIL_PORT'] = int(os.environ.get('MAIL_PORT'))
+    if os.environ.get('MAIL_USERNAME'):
+        app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+    if os.environ.get('MAIL_PASSWORD'):
+        app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
+    if os.environ.get('MAIL_USE_TLS') is not None:
+        app.config['MAIL_USE_TLS'] = os.environ.get('MAIL_USE_TLS', 'true').lower() == 'true'
+    if os.environ.get('MAIL_USE_SSL') is not None:
+        app.config['MAIL_USE_SSL'] = os.environ.get('MAIL_USE_SSL', 'false').lower() == 'true'
+    app.config['MAIL_DEFAULT_SENDER'] = (
+        os.environ.get('MAIL_SENDER_NAME', 'Aldudu Academy'),
+        os.environ.get('MAIL_SENDER_EMAIL', 'noreply@aldudu.academy'),
+    )
+
+    # URL aplikasi (dipakai untuk link verifikasi email, reset password, dll).
+    # Override dari .env agar port sesuai server (mis. 5055).
+    if os.environ.get('APP_URL'):
+        app.config['APP_URL'] = os.environ.get('APP_URL')
+
     if test_config:
         app.config.update(test_config)
 
@@ -179,6 +203,17 @@ def create_app(test_config: Optional[Dict] = None) -> Flask:
     app.add_template_filter(matching_left, 'matching_left')
     app.add_template_filter(matching_right, 'matching_right')
     app.add_template_filter(matching_answer_lines, 'matching_answer_lines')
+
+    @app.context_processor
+    def inject_spa_layout():
+        """Pilih layout: fragment (hanya konten) saat request htmx-boost,
+        atau base.html penuh saat full load. Dipakai halaman yang sudah
+        dikonversi SPA via {% extends layout %}."""
+        is_hx = (
+            request.headers.get('HX-Request') == 'true'
+            and not request.headers.get('HX-History-Restore-Request')
+        )
+        return {'layout': 'layouts/_fragment.html' if is_hx else 'base.html'}
 
     # Register middleware
     from .middleware import register_all_middleware

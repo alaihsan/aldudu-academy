@@ -806,11 +806,10 @@ const CourseDetail = {
             
             // Validate file upload
             const fileInput = document.getElementById('file-upload-input');
-            const file = fileInput.files[0];
-            const maxSizeSlider = document.getElementById('file-max-size-slider');
-            const maxSizeMB = parseInt(maxSizeSlider.value) || 10;
+            const file = fileInput ? fileInput.files[0] : null;
+            const maxSizeMB = 16; // sesuai MAX_CONTENT_LENGTH backend
             const maxSizeBytes = maxSizeMB * 1024 * 1024;
-            
+
             if (!file) {
                 errorEl.textContent = 'Pilih file yang akan diunggah';
                 errorEl.classList.remove('hidden');
@@ -1147,62 +1146,66 @@ async function deleteKbmNote() {
 }
 
 // Color Picker Functions
-function openColorPicker() {
-    document.getElementById('color-picker-modal').classList.remove('hidden');
+function openEditClass() {
+    const modal = document.getElementById('color-picker-modal');
+    if (!modal) return;
+    const nameInput = document.getElementById('edit-class-name');
+    if (nameInput) nameInput.value = window.courseName || '';
+    window._selectedColor = window.courseColor || '#1cb0f6';
+    _markSelectedColor(window._selectedColor);
+    const err = document.getElementById('edit-class-error');
+    if (err) err.classList.add('hidden');
+    modal.classList.remove('hidden');
+    if (nameInput) nameInput.focus();
 }
+
+// Alias kompat (pemanggil lama)
+function openColorPicker() { openEditClass(); }
 
 function closeColorPicker() {
     document.getElementById('color-picker-modal').classList.add('hidden');
 }
 
+function _markSelectedColor(color) {
+    document.querySelectorAll('#color-picker-modal .color-swatch').forEach((b) => {
+        const on = (b.dataset.color || '').toLowerCase() === (color || '').toLowerCase();
+        b.style.outline = on ? '3px solid #4b4b4b' : '';
+        b.style.outlineOffset = on ? '2px' : '';
+    });
+}
+
 function selectColor(color) {
+    window._selectedColor = color;
+    _markSelectedColor(color);
+}
+
+function saveClassEdit() {
     const courseId = window.courseId;
-
-    // Update CSS variables immediately for preview
-    document.documentElement.style.setProperty('--course-theme', color);
-    document.documentElement.style.setProperty('--course-theme-light', color + '15');
-    document.documentElement.style.setProperty('--course-theme-dark', color + 'cc');
-    document.documentElement.style.setProperty('--course-theme-gradient', `linear-gradient(135deg, ${color}, ${color}cc)`);
-
-    // Update hero section background
-    const heroSection = document.querySelector('.hero-section');
-    if (heroSection) {
-        heroSection.style.backgroundColor = color;
+    const nameInput = document.getElementById('edit-class-name');
+    const err = document.getElementById('edit-class-error');
+    const name = (nameInput ? nameInput.value : '').trim();
+    const color = window._selectedColor || window.courseColor || '#1cb0f6';
+    if (err) err.classList.add('hidden');
+    if (name.length < 2) {
+        if (err) { err.textContent = 'Nama kelas minimal 2 karakter'; err.classList.remove('hidden'); }
+        return;
     }
-
-    // Save to database
-    fetch(`/api/course/${courseId}/theme`, {
+    fetch(`/api/courses/${courseId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ color: color })
+        body: JSON.stringify({ name: name, color: color })
     })
-    .then(res => res.json())
-    .then(data => {
+    .then((res) => res.json())
+    .then((data) => {
         if (data.success) {
-            // Show success notification
-            const notification = document.createElement('div');
-            notification.className = 'fixed bottom-6 right-6 px-6 py-4 bg-green-600 text-white rounded-2xl shadow-2xl z-[100] animate-slide-up flex items-center gap-3';
-            notification.innerHTML = `
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                </svg>
-                <span class="font-bold text-sm">Warna tema berhasil diubah!</span>
-            `;
-            document.body.appendChild(notification);
-            setTimeout(() => {
-                notification.style.opacity = '0';
-                notification.style.transition = 'opacity 0.3s';
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
-
-            closeColorPicker();
-        } else {
-            alert('Gagal mengubah warna tema');
+            window.location.reload();   // muat ulang agar hero, judul, dan warna ter-update
+        } else if (err) {
+            err.textContent = data.message || 'Gagal menyimpan perubahan';
+            err.classList.remove('hidden');
         }
     })
-    .catch(err => {
-        console.error(err);
-        alert('Terjadi kesalahan');
+    .catch(() => {
+        if (err) { err.textContent = 'Terjadi kesalahan koneksi'; err.classList.remove('hidden'); }
     });
 }
 
@@ -1215,12 +1218,20 @@ document.addEventListener('DOMContentLoaded', function() {
     window.materialsList = new MaterialsList('materials-list-container', courseId, {
         isTeacher: isTeacher,
         onMaterialSelect: (type, id) => {
-            // Handle material selection (open/view)
-            // For teachers, quiz opens in editor mode by default; students see preview
+            // Berkas PDF dibuka di viewer dalam aplikasi (gaya WhatsApp Desktop)
+            if (type === 'file') {
+                const topic = (window.topicsData || []).find(t => t.id === id && t.type === 'Berkas');
+                const fname = topic && topic.filename ? topic.filename : '';
+                if (fname.toLowerCase().endsWith('.pdf')) {
+                    openPdfViewer(id, topic.name || 'Dokumen');
+                    return;
+                }
+                window.open(`/files/${id}`, '_blank');
+                return;
+            }
             const urls = {
                 'quiz': `/quiz/${id}`,
                 'assignment': `/assignment/${id}`,
-                'file': `/files/${id}`,
                 'link': null
             };
             if (urls[type]) {
@@ -1231,4 +1242,77 @@ document.addEventListener('DOMContentLoaded', function() {
             window.materialsList.refresh();
         }
     });
+});
+
+// ─── Daftar Siswa (roster) ───────────────────────────────────────────────────
+async function openStudentRoster() {
+    const modal = document.getElementById('student-roster-modal');
+    const body = document.getElementById('roster-body');
+    const countEl = document.getElementById('roster-count');
+    if (!modal) return;
+    modal.classList.remove('hidden');
+    body.innerHTML = '<tr><td colspan="4" class="py-6 text-center text-[#afafaf] font-bold">Memuat…</td></tr>';
+    countEl.textContent = 'Memuat…';
+    try {
+        const res = await fetch(`/api/courses/${window.courseId}/students`);
+        const data = await res.json();
+        if (!data.success) {
+            body.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-[#ff4b4b] font-bold">${data.message || 'Gagal memuat'}</td></tr>`;
+            countEl.textContent = '';
+            return;
+        }
+        const genderLabel = (g) => g === 'L' ? 'Laki-laki' : (g === 'P' ? 'Perempuan' : '-');
+        countEl.textContent = `${data.students.length} siswa terdaftar`;
+        if (data.students.length === 0) {
+            body.innerHTML = '<tr><td colspan="4" class="py-6 text-center text-[#afafaf] font-bold">Belum ada siswa di kelas ini.</td></tr>';
+            return;
+        }
+        body.innerHTML = data.students.map((s, i) => `
+            <tr>
+                <td class="py-3 pr-4 font-bold text-[#afafaf]">${i + 1}</td>
+                <td class="py-3 pr-4 font-mono font-bold">${s.nis || '-'}</td>
+                <td class="py-3 pr-4 font-black">${escapeHtmlRoster(s.name)}</td>
+                <td class="py-3 font-bold text-[#afafaf]">${genderLabel(s.gender)}</td>
+            </tr>`).join('');
+    } catch (e) {
+        body.innerHTML = '<tr><td colspan="4" class="py-6 text-center text-[#ff4b4b] font-bold">Terjadi kesalahan koneksi.</td></tr>';
+        countEl.textContent = '';
+    }
+}
+
+function closeStudentRoster() {
+    document.getElementById('student-roster-modal')?.classList.add('hidden');
+}
+
+function escapeHtmlRoster(str) {
+    const d = document.createElement('div');
+    d.textContent = str == null ? '' : String(str);
+    return d.innerHTML;
+}
+
+// ─── PDF Viewer (gaya WhatsApp Desktop) ──────────────────────────────────────
+function openPdfViewer(fileId, name) {
+    const modal = document.getElementById('pdf-viewer-modal');
+    if (!modal) { window.open(`/files/${fileId}`, '_blank'); return; }
+    document.getElementById('pdf-viewer-title').textContent = name || 'Dokumen';
+    document.getElementById('pdf-viewer-download').setAttribute('href', `/files/${fileId}`);
+    document.getElementById('pdf-viewer-frame').setAttribute('src', `/files/${fileId}#view=FitH`);
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closePdfViewer() {
+    const modal = document.getElementById('pdf-viewer-modal');
+    if (!modal) return;
+    modal.classList.add('hidden');
+    document.getElementById('pdf-viewer-frame').setAttribute('src', '');
+    document.body.style.overflow = '';
+}
+
+// Tutup viewer/roster dengan tombol Escape
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closePdfViewer();
+        closeStudentRoster();
+    }
 });
