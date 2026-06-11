@@ -843,9 +843,11 @@ const CourseDetail = {
         } else if (type === 'link') {
             url += 'links';
             options.headers = { 'Content-Type': 'application/json' };
+            const descEl = document.getElementById('link-desc-input');
             options.body = JSON.stringify({
                 name: document.getElementById('link-name-input').value,
-                url: document.getElementById('link-url-input').value
+                url: document.getElementById('link-url-input').value,
+                description: descEl ? descEl.value : ''
             });
         } else if (type === 'discussion') {
             url = `/api/courses/${this.courseId}/discussions`;
@@ -1229,10 +1231,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 window.open(`/files/${id}`, '_blank');
                 return;
             }
+            // Link: buka URL aslinya di tab baru
+            if (type === 'link') {
+                const topic = (window.topicsData || []).find(t => t.id === id && t.type === 'Link');
+                if (topic && topic.url) window.open(topic.url, '_blank', 'noopener,noreferrer');
+                return;
+            }
             const urls = {
                 'quiz': `/quiz/${id}`,
                 'assignment': `/assignment/${id}`,
-                'link': null
             };
             if (urls[type]) {
                 window.open(urls[type], '_blank');

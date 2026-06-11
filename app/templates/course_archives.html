@@ -97,7 +97,7 @@
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                             </svg>
-                                            Diarsipkan: {{ quiz.updated_at.strftime('%d %B %Y, %H:%M') }}
+                                            Diarsipkan: {{ quiz.updated_at.strftime('%d %B %Y, %H:%M') if quiz.updated_at else '-' }}
                                         </span>
                                         {% if quiz.submissions %}
                                         <span class="flex items-center gap-1.5">
@@ -155,7 +155,7 @@
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                             </svg>
-                                            Diarsipkan: {{ assignment.updated_at.strftime('%d %B %Y, %H:%M') }}
+                                            Diarsipkan: {{ assignment.updated_at.strftime('%d %B %Y, %H:%M') if assignment.updated_at else '-' }}
                                         </span>
                                         {% if assignment.submissions %}
                                         <span class="flex items-center gap-1.5">
@@ -213,7 +213,7 @@
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                             </svg>
-                                            Diarsipkan: {{ file.updated_at.strftime('%d %B %Y, %H:%M') }}
+                                            Diarsipkan: {{ file.created_at.strftime('%d %B %Y, %H:%M') if file.created_at else '-' }}
                                         </span>
                                         <span class="inline-flex items-center px-2.5 py-0.5 bg-gray-100 text-gray-600 rounded text-[10px] font-bold uppercase">
                                             {{ file.filename.split('.').pop().upper() if '.' in file.filename else 'DOC' }}
@@ -266,7 +266,7 @@
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                             </svg>
-                                            Diarsipkan: {{ link.updated_at.strftime('%d %B %Y, %H:%M') }}
+                                            Diarsipkan: {{ link.created_at.strftime('%d %B %Y, %H:%M') if link.created_at else '-' }}
                                         </span>
                                     </div>
                                 </div>

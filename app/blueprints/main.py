@@ -9,6 +9,12 @@ from app.models import (
 )
 from app.models.quiz import BloomLevel
 from app.helpers import get_jakarta_now
+
+
+def _trash_now():
+    n = get_jakarta_now()
+    return n.replace(tzinfo=None) if getattr(n, 'tzinfo', None) else n
+
 from app.tenant import get_school_id_or_abort, verify_course_in_school
 
 main_bp = Blueprint('main', __name__)
@@ -51,16 +57,19 @@ def course_detail(course_id):
     if not (is_teacher or is_student or is_admin):
         abort(403, description='Anda tidak memiliki akses ke kelas ini.')
 
-    # Filter based on archived status and user role
+    # Filter: arsip + Ruang TPS dikeluarkan dari daftar materi utama
+    def _live(x):
+        return (not getattr(x, 'is_archived', False)) and (not getattr(x, 'is_trashed', False))
+
     if is_teacher:
-        quizzes = [q for q in course.quizzes if not q.is_archived]
-        assignments = course.assignments
+        quizzes = [q for q in course.quizzes if _live(q)]
+        assignments = [a for a in course.assignments if _live(a)]
     else:
-        quizzes = [q for q in course.quizzes if q.status == QuizStatus.PUBLISHED and not q.is_archived]
-        assignments = [a for a in course.assignments if a.status == AssignmentStatus.PUBLISHED]
-    
-    links = [l for l in course.links if not getattr(l, 'is_archived', False)]
-    files = [f for f in course.files if not getattr(f, 'is_archived', False)]
+        quizzes = [q for q in course.quizzes if q.status == QuizStatus.PUBLISHED and _live(q)]
+        assignments = [a for a in course.assignments if a.status == AssignmentStatus.PUBLISHED and _live(a)]
+
+    links = [l for l in course.links if _live(l)]
+    files = [f for f in course.files if _live(f)]
     discussions = course.discussions
 
     topics = []
@@ -90,6 +99,7 @@ def course_detail(course_id):
             'name': link.name,
             'type': 'Link',
             'url': link.url,
+            'description': link.description or '',
             'created_at': link.created_at,
             'folder_id': getattr(link, 'folder_id', None)
         })
@@ -479,61 +489,58 @@ def api_restore_file(file_id):
 @main_bp.route('/api/quiz/<int:quiz_id>', methods=['DELETE'])
 @login_required
 def api_delete_quiz(quiz_id):
-    """API endpoint untuk menghapus kuis permanen dari arsip"""
+    """Soft-delete kuis ke Ruang TPS (dipanggil oleh tombol Hapus di daftar materi)."""
     from flask import jsonify
     from app.models import Quiz
 
     quiz = db.session.get(Quiz, quiz_id)
     if not quiz:
         return jsonify({'success': False, 'message': 'Kuis tidak ditemukan'}), 404
-
     if quiz.course.teacher_id != current_user.id:
         return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
 
-    db.session.delete(quiz)
+    quiz.is_trashed = True
+    quiz.trashed_at = _trash_now()
     db.session.commit()
-
-    return jsonify({'success': True, 'message': 'Kuis berhasil dihapus permanen'})
+    return jsonify({'success': True, 'message': 'Kuis dipindahkan ke Ruang TPS'})
 
 
 @main_bp.route('/api/assignment/<int:assignment_id>', methods=['DELETE'])
 @login_required
 def api_delete_assignment(assignment_id):
-    """API endpoint untuk menghapus tugas permanen dari arsip"""
+    """Soft-delete tugas ke Ruang TPS."""
     from flask import jsonify
     from app.models import Assignment
 
     assignment = db.session.get(Assignment, assignment_id)
     if not assignment:
         return jsonify({'success': False, 'message': 'Tugas tidak ditemukan'}), 404
-
     if assignment.course.teacher_id != current_user.id:
         return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
 
-    db.session.delete(assignment)
+    assignment.is_trashed = True
+    assignment.trashed_at = _trash_now()
     db.session.commit()
-
-    return jsonify({'success': True, 'message': 'Tugas berhasil dihapus permanen'})
+    return jsonify({'success': True, 'message': 'Tugas dipindahkan ke Ruang TPS'})
 
 
 @main_bp.route('/api/file/<int:file_id>', methods=['DELETE'])
 @login_required
 def api_delete_file(file_id):
-    """API endpoint untuk menghapus file permanen dari arsip"""
+    """Soft-delete berkas ke Ruang TPS."""
     from flask import jsonify
     from app.models import File
 
     file = db.session.get(File, file_id)
     if not file:
         return jsonify({'success': False, 'message': 'File tidak ditemukan'}), 404
-
     if file.course.teacher_id != current_user.id:
         return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
 
-    db.session.delete(file)
+    file.is_trashed = True
+    file.trashed_at = _trash_now()
     db.session.commit()
-
-    return jsonify({'success': True, 'message': 'File berhasil dihapus permanen'})
+    return jsonify({'success': True, 'message': 'Berkas dipindahkan ke Ruang TPS'})
 
 
 @main_bp.route('/api/course/<int:course_id>/theme', methods=['PUT'])
@@ -587,11 +594,11 @@ def course_archives(course_id):
     if not (is_teacher or is_student or is_admin):
         abort(403, description='Anda tidak memiliki akses ke arsip kelas ini.')
 
-    # Get archived items
-    archived_quizzes = Quiz.query.filter_by(course_id=course.id, is_archived=True).order_by(Quiz.updated_at.desc()).all()
-    archived_assignments = Assignment.query.filter_by(course_id=course.id, status=AssignmentStatus.ARCHIVED).order_by(Assignment.updated_at.desc()).all()
-    archived_files = File.query.filter_by(course_id=course.id, is_archived=True).order_by(File.created_at.desc()).all()
-    archived_links = Link.query.filter_by(course_id=course.id, is_archived=True).order_by(Link.created_at.desc()).all()
+    # Get archived items (kecualikan yang sudah masuk Ruang TPS)
+    archived_quizzes = Quiz.query.filter_by(course_id=course.id, is_archived=True, is_trashed=False).order_by(Quiz.updated_at.desc()).all()
+    archived_assignments = Assignment.query.filter_by(course_id=course.id, status=AssignmentStatus.ARCHIVED, is_trashed=False).order_by(Assignment.updated_at.desc()).all()
+    archived_files = File.query.filter_by(course_id=course.id, is_archived=True, is_trashed=False).order_by(File.created_at.desc()).all()
+    archived_links = Link.query.filter_by(course_id=course.id, is_archived=True, is_trashed=False).order_by(Link.created_at.desc()).all()
 
     return render_template('course_archives.html',
                           course=course,

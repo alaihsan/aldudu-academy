@@ -136,6 +136,7 @@ class Link(db.Model):
     id: Mapped[int] = mapped_column(db.Integer, primary_key=True)
     name: Mapped[str] = mapped_column(db.String(200), nullable=False)
     url: Mapped[str] = mapped_column(db.String(500), nullable=False)
+    description: Mapped[Optional[str]] = mapped_column(db.Text, nullable=True)
     course_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('courses.id'), nullable=False, index=True)
 
     # Folder organization
@@ -144,6 +145,10 @@ class Link(db.Model):
 
     # Archive status
     is_archived: Mapped[bool] = mapped_column(db.Boolean, default=False, nullable=False, index=True)
+
+    # Trash (Ruang TPS)
+    is_trashed: Mapped[bool] = mapped_column(db.Boolean, default=False, nullable=False, index=True)
+    trashed_at: Mapped[Optional[datetime.datetime]] = mapped_column(db.DateTime, nullable=True)
 
     created_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=get_jakarta_now)
 
@@ -167,6 +172,10 @@ class File(db.Model):
 
     # Archive status
     is_archived: Mapped[bool] = mapped_column(db.Boolean, default=False, nullable=False, index=True)
+
+    # Trash (Ruang TPS)
+    is_trashed: Mapped[bool] = mapped_column(db.Boolean, default=False, nullable=False, index=True)
+    trashed_at: Mapped[Optional[datetime.datetime]] = mapped_column(db.DateTime, nullable=True)
 
     # Folder organization
     folder_id: Mapped[Optional[int]] = mapped_column(db.Integer, db.ForeignKey('content_folders.id'), nullable=True, index=True)

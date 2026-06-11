@@ -29,6 +29,10 @@ class Assignment(db.Model):
     folder_id: Mapped[Optional[int]] = mapped_column(db.Integer, db.ForeignKey('content_folders.id'), nullable=True, index=True)
     order: Mapped[int] = mapped_column(db.Integer, default=0, nullable=False)
 
+    # Trash (Ruang TPS) status — soft-delete, dihapus permanen otomatis setelah 30 hari
+    is_trashed: Mapped[bool] = mapped_column(db.Boolean, default=False, nullable=False, index=True)
+    trashed_at: Mapped[Optional[datetime]] = mapped_column(db.DateTime, nullable=True)
+
     created_at: Mapped[datetime] = mapped_column(db.DateTime, default=get_jakarta_now)
     updated_at: Mapped[datetime] = mapped_column(db.DateTime, default=get_jakarta_now, onupdate=get_jakarta_now)
 

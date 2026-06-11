@@ -359,7 +359,7 @@ var Dashboard = {
                         </div>
                         <div class="mt-auto flex items-center gap-3 pt-4 border-t-2 border-[#f7f7f7]">
                             <a href="/kelas/${c.id}" class="btn-duo btn-duo-blue flex-1 h-12 text-sm">BUKA KELAS</a>
-                            <button type="button" onclick="event.preventDefault(); Dashboard.copyCode('${c.classCode}')" class="btn-duo btn-duo-ghost w-12 h-12 p-0"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m-7 10h7m-7-4h7"/></svg></button>
+                            <button type="button" onclick="event.preventDefault(); Dashboard.copyCode(event, '${c.classCode}')" class="btn-duo btn-duo-ghost w-12 h-12 p-0"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m-7 10h7m-7-4h7"/></svg></button>
                         </div>
                     </div>
                 </div>
@@ -730,49 +730,64 @@ var Dashboard = {
         });
     },
 
-    copyCode(code) {
-        navigator.clipboard.writeText(code).then(() => {
-            // Find the button that was clicked
-            const btns = document.querySelectorAll('button');
-            let targetBtn = null;
-            btns.forEach(b => {
-                if (b.getAttribute('onclick')?.includes(code)) targetBtn = b;
-            });
-
-            if (targetBtn) {
-                // Icon Success Animation
-                const originalHTML = targetBtn.innerHTML;
-                targetBtn.innerHTML = `
-                    <svg class="w-6 h-6 text-green-600 animate-success-pop" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    // Copy class code yang robust: pakai Clipboard API bila tersedia
+    // (HTTPS/localhost), fallback ke execCommand untuk HTTP non-secure (LAN IP).
+    copyCode(evt, code) {
+        // Kompat: pemanggil lama (`copyCode('AB12')`) — geser argumen
+        if (typeof evt === 'string' && code === undefined) {
+            code = evt;
+            evt = window.event;
+        }
+        const btn = (evt && (evt.currentTarget || evt.target && evt.target.closest('button'))) || null;
+        const fallbackCopy = (text) => {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.setAttribute('readonly', '');
+            ta.style.position = 'fixed';
+            ta.style.left = '-9999px';
+            document.body.appendChild(ta);
+            ta.select();
+            let ok = false;
+            try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+            document.body.removeChild(ta);
+            return ok;
+        };
+        const showFeedback = (success, message) => {
+            if (btn && success) {
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = `
+                    <svg class="w-5 h-5 text-green-600 animate-success-pop" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                    </svg>
-                `;
-                targetBtn.classList.add('bg-green-50', 'ring-2', 'ring-green-500', 'ring-offset-2');
-                
-                // Floating Toast Notification
-                const toast = document.createElement('div');
-                toast.className = 'fixed z-[100] bg-gray-900 text-white px-6 py-3 rounded-2xl font-bold text-sm shadow-2xl animate-toast-float flex items-center space-x-3';
-                toast.innerHTML = `
-                    <div class="w-6 h-6 bg-green-500 rounded-lg flex items-center justify-center">
-                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                    </div>
-                    <span>Kode Kelas Berhasil Disalin</span>
-                `;
-                
-                // Position toast near the button
-                const rect = targetBtn.getBoundingClientRect();
-                toast.style.top = `${rect.top - 60}px`;
-                toast.style.left = `${rect.left + (rect.width/2) - 100}px`;
-                
-                document.body.appendChild(toast);
-                
+                    </svg>`;
+                btn.classList.add('bg-green-50', 'ring-2', 'ring-green-500');
                 setTimeout(() => {
-                    targetBtn.innerHTML = originalHTML;
-                    targetBtn.classList.remove('bg-green-50', 'ring-2', 'ring-green-500', 'ring-offset-2');
-                    toast.remove();
-                }, 2000);
+                    btn.innerHTML = originalHTML;
+                    btn.classList.remove('bg-green-50', 'ring-2', 'ring-green-500');
+                }, 1600);
             }
-        });
+            const toast = document.createElement('div');
+            toast.className = 'fixed z-[100] left-1/2 -translate-x-1/2 px-6 py-3 rounded-2xl font-bold text-sm shadow-2xl animate-toast-float flex items-center gap-3 ' +
+                (success ? 'bg-gray-900 text-white' : 'bg-red-600 text-white');
+            toast.style.top = '20px';
+            toast.innerHTML = success
+                ? `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg><span>${message}</span>`
+                : `<span>${message}</span>`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2000);
+        };
+
+        const doFallback = () => {
+            const ok = fallbackCopy(code);
+            showFeedback(ok, ok ? `Kode kelas disalin: ${code}` : `Gagal menyalin. Salin manual: ${code}`);
+        };
+
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(code)
+                .then(() => showFeedback(true, `Kode kelas disalin: ${code}`))
+                .catch(() => doFallback());
+        } else {
+            doFallback();
+        }
     }
 };
 

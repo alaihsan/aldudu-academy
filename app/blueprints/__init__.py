@@ -14,6 +14,7 @@ def create_blueprints():
     from .gradebook import gradebook_bp
     from .assignment import assignment_bp
     from .whats_new_view import whats_new_view_bp
+    from .trash import trash_bp
 
     return [
         main_bp,
@@ -27,5 +28,6 @@ def create_blueprints():
         tickets_bp,
         gradebook_bp,
         assignment_bp,
-        whats_new_view_bp
+        whats_new_view_bp,
+        trash_bp
     ]

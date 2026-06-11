@@ -275,6 +275,7 @@ def api_create_link(course_id):
     data = request.get_json() or {}
     name = sanitize_text(data.get('name', ''), max_len=200)
     url = data.get('url', '').strip()
+    description = sanitize_rich_text(data.get('description') or '', max_len=5000) or None
 
     if not name:
         return jsonify({'success': False, 'message': 'Nama link wajib diisi'}), 400
@@ -291,6 +292,7 @@ def api_create_link(course_id):
         new_link = Link(
             name=name,
             url=url,
+            description=description,
             course_id=course_id
         )
         db.session.add(new_link)
@@ -303,6 +305,7 @@ def api_create_link(course_id):
                 'id': new_link.id,
                 'name': new_link.name,
                 'url': new_link.url,
+                'description': new_link.description,
                 'course_id': new_link.course_id
             }
         }), 201
@@ -1221,7 +1224,8 @@ def api_restore_link(link_id):
 @courses_bp.route('/link/<int:link_id>', methods=['DELETE'])
 @login_required
 def api_delete_link(link_id):
-    """Delete a link permanently from archive"""
+    """Soft-delete link ke Ruang TPS."""
+    from app.helpers import get_jakarta_now
     link = Link.query.get_or_404(link_id)
     course = Course.query.get(link.course_id)
 
@@ -1231,10 +1235,11 @@ def api_delete_link(link_id):
     if course.teacher_id != current_user.id:
         return jsonify({'success': False, 'message': 'Unauthorized'}), 403
 
-    db.session.delete(link)
+    link.is_trashed = True
+    link.trashed_at = (lambda n: n.replace(tzinfo=None) if getattr(n,'tzinfo',None) else n)(get_jakarta_now())
     db.session.commit()
 
-    return jsonify({'success': True, 'message': 'Link berhasil dihapus permanen'})
+    return jsonify({'success': True, 'message': 'Link dipindahkan ke Ruang TPS'})
 
 
 # ─── Edit materi (judul & isi) ───────────────────────────────────────────────
@@ -1267,6 +1272,8 @@ def api_update_link(link_id):
         if not url:
             return jsonify({'success': False, 'message': 'URL tidak boleh kosong'}), 400
         link.url = url[:500]
+    if 'description' in data:
+        link.description = sanitize_rich_text(data.get('description') or '', max_len=5000) or None
     db.session.commit()
     return jsonify({'success': True, 'message': 'Link diperbarui'})
 

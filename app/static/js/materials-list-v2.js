@@ -442,6 +442,7 @@ class MaterialsList {
                         <h3 class="text-sm font-bold text-gray-900 group-hover:text-green-700 transition-colors truncate">
                             ${material.title || material.name || 'Untitled'}
                         </h3>
+                        ${(() => { const d = (material.description || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim(); return d ? `<p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate">${d}</p>` : ''; })()}
                         <div class="flex items-center gap-3 mt-1 flex-wrap">
                             <span class="inline-flex items-center px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-[10px] font-bold uppercase tracking-wide">
                                 ${this.getTypeLabel(material.type)}
@@ -1418,7 +1419,6 @@ class MaterialsList {
         const t = (window.topicsData || []).find(x => x.id === id && x.type === typeLabel) || {};
         const isLink = type === 'link';
         const headerTitle = { file: 'Edit Berkas', link: 'Edit Link', assignment: 'Edit Tugas' }[type];
-        const secondLabel = isLink ? 'URL' : 'Deskripsi';
 
         const modal = document.createElement('div');
         modal.className = 'modal-overlay fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[60] p-4';
@@ -1433,11 +1433,14 @@ class MaterialsList {
                         <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-widest mb-2">Judul</label>
                         <input id="edit-mat-title" type="text" maxlength="200" class="w-full px-5 py-4 bg-[#f7f7f7] dark:bg-gray-800 border-2 border-[#e5e5e5] dark:border-gray-700 rounded-2xl font-black text-[#4b4b4b] dark:text-white outline-none focus:border-[#1cb0f6]" placeholder="Judul materi">
                     </div>
+                    ${isLink ? `
                     <div>
-                        <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-widest mb-2">${secondLabel}</label>
-                        ${isLink
-                            ? `<input id="edit-mat-second" type="url" class="w-full px-5 py-4 bg-[#f7f7f7] dark:bg-gray-800 border-2 border-[#e5e5e5] dark:border-gray-700 rounded-2xl font-bold text-[#4b4b4b] dark:text-white outline-none focus:border-[#1cb0f6]" placeholder="https://...">`
-                            : `<textarea id="edit-mat-second" rows="4" class="w-full px-5 py-4 bg-[#f7f7f7] dark:bg-gray-800 border-2 border-[#e5e5e5] dark:border-gray-700 rounded-2xl font-bold text-[#4b4b4b] dark:text-white outline-none focus:border-[#1cb0f6]" placeholder="Deskripsi materi..."></textarea>`}
+                        <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-widest mb-2">URL</label>
+                        <input id="edit-mat-url" type="url" class="w-full px-5 py-4 bg-[#f7f7f7] dark:bg-gray-800 border-2 border-[#e5e5e5] dark:border-gray-700 rounded-2xl font-bold text-[#4b4b4b] dark:text-white outline-none focus:border-[#1cb0f6]" placeholder="https://...">
+                    </div>` : ''}
+                    <div>
+                        <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-widest mb-2">Deskripsi <span class="text-[#afafaf] normal-case">(opsional)</span></label>
+                        <textarea id="edit-mat-desc" rows="4" class="w-full px-5 py-4 bg-[#f7f7f7] dark:bg-gray-800 border-2 border-[#e5e5e5] dark:border-gray-700 rounded-2xl font-bold text-[#4b4b4b] dark:text-white outline-none focus:border-[#1cb0f6]" placeholder="Deskripsi materi..."></textarea>
                     </div>
                     <div id="edit-mat-error" class="hidden p-3 bg-red-50 text-[#ff4b4b] rounded-xl text-xs font-black text-center"></div>
                 </div>
@@ -1450,7 +1453,8 @@ class MaterialsList {
 
         // Set nilai secara programatik (aman dari masalah escaping)
         modal.querySelector('#edit-mat-title').value = t.name || '';
-        modal.querySelector('#edit-mat-second').value = isLink ? (t.url || '') : (t.description || '');
+        if (isLink) modal.querySelector('#edit-mat-url').value = t.url || '';
+        modal.querySelector('#edit-mat-desc').value = t.description || '';
 
         const close = () => modal.remove();
         modal.querySelector('.edit-mat-cancel').addEventListener('click', close);
@@ -1460,16 +1464,17 @@ class MaterialsList {
         modal.querySelector('.edit-mat-save').addEventListener('click', async () => {
             const err = modal.querySelector('#edit-mat-error');
             const newTitle = modal.querySelector('#edit-mat-title').value.trim();
-            const second = modal.querySelector('#edit-mat-second').value.trim();
+            const desc = modal.querySelector('#edit-mat-desc').value.trim();
+            const linkUrl = isLink ? modal.querySelector('#edit-mat-url').value.trim() : '';
             err.classList.add('hidden');
             if (!newTitle) { err.textContent = 'Judul tidak boleh kosong'; err.classList.remove('hidden'); return; }
-            if (isLink && !second) { err.textContent = 'URL tidak boleh kosong'; err.classList.remove('hidden'); return; }
+            if (isLink && !linkUrl) { err.textContent = 'URL tidak boleh kosong'; err.classList.remove('hidden'); return; }
 
             const endpoints = { file: `/api/file/${id}`, link: `/api/link/${id}`, assignment: `/api/assignment/${id}` };
             const bodies = {
-                file: { name: newTitle, description: second },
-                link: { name: newTitle, url: second },
-                assignment: { title: newTitle, description: second },
+                file: { name: newTitle, description: desc },
+                link: { name: newTitle, url: linkUrl, description: desc },
+                assignment: { title: newTitle, description: desc },
             };
             try {
                 const res = await fetch(endpoints[type], {
