@@ -1234,7 +1234,13 @@ document.addEventListener('DOMContentLoaded', function() {
             // Link: buka URL aslinya di tab baru
             if (type === 'link') {
                 const topic = (window.topicsData || []).find(t => t.id === id && t.type === 'Link');
-                if (topic && topic.url) window.open(topic.url, '_blank', 'noopener,noreferrer');
+                if (topic && topic.url) {
+                    let targetUrl = topic.url.trim();
+                    if (!/^(?:f|ht)tps?:\/\//i.test(targetUrl) && !targetUrl.startsWith('//')) {
+                        targetUrl = 'https://' + targetUrl;
+                    }
+                    window.open(targetUrl, '_blank', 'noopener,noreferrer');
+                }
                 return;
             }
             const urls = {

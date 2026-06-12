@@ -186,12 +186,17 @@
 
 /* Clear button hover effect */
 #clear-search {
+    transform: translateY(-50%);
     transition: all 0.2s ease;
 }
 
 #clear-search:hover {
     background-color: #f3f4f6;
-    transform: scale(1.1);
+    transform: translateY(-50%) scale(1.1);
+}
+
+#clear-search:active {
+    transform: translateY(-50%) scale(0.95);
 }
 
 /* ========================================

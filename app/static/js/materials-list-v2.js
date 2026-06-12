@@ -1436,7 +1436,7 @@ class MaterialsList {
                     ${isLink ? `
                     <div>
                         <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-widest mb-2">URL</label>
-                        <input id="edit-mat-url" type="url" class="w-full px-5 py-4 bg-[#f7f7f7] dark:bg-gray-800 border-2 border-[#e5e5e5] dark:border-gray-700 rounded-2xl font-bold text-[#4b4b4b] dark:text-white outline-none focus:border-[#1cb0f6]" placeholder="https://...">
+                        <input id="edit-mat-url" type="text" class="w-full px-5 py-4 bg-[#f7f7f7] dark:bg-gray-800 border-2 border-[#e5e5e5] dark:border-gray-700 rounded-2xl font-bold text-[#4b4b4b] dark:text-white outline-none focus:border-[#1cb0f6]" placeholder="https://...">
                     </div>` : ''}
                     <div>
                         <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-widest mb-2">Deskripsi <span class="text-[#afafaf] normal-case">(opsional)</span></label>

@@ -68,7 +68,10 @@ def create_app(test_config: Optional[Dict] = None) -> Flask:
         app.config['APP_URL'] = os.environ.get('APP_URL')
 
     if test_config:
-        app.config.update(test_config)
+        if isinstance(test_config, dict):
+            app.config.update(test_config)
+        else:
+            app.config.from_object(test_config)
 
     # Initialize Sentry
     sentry_dsn = os.environ.get('SENTRY_DSN')

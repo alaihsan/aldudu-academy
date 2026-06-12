@@ -606,7 +606,7 @@ def api_get_grade_entries():
     
     # Check permission
     is_teacher = course.teacher_id == current_user.id
-    is_student = current_user.id in [s.id for s in course.students.all()]
+    is_student = current_user.id in [s.id for s in course.students]
     
     if not is_teacher and not is_student and current_user.role != UserRole.SUPER_ADMIN:
         return jsonify({'success': False, 'message': 'Unauthorized'}), 403

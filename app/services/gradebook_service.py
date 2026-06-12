@@ -203,7 +203,7 @@ def calculate_course_statistics(course_id: int) -> Dict:
         return {}
     
     # Get all students enrolled in the course
-    students = course.students.all()
+    students = course.students
     
     stats = {
         'course_id': course_id,

@@ -275,6 +275,8 @@ def api_create_link(course_id):
     data = request.get_json() or {}
     name = sanitize_text(data.get('name', ''), max_len=200)
     url = data.get('url', '').strip()
+    if url and not url.startswith(('http://', 'https://')):
+        url = 'https://' + url
     description = sanitize_rich_text(data.get('description') or '', max_len=5000) or None
 
     if not name:
@@ -1271,6 +1273,8 @@ def api_update_link(link_id):
         url = (data.get('url') or '').strip()
         if not url:
             return jsonify({'success': False, 'message': 'URL tidak boleh kosong'}), 400
+        if not url.startswith(('http://', 'https://')):
+            url = 'https://' + url
         link.url = url[:500]
     if 'description' in data:
         link.description = sanitize_rich_text(data.get('description') or '', max_len=5000) or None

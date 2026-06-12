@@ -84,6 +84,16 @@
             </a>
 
             {% if current_user.role.value in ['guru', 'admin', 'super_admin'] and course.teacher_id == current_user.id %}
+            <a href="{{ url_for('main.course_import', course_id=course.id) }}"
+               class="nav-link-duo {% if request.endpoint == 'main.course_import' %}active{% endif %}">
+                <div class="nav-icon-duo bg-[#ce82ff]">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                    </svg>
+                </div>
+                Impor Konten
+            </a>
+
             <a href="{{ url_for('trash.course_tps', course_id=course.id) }}"
                class="nav-link-duo {% if 'course_tps' in request.endpoint|default('') %}active{% endif %}">
                 <div class="nav-icon-duo bg-[#ff4b4b]">

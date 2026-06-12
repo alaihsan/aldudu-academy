@@ -54,11 +54,11 @@
             <div class="flex items-center space-x-3">
                 {% if is_teacher %}
                 <!-- Edit Kelas Button (rename + warna) -->
-                <button onclick="openEditClass()" class="btn-duo btn-duo-ghost h-10 text-xs px-4" title="Edit Kelas">
-                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button onclick="openEditClass()" class="flex items-center space-x-2 px-4 py-2 bg-gray-50 dark:bg-gray-950 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-800 rounded-xl transition-all text-xs font-bold text-gray-700 dark:text-gray-300 group" title="Edit Kelas">
+                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                     </svg>
-                    EDIT KELAS
+                    <span class="group-hover:text-primary-700 dark:group-hover:text-primary-400 transition-colors">EDIT KELAS</span>
                 </button>
                 {% endif %}
                 <a href="{{ url_for('main.issues') }}" class="p-2 text-primary-600 hover:bg-primary-50 rounded-lg transition-colors" title="Manajemen Masalah">
@@ -79,7 +79,7 @@
                 <div class="max-w-6xl mx-auto space-y-10 animate-fade-in mb-8">
                 
                 <!-- Hero Section -->
-                <div class="relative rounded-[2.5rem] overflow-hidden border-2 border-slate-200 dark:border-gray-800 shadow-[0_8px_0_#e5e5e5] dark:shadow-[0_8px_0_#1a1a1a] h-64 flex items-center px-12 group" style="background-color: {{ course.color }}">
+                <div id="course-hero-section" class="relative rounded-[2.5rem] overflow-hidden border-2 border-slate-200 dark:border-gray-800 shadow-[0_8px_0_#e5e5e5] dark:shadow-[0_8px_0_#1a1a1a] h-64 flex items-center px-12 group">
                     <!-- Decor -->
                     <div class="absolute inset-0 opacity-20 group-hover:scale-110 transition-transform duration-1000">
                         <svg class="w-full h-full" fill="currentColor" viewBox="0 0 100 100" preserveAspectRatio="none">
@@ -95,10 +95,12 @@
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                                 <span class="font-black text-sm">{{ course.teacher.name }}</span>
                             </div>
+                            {% if course.students | length > 0 %}
                             <div class="flex items-center gap-2 bg-black/10 px-4 py-2 rounded-xl border border-white/20">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                                 <span class="font-black text-sm">{{ course.students | length }} Peserta</span>
                             </div>
+                            {% endif %}
                             {% if is_teacher %}
                             <button onclick="openStudentRoster()" class="flex items-center gap-2 bg-white/20 hover:bg-white/30 px-4 py-2 rounded-xl border border-white/20 transition-colors active:scale-95">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
@@ -272,7 +274,7 @@
                 </div>
                 <div>
                     <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2">URL (http/https)</label>
-                    <input type="url" id="link-url-input" class="w-full px-6 py-4 bg-[#f7f7f7] border-2 border-[#e5e5e5] rounded-2xl focus:border-[#ce82ff] outline-none font-black text-[#4b4b4b]" required>
+                    <input type="text" id="link-url-input" class="w-full px-6 py-4 bg-[#f7f7f7] border-2 border-[#e5e5e5] rounded-2xl focus:border-[#ce82ff] outline-none font-black text-[#4b4b4b]" required>
                 </div>
                 <div>
                     <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2">Deskripsi <span class="text-[#afafaf] normal-case">(opsional)</span></label>
@@ -364,13 +366,129 @@
     </div>
 </div>
 
+<div class="hidden">
+    <span id="course-id-data">{{ course.id }}</span>
+    <span id="is-teacher-data">{{ 'true' if is_teacher else 'false' }}</span>
+    <span id="course-name-data">{{ course.name }}</span>
+    <span id="course-color-data">{{ course.color or '#1cb0f6' }}</span>
+    <span id="topics-data-raw">{{ topics_json | tojson }}</span>
+</div>
+
 <script>
-// Pass template data to JavaScript globals (used by course_detail.js)
-window.courseId = {{ course.id }};
-window.isTeacher = {{ 'true' if is_teacher else 'false' }};
-window.courseName = {{ course.name | tojson }};
-window.courseColor = {{ (course.color or '#1cb0f6') | tojson }};
-window.topicsData = {{ topics_json | tojson }};
+// Pass template data to JavaScript globals (used by course_detail.js and materials-list-v2.js)
+window.courseId = parseInt(document.getElementById('course-id-data').textContent, 10);
+window.isTeacher = document.getElementById('is-teacher-data').textContent.trim() === 'true';
+window.courseName = document.getElementById('course-name-data').textContent;
+window.courseColor = document.getElementById('course-color-data').textContent;
+window.topicsData = JSON.parse(document.getElementById('topics-data-raw').textContent);
+
+// Set hero section background color
+const heroSection = document.getElementById('course-hero-section');
+if (heroSection) {
+    heroSection.style.backgroundColor = window.courseColor;
+}
+
+// Class Switcher Dropdown Implementation
+let classSwitcherLoaded = false;
+
+window.toggleClassSwitcher = async function() {
+    const menu = document.getElementById('class-switcher-menu');
+    const arrow = document.getElementById('switcher-arrow');
+    if (!menu) return;
+
+    const isHidden = menu.classList.contains('hidden');
+    if (isHidden) {
+        menu.classList.remove('hidden');
+        if (arrow) arrow.style.transform = 'rotate(180deg)';
+        
+        if (!classSwitcherLoaded) {
+            await loadClassSwitcherList();
+        }
+    } else {
+        menu.classList.add('hidden');
+        if (arrow) arrow.style.transform = 'rotate(0deg)';
+    }
+};
+
+async function loadClassSwitcherList() {
+    const listContainer = document.getElementById('class-switcher-list');
+    if (!listContainer) return;
+
+    listContainer.innerHTML = `
+        <div class="px-6 py-4 text-center text-xs text-gray-500">
+            <span class="inline-block animate-spin mr-2">⏳</span> Memuat kelas...
+        </div>
+    `;
+
+    try {
+        const res = await fetch('/api/courses');
+        if (!res.ok) throw new Error('Gagal mengambil data kelas');
+        const data = await res.json();
+        
+        if (data.success && Array.isArray(data.courses)) {
+            if (data.courses.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="px-6 py-4 text-center text-xs text-gray-400">
+                        Tidak ada kelas lain.
+                    </div>
+                `;
+                return;
+            }
+
+            listContainer.innerHTML = data.courses.map(c => {
+                const isActive = c.id === window.courseId;
+                if (isActive) {
+                    return `
+                        <div class="flex items-center justify-between px-6 py-4 bg-primary-50/50 dark:bg-primary-900/10 border-b border-gray-100 dark:border-gray-800 last:border-0">
+                            <div class="flex items-center space-x-3">
+                                <span class="w-3 h-3 rounded-full shrink-0" style="background-color: ${c.color || '#1cb0f6'}"></span>
+                                <span class="text-sm font-black text-primary-600 dark:text-primary-400">${c.name}</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-[10px] font-black uppercase tracking-wider text-primary-600 bg-primary-100/50 dark:bg-primary-950 dark:text-primary-400 px-2.5 py-1 rounded-full">${c.class_code}</span>
+                                <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                                </svg>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    return `
+                        <a href="/kelas/${c.id}" class="flex items-center justify-between px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors border-b border-gray-100 dark:border-gray-800 last:border-0 group">
+                            <div class="flex items-center space-x-3">
+                                <span class="w-3 h-3 rounded-full shrink-0 group-hover:scale-125 transition-transform" style="background-color: ${c.color || '#1cb0f6'}"></span>
+                                <span class="text-sm font-bold text-gray-700 dark:text-gray-300 group-hover:text-primary-600 transition-colors">${c.name}</span>
+                            </div>
+                            <span class="text-[10px] font-black uppercase tracking-wider text-gray-400 group-hover:text-gray-600 bg-gray-100 dark:bg-gray-800 px-2.5 py-1 rounded-full transition-colors">${c.class_code}</span>
+                        </a>
+                    `;
+                }
+            }).join('');
+            
+            classSwitcherLoaded = true;
+        } else {
+            throw new Error(data.message || 'Gagal memuat daftar kelas');
+        }
+    } catch (err) {
+        console.error(err);
+        listContainer.innerHTML = `
+            <div class="px-6 py-4 text-center text-xs text-red-500 font-bold">
+                ⚠️ ${err.message || 'Gagal memuat kelas'}
+            </div>
+        `;
+    }
+}
+
+// Dismiss switcher when clicking outside
+window.addEventListener('click', function(e) {
+    const switcher = document.getElementById('class-switcher');
+    const menu = document.getElementById('class-switcher-menu');
+    const arrow = document.getElementById('switcher-arrow');
+    if (switcher && !switcher.contains(e.target) && menu && !menu.classList.contains('hidden')) {
+        menu.classList.add('hidden');
+        if (arrow) arrow.style.transform = 'rotate(0deg)';
+    }
+});
 </script>
 
 <!-- Color Picker Modal -->
