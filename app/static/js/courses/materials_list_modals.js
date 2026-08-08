@@ -109,24 +109,7 @@ Object.assign(MaterialsList.prototype, {
         });
     },
 
-    showNotification(message, type = 'success') {
-        const notification = document.createElement('div');
-        notification.className = `fixed bottom-6 right-6 px-6 py-4 rounded-2xl shadow-2xl z-[100] animate-slide-up flex items-center gap-3 ${
-            type === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'
-        }`;
-        notification.innerHTML = `
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-            </svg>
-            <span class="font-bold text-sm">${message}</span>
-        `;
-        document.body.appendChild(notification);
-        setTimeout(() => {
-            notification.style.opacity = '0';
-            notification.style.transition = 'opacity 0.3s';
-            setTimeout(() => notification.remove(), 300);
-        }, 3000);
-    },
+    // showNotification() is defined in core/dom-utils.js (loaded via base.html)
 
     showAddMaterialModal() {
         const modal = document.createElement('div');
@@ -300,7 +283,7 @@ Object.assign(MaterialsList.prototype, {
 
                 if (data.success && data.quiz && data.quiz.id) {
                     modal.remove();
-                    this.showNotification('Kuis berhasil dibuat! Membuka editor...', 'success');
+                    showNotification('Kuis berhasil dibuat! Membuka editor...', 'success');
                     setTimeout(() => {
                         window.location.href = `/quiz/${data.quiz.id}`;
                     }, 500);
@@ -375,7 +358,7 @@ Object.assign(MaterialsList.prototype, {
                         this.render();
                         this.attachEventListeners();
                     });
-                    this.showNotification('Folder berhasil dibuat!', 'success');
+                    showNotification('Folder berhasil dibuat!', 'success');
                 } else {
                     errorDiv.textContent = data.message || 'Gagal membuat folder';
                     errorDiv.classList.remove('hidden');
@@ -483,13 +466,13 @@ Object.assign(MaterialsList.prototype, {
             
             if (data.success) {
                 this.refresh();
-                this.showNotification('Kuis berhasil diarsipkan', 'success');
+                showNotification('Kuis berhasil diarsipkan', 'success');
             } else {
-                this.showNotification(data.message || 'Gagal mengarsipkan kuis', 'error');
+                showNotification(data.message || 'Gagal mengarsipkan kuis', 'error');
             }
         } catch (error) {
             console.error('Error archiving quiz:', error);
-            this.showNotification('Terjadi kesalahan', 'error');
+            showNotification('Terjadi kesalahan', 'error');
         }
     },
 
@@ -503,13 +486,13 @@ Object.assign(MaterialsList.prototype, {
             
             if (data.success) {
                 this.refresh();
-                this.showNotification('Tugas berhasil diarsipkan', 'success');
+                showNotification('Tugas berhasil diarsipkan', 'success');
             } else {
-                this.showNotification(data.message || 'Gagal mengarsipkan tugas', 'error');
+                showNotification(data.message || 'Gagal mengarsipkan tugas', 'error');
             }
         } catch (error) {
             console.error('Error archiving assignment:', error);
-            this.showNotification('Terjadi kesalahan', 'error');
+            showNotification('Terjadi kesalahan', 'error');
         }
     },
 
@@ -523,13 +506,13 @@ Object.assign(MaterialsList.prototype, {
             
             if (data.success) {
                 this.refresh();
-                this.showNotification('Berkas berhasil diarsipkan', 'success');
+                showNotification('Berkas berhasil diarsipkan', 'success');
             } else {
-                this.showNotification(data.message || 'Gagal mengarsipkan berkas', 'error');
+                showNotification(data.message || 'Gagal mengarsipkan berkas', 'error');
             }
         } catch (error) {
             console.error('Error archiving file:', error);
-            this.showNotification('Terjadi kesalahan', 'error');
+            showNotification('Terjadi kesalahan', 'error');
         }
     },
 
@@ -543,13 +526,13 @@ Object.assign(MaterialsList.prototype, {
             
             if (data.success) {
                 this.refresh();
-                this.showNotification('Link berhasil diarsipkan', 'success');
+                showNotification('Link berhasil diarsipkan', 'success');
             } else {
-                this.showNotification(data.message || 'Gagal mengarsipkan link', 'error');
+                showNotification(data.message || 'Gagal mengarsipkan link', 'error');
             }
         } catch (error) {
             console.error('Error archiving link:', error);
-            this.showNotification('Terjadi kesalahan', 'error');
+            showNotification('Terjadi kesalahan', 'error');
         }
     },
 
@@ -625,7 +608,7 @@ Object.assign(MaterialsList.prototype, {
                 if (data.success) {
                     close();
                     this.refresh();
-                    this.showNotification('Materi berhasil diperbarui', 'success');
+                    showNotification('Materi berhasil diperbarui', 'success');
                 } else {
                     err.textContent = data.message || 'Gagal menyimpan'; err.classList.remove('hidden');
                 }
@@ -637,7 +620,7 @@ Object.assign(MaterialsList.prototype, {
 
     showMoveToFolderModal(materialId, materialType) {
         if (this.folders.length === 0) {
-            this.showNotification('Belum ada folder. Buat folder terlebih dahulu.', 'error');
+            showNotification('Belum ada folder. Buat folder terlebih dahulu.', 'error');
             return;
         }
 
@@ -735,7 +718,7 @@ Object.assign(MaterialsList.prototype, {
                     if (folder) folder.name = newName;
                     this.render();
                     this.attachEventListeners();
-                    this.showNotification('Nama folder berhasil diubah', 'success');
+                    showNotification('Nama folder berhasil diubah', 'success');
                 } else {
                     errorDiv.textContent = data.message || 'Gagal mengubah nama folder';
                     errorDiv.classList.remove('hidden');
@@ -758,13 +741,13 @@ Object.assign(MaterialsList.prototype, {
 
             if (data.success) {
                 this.refresh();
-                this.showNotification('Materi berhasil dihapus', 'success');
+                showNotification('Materi berhasil dihapus', 'success');
             } else {
-                this.showNotification(data.message || 'Gagal menghapus materi', 'error');
+                showNotification(data.message || 'Gagal menghapus materi', 'error');
             }
         } catch (error) {
             console.error('Error deleting material:', error);
-            this.showNotification('Terjadi kesalahan', 'error');
+            showNotification('Terjadi kesalahan', 'error');
         }
     },
 
@@ -778,13 +761,13 @@ Object.assign(MaterialsList.prototype, {
                 this.expandedFolders.delete(folderId);
                 this.render();
                 this.attachEventListeners();
-                this.showNotification('Folder berhasil dihapus', 'success');
+                showNotification('Folder berhasil dihapus', 'success');
             } else {
-                this.showNotification(data.message || 'Gagal menghapus folder', 'error');
+                showNotification(data.message || 'Gagal menghapus folder', 'error');
             }
         } catch (error) {
             console.error('Error deleting folder:', error);
-            this.showNotification('Terjadi kesalahan', 'error');
+            showNotification('Terjadi kesalahan', 'error');
         }
     },
 

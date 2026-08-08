@@ -29,7 +29,7 @@ async function openStudentRoster() {
             <tr>
                 <td class="py-3 pr-4 font-bold text-[#afafaf]">${i + 1}</td>
                 <td class="py-3 pr-4 font-mono font-bold">${s.nis || '-'}</td>
-                <td class="py-3 pr-4 font-black">${escapeHtmlRoster(s.name)}</td>
+                <td class="py-3 pr-4 font-black">${escapeHtml(s.name)}</td>
                 <td class="py-3 font-bold text-[#afafaf]">${genderLabel(s.gender)}</td>
             </tr>`).join('');
     } catch (e) {
@@ -42,8 +42,4 @@ function closeStudentRoster() {
     document.getElementById('student-roster-modal')?.classList.add('hidden');
 }
 
-function escapeHtmlRoster(str) {
-    const d = document.createElement('div');
-    d.textContent = str == null ? '' : String(str);
-    return d.innerHTML;
-}
+// escapeHtml() is defined in core/dom-utils.js (loaded via base.html)

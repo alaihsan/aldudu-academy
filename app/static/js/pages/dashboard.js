@@ -9,17 +9,13 @@
 if (typeof DOMPurify === 'undefined') {
     window.DOMPurify = {
         sanitize: function(html, opts) {
-            // Basic HTML entity escaping for dynamic values is handled
-            // by escapeHtml() below; for full HTML strings passed here,
-            // return as-is since the content comes from our own API.
+            // Basic HTML entity escaping for dynamic values is handled by
+            // escapeHtml() (core/dom-utils.js, loaded before this file);
+            // for full HTML strings passed here, return as-is since the
+            // content comes from our own API.
             return html;
         }
     };
-}
-
-function escapeHtml(str) {
-    if (typeof str !== 'string') return str;
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 var Dashboard = {

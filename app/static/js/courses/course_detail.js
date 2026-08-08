@@ -363,7 +363,7 @@ const CourseDetail = {
                     this.updateFolderCounts();
                     
                     // Show success notification
-                    this.showNotification('✅ Materi berhasil dipindahkan ke folder', 'success');
+                    showNotification('✅ Materi berhasil dipindahkan ke folder', 'success');
                 }
             } else {
                 throw new Error(data.message || 'Gagal memindahkan materi');
@@ -380,7 +380,7 @@ const CourseDetail = {
             }, 1000);
             
             // Show error notification
-            this.showNotification('❌ Gagal memindahkan materi. Silakan coba lagi.', 'error');
+            showNotification('❌ Gagal memindahkan materi. Silakan coba lagi.', 'error');
             
             // Revert folderId if move failed
             if (originalFolderId) {
@@ -873,38 +873,7 @@ const CourseDetail = {
         }
     },
 
-    // ─── Notifications ────────────────────────────────────────────
-
-    showNotification(message, type = 'info') {
-        // Remove existing notification
-        const existing = document.querySelector('.drag-notification');
-        if (existing) existing.remove();
-
-        const colors = {
-            success: { bg: 'bg-green-50', border: 'border-green-200', text: 'text-green-700', icon: '✅' },
-            error: { bg: 'bg-red-50', border: 'border-red-200', text: 'text-red-700', icon: '❌' },
-            info: { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-700', icon: 'ℹ️' }
-        };
-
-        const color = colors[type] || colors.info;
-
-        const notification = document.createElement('div');
-        notification.className = `drag-notification fixed bottom-6 right-6 ${color.bg} ${color.border} border-2 rounded-2xl px-6 py-4 shadow-2xl z-[9999] animate-slide-up flex items-center gap-3`;
-        notification.innerHTML = `
-            <span class="text-xl">${color.icon}</span>
-            <span class="font-bold ${color.text}">${message}</span>
-        `;
-
-        document.body.appendChild(notification);
-
-        // Auto-remove after 3 seconds
-        setTimeout(() => {
-            notification.style.transition = 'all 0.3s ease';
-            notification.style.opacity = '0';
-            notification.style.transform = 'translateY(20px)';
-            setTimeout(() => notification.remove(), 300);
-        }, 3000);
-    }
+    // showNotification() is defined in core/dom-utils.js (loaded via base.html)
 };
 
 // KBM notes, class-edit modal, student roster, and the PDF viewer used to
