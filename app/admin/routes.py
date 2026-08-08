@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 # Password default untuk siswa hasil import
 DEFAULT_STUDENT_PASSWORD = 'passwd'
 
-admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
+admin_bp = Blueprint('admin', __name__, url_prefix='/admin', template_folder='templates')
 
 
 @admin_bp.before_request
@@ -38,7 +38,7 @@ def dashboard():
     # Recent Activities - filtered by school
     recent_logs = ActivityLog.query.filter_by(school_id=school_id).order_by(ActivityLog.created_at.desc()).limit(20).all()
 
-    return render_template('admin_dashboard.html', stats=stats, recent_logs=recent_logs)
+    return render_template('admin/admin_dashboard.html', stats=stats, recent_logs=recent_logs)
 
 @admin_bp.route('/users')
 def user_management():
@@ -48,7 +48,7 @@ def user_management():
     courses = (Course.query.join(AcademicYear)
                .filter(AcademicYear.school_id == school_id)
                .order_by(Course.name).all())
-    return render_template('admin_users.html', gurus=gurus, murids=murids, courses=courses)
+    return render_template('admin/admin_users.html', gurus=gurus, murids=murids, courses=courses)
 
 
 @admin_bp.route('/api/users', methods=['GET'])
@@ -479,7 +479,7 @@ def _verify_class_in_school(course):
 def classes_management():
     """Halaman Manajemen Kelas — daftar semua kelas sekolah."""
     courses = _school_courses(current_user.school_id)
-    return render_template('admin_classes.html', courses=courses)
+    return render_template('admin/admin_classes.html', courses=courses)
 
 
 @admin_bp.route('/classes/<int:course_id>')
@@ -489,7 +489,7 @@ def class_detail(course_id):
     _verify_class_in_school(course)
     students = sorted(course.students, key=lambda s: (s.name or '').lower())
     other_classes = [c for c in _school_courses(current_user.school_id) if c.id != course.id]
-    return render_template('admin_class_detail.html',
+    return render_template('admin/admin_class_detail.html',
                            course=course, students=students, other_classes=other_classes)
 
 

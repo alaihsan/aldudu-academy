@@ -15,15 +15,15 @@ def register_blueprints(app):
     from app.quiz.routes import quiz_bp
     from app.blueprints.discussion import discussion_bp
     from app.issues.routes import issues_bp, issues_pages_bp
-    from app.blueprints.admin import admin_bp
-    from app.blueprints.superadmin import superadmin_bp
+    from app.admin.routes import admin_bp
+    from app.superadmin.routes import superadmin_bp
     from app.tickets.routes import tickets_bp
     from app.gradebook.routes import gradebook_bp
     from app.assignment.routes import assignment_bp
     from app.whats_new.routes import whats_new_view_bp
     from app.trash.routes import trash_bp
-    from app.blueprints.health import health_bp
-    from app.blueprints.metrics import metrics_bp
+    from app.health.routes import health_bp
+    from app.metrics.routes import metrics_bp
 
     blueprints = [
         main_bp,
