@@ -4,7 +4,6 @@ import warnings
 from typing import Optional, Dict
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request, render_template
-from flask_talisman import Talisman
 
 from .extensions import db, login_manager, mail, migrate, cache, limiter
 from .config import config_by_name
