@@ -375,7 +375,7 @@
 </div>
 
 <script>
-// Pass template data to JavaScript globals (used by course_detail.js and materials-list-v2.js)
+// Pass template data to JavaScript globals (used by course_detail.js and materials_list.js)
 window.courseId = parseInt(document.getElementById('course-id-data').textContent, 10);
 window.isTeacher = document.getElementById('is-teacher-data').textContent.trim() === 'true';
 window.courseName = document.getElementById('course-name-data').textContent;
@@ -594,7 +594,13 @@ window.addEventListener('click', function(e) {
 {% endblock %}
 
 {% block extra_scripts %}
-<script src="{{ url_for('static', filename='js/materials-list-v2.js') }}?v={{ asset_hash('js/materials-list-v2.js') }}"></script>
-<script src="{{ url_for('static', filename='js/course_detail.js') }}?v={{ asset_hash('js/course_detail.js') }}"></script>
-<script src="{{ url_for('static', filename='js/discussion.js') }}?v={{ asset_hash('js/discussion.js') }}"></script>
+<script src="{{ url_for('static', filename='js/courses/materials_list.js') }}?v={{ asset_hash('js/courses/materials_list.js') }}"></script>
+<script src="{{ url_for('static', filename='js/courses/materials_list_dnd.js') }}?v={{ asset_hash('js/courses/materials_list_dnd.js') }}"></script>
+<script src="{{ url_for('static', filename='js/courses/materials_list_modals.js') }}?v={{ asset_hash('js/courses/materials_list_modals.js') }}"></script>
+<script src="{{ url_for('static', filename='js/courses/course_detail.js') }}?v={{ asset_hash('js/courses/course_detail.js') }}"></script>
+<script src="{{ url_for('static', filename='js/courses/course_detail_kbm.js') }}?v={{ asset_hash('js/courses/course_detail_kbm.js') }}"></script>
+<script src="{{ url_for('static', filename='js/courses/course_detail_class_edit.js') }}?v={{ asset_hash('js/courses/course_detail_class_edit.js') }}"></script>
+<script src="{{ url_for('static', filename='js/courses/course_detail_roster.js') }}?v={{ asset_hash('js/courses/course_detail_roster.js') }}"></script>
+<script src="{{ url_for('static', filename='js/courses/course_detail_pdf_viewer.js') }}?v={{ asset_hash('js/courses/course_detail_pdf_viewer.js') }}"></script>
+<script src="{{ url_for('static', filename='js/discussion/discussion.js') }}?v={{ asset_hash('js/discussion/discussion.js') }}"></script>
 {% endblock %}

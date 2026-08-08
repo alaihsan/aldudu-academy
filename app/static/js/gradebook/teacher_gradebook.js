@@ -363,8 +363,4 @@ function formatNumber(value) {
     return Number.isInteger(number) ? String(number) : number.toFixed(1);
 }
 
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text == null ? '' : String(text);
-    return div.innerHTML;
-}
+// escapeHtml() is defined in core/dom-utils.js (loaded via base.html)

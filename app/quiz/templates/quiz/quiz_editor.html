@@ -445,11 +445,11 @@
 {% endblock %}
 
 {% block extra_scripts %}
-<script src="{{ url_for('static', filename='quiz-editor.js') }}?v={{ asset_hash('quiz-editor.js') }}"></script>
+<script src="{{ url_for('static', filename='js/quiz/quiz-editor.js') }}?v={{ asset_hash('js/quiz/quiz-editor.js') }}"></script>
 <script>
 // Pass template data to JavaScript globals
 window.quizId = {{ quiz.id }};
 window.quizThemeColor = '{{ quiz.theme_color or "#673ab7" }}';
 </script>
-<script src="{{ url_for('static', filename='js/quiz_editor_inline.js') }}?v={{ asset_hash('js/quiz_editor_inline.js') }}"></script>
+<script src="{{ url_for('static', filename='js/quiz/quiz_editor_inline.js') }}?v={{ asset_hash('js/quiz/quiz_editor_inline.js') }}"></script>
 {% endblock %}

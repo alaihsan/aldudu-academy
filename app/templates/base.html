@@ -182,17 +182,20 @@
 
     {% block extra_scripts %}{% endblock %}
 
+    <!-- Shared DOM utilities (escapeHtml, showNotification) -->
+    <script src="{{ url_for('static', filename='js/core/dom-utils.js') }}?v={{ asset_hash('js/core/dom-utils.js') }}"></script>
+
     <!-- Language Manager (always needed) -->
-    <script src="{{ url_for('static', filename='js/language.js') }}?v={{ asset_hash('js/language.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/core/language.js') }}?v={{ asset_hash('js/core/language.js') }}"></script>
 
     <!-- Theme Manager (dark mode) -->
-    <script src="{{ url_for('static', filename='js/theme-manager.js') }}?v={{ asset_hash('js/theme-manager.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/core/theme-manager.js') }}?v={{ asset_hash('js/core/theme-manager.js') }}"></script>
 
     <!-- Sidebar & Global Logic (always needed) -->
-    <script src="{{ url_for('static', filename='js/sidebar.js') }}?v={{ asset_hash('js/sidebar.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/core/sidebar.js') }}?v={{ asset_hash('js/core/sidebar.js') }}"></script>
 
     <!-- Global Utilities (floating issue, logout, etc) -->
-    <script src="{{ url_for('static', filename='js/global-utils.js') }}?v={{ asset_hash('js/global-utils.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/core/global-utils.js') }}?v={{ asset_hash('js/core/global-utils.js') }}"></script>
 
     <!-- Page-specific scripts (loaded only on relevant pages) -->
     {% if page_script %}
