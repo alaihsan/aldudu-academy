@@ -9,7 +9,7 @@ per-app restructure), only the import lines here need to change.
 
 
 def register_blueprints(app):
-    from app.blueprints.auth import auth_bp
+    from app.auth.routes import auth_bp
     from app.blueprints.courses import courses_bp
     from app.blueprints.main import main_bp
     from app.quiz.routes import quiz_bp

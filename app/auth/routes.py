@@ -4,12 +4,12 @@ from flask_login import login_user, logout_user, current_user, login_required
 from app.models import User, UserRole, SchoolStatus, PasswordResetToken, School
 from app.helpers import is_valid_email, log_activity, validate_password
 from app.core.extensions import limiter, db
-from app.services.auth_service import (
+from app.auth.services import (
     register_school, verify_email_token,
     request_password_reset, reset_password, register_user,
 )
 
-auth_bp = Blueprint('auth', __name__)
+auth_bp = Blueprint('auth', __name__, template_folder='templates')
 
 
 # ─── Page Routes ────────────────────────────────────
