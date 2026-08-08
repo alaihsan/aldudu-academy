@@ -222,15 +222,8 @@ def create_app(test_config: Optional[Dict] = None) -> Flask:
     register_all_middleware(app)
 
     # Register blueprints
-    from .blueprints import create_blueprints
-    for bp in create_blueprints():
-        app.register_blueprint(bp)
-
-    # Register health and metrics blueprints
-    from .blueprints.health import health_bp
-    from .blueprints.metrics import metrics_bp
-    app.register_blueprint(health_bp)
-    app.register_blueprint(metrics_bp)
+    from .core.registry import register_blueprints
+    register_blueprints(app)
 
     # Register CLI commands
     from .core.cli import register_cli_commands
