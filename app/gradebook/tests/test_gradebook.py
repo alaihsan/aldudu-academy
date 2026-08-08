@@ -6,8 +6,8 @@ from flask import url_for
 from app.core.extensions import db
 from app.models import User, UserRole, Course, Quiz, QuizSubmission, QuizStatus
 from app.models import Assignment, AssignmentSubmission, AssignmentStatus
-from app.models.gradebook import GradeCategory, GradeCategoryType, GradeItem, GradeEntry
-from app.models.gradebook import LearningObjective, LearningGoal
+from app.gradebook.models import GradeCategory, GradeCategoryType, GradeItem, GradeEntry
+from app.gradebook.models import LearningObjective, LearningGoal
 
 
 class TestGradebookIntegration:
@@ -317,7 +317,7 @@ class TestGradebookBugFixes:
     
     def test_bug1_mixed_weight_items(self, app, course, grade_category, student_user):
         """Test BUG-1 fix: Mixed weight items (some 0, some >0) should all be included"""
-        from app.services.gradebook_service import calculate_category_grade
+        from app.gradebook.services import calculate_category_grade
         
         # Create quiz item with weight=100 (imported)
         quiz_item = GradeItem(
@@ -368,7 +368,7 @@ class TestGradebookBugFixes:
 
     def test_bug2_unified_final_grade(self, app, course, grade_category, student_user):
         """Test BUG-2 fix: Unified final grade calculation"""
-        from app.services.gradebook_service import calculate_final_grade, calculate_category_grade
+        from app.gradebook.services import calculate_final_grade, calculate_category_grade
         
         # Create grade item
         item = GradeItem(
@@ -405,7 +405,7 @@ class TestGradebookBugFixes:
 
     def test_bug3_manual_override_protects_from_sync(self, app, course, quiz, grade_category, student_user):
         """Test BUG-3 fix: Manual override protects grade from auto-sync"""
-        from app.services.gradebook_service import sync_quiz_grades
+        from app.gradebook.services import sync_quiz_grades
         
         # Create grade item for quiz
         grade_item = GradeItem(
@@ -451,7 +451,7 @@ class TestGradebookBugFixes:
 
     def test_bulk_save_grades_sets_manual_override(self, app, course, grade_category, student_user, teacher_user):
         """Test that bulk_save_grades sets manual_override flag"""
-        from app.services.gradebook_service import bulk_save_grades
+        from app.gradebook.services import bulk_save_grades
         
         # Create grade item
         item = GradeItem(

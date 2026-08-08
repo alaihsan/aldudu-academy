@@ -14,6 +14,6 @@ from .issue import Issue, IssueStatus, IssuePriority
 from .ticket import Ticket, TicketMessage, TicketCategory, TicketStatus, TicketPriority
 from .token import EmailVerificationToken, PasswordResetToken
 from .activity_log import ActivityLog
-from .gradebook import GradeCategory, GradeCategoryType, LearningObjective, LearningGoal, GradeItem, GradeEntry
+from app.gradebook.models import GradeCategory, GradeCategoryType, LearningObjective, LearningGoal, GradeItem, GradeEntry
 from .assignment import Assignment, AssignmentSubmission, AssignmentStatus, AssignmentSubmissionStatus
 from .whats_new import WhatsNew

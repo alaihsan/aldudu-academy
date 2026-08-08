@@ -7,8 +7,8 @@ from sqlalchemy import func
 from flask import current_app
 from flask_caching import Cache
 from app.core.extensions import db, cache
-from app.models import (
-    Course, User, Quiz, QuizSubmission, QuizStatus,
+from app.models import Course, User, Quiz, QuizSubmission, QuizStatus
+from app.gradebook.models import (
     GradeCategory, GradeCategoryType, LearningObjective, LearningGoal,
     GradeItem, GradeEntry
 )

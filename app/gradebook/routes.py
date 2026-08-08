@@ -6,12 +6,12 @@ from flask import Blueprint, render_template, request, jsonify, redirect, url_fo
 from flask_login import login_required, current_user
 from flask_caching import Cache
 from app.models import Course, User, UserRole, Quiz, QuizStatus, AcademicYear
-from app.models.gradebook import (
+from app.gradebook.models import (
     GradeCategory, GradeCategoryType, LearningObjective, LearningGoal,
     GradeItem, GradeEntry
 )
 from app.core.extensions import db, cache
-from app.services.gradebook_service import (
+from app.gradebook.services import (
     calculate_student_grade, calculate_category_grade, calculate_course_statistics,
     import_quiz_to_gradebook, sync_quiz_grades, get_student_grades_summary,
     bulk_save_grades
@@ -44,7 +44,7 @@ def get_or_create_grade_category(course_id: int, name: str, category_type: Grade
     db.session.flush()
     return category
 
-gradebook_bp = Blueprint('gradebook', __name__, url_prefix='/gradebook')
+gradebook_bp = Blueprint('gradebook', __name__, url_prefix='/gradebook', template_folder='templates')
 
 
 # ─── Page Routes ───────────────────────────────────────────────────────────────
@@ -1197,7 +1197,7 @@ def api_wizard_setup(course_id):
         "learning_objectives": [{"code": "CP-1", "description": "..."}]
     }
     """
-    from app.models.gradebook import GradeCategory, GradeCategoryType, LearningObjective
+    from app.gradebook.models import GradeCategory, GradeCategoryType, LearningObjective
     
     course = Course.query.get_or_404(course_id)
     

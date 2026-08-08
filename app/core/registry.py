@@ -18,7 +18,7 @@ def register_blueprints(app):
     from app.blueprints.admin import admin_bp
     from app.blueprints.superadmin import superadmin_bp
     from app.blueprints.tickets import tickets_bp
-    from app.blueprints.gradebook import gradebook_bp
+    from app.gradebook.routes import gradebook_bp
     from app.blueprints.assignment import assignment_bp
     from app.blueprints.whats_new_view import whats_new_view_bp
     from app.blueprints.trash import trash_bp

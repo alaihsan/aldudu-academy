@@ -1,10 +1,23 @@
+"""
+Shared pytest fixtures for tests colocated under app/<feature>/tests/.
+
+Several features share a fixture chain rooted in `course` (which itself
+depends on `active_school`/`teacher_user`) — e.g. gradebook, quiz, and
+assignment tests all build on the same test course. Keeping those shared
+fixtures here (an ancestor directory of every app/<feature>/tests/ package)
+lets pytest's conftest discovery make them available everywhere under
+app/, without duplicating them per feature.
+
+tests/conftest.py (repo root) still holds its own copy for the test
+files that haven't been colocated into app/<feature>/tests/ yet, since
+that directory isn't a descendant of this one.
+"""
 import os
 import sys
 import pytest
 from datetime import datetime
 from pathlib import Path
 
-# Ensure project root is importable when running tests
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
@@ -14,23 +27,20 @@ if str(ROOT) not in sys.path:
 def app():
     """Create application for testing with MySQL"""
     from app import create_app
-    import os
-    
-    # Use MySQL from environment or .env
-    database_url = os.environ.get('TEST_DATABASE_URL', 
-                   os.environ.get('DATABASE_URL', 
+
+    database_url = os.environ.get('TEST_DATABASE_URL',
+                   os.environ.get('DATABASE_URL',
                    'mysql+pymysql://root:@localhost:3306/aldudu_academy_test'))
-    
+
     app = create_app(test_config={
         'TESTING': True,
         'SQLALCHEMY_DATABASE_URI': database_url,
         'SQLALCHEMY_TRACK_MODIFICATIONS': False,
         'WTF_CSRF_ENABLED': False,
     })
-    
+
     with app.app_context():
         from app.core.extensions import db
-        # Drop all tables first to ensure clean state
         db.drop_all()
         db.create_all()
         yield app
@@ -72,7 +82,7 @@ def teacher_user(app, active_school):
     """Create a teacher user for testing"""
     from app.core.extensions import db
     from app.models import User, UserRole
-    
+
     user = User(
         name='Test Teacher',
         email='teacher@test.com',
@@ -91,7 +101,7 @@ def student_user(app, active_school):
     """Create a student user for testing"""
     from app.core.extensions import db
     from app.models import User, UserRole
-    
+
     user = User(
         name='Test Student',
         email='student@test.com',
@@ -109,9 +119,8 @@ def student_user(app, active_school):
 def course(app, teacher_user, active_school):
     """Create a course for testing"""
     from app.core.extensions import db
-    from app.models import Course, AcademicYear, User
-    
-    # Create academic year first (required foreign key)
+    from app.models import Course, AcademicYear
+
     academic_year = AcademicYear(
         year=str(datetime.now().year),
         is_active=True,
@@ -119,7 +128,7 @@ def course(app, teacher_user, active_school):
     )
     db.session.add(academic_year)
     db.session.commit()
-    
+
     course = Course(
         name='Test Course',
         class_code='TEST123',
@@ -128,77 +137,8 @@ def course(app, teacher_user, active_school):
     )
     db.session.add(course)
     db.session.commit()
-    
+
     return course
-
-
-@pytest.fixture
-def grade_category(app, course):
-    """Create a grade category for testing"""
-    from app.core.extensions import db
-    from app.gradebook.models import GradeCategory, GradeCategoryType
-    
-    category = GradeCategory(
-        name='Penilaian Harian',
-        category_type=GradeCategoryType.FORMATIF,
-        weight=30.0,
-        course_id=course.id
-    )
-    db.session.add(category)
-    db.session.commit()
-    return category
-
-
-@pytest.fixture
-def learning_objective(app, course):
-    """Create a learning objective for testing"""
-    from app.core.extensions import db
-    from app.gradebook.models import LearningObjective
-    
-    lo = LearningObjective(
-        code='CP-1',
-        description='Test Learning Objective',
-        course_id=course.id
-    )
-    db.session.add(lo)
-    db.session.commit()
-    return lo
-
-
-@pytest.fixture
-def grade_item(app, course, grade_category):
-    """Create a grade item for testing"""
-    from app.core.extensions import db
-    from app.gradebook.models import GradeItem
-    
-    item = GradeItem(
-        name='Test Grade Item',
-        category_id=grade_category.id,
-        max_score=100.0,
-        weight=10.0,
-        course_id=course.id
-    )
-    db.session.add(item)
-    db.session.commit()
-    return item
-
-
-@pytest.fixture
-def grade_entry(app, grade_item, student_user):
-    """Create a grade entry for testing"""
-    from app.core.extensions import db
-    from app.gradebook.models import GradeEntry
-    
-    entry = GradeEntry(
-        grade_item_id=grade_item.id,
-        student_id=student_user.id,
-        score=85.0,
-        percentage=85.0,
-        feedback='Good job!'
-    )
-    db.session.add(entry)
-    db.session.commit()
-    return entry
 
 
 @pytest.fixture
@@ -206,7 +146,7 @@ def quiz(app, course):
     """Create a quiz for testing"""
     from app.core.extensions import db
     from app.models import Quiz, QuizStatus
-    
+
     quiz = Quiz(
         name='Test Quiz',
         description='Test Description',
@@ -224,7 +164,7 @@ def assignment(app, course):
     """Create an assignment for testing"""
     from app.core.extensions import db
     from app.models import Assignment, AssignmentStatus
-    
+
     assignment = Assignment(
         title='Test Assignment',
         description='Test Description',

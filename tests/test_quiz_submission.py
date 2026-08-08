@@ -137,7 +137,7 @@ class TestQuizGradeCalculation:
     def test_quiz_grade_sync_to_gradebook(self, client, quiz, student_user, grade_item):
         """Test syncing quiz grade to gradebook"""
         from app.core.extensions import db
-        from app.models.gradebook import GradeEntry
+        from app.gradebook.models import GradeEntry
         
         # Create submission
         submission = QuizSubmission(

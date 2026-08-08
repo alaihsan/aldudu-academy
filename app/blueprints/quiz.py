@@ -767,7 +767,7 @@ def api_submit_quiz(quiz_id):
 
     # ── Auto-sync quiz score to gradebook ──────────────────────────────
     try:
-        from app.models.gradebook import GradeItem, GradeEntry, GradeCategory, GradeCategoryType
+        from app.gradebook.models import GradeItem, GradeEntry, GradeCategory, GradeCategoryType
         from app.helpers import get_jakarta_now
 
         grade_item = GradeItem.query.filter_by(quiz_id=quiz.id).first()
