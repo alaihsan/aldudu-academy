@@ -596,5 +596,9 @@ window.addEventListener('click', function(e) {
 {% block extra_scripts %}
 <script src="{{ url_for('static', filename='js/courses/materials-list-v2.js') }}?v={{ asset_hash('js/courses/materials-list-v2.js') }}"></script>
 <script src="{{ url_for('static', filename='js/courses/course_detail.js') }}?v={{ asset_hash('js/courses/course_detail.js') }}"></script>
+<script src="{{ url_for('static', filename='js/courses/course_detail_kbm.js') }}?v={{ asset_hash('js/courses/course_detail_kbm.js') }}"></script>
+<script src="{{ url_for('static', filename='js/courses/course_detail_class_edit.js') }}?v={{ asset_hash('js/courses/course_detail_class_edit.js') }}"></script>
+<script src="{{ url_for('static', filename='js/courses/course_detail_roster.js') }}?v={{ asset_hash('js/courses/course_detail_roster.js') }}"></script>
+<script src="{{ url_for('static', filename='js/courses/course_detail_pdf_viewer.js') }}?v={{ asset_hash('js/courses/course_detail_pdf_viewer.js') }}"></script>
 <script src="{{ url_for('static', filename='js/discussion/discussion.js') }}?v={{ asset_hash('js/discussion/discussion.js') }}"></script>
 {% endblock %}
