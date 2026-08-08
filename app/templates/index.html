@@ -495,7 +495,9 @@
 {% endblock %}
 
 {% block page_scripts %}
-<script src="{{ url_for('static', filename='js/pages/dashboard-legacy.js') }}?v={{ asset_hash('js/pages/dashboard-legacy.js') }}"></script>
+<script src="{{ url_for('static', filename='js/pages/dashboard.js') }}?v={{ asset_hash('js/pages/dashboard.js') }}"></script>
+<script src="{{ url_for('static', filename='js/auth/login_register.js') }}?v={{ asset_hash('js/auth/login_register.js') }}"></script>
+<script src="{{ url_for('static', filename='js/pages/dashboard_class_modal.js') }}?v={{ asset_hash('js/pages/dashboard_class_modal.js') }}"></script>
 
 <!-- Dynamic Quote with Typing Effect -->
 <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}?v={{ asset_hash('css/index.css') }}">
