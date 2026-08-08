@@ -1,6 +1,6 @@
 from flask import (
     Blueprint, request, jsonify, abort,
-    render_template, make_response, url_for, current_app
+    render_template, url_for, current_app
 )
 from flask_login import login_required, current_user
 from sqlalchemy.orm import joinedload
@@ -15,7 +15,6 @@ from app.quiz.models import (
 from app.helpers import matching_pair, sanitize_text, sanitize_rich_text, log_activity
 from app.core.authorization import get_school_id_or_abort, verify_course_in_school
 from app.quiz.services import create_sample_docx_bytes, import_questions_from_docx
-import datetime
 import json
 import os
 import logging
