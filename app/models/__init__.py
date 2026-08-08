@@ -10,7 +10,7 @@ from app.quiz.models import (
     QuestionType, GradeType, QuizStatus,
     BloomLevel, QuestionBloomTaxonomy,
 )
-from .discussion import Discussion, Post, Like
+from app.discussion.models import Discussion, Post, Like
 from .issue import Issue, IssueStatus, IssuePriority
 from .ticket import Ticket, TicketMessage, TicketCategory, TicketStatus, TicketPriority
 from .token import EmailVerificationToken, PasswordResetToken

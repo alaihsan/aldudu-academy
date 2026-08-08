@@ -13,7 +13,7 @@ def register_blueprints(app):
     from app.blueprints.courses import courses_bp
     from app.blueprints.main import main_bp
     from app.quiz.routes import quiz_bp
-    from app.blueprints.discussion import discussion_bp
+    from app.discussion.routes import discussion_bp, discussion_pages_bp
     from app.kbm.routes import kbm_bp
     from app.issues.routes import issues_bp, issues_pages_bp
     from app.admin.routes import admin_bp
@@ -32,6 +32,7 @@ def register_blueprints(app):
         courses_bp,
         quiz_bp,
         discussion_bp,
+        discussion_pages_bp,
         kbm_bp,
         issues_bp,
         issues_pages_bp,
