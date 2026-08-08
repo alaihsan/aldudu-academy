@@ -8,7 +8,7 @@ from werkzeug.utils import secure_filename
 from sqlalchemy.orm import joinedload, selectinload
 from app.models import db, Course, AcademicYear, UserRole, Link, File, Discussion, Post, Like, UserCourseOrder, KbmNote, KbmActivityType, Quiz, GradeType, QuizStatus, ContentFolder, Assignment
 from app.helpers import sanitize_text, sanitize_rich_text, is_valid_color, is_valid_class_code, generate_class_code, get_courses_for_user, format_course_data, log_activity
-from app.tenant import get_school_id_or_abort, verify_course_in_school, verify_academic_year_in_school
+from app.core.authorization import get_school_id_or_abort, verify_course_in_school, verify_academic_year_in_school
 
 logger = logging.getLogger(__name__)
 

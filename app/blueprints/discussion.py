@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify, abort
 from flask_login import login_required, current_user
 from app.models import db, Post, Discussion
 from app.helpers import sanitize_text
-from app.tenant import get_school_id_or_abort, verify_course_in_school
+from app.core.authorization import get_school_id_or_abort, verify_course_in_school
 
 discussion_bp = Blueprint('discussion', __name__, url_prefix='/api')
 

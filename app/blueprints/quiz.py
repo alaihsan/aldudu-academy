@@ -26,7 +26,7 @@ quiz_bp = Blueprint('quiz', __name__, url_prefix='/api')
 # --- Helper Functions ---
 
 def get_quiz_or_abort(quiz_id, check_teacher=True):
-    from app.tenant import get_school_id_or_abort, verify_course_in_school
+    from app.core.authorization import get_school_id_or_abort, verify_course_in_school
     quiz = db.session.get(Quiz, quiz_id)
     if not quiz: abort(404, description="Kuis tidak ditemukan.")
     school_id = get_school_id_or_abort()
@@ -36,7 +36,7 @@ def get_quiz_or_abort(quiz_id, check_teacher=True):
     return quiz
 
 def get_question_or_abort(question_id, check_teacher=True):
-    from app.tenant import get_school_id_or_abort, verify_course_in_school
+    from app.core.authorization import get_school_id_or_abort, verify_course_in_school
     question = db.session.get(Question, question_id)
     if not question: abort(404, description="Pertanyaan tidak ditemukan.")
     school_id = get_school_id_or_abort()
@@ -298,7 +298,7 @@ def api_add_option(question_id):
 @quiz_bp.route('/option/<int:option_id>/update', methods=['PUT'])
 @login_required
 def api_update_option(option_id):
-    from app.tenant import get_school_id_or_abort, verify_course_in_school
+    from app.core.authorization import get_school_id_or_abort, verify_course_in_school
     option = db.session.get(Option, option_id)
     if not option: abort(404)
     school_id = get_school_id_or_abort()
@@ -312,7 +312,7 @@ def api_update_option(option_id):
 @quiz_bp.route('/option/<int:option_id>/delete', methods=['DELETE'])
 @login_required
 def api_delete_option(option_id):
-    from app.tenant import get_school_id_or_abort, verify_course_in_school
+    from app.core.authorization import get_school_id_or_abort, verify_course_in_school
     option = db.session.get(Option, option_id)
     if not option: return "", 200
     school_id = get_school_id_or_abort()
@@ -380,7 +380,7 @@ def api_set_quiz_status(quiz_id):
 @quiz_bp.route('/submission/<int:submission_id>')
 @login_required
 def api_get_submission(submission_id):
-    from app.tenant import get_school_id_or_abort, verify_course_in_school
+    from app.core.authorization import get_school_id_or_abort, verify_course_in_school
     submission = db.session.get(QuizSubmission, submission_id)
     if not submission:
         abort(404)
@@ -397,7 +397,7 @@ def api_get_submission(submission_id):
 @quiz_bp.route('/submission/<int:submission_id>/update-score', methods=['POST'])
 @login_required
 def api_update_submission_score(submission_id):
-    from app.tenant import get_school_id_or_abort, verify_course_in_school
+    from app.core.authorization import get_school_id_or_abort, verify_course_in_school
     submission = db.session.get(QuizSubmission, submission_id)
     if not submission:
         abort(404)
@@ -581,7 +581,7 @@ def api_update_quiz_settings(quiz_id):
 @quiz_bp.route('/quiz/<int:quiz_id>/verify-password', methods=['POST'])
 @login_required
 def api_verify_quiz_password(quiz_id):
-    from app.tenant import get_school_id_or_abort, verify_course_in_school
+    from app.core.authorization import get_school_id_or_abort, verify_course_in_school
     quiz = db.session.get(Quiz, quiz_id)
     if not quiz:
         abort(404)
@@ -677,7 +677,7 @@ def api_remove_question_image(question_id):
 @quiz_bp.route('/quiz/<int:quiz_id>/submit', methods=['POST'])
 @login_required
 def api_submit_quiz(quiz_id):
-    from app.tenant import get_school_id_or_abort, verify_course_in_school
+    from app.core.authorization import get_school_id_or_abort, verify_course_in_school
     quiz = db.session.get(Quiz, quiz_id)
     if not quiz:
         abort(404, description="Kuis tidak ditemukan.")

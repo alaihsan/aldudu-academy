@@ -15,7 +15,7 @@ def _trash_now():
     n = get_jakarta_now()
     return n.replace(tzinfo=None) if getattr(n, 'tzinfo', None) else n
 
-from app.tenant import get_school_id_or_abort, verify_course_in_school
+from app.core.authorization import get_school_id_or_abort, verify_course_in_school
 
 main_bp = Blueprint('main', __name__)
 

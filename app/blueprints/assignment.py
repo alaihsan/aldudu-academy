@@ -10,7 +10,7 @@ from app.helpers import get_jakarta_now
 assignment_bp = Blueprint('assignment', __name__, url_prefix='/assignment')
 
 def get_assignment_or_abort(assignment_id, check_teacher=False):
-    from app.tenant import get_school_id_or_abort, verify_course_in_school
+    from app.core.authorization import get_school_id_or_abort, verify_course_in_school
     assignment = db.session.get(Assignment, assignment_id)
     if not assignment:
         abort(404, description="Tugas tidak ditemukan.")
@@ -29,7 +29,7 @@ def get_assignment_or_abort(assignment_id, check_teacher=False):
 @assignment_bp.route('/course/<int:course_id>/create', methods=['POST'])
 @login_required
 def create_assignment(course_id):
-    from app.tenant import get_school_id_or_abort, verify_course_in_school
+    from app.core.authorization import get_school_id_or_abort, verify_course_in_school
     course = db.session.get(Course, course_id)
     if not course:
         abort(404)

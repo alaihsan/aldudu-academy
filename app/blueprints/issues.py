@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify, abort, current_app
 from flask_login import login_required, current_user
 from app.models import db, Issue, IssueStatus, IssuePriority, UserRole
 from app.helpers import sanitize_text
-from app.tenant import get_school_id_or_abort
+from app.core.authorization import get_school_id_or_abort
 
 issues_bp = Blueprint('issues', __name__, url_prefix='/api')
 

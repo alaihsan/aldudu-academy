@@ -5,7 +5,7 @@ from flask_login import login_required, current_user
 from app.models import db, User, UserRole, ActivityLog, Course, AcademicYear, QuizSubmission, Quiz, School
 from app.helpers import log_activity, sanitize_text, is_valid_email, generate_random_password, validate_password, generate_class_code
 from sqlalchemy import func
-from app.tenant import get_school_id_or_abort
+from app.core.authorization import get_school_id_or_abort
 
 logger = logging.getLogger(__name__)
 
