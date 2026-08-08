@@ -1,9 +1,8 @@
-from flask import Blueprint, render_template, redirect, url_for, abort, send_from_directory, request
-import os
+from flask import Blueprint, render_template, redirect, url_for, abort, request
 from flask_login import login_required, current_user
 from app.models import (
     db, Course, Quiz, Question, Option,
-    QuestionType, GradeType, UserRole, Link, File,
+    QuestionType, UserRole, Link, File,
     QuizSubmission, Answer, QuizStatus, ActivityLog,
     Assignment, AssignmentStatus
 )
@@ -189,45 +188,6 @@ def quiz_saved(quiz_id):
     course = quiz.course
     return redirect(url_for('main.course_detail', course_id=course.id))
 
-@main_bp.route('/files/<int:file_id>')
-@login_required
-def serve_file(file_id):
-    file = db.session.get(File, file_id)
-    if file is None:
-        abort(404)
-
-    course = file.course
-    school_id = get_school_id_or_abort()
-    verify_course_in_school(course, school_id)
-    is_teacher = (current_user.id == course.teacher_id)
-
-    if not is_teacher and current_user not in course.students:
-        abort(403)
-        
-    now = get_jakarta_now()
-    if file.start_date and now < file.start_date:
-        abort(403, description="File is not yet available.")
-    if file.end_date and now > file.end_date:
-        abort(403, description="File has expired.")
-
-    upload_folder = os.path.join(os.getcwd(), 'instance', 'uploads', str(course.id))
-    return send_from_directory(upload_folder, file.filename, as_attachment=False)
-
-@main_bp.route('/uploads/<int:course_id>/<path:filename>')
-@login_required
-def serve_question_image(course_id, filename):
-    course = db.session.get(Course, course_id)
-    if course is None:
-        abort(404)
-    school_id = get_school_id_or_abort()
-    verify_course_in_school(course, school_id)
-    is_teacher = (current_user.id == course.teacher_id)
-    is_student = current_user in course.students
-    if not is_teacher and not is_student:
-        abort(403)
-    upload_folder = os.path.join(os.getcwd(), 'instance', 'uploads', str(course_id))
-    return send_from_directory(upload_folder, filename, as_attachment=False)
-
 @main_bp.route('/settings')
 @login_required
 def settings():
@@ -368,26 +328,6 @@ def api_archive_assignment(assignment_id):
     return jsonify({'success': True, 'message': 'Tugas berhasil diarsipkan'})
 
 
-@main_bp.route('/api/file/<int:file_id>/archive', methods=['POST'])
-@login_required
-def api_archive_file(file_id):
-    """API endpoint untuk mengarsipkan file"""
-    from flask import jsonify
-    from app.models import File
-
-    file = db.session.get(File, file_id)
-    if not file:
-        return jsonify({'success': False, 'message': 'File tidak ditemukan'}), 404
-
-    if file.course.teacher_id != current_user.id:
-        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
-
-    file.is_archived = True
-    db.session.commit()
-
-    return jsonify({'success': True, 'message': 'File berhasil diarsipkan'})
-
-
 @main_bp.route('/api/quiz/<int:quiz_id>/restore', methods=['POST'])
 @login_required
 def api_restore_quiz(quiz_id):
@@ -428,26 +368,6 @@ def api_restore_assignment(assignment_id):
     return jsonify({'success': True, 'message': 'Tugas berhasil dipulihkan'})
 
 
-@main_bp.route('/api/file/<int:file_id>/restore', methods=['POST'])
-@login_required
-def api_restore_file(file_id):
-    """API endpoint untuk memulihkan file dari arsip"""
-    from flask import jsonify
-    from app.models import File
-
-    file = db.session.get(File, file_id)
-    if not file:
-        return jsonify({'success': False, 'message': 'File tidak ditemukan'}), 404
-
-    if file.course.teacher_id != current_user.id:
-        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
-
-    file.is_archived = False
-    db.session.commit()
-
-    return jsonify({'success': True, 'message': 'File berhasil dipulihkan'})
-
-
 @main_bp.route('/api/quiz/<int:quiz_id>', methods=['DELETE'])
 @login_required
 def api_delete_quiz(quiz_id):
@@ -484,25 +404,6 @@ def api_delete_assignment(assignment_id):
     assignment.trashed_at = _trash_now()
     db.session.commit()
     return jsonify({'success': True, 'message': 'Tugas dipindahkan ke Ruang TPS'})
-
-
-@main_bp.route('/api/file/<int:file_id>', methods=['DELETE'])
-@login_required
-def api_delete_file(file_id):
-    """Soft-delete berkas ke Ruang TPS."""
-    from flask import jsonify
-    from app.models import File
-
-    file = db.session.get(File, file_id)
-    if not file:
-        return jsonify({'success': False, 'message': 'File tidak ditemukan'}), 404
-    if file.course.teacher_id != current_user.id:
-        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
-
-    file.is_trashed = True
-    file.trashed_at = _trash_now()
-    db.session.commit()
-    return jsonify({'success': True, 'message': 'Berkas dipindahkan ke Ruang TPS'})
 
 
 @main_bp.route('/api/course/<int:course_id>/theme', methods=['PUT'])
@@ -596,202 +497,6 @@ def course_import(course_id):
                            course=course,
                            other_courses=other_courses,
                            is_teacher=is_teacher)
-
-
-@main_bp.route('/api/courses/<int:course_id>/importable-materials', methods=['GET'])
-@login_required
-def api_get_importable_materials(course_id):
-    """Mendapatkan daftar materi dari kelas lain yang dapat diimpor"""
-    from flask import jsonify
-    from app.models import Course, Quiz, Assignment, File, Link, UserRole, QuizStatus, AssignmentStatus
-    
-    course = db.session.get(Course, course_id)
-    if not course:
-        return jsonify({'success': False, 'message': 'Kelas tidak ditemukan'}), 404
-        
-    # Security check: must be the teacher of this course
-    if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
-
-    # We only import non-archived and non-trashed items
-    quizzes = Quiz.query.filter_by(course_id=course_id, is_archived=False, is_trashed=False).all()
-    assignments = Assignment.query.filter_by(course_id=course_id, is_trashed=False).filter(Assignment.status != AssignmentStatus.ARCHIVED).all()
-    files = File.query.filter_by(course_id=course_id, is_archived=False, is_trashed=False).all()
-    links = Link.query.filter_by(course_id=course_id, is_archived=False, is_trashed=False).all()
-
-    return jsonify({
-        'success': True,
-        'quizzes': [{'id': q.id, 'name': q.name, 'points': q.points} for q in quizzes],
-        'assignments': [{'id': a.id, 'title': a.title, 'max_score': a.max_score} for a in assignments],
-        'files': [{'id': f.id, 'name': f.name, 'filename': f.filename} for f in files],
-        'links': [{'id': l.id, 'name': l.name, 'url': l.url} for l in links]
-    })
-
-
-@main_bp.route('/api/courses/<int:course_id>/import', methods=['POST'])
-@login_required
-def api_import_materials(course_id):
-    """Mengimpor materi terpilih ke kelas tujuan (course_id)"""
-    from flask import jsonify, request
-    from app.models import Course, Quiz, Question, Option, QuestionBloomTaxonomy, Assignment, File, Link, UserRole
-    import shutil
-    import os
-    
-    dest_course = db.session.get(Course, course_id)
-    if not dest_course:
-        return jsonify({'success': False, 'message': 'Kelas tujuan tidak ditemukan'}), 404
-        
-    # Verify destination course permission
-    if dest_course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
-
-    data = request.get_json() or {}
-    source_course_id = data.get('source_course_id')
-    items = data.get('items', []) # List of {type: 'quiz'|'assignment'|'file'|'link', id: int}
-
-    if not source_course_id:
-        return jsonify({'success': False, 'message': 'Kelas asal wajib ditentukan'}), 400
-
-    source_course = db.session.get(Course, source_course_id)
-    if not source_course:
-        return jsonify({'success': False, 'message': 'Kelas asal tidak ditemukan'}), 404
-
-    # Verify source course permission
-    if source_course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
-
-    try:
-        imported_count = 0
-        for item in items:
-            item_type = item.get('type')
-            item_id = item.get('id')
-
-            if item_type == 'quiz':
-                quiz = Quiz.query.filter_by(id=item_id, course_id=source_course_id).first()
-                if quiz:
-                    # Duplicate Quiz
-                    new_quiz = Quiz(
-                        name=quiz.name,
-                        description=quiz.description,
-                        theme_color=quiz.theme_color,
-                        bg_pattern=quiz.bg_pattern,
-                        font_question=quiz.font_question,
-                        font_answer=quiz.font_answer,
-                        course_id=course_id,
-                        grade_type=quiz.grade_type,
-                        status=quiz.status,
-                        points=quiz.points,
-                        duration=quiz.duration,
-                        max_attempts=quiz.max_attempts,
-                        is_quiz=quiz.is_quiz,
-                        collect_email=quiz.collect_email,
-                        shuffle_questions=quiz.shuffle_questions,
-                        confirmation_message=quiz.confirmation_message,
-                        default_points=quiz.default_points,
-                        required_by_default=quiz.required_by_default,
-                        questions_per_page=quiz.questions_per_page,
-                        bg_opacity=quiz.bg_opacity
-                    )
-                    db.session.add(new_quiz)
-                    db.session.flush() # Flush to get new_quiz.id
-
-                    # Duplicate Questions & Options
-                    questions = Question.query.filter_by(quiz_id=quiz.id).all()
-                    for q in questions:
-                        new_q = Question(
-                            question_text=q.question_text,
-                            question_type=q.question_type,
-                            quiz_id=new_quiz.id,
-                            order=q.order,
-                            description=q.description,
-                            image=q.image,
-                            is_required=q.is_required,
-                            points=q.points,
-                            max_file_size=q.max_file_size,
-                            allowed_file_types=q.allowed_file_types
-                        )
-                        db.session.add(new_q)
-                        db.session.flush()
-
-                        # Duplicate bloom taxonomy if exists
-                        if q.bloom_taxonomy:
-                            new_bt = QuestionBloomTaxonomy(
-                                question_id=new_q.id,
-                                bloom_level=q.bloom_taxonomy.bloom_level,
-                                bloom_description=q.bloom_taxonomy.bloom_description
-                            )
-                            db.session.add(new_bt)
-
-                        # Duplicate Options
-                        options = Option.query.filter_by(question_id=q.id).all()
-                        for opt in options:
-                            new_opt = Option(
-                                option_text=opt.option_text,
-                                is_correct=opt.is_correct,
-                                question_id=new_q.id,
-                                order=opt.order
-                            )
-                            db.session.add(new_opt)
-                    imported_count += 1
-
-            elif item_type == 'assignment':
-                assignment = Assignment.query.filter_by(id=item_id, course_id=source_course_id).first()
-                if assignment:
-                    new_assignment = Assignment(
-                        title=assignment.title,
-                        description=assignment.description,
-                        course_id=course_id,
-                        due_date=assignment.due_date,
-                        max_score=assignment.max_score,
-                        status=assignment.status
-                    )
-                    db.session.add(new_assignment)
-                    imported_count += 1
-
-            elif item_type == 'file':
-                file_item = File.query.filter_by(id=item_id, course_id=source_course_id).first()
-                if file_item:
-                    # Duplicate DB record
-                    new_file = File(
-                        name=file_item.name,
-                        description=file_item.description,
-                        filename=file_item.filename,
-                        course_id=course_id
-                    )
-                    db.session.add(new_file)
-                    
-                    # Copy physical file
-                    src_dir = os.path.join(os.getcwd(), 'instance', 'uploads', str(source_course_id))
-                    dest_dir = os.path.join(os.getcwd(), 'instance', 'uploads', str(course_id))
-                    os.makedirs(dest_dir, exist_ok=True)
-                    
-                    src_path = os.path.join(src_dir, file_item.filename)
-                    dest_path = os.path.join(dest_dir, file_item.filename)
-                    if os.path.exists(src_path):
-                        shutil.copy2(src_path, dest_path)
-                    imported_count += 1
-
-            elif item_type == 'link':
-                link = Link.query.filter_by(id=item_id, course_id=source_course_id).first()
-                if link:
-                    new_link = Link(
-                        name=link.name,
-                        url=link.url,
-                        description=link.description,
-                        course_id=course_id
-                    )
-                    db.session.add(new_link)
-                    imported_count += 1
-
-        db.session.commit()
-        return jsonify({'success': True, 'message': f'Berhasil mengimpor {imported_count} materi.'})
-
-    except Exception as e:
-        db.session.rollback()
-        import logging
-        logger = logging.getLogger(__name__)
-        logger.error(f"Failed to import materials: {e}", exc_info=True)
-        return jsonify({'success': False, 'message': 'Terjadi kesalahan server saat mengimpor'}), 500
 
 
 @main_bp.errorhandler(403)

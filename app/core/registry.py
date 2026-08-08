@@ -20,11 +20,12 @@ def register_blueprints(app):
     from app.superadmin.routes import superadmin_bp
     from app.tickets.routes import tickets_bp
     from app.gradebook.routes import gradebook_bp
-    from app.assignment.routes import assignment_bp
+    from app.assignment.routes import assignment_bp, assignment_api_bp
     from app.whats_new.routes import whats_new_view_bp
     from app.trash.routes import trash_bp
     from app.health.routes import health_bp
     from app.metrics.routes import metrics_bp
+    from app.content.routes import content_bp, content_files_bp
 
     blueprints = [
         main_bp,
@@ -41,10 +42,13 @@ def register_blueprints(app):
         tickets_bp,
         gradebook_bp,
         assignment_bp,
+        assignment_api_bp,
         whats_new_view_bp,
         trash_bp,
         health_bp,
         metrics_bp,
+        content_bp,
+        content_files_bp,
     ]
     for bp in blueprints:
         app.register_blueprint(bp)

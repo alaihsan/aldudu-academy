@@ -7,9 +7,43 @@ from app.core.extensions import db
 from app.models import Course, GradeItem, GradeEntry, ActivityLog, UserRole
 from app.assignment.models import Assignment, AssignmentSubmission, AssignmentStatus, AssignmentSubmissionStatus
 from app.core.authorization import get_school_id_or_abort, verify_course_in_school
-from app.helpers import get_jakarta_now
+from app.helpers import get_jakarta_now, sanitize_text, sanitize_rich_text
 
 assignment_bp = Blueprint('assignment', __name__, url_prefix='/assignment', template_folder='templates')
+
+# Separate blueprint (url_prefix='/api') for the material-edit endpoint, since
+# assignment_bp's prefix is fixed to /assignment for its own routes.
+assignment_api_bp = Blueprint('assignment_api', __name__, url_prefix='/api')
+
+
+def _verify_material_owner(course):
+    """Pastikan kelas valid & pemiliknya guru saat ini."""
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(course, school_id)
+    if course.teacher_id != current_user.id:
+        return False
+    return True
+
+
+@assignment_api_bp.route('/assignment/<int:assignment_id>', methods=['PUT'])
+@login_required
+def api_update_assignment(assignment_id):
+    """Edit judul (title) & isi (description) sebuah tugas."""
+    a = Assignment.query.get_or_404(assignment_id)
+    course = Course.query.get(a.course_id)
+    if not _verify_material_owner(course):
+        return jsonify({'success': False, 'message': 'Tidak memiliki izin'}), 403
+    data = request.get_json() or {}
+    if 'title' in data:
+        title = sanitize_text(data.get('title'), max_len=200)
+        if not title:
+            return jsonify({'success': False, 'message': 'Judul tidak boleh kosong'}), 400
+        a.title = title
+    if 'description' in data:
+        a.description = sanitize_rich_text(data.get('description') or '', max_len=5000) or None
+    db.session.commit()
+    return jsonify({'success': True, 'message': 'Tugas diperbarui'})
+
 
 def get_assignment_or_abort(assignment_id, check_teacher=False):
     assignment = db.session.get(Assignment, assignment_id)

@@ -12,7 +12,7 @@ from app.quiz.models import (
     QuizSubmission, Answer,
     QuestionBloomTaxonomy, BloomLevel,
 )
-from app.helpers import matching_pair, sanitize_text, sanitize_rich_text
+from app.helpers import matching_pair, sanitize_text, sanitize_rich_text, log_activity
 from app.core.authorization import get_school_id_or_abort, verify_course_in_school
 from app.quiz.services import create_sample_docx_bytes, import_questions_from_docx
 import datetime
@@ -58,6 +58,51 @@ def get_matching_pairs(question):
     return pairs
 
 # --- Routes ---
+
+@quiz_bp.route('/courses/<int:course_id>/quizzes', methods=['POST'])
+@login_required
+def api_create_quiz(course_id):
+    allowed_roles = [UserRole.GURU, UserRole.ADMIN, UserRole.SUPER_ADMIN]
+    if current_user.role not in allowed_roles:
+        return jsonify({'success': False, 'message': 'Hanya guru yang dapat membuat kuis'}), 403
+
+    course = db.session.get(Course, course_id)
+    if not course:
+        return jsonify({'success': False, 'message': 'Mata pelajaran tidak ditemukan'}), 404
+
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(course, school_id)
+
+    if course.teacher_id != current_user.id and current_user.role not in [UserRole.ADMIN, UserRole.SUPER_ADMIN]:
+        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
+
+    data = request.get_json() or {}
+    name = sanitize_text(data.get('name', ''), max_len=200) or 'Kuis Tanpa Judul'
+
+    try:
+        grade_type = GradeType(data.get('grade_type', 'numeric'))
+    except ValueError:
+        grade_type = GradeType.NUMERIC
+
+    try:
+        points = int(data.get('points', 100))
+    except (ValueError, TypeError):
+        points = 100
+
+    quiz = Quiz(
+        name=name,
+        course_id=course_id,
+        grade_type=grade_type,
+        points=points,
+        status=QuizStatus.DRAFT,
+    )
+    db.session.add(quiz)
+    db.session.commit()
+
+    log_activity(current_user.id, f'Membuat kuis: {name}', target_type='Quiz', target_id=quiz.id)
+
+    return jsonify({'success': True, 'quiz': {'id': quiz.id, 'name': quiz.name}}), 201
+
 
 @quiz_bp.route('/quiz/<int:quiz_id>/question/add', methods=['POST'])
 @login_required
