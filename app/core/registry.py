@@ -2,16 +2,17 @@
 Blueprint Registry
 
 Central, explicit list of every blueprint registered on the app — the
-Flask analog of Django's INSTALLED_APPS. As features move out of
-app/blueprints/ into their own app/<feature>/ packages (see the
-per-app restructure), only the import lines here need to change.
+Flask analog of Django's INSTALLED_APPS. Every feature now lives in its
+own app/<feature>/ package (the per-app restructure is complete —
+app/blueprints/ no longer exists); only the import lines here need to
+change as features evolve.
 """
 
 
 def register_blueprints(app):
     from app.auth.routes import auth_bp
     from app.courses.routes import courses_bp, courses_pages_bp
-    from app.blueprints.main import main_bp
+    from app.pages.routes import main_bp
     from app.quiz.routes import quiz_bp, quiz_pages_bp
     from app.discussion.routes import discussion_bp, discussion_pages_bp
     from app.kbm.routes import kbm_bp
