@@ -4,7 +4,7 @@ from .school import School, SchoolStatus
 from .user import User, UserRole
 from .course import Course, AcademicYear, Link, File, enrollments, UserCourseOrder, KbmNote, KbmActivityType
 from .content_folder import ContentFolder
-from .quiz import (
+from app.quiz.models import (
     Quiz, Question, Option, QuizSubmission, Answer,
     QuestionType, GradeType, QuizStatus,
     BloomLevel, QuestionBloomTaxonomy,

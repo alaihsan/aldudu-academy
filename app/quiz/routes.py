@@ -4,14 +4,17 @@ from flask import (
 )
 from flask_login import login_required, current_user
 from sqlalchemy.orm import joinedload
-from app.models import (
-    db, Course, Quiz, UserRole, GradeType, QuizStatus,
+from app.core.extensions import db
+from app.models import Course, UserRole
+from app.quiz.models import (
+    Quiz, GradeType, QuizStatus,
     Question, Option, QuestionType,
-    QuizSubmission, Answer
+    QuizSubmission, Answer,
+    QuestionBloomTaxonomy, BloomLevel,
 )
-from app.models.quiz import QuestionBloomTaxonomy, BloomLevel
 from app.helpers import matching_pair, sanitize_text, sanitize_rich_text
-from app.services.quiz_docx_import_service import create_sample_docx_bytes, import_questions_from_docx
+from app.core.authorization import get_school_id_or_abort, verify_course_in_school
+from app.quiz.services import create_sample_docx_bytes, import_questions_from_docx
 import datetime
 import json
 import os
@@ -21,12 +24,11 @@ from werkzeug.utils import secure_filename
 
 logger = logging.getLogger(__name__)
 
-quiz_bp = Blueprint('quiz', __name__, url_prefix='/api')
+quiz_bp = Blueprint('quiz', __name__, url_prefix='/api', template_folder='templates')
 
 # --- Helper Functions ---
 
 def get_quiz_or_abort(quiz_id, check_teacher=True):
-    from app.core.authorization import get_school_id_or_abort, verify_course_in_school
     quiz = db.session.get(Quiz, quiz_id)
     if not quiz: abort(404, description="Kuis tidak ditemukan.")
     school_id = get_school_id_or_abort()
@@ -36,7 +38,6 @@ def get_quiz_or_abort(quiz_id, check_teacher=True):
     return quiz
 
 def get_question_or_abort(question_id, check_teacher=True):
-    from app.core.authorization import get_school_id_or_abort, verify_course_in_school
     question = db.session.get(Question, question_id)
     if not question: abort(404, description="Pertanyaan tidak ditemukan.")
     school_id = get_school_id_or_abort()
@@ -94,7 +95,7 @@ def api_add_question(quiz_id):
         db.session.add(question)
         db.session.commit()
         db.session.refresh(question)
-        return render_template('_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question, BloomLevel=BloomLevel)
+        return render_template('quiz/_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question, BloomLevel=BloomLevel)
     
     except Exception as e:
         db.session.rollback()
@@ -184,7 +185,7 @@ def api_change_question_type(question_id):
 
     db.session.commit()
     db.session.refresh(question)
-    return render_template('_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question, BloomLevel=BloomLevel)
+    return render_template('quiz/_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question, BloomLevel=BloomLevel)
 
 @quiz_bp.route('/question/<int:question_id>/duplicate', methods=['POST'])
 @login_required
@@ -220,7 +221,7 @@ def api_duplicate_question(question_id):
     db.session.commit()
     db.session.refresh(new_q)
     
-    return render_template('_question_form.html', question=new_q, QuestionType=QuestionType, Option=Option, Question=Question, BloomLevel=BloomLevel)
+    return render_template('quiz/_question_form.html', question=new_q, QuestionType=QuestionType, Option=Option, Question=Question, BloomLevel=BloomLevel)
 
 @quiz_bp.route('/question/<int:question_id>/update', methods=['PUT'])
 @login_required
@@ -228,7 +229,7 @@ def api_update_question(question_id):
     question = get_question_or_abort(question_id)
     question.question_text = sanitize_rich_text(request.form.get('question_text', ''))
     db.session.commit()
-    return render_template('_question_title_input.html', question=question)
+    return render_template('quiz/_question_title_input.html', question=question)
 
 @quiz_bp.route('/question/<int:question_id>/update-points', methods=['PUT'])
 @login_required
@@ -247,7 +248,7 @@ def api_toggle_question_required(question_id):
     question = get_question_or_abort(question_id)
     question.is_required = not question.is_required
     db.session.commit()
-    return render_template('_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question, BloomLevel=BloomLevel)
+    return render_template('quiz/_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question, BloomLevel=BloomLevel)
 
 @quiz_bp.route('/question/<int:question_id>/set-correct', methods=['POST'])
 @login_required
@@ -262,7 +263,6 @@ def api_set_correct(question_id):
     db.session.commit()
     
     # Return updated true/false options HTML (without grid wrapper - target div already has it)
-    from app.models import Option
     options_html = ''
     for opt in question.options.order_by(Option.order).all():
         is_correct_class = 'border-primary-500 bg-primary-50 shadow-sm' if opt.is_correct else 'border-gray-100 bg-gray-50/30 hover:border-gray-200'
@@ -293,12 +293,11 @@ def api_add_option(question_id):
     new_opt = Option(question_id=question.id, option_text=f"Opsi {new_order}", order=new_order)
     db.session.add(new_opt)
     db.session.commit()
-    return render_template('_option_form.html', option=new_opt, question=question, Option=Option)
+    return render_template('quiz/_option_form.html', option=new_opt, question=question, Option=Option)
 
 @quiz_bp.route('/option/<int:option_id>/update', methods=['PUT'])
 @login_required
 def api_update_option(option_id):
-    from app.core.authorization import get_school_id_or_abort, verify_course_in_school
     option = db.session.get(Option, option_id)
     if not option: abort(404)
     school_id = get_school_id_or_abort()
@@ -307,12 +306,11 @@ def api_update_option(option_id):
         abort(403)
     option.option_text = sanitize_rich_text(request.form.get('option_text', ''), max_len=500)
     db.session.commit()
-    return render_template('_option_text_input.html', option=option)
+    return render_template('quiz/_option_text_input.html', option=option)
 
 @quiz_bp.route('/option/<int:option_id>/delete', methods=['DELETE'])
 @login_required
 def api_delete_option(option_id):
-    from app.core.authorization import get_school_id_or_abort, verify_course_in_school
     option = db.session.get(Option, option_id)
     if not option: return "", 200
     school_id = get_school_id_or_abort()
@@ -335,7 +333,7 @@ def api_set_bloom_taxonomy(question_id):
         if question.bloom_taxonomy:
             db.session.delete(question.bloom_taxonomy)
             db.session.commit()
-        return render_template('_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question, BloomLevel=BloomLevel)
+        return render_template('quiz/_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question, BloomLevel=BloomLevel)
 
     try:
         bloom_level = BloomLevel(bloom_value)
@@ -355,7 +353,7 @@ def api_set_bloom_taxonomy(question_id):
 
     db.session.commit()
     db.session.refresh(question)
-    return render_template('_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question, BloomLevel=BloomLevel)
+    return render_template('quiz/_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question, BloomLevel=BloomLevel)
 
 @quiz_bp.route('/question/<int:question_id>/delete', methods=['DELETE'])
 @login_required
@@ -380,7 +378,6 @@ def api_set_quiz_status(quiz_id):
 @quiz_bp.route('/submission/<int:submission_id>')
 @login_required
 def api_get_submission(submission_id):
-    from app.core.authorization import get_school_id_or_abort, verify_course_in_school
     submission = db.session.get(QuizSubmission, submission_id)
     if not submission:
         abort(404)
@@ -392,12 +389,11 @@ def api_get_submission(submission_id):
     if not is_teacher and submission.user_id != current_user.id:
         abort(403)
         
-    return render_template('quiz_submission_detail.html', submission=submission, is_teacher=is_teacher)
+    return render_template('quiz/quiz_submission_detail.html', submission=submission, is_teacher=is_teacher)
 
 @quiz_bp.route('/submission/<int:submission_id>/update-score', methods=['POST'])
 @login_required
 def api_update_submission_score(submission_id):
-    from app.core.authorization import get_school_id_or_abort, verify_course_in_school
     submission = db.session.get(QuizSubmission, submission_id)
     if not submission:
         abort(404)
@@ -581,7 +577,6 @@ def api_update_quiz_settings(quiz_id):
 @quiz_bp.route('/quiz/<int:quiz_id>/verify-password', methods=['POST'])
 @login_required
 def api_verify_quiz_password(quiz_id):
-    from app.core.authorization import get_school_id_or_abort, verify_course_in_school
     quiz = db.session.get(Quiz, quiz_id)
     if not quiz:
         abort(404)
@@ -628,7 +623,7 @@ def api_update_upload_settings(question_id):
         db.session.commit()
     except (ValueError, TypeError):
         pass
-    return render_template('_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question, BloomLevel=BloomLevel)
+    return render_template('quiz/_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question, BloomLevel=BloomLevel)
 
 @quiz_bp.route('/question/<int:question_id>/upload-image', methods=['POST'])
 @login_required
@@ -657,7 +652,7 @@ def api_upload_question_image(question_id):
         question.image = filename
         db.session.commit()
         
-        return render_template('_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question, BloomLevel=BloomLevel)
+        return render_template('quiz/_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question, BloomLevel=BloomLevel)
 
 @quiz_bp.route('/question/<int:question_id>/remove-image', methods=['DELETE'])
 @login_required
@@ -672,12 +667,11 @@ def api_remove_question_image(question_id):
         question.image = None
         db.session.commit()
     
-    return render_template('_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question, BloomLevel=BloomLevel)
+    return render_template('quiz/_question_form.html', question=question, QuestionType=QuestionType, Option=Option, Question=Question, BloomLevel=BloomLevel)
 
 @quiz_bp.route('/quiz/<int:quiz_id>/submit', methods=['POST'])
 @login_required
 def api_submit_quiz(quiz_id):
-    from app.core.authorization import get_school_id_or_abort, verify_course_in_school
     quiz = db.session.get(Quiz, quiz_id)
     if not quiz:
         abort(404, description="Kuis tidak ditemukan.")

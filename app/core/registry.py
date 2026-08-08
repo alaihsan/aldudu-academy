@@ -12,7 +12,7 @@ def register_blueprints(app):
     from app.blueprints.auth import auth_bp
     from app.blueprints.courses import courses_bp
     from app.blueprints.main import main_bp
-    from app.blueprints.quiz import quiz_bp
+    from app.quiz.routes import quiz_bp
     from app.blueprints.discussion import discussion_bp
     from app.blueprints.issues import issues_bp
     from app.blueprints.admin import admin_bp

@@ -9,7 +9,8 @@ from typing import List, Optional
 from werkzeug.utils import secure_filename
 
 from app.helpers import sanitize_rich_text
-from app.models import Option, Question, QuestionType, db
+from app.core.extensions import db
+from app.quiz.models import Option, Question, QuestionType
 
 
 DOCX_NS = {

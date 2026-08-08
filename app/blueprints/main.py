@@ -7,7 +7,7 @@ from app.models import (
     QuizSubmission, Answer, Discussion, QuizStatus, ActivityLog,
     Assignment, AssignmentStatus
 )
-from app.models.quiz import BloomLevel
+from app.quiz.models import BloomLevel
 from app.helpers import get_jakarta_now
 
 
@@ -163,14 +163,14 @@ def quiz_detail(quiz_id):
 
     # For teachers: show editor by default, show preview only when preview=true
     if is_teacher and not is_preview:
-        return render_template('quiz_editor.html', quiz=quiz, QuestionType=QuestionType, Question=Question, Option=Option, BloomLevel=BloomLevel)
+        return render_template('quiz/quiz_editor.html', quiz=quiz, QuestionType=QuestionType, Question=Question, Option=Option, BloomLevel=BloomLevel)
     else:
         questions = quiz.questions.order_by(Question.order).all()
         if quiz.shuffle_questions:
             import secrets
             secrets.SystemRandom().shuffle(questions)
         return render_template(
-            'quiz_detail.html',
+            'quiz/quiz_detail.html',
             quiz=quiz,
             course=course,
             is_teacher=is_teacher,

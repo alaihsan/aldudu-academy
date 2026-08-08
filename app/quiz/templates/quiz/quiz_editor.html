@@ -147,7 +147,7 @@
     </div>
     <div id="questions-list" class="space-y-3">
         {% for question in quiz.questions.order_by(Question.order).all() %}
-            {% include '_question_form.html' %}
+            {% include 'quiz/_question_form.html' %}
         {% endfor %}
     </div>
 </div>

@@ -2,7 +2,7 @@ import datetime
 import enum
 from typing import List, Optional
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from . import db
+from app.core.extensions import db
 from app.helpers import get_jakarta_now
 
 class QuestionType(enum.Enum):

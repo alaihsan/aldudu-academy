@@ -911,7 +911,7 @@ def api_get_ctt_analysis(quiz_id):
     - point_biserial (discrimination index) for each question
     - Summary statistics
     """
-    from app.models.quiz import Question, QuizSubmission, Answer
+    from app.quiz.models import Question, QuizSubmission, Answer
     
     quiz = Quiz.query.get_or_404(quiz_id)
     course = Course.query.get(quiz.course_id)
@@ -1053,7 +1053,7 @@ def api_get_ctt_analysis(quiz_id):
         # Distractor analysis for multiple choice questions
         distractor_analysis = None
         if question.question_type in ['multiple_choice', 'true_false', 'dropdown']:
-            from app.models.quiz import Option
+            from app.quiz.models import Option
             options = Option.query.filter_by(question_id=question.id).all()
             distractor_analysis = []
 

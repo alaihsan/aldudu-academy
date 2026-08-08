@@ -17,7 +17,7 @@
     <div class="flex flex-col md:flex-row gap-8 mb-4 items-start">
         <!-- Question Text (Full Width & Auto Expand) -->
         <div class="flex-1 w-full flex items-start justify-between group/q-input">
-            {% include '_question_title_input.html' %}
+            {% include 'quiz/_question_title_input.html' %}
             
             <!-- Inline Image Upload Button (Positioned to the right) -->
             <label class="p-2 ml-4 text-gray-400 dark:text-gray-500 hover:text-primary-600 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all cursor-pointer flex-shrink-0" title="Tambah Gambar">
@@ -79,7 +79,7 @@
         {% if question.question_type.name in ['MULTIPLE_CHOICE', 'DROPDOWN', 'CHECKBOX', 'MATCHING'] %}
             <div id="options-list-{{ question.id }}" class="space-y-2">
                 {% for option in question.options.order_by(Option.order).all() %}
-                    {% include '_option_form.html' %}
+                    {% include 'quiz/_option_form.html' %}
                 {% endfor %}
             </div>
             <div class="flex items-center space-x-4 mt-6 group/add">
