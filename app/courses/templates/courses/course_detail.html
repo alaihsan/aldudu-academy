@@ -594,7 +594,7 @@ window.addEventListener('click', function(e) {
 {% endblock %}
 
 {% block extra_scripts %}
-<script src="{{ url_for('static', filename='js/materials-list-v2.js') }}?v={{ asset_hash('js/materials-list-v2.js') }}"></script>
-<script src="{{ url_for('static', filename='js/course_detail.js') }}?v={{ asset_hash('js/course_detail.js') }}"></script>
-<script src="{{ url_for('static', filename='js/discussion.js') }}?v={{ asset_hash('js/discussion.js') }}"></script>
+<script src="{{ url_for('static', filename='js/courses/materials-list-v2.js') }}?v={{ asset_hash('js/courses/materials-list-v2.js') }}"></script>
+<script src="{{ url_for('static', filename='js/courses/course_detail.js') }}?v={{ asset_hash('js/courses/course_detail.js') }}"></script>
+<script src="{{ url_for('static', filename='js/discussion/discussion.js') }}?v={{ asset_hash('js/discussion/discussion.js') }}"></script>
 {% endblock %}

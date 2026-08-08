@@ -495,10 +495,10 @@
 {% endblock %}
 
 {% block page_scripts %}
-<script src="{{ url_for('static', filename='js/dashboard-legacy.js') }}?v={{ asset_hash('js/dashboard-legacy.js') }}"></script>
+<script src="{{ url_for('static', filename='js/pages/dashboard-legacy.js') }}?v={{ asset_hash('js/pages/dashboard-legacy.js') }}"></script>
 
 <!-- Dynamic Quote with Typing Effect -->
 <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}?v={{ asset_hash('css/index.css') }}">
 
-<script src="{{ url_for('static', filename='js/index_quotes.js') }}?v={{ asset_hash('js/index_quotes.js') }}"></script>
+<script src="{{ url_for('static', filename='js/pages/index_quotes.js') }}?v={{ asset_hash('js/pages/index_quotes.js') }}"></script>
 {% endblock %}

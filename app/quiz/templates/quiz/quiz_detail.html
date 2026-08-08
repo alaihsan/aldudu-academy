@@ -229,5 +229,5 @@
   window.quizReturnUrl = "{{ url_for('courses_pages.course_detail', course_id=quiz.course_id) }}";
   window.quizConfirmationMessage = {{ (quiz.confirmation_message or 'Jawaban Anda telah direkam.') | tojson }};
 </script>
-<script src="{{ url_for('static', filename='js/quiz_detail.js') }}?v={{ asset_hash('js/quiz_detail.js') }}"></script>
+<script src="{{ url_for('static', filename='js/quiz/quiz_detail.js') }}?v={{ asset_hash('js/quiz/quiz_detail.js') }}"></script>
 {% endblock %}
