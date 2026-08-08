@@ -4,11 +4,10 @@ import warnings
 from typing import Optional, Dict
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request, render_template
-from flask_talisman import Talisman
 
-from .extensions import db, login_manager, mail, migrate, cache, limiter
-from .config import config_by_name
-from .validators.env import run_all_validations
+from .core.extensions import db, login_manager, mail, migrate, cache, limiter
+from .core.config import config_by_name
+from .core.validators.env import run_all_validations
 
 
 def create_app(test_config: Optional[Dict] = None) -> Flask:
@@ -219,22 +218,15 @@ def create_app(test_config: Optional[Dict] = None) -> Flask:
         return {'layout': 'layouts/_fragment.html' if is_hx else 'base.html'}
 
     # Register middleware
-    from .middleware import register_all_middleware
+    from .core.middleware import register_all_middleware
     register_all_middleware(app)
 
     # Register blueprints
-    from .blueprints import create_blueprints
-    for bp in create_blueprints():
-        app.register_blueprint(bp)
-
-    # Register health and metrics blueprints
-    from .blueprints.health import health_bp
-    from .blueprints.metrics import metrics_bp
-    app.register_blueprint(health_bp)
-    app.register_blueprint(metrics_bp)
+    from .core.registry import register_blueprints
+    register_blueprints(app)
 
     # Register CLI commands
-    from .cli import register_cli_commands
+    from .core.cli import register_cli_commands
     register_cli_commands(app)
 
     # Global Error Handlers

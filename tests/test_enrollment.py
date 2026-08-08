@@ -6,7 +6,7 @@ Students are enrolled through the User.courses_enrolled relationship.
 """
 import pytest
 from app.models import User, UserRole, Course, AcademicYear, enrollments
-from app.extensions import db
+from app.core.extensions import db
 
 
 class TestEnrollment:

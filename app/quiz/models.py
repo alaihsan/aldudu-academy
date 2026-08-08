@@ -1,0 +1,196 @@
+import datetime
+import enum
+from typing import List, Optional
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from app.core.extensions import db
+from app.helpers import get_jakarta_now
+
+class QuestionType(enum.Enum):
+    MULTIPLE_CHOICE = 'multiple_choice'
+    TRUE_FALSE = 'true_false'
+    DROPDOWN = 'dropdown'
+    CHECKBOX = 'checkbox'
+    LONG_TEXT = 'long_text'
+    UPLOAD = 'upload'
+    MATCHING = 'matching'
+
+class BloomLevel(enum.Enum):
+    """Bloom's Revised Taxonomy Levels"""
+    REMEMBER = 'remember'  # Mengingat informasi
+    UNDERSTAND = 'understand'  # Memahami konsep
+    APPLY = 'apply'  # Menerapkan konsep
+    ANALYZE = 'analyze'  # Menganalisis informasi
+    EVALUATE = 'evaluate'  # Mengevaluasi/menilai
+    CREATE = 'create'  # Mencipta/menghasilkan
+
+class QuizStatus(enum.Enum):
+    DRAFT = 'draft'
+    PUBLISHED = 'published'
+    UNPUBLISHED = 'unpublished'
+
+class GradeType(enum.Enum):
+    NUMERIC = 'numeric'
+    LETTER = 'letter'
+
+class Quiz(db.Model):
+    __tablename__ = 'quizzes'
+
+    id: Mapped[int] = mapped_column(db.Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(db.String(200), nullable=False)
+    description: Mapped[Optional[str]] = mapped_column(db.Text, nullable=True)
+    
+    # Theme & Style Settings
+    theme_color: Mapped[str] = mapped_column(db.String(7), default='#673ab7')
+    bg_pattern: Mapped[str] = mapped_column(db.String(50), default='none')
+    font_question: Mapped[str] = mapped_column(db.String(50), default='Inter')
+    font_answer: Mapped[str] = mapped_column(db.String(50), default='Inter')
+
+    course_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('courses.id'), nullable=False)
+    grade_type: Mapped[GradeType] = mapped_column(db.Enum(GradeType), nullable=False, default=GradeType.NUMERIC)
+    
+    # Status Management
+    status: Mapped[QuizStatus] = mapped_column(db.Enum(QuizStatus), default=QuizStatus.DRAFT, nullable=False)
+    
+    points: Mapped[int] = mapped_column(db.Integer, default=100)
+    duration: Mapped[int] = mapped_column(db.Integer, default=0) # Duration in minutes, 0 means unlimited
+    max_attempts: Mapped[int] = mapped_column(db.Integer, default=1) # 0 = unlimited
+    is_published: Mapped[bool] = mapped_column(db.Boolean, default=False, nullable=False) # Legacy, keeping for migration safety
+
+    # Settings fields
+    is_quiz: Mapped[bool] = mapped_column(db.Boolean, default=True, nullable=False)
+    collect_email: Mapped[str] = mapped_column(db.String(20), default='verified', nullable=False)
+    shuffle_questions: Mapped[bool] = mapped_column(db.Boolean, default=False, nullable=False)
+    confirmation_message: Mapped[Optional[str]] = mapped_column(db.Text, nullable=True, default='Jawaban Anda telah direkam.')
+    default_points: Mapped[int] = mapped_column(db.Integer, default=10, nullable=False)
+    required_by_default: Mapped[bool] = mapped_column(db.Boolean, default=False, nullable=False)
+    questions_per_page: Mapped[int] = mapped_column(db.Integer, default=0, nullable=False)
+
+    # Background opacity (0-100)
+    bg_opacity: Mapped[int] = mapped_column(db.Integer, default=60, nullable=False)
+
+    # Archive status
+    is_archived: Mapped[bool] = mapped_column(db.Boolean, default=False, nullable=False, index=True)
+
+    # Trash (Ruang TPS) status — soft-delete, dihapus permanen otomatis setelah 30 hari
+    is_trashed: Mapped[bool] = mapped_column(db.Boolean, default=False, nullable=False, index=True)
+    trashed_at: Mapped[Optional[datetime.datetime]] = mapped_column(db.DateTime, nullable=True)
+
+    # Folder organization
+    folder_id: Mapped[Optional[int]] = mapped_column(db.Integer, db.ForeignKey('content_folders.id'), nullable=True, index=True)
+    order: Mapped[int] = mapped_column(db.Integer, default=0, nullable=False)
+
+    created_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=get_jakarta_now, nullable=False)
+    updated_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=get_jakarta_now, onupdate=get_jakarta_now, nullable=False)
+
+    course: Mapped['Course'] = relationship('Course', back_populates='quizzes')
+    folder = relationship('ContentFolder', back_populates='quizzes', foreign_keys=[folder_id])
+    questions: Mapped[List['Question']] = relationship('Question', back_populates='quiz', lazy='dynamic', cascade="all, delete-orphan")
+    submissions: Mapped[List['QuizSubmission']] = relationship('QuizSubmission', back_populates='quiz', cascade='all, delete-orphan')
+
+class Question(db.Model):
+    __tablename__ = 'questions'
+    id: Mapped[int] = mapped_column(db.Integer, primary_key=True)
+    question_text: Mapped[str] = mapped_column(db.Text, nullable=False)
+    question_type: Mapped[QuestionType] = mapped_column(db.Enum(QuestionType), nullable=False, default=QuestionType.MULTIPLE_CHOICE)
+    quiz_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('quizzes.id'), nullable=False, index=True)
+    order: Mapped[int] = mapped_column(db.Integer, nullable=False, default=1)
+    description: Mapped[Optional[str]] = mapped_column(db.Text, nullable=True)
+    image: Mapped[Optional[str]] = mapped_column(db.String(255), nullable=True)
+    is_required: Mapped[bool] = mapped_column(db.Boolean, default=True, nullable=False)
+    points: Mapped[int] = mapped_column(db.Integer, default=0, nullable=False)
+    max_file_size: Mapped[int] = mapped_column(db.Integer, default=10, nullable=False)
+    allowed_file_types: Mapped[Optional[str]] = mapped_column(db.String(200), default='document')
+
+    quiz: Mapped[Quiz] = relationship('Quiz', back_populates='questions')
+    options: Mapped[List['Option']] = relationship('Option', back_populates='question', lazy='dynamic', cascade='all, delete-orphan')
+    bloom_taxonomy: Mapped[Optional['QuestionBloomTaxonomy']] = relationship(
+        'QuestionBloomTaxonomy',
+        back_populates='question',
+        uselist=False,
+        cascade='all, delete-orphan'
+    )
+
+class QuestionBloomTaxonomy(db.Model):
+    """
+    Mapping taksonomi Bloom (C1-C6) untuk setiap soal.
+
+    Digunakan untuk:
+    - Validitas konstruk: memastikan quiz mengukur berbagai level kognitif
+    - Reporting: distribusi soal per level Bloom
+    """
+    __tablename__ = 'question_bloom_taxonomy'
+
+    id: Mapped[int] = mapped_column(db.Integer, primary_key=True)
+    question_id: Mapped[int] = mapped_column(
+        db.Integer,
+        db.ForeignKey('questions.id', ondelete='CASCADE'),
+        nullable=False,
+        unique=True
+    )
+
+    # Bloom's Revised Taxonomy
+    bloom_level: Mapped[str] = mapped_column(db.Enum(BloomLevel), nullable=False)
+    bloom_description: Mapped[Optional[str]] = mapped_column(db.Text, nullable=True)
+
+    # Verification
+    verified_by: Mapped[Optional[int]] = mapped_column(
+        db.Integer, db.ForeignKey('users.id'), nullable=True
+    )
+    verified_at: Mapped[Optional[datetime.datetime]] = mapped_column(db.DateTime, nullable=True)
+
+    # Timestamps
+    created_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=get_jakarta_now)
+    updated_at: Mapped[datetime.datetime] = mapped_column(
+        db.DateTime, default=get_jakarta_now, onupdate=get_jakarta_now
+    )
+
+    # Relationships
+    question: Mapped[Question] = relationship('Question', back_populates='bloom_taxonomy')
+    verifier = relationship('User', foreign_keys=[verified_by])
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'question_id': self.question_id,
+            'bloom_level': self.bloom_level.value,
+            'bloom_description': self.bloom_description,
+            'verified_by': self.verified_by,
+            'verified_at': self.verified_at.isoformat() if self.verified_at else None,
+        }
+
+    def __repr__(self) -> str:
+        return f'<QuestionBloomTaxonomy Q{self.question_id}: {self.bloom_level.value}>'
+
+class Option(db.Model):
+    __tablename__ = 'options'
+    id: Mapped[int] = mapped_column(db.Integer, primary_key=True)
+    option_text: Mapped[str] = mapped_column(db.String(500), nullable=False)
+    is_correct: Mapped[bool] = mapped_column(db.Boolean, default=False, nullable=False)
+    question_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('questions.id'), nullable=False, index=True)
+    order: Mapped[int] = mapped_column(db.Integer, nullable=False, default=1)
+    question: Mapped[Question] = relationship('Question', back_populates='options')
+
+class QuizSubmission(db.Model):
+    __tablename__ = 'quiz_submissions'
+    id: Mapped[int] = mapped_column(db.Integer, primary_key=True)
+    quiz_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('quizzes.id'), nullable=False, index=True)
+    user_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
+    submitted_at: Mapped[datetime.datetime] = mapped_column(db.DateTime, default=get_jakarta_now, nullable=False)
+    score: Mapped[Optional[float]] = mapped_column(db.Float, nullable=True)
+    total_points: Mapped[int] = mapped_column(db.Integer, nullable=False)
+    quiz: Mapped[Quiz] = relationship('Quiz', back_populates='submissions')
+    user: Mapped['User'] = relationship('User', backref='quiz_submissions')
+    answers: Mapped[List['Answer']] = relationship('Answer', back_populates='submission', lazy='dynamic', cascade='all, delete-orphan')
+
+class Answer(db.Model):
+    __tablename__ = 'answers'
+    id: Mapped[int] = mapped_column(db.Integer, primary_key=True)
+    submission_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('quiz_submissions.id'), nullable=False, index=True)
+    question_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey('questions.id'), nullable=False, index=True)
+    answer_text: Mapped[Optional[str]] = mapped_column(db.Text, nullable=True)
+    selected_option_id: Mapped[Optional[int]] = mapped_column(db.Integer, db.ForeignKey('options.id'), nullable=True)
+    manual_score: Mapped[Optional[int]] = mapped_column(db.Integer, nullable=True)
+    
+    submission: Mapped[QuizSubmission] = relationship('QuizSubmission', back_populates='answers')
+    question: Mapped[Question] = relationship('Question', backref='answers')
+    selected_option: Mapped[Optional[Option]] = relationship('Option', backref='answers')

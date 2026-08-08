@@ -1,0 +1,464 @@
+{% extends "base.html" %}
+
+{% block title %}Impor Konten - {{ course.name }} - Aldudu Academy{% endblock %}
+
+{% block extra_head %}
+<!-- Optional Extra Styling for Import Page -->
+<style>
+    .item-checkbox:checked + label {
+        border-color: #ce82ff;
+        background-color: #faf5ff;
+    }
+    html.dark .item-checkbox:checked + label {
+        background-color: #271c35;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div id="app-page" class="min-h-screen bg-gray-50 dark:bg-gray-950 flex">
+    <!-- Sidebar -->
+    {% include '_sidebar.html' %}
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <!-- Top Header -->
+        <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-800 h-16 flex items-center justify-between px-8 sticky top-0 z-30">
+            <div class="flex items-center space-x-4">
+                <a href="{{ url_for('courses_pages.course_detail', course_id=course.id) }}" class="p-2 text-gray-400 dark:text-gray-500 hover:text-primary-600 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                </a>
+                <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100 truncate">{{ course.name }} - Impor Konten</h2>
+            </div>
+            <div class="px-4 py-1.5 bg-[#faf5ff] dark:bg-purple-900/30 rounded-full text-[10px] font-black uppercase tracking-widest text-[#ce82ff]">
+                📥 Impor
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 overflow-y-auto p-8 sm:p-12">
+            <div class="max-w-4xl mx-auto space-y-8 animate-fade-in">
+                <!-- Hero section -->
+                <div class="bg-white dark:bg-gray-900 rounded-[2.5rem] border-2 border-[#e5e5e5] dark:border-gray-700 p-8 shadow-sm flex flex-col md:flex-row items-center gap-6">
+                    <div class="w-16 h-16 rounded-[1.25rem] bg-[#ce82ff] text-white flex items-center justify-center shrink-0 shadow-[0_4px_0_#af60f0]">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1 text-center md:text-left">
+                        <h1 class="text-2xl sm:text-3xl font-black text-gray-900 dark:text-gray-100 mb-1">Impor Konten Pembelajaran</h1>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 font-medium">Salin kuis, tugas, file, atau tautan dari kelas Anda yang lain langsung ke dalam kelas <b>{{ course.name }}</b> ini.</p>
+                    </div>
+                </div>
+
+                <!-- Select Source Class -->
+                <div class="bg-white dark:bg-gray-900 rounded-[2.5rem] border-2 border-[#e5e5e5] dark:border-gray-700 p-8 shadow-sm">
+                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-4">PILIH KELAS ASAL KONTEN</label>
+                    {% if other_courses %}
+                    <div class="relative w-full md:w-96">
+                        <select id="source-course-select" onchange="loadSourceMaterials()" class="w-full px-6 py-4 bg-[#f7f7f7] dark:bg-gray-800 border-2 border-[#e5e5e5] dark:border-gray-700 rounded-2xl focus:border-[#ce82ff] outline-none font-bold text-[#4b4b4b] dark:text-white transition-all appearance-none cursor-pointer">
+                            <option value="" disabled selected>Pilih kelas asal...</option>
+                            {% for other in other_courses %}
+                            <option value="{{ other.id }}">{{ other.name }} ({{ other.class_code }})</option>
+                            {% endfor %}
+                        </select>
+                        <div class="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-[#afafaf]">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </div>
+                    </div>
+                    {% else %}
+                    <p class="text-sm font-bold text-gray-500 dark:text-gray-400">Anda tidak mengajar kelas lain selain kelas ini.</p>
+                    {% endif %}
+                </div>
+
+                <!-- Choose Content Type (Hidden until source class selected) -->
+                <div id="type-selector-container" class="hidden bg-white dark:bg-gray-900 rounded-[2.5rem] border-2 border-[#e5e5e5] dark:border-gray-700 p-8 shadow-sm">
+                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-4">PILIH TIPE KONTEN YANG INGIN DIIMPOR</label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Option Materi -->
+                        <div id="type-opt-materi" onclick="selectImportType('materi')" class="flex items-center gap-4 p-5 border-2 border-[#ce82ff] bg-[#faf5ff] dark:bg-purple-900/10 rounded-2xl cursor-pointer hover:bg-slate-50 dark:hover:bg-gray-800 transition-all select-none">
+                            <div class="w-12 h-12 rounded-xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-xl shrink-0">
+                                📝
+                            </div>
+                            <div class="flex-1">
+                                <span class="block text-sm font-bold text-gray-900 dark:text-gray-100">Materi Pembelajaran</span>
+                                <span class="block text-xs text-gray-400 mt-0.5">Tugas kelas, berkas PDF/doc, dan link referensi</span>
+                            </div>
+                            <div class="shrink-0 w-6 h-6 rounded-full bg-[#ce82ff] flex items-center justify-center text-white check-icon">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <!-- Option Soal -->
+                        <div id="type-opt-soal" onclick="selectImportType('soal')" class="flex items-center gap-4 p-5 border-2 border-[#e5e5e5] dark:border-gray-700 bg-white dark:bg-gray-950 rounded-2xl cursor-pointer hover:bg-slate-50 dark:hover:bg-gray-800 transition-all select-none">
+                            <div class="w-12 h-12 rounded-xl bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center text-xl shrink-0">
+                                📊
+                            </div>
+                            <div class="flex-1">
+                                <span class="block text-sm font-bold text-gray-900 dark:text-gray-100">Kuis & Soal</span>
+                                <span class="block text-xs text-gray-400 mt-0.5">Ujian, ulangan harian, dan bank kuis</span>
+                            </div>
+                            <div class="shrink-0 w-6 h-6 rounded-full bg-[#ce82ff] flex items-center justify-center text-white check-icon hidden">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Materials Section Container (Hidden until selected) -->
+                <div id="materials-container" class="hidden space-y-6">
+                    <div class="bg-white dark:bg-gray-900 rounded-[2.5rem] border-2 border-[#e5e5e5] dark:border-gray-700 p-8 shadow-sm">
+                        <!-- Select all header -->
+                        <div class="flex items-center justify-between pb-6 border-b border-gray-100 dark:border-gray-800 mb-6">
+                            <div>
+                                <h3 class="text-lg font-black text-gray-900 dark:text-gray-100">Daftar Materi</h3>
+                                <p class="text-xs text-[#afafaf] font-bold mt-0.5">Pilih materi yang ingin Anda salin ke kelas ini</p>
+                            </div>
+                            <label class="flex items-center gap-3 cursor-pointer select-none">
+                                <input type="checkbox" id="select-all-checkbox" onchange="toggleSelectAll(this)" class="w-5 h-5 border-2 border-gray-300 dark:border-gray-600 rounded text-[#ce82ff] focus:ring-0 cursor-pointer">
+                                <span class="text-sm font-black text-[#4b4b4b] dark:text-gray-200">Pilih Semua</span>
+                            </label>
+                        </div>
+
+                        <!-- Quizzes Group -->
+                        <div id="group-quizzes" class="hidden mb-8">
+                            <h4 class="text-xs font-black text-[#afafaf] uppercase tracking-wider mb-3">📊 Kuis & Ulangan</h4>
+                            <div class="space-y-3" id="list-quizzes"></div>
+                        </div>
+
+                        <!-- Assignments Group -->
+                        <div id="group-assignments" class="hidden mb-8">
+                            <h4 class="text-xs font-black text-[#afafaf] uppercase tracking-wider mb-3">📝 Tugas Kelas</h4>
+                            <div class="space-y-3" id="list-assignments"></div>
+                        </div>
+
+                        <!-- Files Group -->
+                        <div id="group-files" class="hidden mb-8">
+                            <h4 class="text-xs font-black text-[#afafaf] uppercase tracking-wider mb-3">📎 Berkas Pembelajaran</h4>
+                            <div class="space-y-3" id="list-files"></div>
+                        </div>
+
+                        <!-- Links Group -->
+                        <div id="group-links" class="hidden mb-6">
+                            <h4 class="text-xs font-black text-[#afafaf] uppercase tracking-wider mb-3">🔗 Referensi Link</h4>
+                            <div class="space-y-3" id="list-links"></div>
+                        </div>
+
+                        <!-- Empty state when no materials in source class -->
+                        <div id="empty-materials-msg" class="hidden text-center py-12">
+                            <p class="text-gray-400 font-bold text-sm">Kelas asal tidak memiliki materi yang dapat diimpor.</p>
+                        </div>
+                    </div>
+
+                    <!-- Action Button Container -->
+                    <div class="flex justify-end">
+                        <button id="btn-import-submit" onclick="submitImport()" disabled class="btn-duo btn-duo-purple h-14 px-8 text-sm font-black disabled:opacity-50 disabled:pointer-events-none shadow-lg">
+                            IMPOR KONTEN TERPILIH
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+// State management for import options
+let currentImportType = 'materi';
+let sourceMaterialsData = null;
+
+// Keep tracks of checked items
+function updateSubmitButtonState() {
+    const checkboxes = document.querySelectorAll('.item-checkbox:checked');
+    const btn = document.getElementById('btn-import-submit');
+    if (checkboxes.length > 0) {
+        btn.removeAttribute('disabled');
+    } else {
+        btn.setAttribute('disabled', 'true');
+    }
+}
+
+function toggleSelectAll(selectAllCheckbox) {
+    const checkboxes = document.querySelectorAll('.item-checkbox');
+    checkboxes.forEach(cb => {
+        cb.checked = selectAllCheckbox.checked;
+        cb.dispatchEvent(new Event('change'));
+    });
+    updateSubmitButtonState();
+}
+
+function selectImportType(type) {
+    currentImportType = type;
+    
+    // Update active class styles for Materi option
+    const optMateri = document.getElementById('type-opt-materi');
+    const checkMateri = optMateri.querySelector('.check-icon');
+    if (type === 'materi') {
+        optMateri.classList.add('border-[#ce82ff]', 'bg-[#faf5ff]', 'dark:bg-purple-900/10');
+        optMateri.classList.remove('border-[#e5e5e5]', 'dark:border-gray-700', 'bg-white', 'dark:bg-gray-950');
+        checkMateri.classList.remove('hidden');
+    } else {
+        optMateri.classList.remove('border-[#ce82ff]', 'bg-[#faf5ff]', 'dark:bg-purple-900/10');
+        optMateri.classList.add('border-[#e5e5e5]', 'dark:border-gray-700', 'bg-white', 'dark:bg-gray-950');
+        checkMateri.classList.add('hidden');
+    }
+
+    // Update active class styles for Soal option
+    const optSoal = document.getElementById('type-opt-soal');
+    const checkSoal = optSoal.querySelector('.check-icon');
+    if (type === 'soal') {
+        optSoal.classList.add('border-[#ce82ff]', 'bg-[#faf5ff]', 'dark:bg-purple-900/10');
+        optSoal.classList.remove('border-[#e5e5e5]', 'dark:border-gray-700', 'bg-white', 'dark:bg-gray-950');
+        checkSoal.classList.remove('hidden');
+    } else {
+        optSoal.classList.remove('border-[#ce82ff]', 'bg-[#faf5ff]', 'dark:bg-purple-900/10');
+        optSoal.classList.add('border-[#e5e5e5]', 'dark:border-gray-700', 'bg-white', 'dark:bg-gray-950');
+        checkSoal.classList.add('hidden');
+    }
+    
+    // Render the materials of the chosen type
+    renderMaterials();
+}
+
+async function loadSourceMaterials() {
+    const select = document.getElementById('source-course-select');
+    const sourceId = select.value;
+    if (!sourceId) return;
+
+    // Show loading
+    Swal.fire({
+        title: 'Memuat data…',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    try {
+        const res = await fetch(`/api/courses/${sourceId}/importable-materials`);
+        const data = await res.json();
+        Swal.close();
+
+        if (!data.success) {
+            Swal.fire({ icon: 'error', title: 'Gagal memuat materi', text: data.message });
+            return;
+        }
+
+        // Save data to global variable
+        sourceMaterialsData = data;
+
+        // Show choice container
+        document.getElementById('type-selector-container').classList.remove('hidden');
+
+        // Show materials list container
+        document.getElementById('materials-container').classList.remove('hidden');
+
+        // Set default type to 'materi' and render
+        selectImportType('materi');
+
+    } catch (err) {
+        Swal.close();
+        Swal.fire({ icon: 'error', title: 'Kesalahan', text: 'Terjadi kegagalan koneksi ke server.' });
+    }
+}
+
+function renderMaterials() {
+    if (!sourceMaterialsData) return;
+
+    // Reset inputs & select all checkbox
+    document.getElementById('select-all-checkbox').checked = false;
+    document.getElementById('btn-import-submit').setAttribute('disabled', 'true');
+
+    // Helper to check if any content loaded for the active type
+    let activeItemsCount = 0;
+
+    // Quizzes (only show in 'soal' mode)
+    const listQuizzes = document.getElementById('list-quizzes');
+    listQuizzes.innerHTML = '';
+    const groupQuizzes = document.getElementById('group-quizzes');
+    if (currentImportType === 'soal' && sourceMaterialsData.quizzes && sourceMaterialsData.quizzes.length > 0) {
+        groupQuizzes.classList.remove('hidden');
+        sourceMaterialsData.quizzes.forEach(item => {
+            listQuizzes.appendChild(createItemElement('quiz', item.id, '📊', item.name, `${item.points} poin`));
+            activeItemsCount++;
+        });
+    } else {
+        groupQuizzes.classList.add('hidden');
+    }
+
+    // Assignments (only show in 'materi' mode)
+    const listAssignments = document.getElementById('list-assignments');
+    listAssignments.innerHTML = '';
+    const groupAssignments = document.getElementById('group-assignments');
+    if (currentImportType === 'materi' && sourceMaterialsData.assignments && sourceMaterialsData.assignments.length > 0) {
+        groupAssignments.classList.remove('hidden');
+        sourceMaterialsData.assignments.forEach(item => {
+            listAssignments.appendChild(createItemElement('assignment', item.id, '📝', item.title, `Nilai maks: ${item.max_score}`));
+            activeItemsCount++;
+        });
+    } else {
+        groupAssignments.classList.add('hidden');
+    }
+
+    // Files (only show in 'materi' mode)
+    const listFiles = document.getElementById('list-files');
+    listFiles.innerHTML = '';
+    const groupFiles = document.getElementById('group-files');
+    if (currentImportType === 'materi' && sourceMaterialsData.files && sourceMaterialsData.files.length > 0) {
+        groupFiles.classList.remove('hidden');
+        sourceMaterialsData.files.forEach(item => {
+            listFiles.appendChild(createItemElement('file', item.id, '📎', item.name, item.filename));
+            activeItemsCount++;
+        });
+    } else {
+        groupFiles.classList.add('hidden');
+    }
+
+    // Links (only show in 'materi' mode)
+    const listLinks = document.getElementById('list-links');
+    listLinks.innerHTML = '';
+    const groupLinks = document.getElementById('group-links');
+    if (currentImportType === 'materi' && sourceMaterialsData.links && sourceMaterialsData.links.length > 0) {
+        groupLinks.classList.remove('hidden');
+        sourceMaterialsData.links.forEach(item => {
+            listLinks.appendChild(createItemElement('link', item.id, '🔗', item.name, item.url));
+            activeItemsCount++;
+        });
+    } else {
+        groupLinks.classList.add('hidden');
+    }
+
+    // Empty message
+    const emptyMsg = document.getElementById('empty-materials-msg');
+    if (activeItemsCount === 0) {
+        emptyMsg.classList.remove('hidden');
+    } else {
+        emptyMsg.classList.add('hidden');
+    }
+}
+
+function createItemElement(type, id, icon, title, details) {
+    const div = document.createElement('div');
+    const inputId = `${type}-${id}`;
+    
+    div.innerHTML = `
+        <input type="checkbox" id="${inputId}" data-id="${id}" data-type="${type}" onchange="updateSubmitButtonState()" class="item-checkbox hidden">
+        <label for="${inputId}" class="flex items-center gap-4 px-5 py-4 border-2 border-[#e5e5e5] dark:border-gray-700 rounded-2xl cursor-pointer hover:bg-slate-50 dark:hover:bg-gray-800 transition-all select-none w-full">
+            <div class="flex-shrink-0 w-5 h-5 rounded-md border-2 border-gray-300 dark:border-gray-600 flex items-center justify-center check-box-visual">
+                <svg class="w-3.5 h-3.5 text-white hidden checked-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                </svg>
+            </div>
+            <div class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-gray-800 flex items-center justify-center text-lg flex-shrink-0">
+                ${icon}
+            </div>
+            <div class="flex-1 min-w-0">
+                <span class="block text-sm font-bold text-gray-900 dark:text-gray-100 truncate">${title}</span>
+                <span class="block text-xs text-gray-400 truncate mt-0.5">${details}</span>
+            </div>
+        </label>
+    `;
+
+    // Visual helper for checkmarks
+    const checkbox = div.querySelector('input');
+    const boxVisual = div.querySelector('.check-box-visual');
+    const svg = div.querySelector('.checked-svg');
+    checkbox.addEventListener('change', () => {
+        if (checkbox.checked) {
+            boxVisual.classList.add('bg-[#ce82ff]', 'border-[#ce82ff]');
+            svg.classList.remove('hidden');
+        } else {
+            boxVisual.classList.remove('bg-[#ce82ff]', 'border-[#ce82ff]');
+            svg.classList.add('hidden');
+        }
+    });
+
+    return div;
+}
+
+async function submitImport() {
+    const select = document.getElementById('source-course-select');
+    const sourceId = select.value;
+    if (!sourceId) return;
+
+    const selectedCheckboxes = document.querySelectorAll('.item-checkbox:checked');
+    if (selectedCheckboxes.length === 0) return;
+
+    const items = [];
+    selectedCheckboxes.forEach(cb => {
+        items.push({
+            type: cb.dataset.type,
+            id: parseInt(cb.dataset.id)
+        });
+    });
+
+    const confirm = await Swal.fire({
+        title: 'Impor Konten?',
+        text: `Anda akan mengimpor ${items.length} materi ke dalam kelas ini.`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'YA, IMPOR',
+        cancelButtonText: 'BATAL',
+        confirmButtonColor: '#ce82ff',
+    });
+
+    if (!confirm.isConfirmed) return;
+
+    Swal.fire({
+        title: 'Mengimpor konten…',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    try {
+        const destCourseId = "{{ course.id }}";
+        const response = await fetch(`/api/courses/${destCourseId}/import`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                source_course_id: parseInt(sourceId),
+                items: items
+            })
+        });
+        const data = await response.json();
+        Swal.close();
+
+        if (data.success) {
+            await Swal.fire({
+                icon: 'success',
+                title: 'Berhasil diimpor!',
+                text: data.message,
+                confirmButtonColor: '#ce82ff',
+                confirmButtonText: 'LIHAT MATERI'
+            });
+            // Redirect to class content detail page
+            window.location.href = `/kelas/${destCourseId}`;
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal mengimpor',
+                text: data.message || 'Terjadi kesalahan internal'
+            });
+        }
+
+    } catch (err) {
+        Swal.close();
+        Swal.fire({
+            icon: 'error',
+            title: 'Kesalahan',
+            text: 'Kesalahan koneksi ke server.'
+        });
+    }
+}
+</script>
+{% endblock %}

@@ -12,14 +12,14 @@ class TestFileUploadValidation:
 
     def test_allowed_extension_pdf(self, app):
         """Test PDF file is allowed"""
-        from app.blueprints.courses import allowed_file
+        from app.content.routes import allowed_file
         
         assert allowed_file('document.pdf') is True
         assert allowed_file('file.PDF') is True
 
     def test_allowed_extension_image(self, app):
         """Test image files are allowed"""
-        from app.blueprints.courses import allowed_file
+        from app.content.routes import allowed_file
         
         assert allowed_file('image.png') is True
         assert allowed_file('photo.jpg') is True
@@ -29,7 +29,7 @@ class TestFileUploadValidation:
 
     def test_allowed_extension_document(self, app):
         """Test document files are allowed"""
-        from app.blueprints.courses import allowed_file
+        from app.content.routes import allowed_file
         
         assert allowed_file('document.doc') is True
         assert allowed_file('document.docx') is True
@@ -40,7 +40,7 @@ class TestFileUploadValidation:
 
     def test_disallowed_extension_exe(self, app):
         """Test executable files are disallowed"""
-        from app.blueprints.courses import allowed_file
+        from app.content.routes import allowed_file
         
         assert allowed_file('virus.exe') is False
         assert allowed_file('script.bat') is False
@@ -48,14 +48,14 @@ class TestFileUploadValidation:
 
     def test_disallowed_extension_no_extension(self, app):
         """Test files without extension are disallowed"""
-        from app.blueprints.courses import allowed_file
+        from app.content.routes import allowed_file
         
         assert allowed_file('noextension') is False
         assert allowed_file('file.') is False
 
     def test_file_size_limit(self, app):
         """Test file size limit enforcement"""
-        from app.config import Config
+        from app.core.config import Config
         
         # Default max is 16MB
         assert Config.MAX_CONTENT_LENGTH == 16 * 1024 * 1024
@@ -168,7 +168,7 @@ class TestFileStorage:
     def test_upload_folder_outside_instance(self, app):
         """Test that upload folder is within instance directory"""
         import os
-        from app.config import Config
+        from app.core.config import Config
         
         upload_folder = Config.UPLOAD_FOLDER
         instance_path = os.path.join(os.getcwd(), 'instance')

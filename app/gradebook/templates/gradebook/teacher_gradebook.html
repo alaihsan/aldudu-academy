@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}Buku Nilai - {{ course.name }}{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/gradebook/teacher_gradebook.css') }}?v={{ asset_hash('css/gradebook/teacher_gradebook.css') }}">
+{% endblock %}
+
+{% block body %}
+<div id="app-page" class="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
+    {% include '_sidebar.html' %}
+
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-8 py-4 sticky top-0 z-30 gap-4">
+            <div class="flex items-center space-x-4">
+                <a href="{{ url_for('courses_pages.course_detail', course_id=course.id) }}" class="p-2 text-gray-400 dark:text-gray-500 hover:text-theme transition-colors" aria-label="Kembali">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                </a>
+                <div>
+                    <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100">{{ course.name }}</h2>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Buku Nilai</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button type="button" onclick="syncQuizGrades()" id="sync-quiz-btn" class="gradebook-action-btn gradebook-action-btn-primary">
+                    <span class="gradebook-action-icon">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v6h6M20 20v-6h-6M5 19a9 9 0 0014-3.5M19 5A9 9 0 005 8.5"/>
+                        </svg>
+                    </span>
+                    <span class="gradebook-action-text">
+                        <span class="gradebook-action-title">Sinkronkan Quiz</span>
+                        <span class="gradebook-action-subtitle">Tarik nilai terbaru ke Buku Nilai</span>
+                    </span>
+                </button>
+                <a href="{{ url_for('gradebook.my_grades', course_id=course.id) }}" target="_blank" rel="noopener" class="gradebook-action-btn gradebook-action-btn-secondary">
+                    <span class="gradebook-action-icon">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                        </svg>
+                    </span>
+                    <span class="gradebook-action-text">
+                        <span class="gradebook-action-title">Preview Siswa</span>
+                        <span class="gradebook-action-subtitle">Lihat tampilan nilai murid</span>
+                    </span>
+                </a>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-8">
+            <div class="max-w-7xl mx-auto space-y-6">
+                <section class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-5">
+                    <div class="flex flex-col lg:flex-row lg:items-end gap-4">
+                        <div class="flex-1">
+                            <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Tampilkan</label>
+                            <select id="filter-type" onchange="renderGradebook()" class="w-full lg:max-w-xs px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none transition-all">
+                                <option value="">Semua kolom nilai</option>
+                                <option value="quiz">Quiz</option>
+                                <option value="assignment">Tugas</option>
+                                <option value="manual">Nilai Lainnya</option>
+                            </select>
+                        </div>
+                        <div class="flex gap-3">
+                            <button type="button" onclick="openAddItemModal()" class="px-5 py-2.5 bg-theme text-white rounded-lg font-bold hover:opacity-90 transition-all">
+                                Tambah Kolom Nilai
+                            </button>
+                            <button type="button" onclick="loadGradebook()" class="px-5 py-2.5 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-lg font-semibold hover:bg-gray-50 dark:hover:bg-gray-600 transition-all">
+                                Muat Ulang
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
+                        <p class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Siswa</p>
+                        <p id="stat-students" class="text-3xl font-bold text-gray-900 dark:text-gray-100 mt-2">-</p>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
+                        <p class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Kolom Nilai</p>
+                        <p id="stat-items" class="text-3xl font-bold text-gray-900 dark:text-gray-100 mt-2">-</p>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
+                        <p class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Rata-rata</p>
+                        <p id="stat-average" class="text-3xl font-bold text-theme mt-2">-</p>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
+                        <p class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Sudah Dinilai</p>
+                        <p id="stat-graded" class="text-3xl font-bold text-gray-900 dark:text-gray-100 mt-2">-</p>
+                    </div>
+                </section>
+
+                <section class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+                    <div class="px-5 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                        <div>
+                            <h3 class="font-bold text-gray-900 dark:text-gray-100">Tabel Nilai</h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Klik nilai atau komentar untuk mengedit satu kolom.</p>
+                        </div>
+                        <div id="save-status" class="text-sm text-gray-500 dark:text-gray-400"></div>
+                    </div>
+                    <div id="gradebook-table-wrap" class="gradebook-table-wrap">
+                        <div class="text-center py-12 text-gray-500 dark:text-gray-400">Memuat buku nilai...</div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div id="add-item-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 z-50 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg animate-slide-up">
+        <div class="modal-header-theme px-6 py-4">
+            <h3 class="text-xl font-bold text-white">Tambah Kolom Nilai</h3>
+            <p class="text-white/80 text-sm mt-1">Kolom ini masuk ke Nilai Lainnya.</p>
+        </div>
+        <form id="add-item-form" class="p-6 space-y-4">
+            <input type="hidden" id="item-course-id" value="{{ course.id }}">
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Nama Kolom *</label>
+                <input type="text" id="item-name" required class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none" placeholder="Contoh: Praktik, Proyek, Keaktifan">
+            </div>
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Nilai Maksimal</label>
+                <input type="number" id="item-max-score" value="100" min="1" step="0.1" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none">
+            </div>
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Keterangan Kolom</label>
+                <textarea id="item-description" rows="3" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none" placeholder="Opsional"></textarea>
+            </div>
+            <div id="add-item-error" class="hidden text-red-600 dark:text-red-400 text-sm"></div>
+        </form>
+        <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 flex justify-end space-x-3 rounded-b-2xl">
+            <button type="button" onclick="closeAddItemModal()" class="px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all font-semibold">Batal</button>
+            <button type="button" onclick="saveGradeItem()" class="px-4 py-2 bg-theme text-white rounded-lg hover:opacity-90 transition-all font-semibold">Simpan</button>
+        </div>
+    </div>
+</div>
+
+<div id="grade-entry-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 z-50 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-6xl animate-slide-up max-h-[90vh] flex flex-col">
+        <div class="modal-header-theme px-6 py-4 flex items-start justify-between">
+            <div>
+                <h3 class="text-xl font-bold text-white" id="entry-modal-title">Input Nilai</h3>
+                <p class="text-white/80 text-sm mt-1" id="entry-modal-desc">Nilai dan komentar per siswa.</p>
+            </div>
+            <button type="button" onclick="closeGradeEntryModal()" class="text-white/80 hover:text-white transition-colors" aria-label="Tutup">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <div class="p-6 overflow-y-auto">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead class="bg-gray-50 dark:bg-gray-800 sticky top-0">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">No</th>
+                            <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Siswa</th>
+                            <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase w-36">Nilai</th>
+                            <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Komentar</th>
+                        </tr>
+                    </thead>
+                    <tbody id="grade-entry-body" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 flex justify-between items-center rounded-b-2xl">
+            <button type="button" onclick="autoFillGrades()" class="px-4 py-2 text-theme bg-theme-light rounded-lg hover:bg-theme/10 transition-all text-sm font-bold">Isi Nilai Maksimal</button>
+            <div class="flex space-x-3">
+                <button type="button" onclick="closeGradeEntryModal()" class="px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all font-semibold">Batal</button>
+                <button type="button" onclick="saveAllGrades()" class="px-4 py-2 bg-theme text-white rounded-lg hover:opacity-90 transition-all font-semibold">Simpan</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+window.courseId = {{ course.id }};
+</script>
+<script src="{{ url_for('static', filename='js/gradebook/teacher_gradebook.js') }}?v={{ asset_hash('js/gradebook/teacher_gradebook.js') }}"></script>
+{% endblock %}

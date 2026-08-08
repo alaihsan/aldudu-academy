@@ -16,7 +16,7 @@ Skenario yang diuji:
 import pytest
 from sqlalchemy.pool import StaticPool
 from app import create_app
-from app.extensions import db as _db
+from app.core.extensions import db as _db
 from app.models import (
     User, UserRole, School, SchoolStatus,
     AcademicYear, Course,
@@ -402,7 +402,7 @@ class TestTicketService:
 
     def test_ticket_number_scoped_per_school(self, app, seed):
         """Nomor ticket dihasilkan terpisah untuk tiap sekolah."""
-        from app.services.ticket_service import generate_ticket_number
+        from app.tickets.services import generate_ticket_number
         with app.app_context():
             num_a = generate_ticket_number(school_id=seed['school_a_id'])
             num_b = generate_ticket_number(school_id=seed['school_b_id'])
@@ -416,7 +416,7 @@ class TestTicketService:
 
     def test_queue_position_scoped_per_school(self, app, seed):
         """Posisi antrian dihitung per sekolah, bukan secara global."""
-        from app.services.ticket_service import get_queue_position
+        from app.tickets.services import get_queue_position
         with app.app_context():
             t1 = Ticket(
                 ticket_number='TKT-QA-TEST01', title='Queue A', description='d',
