@@ -91,12 +91,7 @@ def quiz_saved(quiz_id):
 @login_required
 def api_archive_quiz(quiz_id):
     """API endpoint untuk mengarsipkan kuis"""
-    quiz = db.session.get(Quiz, quiz_id)
-    if not quiz:
-        return jsonify({'success': False, 'message': 'Kuis tidak ditemukan'}), 404
-
-    if quiz.course.teacher_id != current_user.id:
-        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
+    quiz = get_quiz_or_abort(quiz_id)
 
     quiz.is_archived = True
     db.session.commit()
@@ -108,12 +103,7 @@ def api_archive_quiz(quiz_id):
 @login_required
 def api_restore_quiz(quiz_id):
     """API endpoint untuk memulihkan kuis dari arsip"""
-    quiz = db.session.get(Quiz, quiz_id)
-    if not quiz:
-        return jsonify({'success': False, 'message': 'Kuis tidak ditemukan'}), 404
-
-    if quiz.course.teacher_id != current_user.id:
-        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
+    quiz = get_quiz_or_abort(quiz_id)
 
     quiz.is_archived = False
     db.session.commit()
@@ -125,11 +115,7 @@ def api_restore_quiz(quiz_id):
 @login_required
 def api_delete_quiz(quiz_id):
     """Soft-delete kuis ke Ruang TPS (dipanggil oleh tombol Hapus di daftar materi)."""
-    quiz = db.session.get(Quiz, quiz_id)
-    if not quiz:
-        return jsonify({'success': False, 'message': 'Kuis tidak ditemukan'}), 404
-    if quiz.course.teacher_id != current_user.id:
-        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
+    quiz = get_quiz_or_abort(quiz_id)
 
     quiz.is_trashed = True
     quiz.trashed_at = _trash_now()

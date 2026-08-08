@@ -54,12 +54,7 @@ def _trash_now():
 @login_required
 def api_archive_assignment(assignment_id):
     """API endpoint untuk mengarsipkan tugas"""
-    assignment = db.session.get(Assignment, assignment_id)
-    if not assignment:
-        return jsonify({'success': False, 'message': 'Tugas tidak ditemukan'}), 404
-
-    if assignment.course.teacher_id != current_user.id:
-        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
+    assignment = get_assignment_or_abort(assignment_id, check_teacher=True)
 
     assignment.status = AssignmentStatus.ARCHIVED
     db.session.commit()
@@ -71,12 +66,7 @@ def api_archive_assignment(assignment_id):
 @login_required
 def api_restore_assignment(assignment_id):
     """API endpoint untuk memulihkan tugas dari arsip"""
-    assignment = db.session.get(Assignment, assignment_id)
-    if not assignment:
-        return jsonify({'success': False, 'message': 'Tugas tidak ditemukan'}), 404
-
-    if assignment.course.teacher_id != current_user.id:
-        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
+    assignment = get_assignment_or_abort(assignment_id, check_teacher=True)
 
     assignment.status = AssignmentStatus.PUBLISHED
     db.session.commit()
@@ -88,11 +78,7 @@ def api_restore_assignment(assignment_id):
 @login_required
 def api_delete_assignment(assignment_id):
     """Soft-delete tugas ke Ruang TPS."""
-    assignment = db.session.get(Assignment, assignment_id)
-    if not assignment:
-        return jsonify({'success': False, 'message': 'Tugas tidak ditemukan'}), 404
-    if assignment.course.teacher_id != current_user.id:
-        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
+    assignment = get_assignment_or_abort(assignment_id, check_teacher=True)
 
     assignment.is_trashed = True
     assignment.trashed_at = _trash_now()

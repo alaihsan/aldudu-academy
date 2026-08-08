@@ -189,6 +189,9 @@ def delete_post(post_id):
     if not post:
         return jsonify({'success': False, 'message': 'Post tidak ditemukan'}), 404
 
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(post.discussion.course, school_id)
+
     # Allow deletion if user is the post author or the discussion creator (teacher)
     if current_user.id != post.user_id and current_user.id != post.discussion.user_id:
         return jsonify({'success': False, 'message': 'Anda tidak memiliki izin untuk menghapus post ini'}), 403

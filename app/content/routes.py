@@ -398,7 +398,7 @@ def api_archive_file(file_id):
     if not file:
         return jsonify({'success': False, 'message': 'File tidak ditemukan'}), 404
 
-    if file.course.teacher_id != current_user.id:
+    if not _verify_material_owner(file.course):
         return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
 
     file.is_archived = True
@@ -415,7 +415,7 @@ def api_restore_file(file_id):
     if not file:
         return jsonify({'success': False, 'message': 'File tidak ditemukan'}), 404
 
-    if file.course.teacher_id != current_user.id:
+    if not _verify_material_owner(file.course):
         return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
 
     file.is_archived = False
@@ -431,7 +431,7 @@ def api_delete_file(file_id):
     file = db.session.get(File, file_id)
     if not file:
         return jsonify({'success': False, 'message': 'File tidak ditemukan'}), 404
-    if file.course.teacher_id != current_user.id:
+    if not _verify_material_owner(file.course):
         return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
 
     file.is_trashed = True
