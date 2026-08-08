@@ -1149,7 +1149,7 @@ def api_get_ctt_analysis(quiz_id):
 @login_required
 def api_get_assignment_submissions(assignment_id):
     """Get assignment submissions with attachments for preview"""
-    from app.models.assignment import Assignment, AssignmentSubmission
+    from app.assignment.models import Assignment, AssignmentSubmission
     
     assignment = Assignment.query.get_or_404(assignment_id)
     course = Course.query.get(assignment.course_id)

@@ -14,14 +14,14 @@ def register_blueprints(app):
     from app.blueprints.main import main_bp
     from app.quiz.routes import quiz_bp
     from app.blueprints.discussion import discussion_bp
-    from app.blueprints.issues import issues_bp
+    from app.issues.routes import issues_bp, issues_pages_bp
     from app.blueprints.admin import admin_bp
     from app.blueprints.superadmin import superadmin_bp
-    from app.blueprints.tickets import tickets_bp
+    from app.tickets.routes import tickets_bp
     from app.gradebook.routes import gradebook_bp
-    from app.blueprints.assignment import assignment_bp
-    from app.blueprints.whats_new_view import whats_new_view_bp
-    from app.blueprints.trash import trash_bp
+    from app.assignment.routes import assignment_bp
+    from app.whats_new.routes import whats_new_view_bp
+    from app.trash.routes import trash_bp
     from app.blueprints.health import health_bp
     from app.blueprints.metrics import metrics_bp
 
@@ -32,6 +32,7 @@ def register_blueprints(app):
         quiz_bp,
         discussion_bp,
         issues_bp,
+        issues_pages_bp,
         admin_bp,
         superadmin_bp,
         tickets_bp,

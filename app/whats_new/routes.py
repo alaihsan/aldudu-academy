@@ -1,9 +1,9 @@
 from flask import Blueprint, render_template, jsonify
 from flask_login import login_required, current_user
-from app.models import WhatsNew
+from app.whats_new.models import WhatsNew
 from app.core.extensions import db
 
-whats_new_view_bp = Blueprint('whats_new_view', __name__)
+whats_new_view_bp = Blueprint('whats_new_view', __name__, template_folder='templates')
 
 
 @whats_new_view_bp.before_request
@@ -15,7 +15,7 @@ def login_required():
 @whats_new_view_bp.route('/whats-new')
 def view_whats_new():
     """Halaman What's New untuk semua user (Admin, Guru, Murid)."""
-    return render_template('whats_new.html')
+    return render_template('whats_new/whats_new.html')
 
 
 @whats_new_view_bp.route('/api/whats-new/published', methods=['GET'])

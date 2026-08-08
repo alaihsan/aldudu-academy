@@ -15,5 +15,5 @@ from .ticket import Ticket, TicketMessage, TicketCategory, TicketStatus, TicketP
 from .token import EmailVerificationToken, PasswordResetToken
 from .activity_log import ActivityLog
 from app.gradebook.models import GradeCategory, GradeCategoryType, LearningObjective, LearningGoal, GradeItem, GradeEntry
-from .assignment import Assignment, AssignmentSubmission, AssignmentStatus, AssignmentSubmissionStatus
-from .whats_new import WhatsNew
+from app.assignment.models import Assignment, AssignmentSubmission, AssignmentStatus, AssignmentSubmissionStatus
+from app.whats_new.models import WhatsNew

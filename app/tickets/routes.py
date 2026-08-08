@@ -3,10 +3,10 @@ from flask_login import login_required, current_user
 from app.core.extensions import db
 from app.models import Ticket, TicketMessage, TicketStatus, TicketPriority, TicketCategory, UserRole
 from app.helpers import sanitize_text
-from app.services.ticket_service import generate_ticket_number, transition_status
+from app.tickets.services import generate_ticket_number, transition_status
 from app.services.email_service import send_ticket_update_email
 
-tickets_bp = Blueprint('tickets', __name__)
+tickets_bp = Blueprint('tickets', __name__, template_folder='templates')
 
 
 # ─── Page Routes ────────────────────────────────────
@@ -14,7 +14,7 @@ tickets_bp = Blueprint('tickets', __name__)
 @tickets_bp.route('/s/<slug>/tickets')
 @login_required
 def tickets_page(slug):
-    return render_template('tickets.html')
+    return render_template('tickets/tickets.html')
 
 
 @tickets_bp.route('/s/<slug>/tickets/<int:ticket_id>')
@@ -28,7 +28,7 @@ def ticket_detail_page(slug, ticket_id):
         abort(403)
     if ticket.school_id != current_user.school_id:
         abort(403)
-    return render_template('ticket_detail.html', ticket=ticket)
+    return render_template('tickets/ticket_detail.html', ticket=ticket)
 
 
 # ─── API Routes ─────────────────────────────────────

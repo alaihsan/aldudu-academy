@@ -10,7 +10,7 @@ from app.models import (
 )
 from app.helpers import get_jakarta_now, sanitize_text
 from app.services.email_service import send_school_approved_email, send_ticket_update_email, send_email
-from app.services.ticket_service import transition_status, TicketStatus as TStat
+from app.tickets.services import transition_status, TicketStatus as TStat
 from app.core.middleware import invalidate_school_cache
 
 superadmin_bp = Blueprint('superadmin', __name__, url_prefix='/superadmin')

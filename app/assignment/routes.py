@@ -4,13 +4,14 @@ from flask import Blueprint, request, jsonify, abort, render_template, current_a
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 from app.core.extensions import db
-from app.models import Assignment, AssignmentSubmission, AssignmentStatus, AssignmentSubmissionStatus, Course, GradeItem, GradeEntry, ActivityLog, UserRole
+from app.models import Course, GradeItem, GradeEntry, ActivityLog, UserRole
+from app.assignment.models import Assignment, AssignmentSubmission, AssignmentStatus, AssignmentSubmissionStatus
+from app.core.authorization import get_school_id_or_abort, verify_course_in_school
 from app.helpers import get_jakarta_now
 
-assignment_bp = Blueprint('assignment', __name__, url_prefix='/assignment')
+assignment_bp = Blueprint('assignment', __name__, url_prefix='/assignment', template_folder='templates')
 
 def get_assignment_or_abort(assignment_id, check_teacher=False):
-    from app.core.authorization import get_school_id_or_abort, verify_course_in_school
     assignment = db.session.get(Assignment, assignment_id)
     if not assignment:
         abort(404, description="Tugas tidak ditemukan.")
@@ -29,7 +30,6 @@ def get_assignment_or_abort(assignment_id, check_teacher=False):
 @assignment_bp.route('/course/<int:course_id>/create', methods=['POST'])
 @login_required
 def create_assignment(course_id):
-    from app.core.authorization import get_school_id_or_abort, verify_course_in_school
     course = db.session.get(Course, course_id)
     if not course:
         abort(404)
@@ -91,7 +91,7 @@ def detail(assignment_id):
         submission = AssignmentSubmission.query.filter_by(assignment_id=assignment.id, student_id=current_user.id).first()
         
     return render_template(
-        'assignment_detail.html',
+        'assignment/assignment_detail.html',
         assignment=assignment,
         course=assignment.course,
         is_teacher=is_teacher,

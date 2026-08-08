@@ -282,11 +282,6 @@ def privacy_policy():
 def sponsor():
     return render_template('sponsor.html')
 
-@main_bp.route('/issues')
-@login_required
-def issues():
-    return render_template('issues.html')
-
 @main_bp.route('/api/set-language', methods=['POST'])
 @login_required
 def set_language():

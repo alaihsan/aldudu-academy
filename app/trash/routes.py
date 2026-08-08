@@ -20,7 +20,7 @@ from app.core.authorization import get_school_id_or_abort, verify_course_in_scho
 
 logger = logging.getLogger(__name__)
 
-trash_bp = Blueprint('trash', __name__)
+trash_bp = Blueprint('trash', __name__, template_folder='templates')
 
 TRASH_RETENTION_DAYS = 30
 
@@ -142,7 +142,7 @@ def course_tps(course_id):
     # urutkan: paling baru dibuang di atas
     items.sort(key=lambda x: x['trashed_at'] if x['trashed_at'] != '-' else '', reverse=True)
 
-    return render_template('course_tps.html',
+    return render_template('trash/course_tps.html',
                            course=course,
                            items=items,
                            retention_days=TRASH_RETENTION_DAYS,

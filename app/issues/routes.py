@@ -1,10 +1,21 @@
-from flask import Blueprint, request, jsonify, abort, current_app
+from flask import Blueprint, request, jsonify, abort, current_app, render_template
 from flask_login import login_required, current_user
 from app.models import db, Issue, IssueStatus, IssuePriority, UserRole
 from app.helpers import sanitize_text
 from app.core.authorization import get_school_id_or_abort
 
 issues_bp = Blueprint('issues', __name__, url_prefix='/api')
+
+# Separate blueprint (no /api prefix) for the page render, since issues_bp's
+# prefix is fixed to /api for its JSON routes.
+issues_pages_bp = Blueprint('issues_pages', __name__, template_folder='templates')
+
+
+@issues_pages_bp.route('/issues')
+@login_required
+def issues_page():
+    return render_template('issues/issues.html')
+
 
 @issues_bp.route('/issues', methods=['GET'])
 @login_required
