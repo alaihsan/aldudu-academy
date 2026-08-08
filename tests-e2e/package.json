@@ -1,0 +1,17 @@
+{
+  "name": "aldudu-academy-e2e",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Playwright smoke tests guarding the app/static/js modularization refactor (regression gate, not full feature coverage).",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.1",
+    "chart.js": "^4.5.1",
+    "dompurify": "^3.0.6",
+    "htmx.org": "^1.9.10",
+    "sortablejs": "^1.15.2",
+    "sweetalert2": "^11.26.25"
+  }
+}

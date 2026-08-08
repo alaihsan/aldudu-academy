@@ -60,4 +60,9 @@ htmlcov/
 .coverage
 
 # Migrations (if not already tracked)
-migrations/alembic_version  
+migrations/alembic_version
+
+# Playwright E2E smoke suite (tests-e2e/)
+instance/e2e_test.db
+tests-e2e/test-results/
+tests-e2e/playwright-report/
