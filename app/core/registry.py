@@ -10,9 +10,9 @@ per-app restructure), only the import lines here need to change.
 
 def register_blueprints(app):
     from app.auth.routes import auth_bp
-    from app.blueprints.courses import courses_bp
+    from app.courses.routes import courses_bp, courses_pages_bp
     from app.blueprints.main import main_bp
-    from app.quiz.routes import quiz_bp
+    from app.quiz.routes import quiz_bp, quiz_pages_bp
     from app.discussion.routes import discussion_bp, discussion_pages_bp
     from app.kbm.routes import kbm_bp
     from app.issues.routes import issues_bp, issues_pages_bp
@@ -31,7 +31,9 @@ def register_blueprints(app):
         main_bp,
         auth_bp,
         courses_bp,
+        courses_pages_bp,
         quiz_bp,
+        quiz_pages_bp,
         discussion_bp,
         discussion_pages_bp,
         kbm_bp,

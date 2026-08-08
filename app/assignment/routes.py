@@ -45,6 +45,61 @@ def api_update_assignment(assignment_id):
     return jsonify({'success': True, 'message': 'Tugas diperbarui'})
 
 
+def _trash_now():
+    n = get_jakarta_now()
+    return n.replace(tzinfo=None) if getattr(n, 'tzinfo', None) else n
+
+
+@assignment_api_bp.route('/assignment/<int:assignment_id>/archive', methods=['POST'])
+@login_required
+def api_archive_assignment(assignment_id):
+    """API endpoint untuk mengarsipkan tugas"""
+    assignment = db.session.get(Assignment, assignment_id)
+    if not assignment:
+        return jsonify({'success': False, 'message': 'Tugas tidak ditemukan'}), 404
+
+    if assignment.course.teacher_id != current_user.id:
+        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
+
+    assignment.status = AssignmentStatus.ARCHIVED
+    db.session.commit()
+
+    return jsonify({'success': True, 'message': 'Tugas berhasil diarsipkan'})
+
+
+@assignment_api_bp.route('/assignment/<int:assignment_id>/restore', methods=['POST'])
+@login_required
+def api_restore_assignment(assignment_id):
+    """API endpoint untuk memulihkan tugas dari arsip"""
+    assignment = db.session.get(Assignment, assignment_id)
+    if not assignment:
+        return jsonify({'success': False, 'message': 'Tugas tidak ditemukan'}), 404
+
+    if assignment.course.teacher_id != current_user.id:
+        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
+
+    assignment.status = AssignmentStatus.PUBLISHED
+    db.session.commit()
+
+    return jsonify({'success': True, 'message': 'Tugas berhasil dipulihkan'})
+
+
+@assignment_api_bp.route('/assignment/<int:assignment_id>', methods=['DELETE'])
+@login_required
+def api_delete_assignment(assignment_id):
+    """Soft-delete tugas ke Ruang TPS."""
+    assignment = db.session.get(Assignment, assignment_id)
+    if not assignment:
+        return jsonify({'success': False, 'message': 'Tugas tidak ditemukan'}), 404
+    if assignment.course.teacher_id != current_user.id:
+        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
+
+    assignment.is_trashed = True
+    assignment.trashed_at = _trash_now()
+    db.session.commit()
+    return jsonify({'success': True, 'message': 'Tugas dipindahkan ke Ruang TPS'})
+
+
 def get_assignment_or_abort(assignment_id, check_teacher=False):
     assignment = db.session.get(Assignment, assignment_id)
     if not assignment:

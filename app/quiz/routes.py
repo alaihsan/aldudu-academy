@@ -26,6 +26,117 @@ logger = logging.getLogger(__name__)
 
 quiz_bp = Blueprint('quiz', __name__, url_prefix='/api', template_folder='templates')
 
+# Separate blueprint (no /api prefix) for page renders, since quiz_bp's
+# prefix is fixed to /api for its JSON routes.
+quiz_pages_bp = Blueprint('quiz_pages', __name__, template_folder='templates')
+
+
+def _trash_now():
+    from app.helpers import get_jakarta_now
+    n = get_jakarta_now()
+    return n.replace(tzinfo=None) if getattr(n, 'tzinfo', None) else n
+
+
+@quiz_pages_bp.route('/quiz/<int:quiz_id>')
+@login_required
+def quiz_detail(quiz_id):
+    quiz = db.session.get(Quiz, quiz_id)
+    if quiz is None:
+        abort(404)
+
+    course = quiz.course
+    school_id = get_school_id_or_abort()
+    verify_course_in_school(course, school_id)
+    is_teacher = (current_user.id == course.teacher_id)
+    is_preview = request.args.get('preview') == 'true'
+
+    if not is_teacher and current_user not in course.students:
+        abort(403)
+
+    if not is_teacher and quiz.status != QuizStatus.PUBLISHED:
+        abort(403, description='Kuis ini belum tersedia.')
+
+    # For teachers: show editor by default, show preview only when preview=true
+    if is_teacher and not is_preview:
+        return render_template('quiz/quiz_editor.html', quiz=quiz, QuestionType=QuestionType, Question=Question, Option=Option, BloomLevel=BloomLevel)
+    else:
+        questions = quiz.questions.order_by(Question.order).all()
+        if quiz.shuffle_questions:
+            import secrets
+            secrets.SystemRandom().shuffle(questions)
+        return render_template(
+            'quiz/quiz_detail.html',
+            quiz=quiz,
+            course=course,
+            is_teacher=is_teacher,
+            is_preview=is_preview,
+            questions=questions,
+            QuestionType=QuestionType,
+            Option=Option
+        )
+
+
+@quiz_pages_bp.route('/quiz/<int:quiz_id>/saved', methods=['GET'])
+@login_required
+def quiz_saved(quiz_id):
+    from flask import redirect
+    quiz = db.session.get(Quiz, quiz_id)
+    if quiz is None:
+        abort(404)
+    course = quiz.course
+    return redirect(url_for('courses_pages.course_detail', course_id=course.id))
+
+
+@quiz_bp.route('/quiz/<int:quiz_id>/archive', methods=['POST'])
+@login_required
+def api_archive_quiz(quiz_id):
+    """API endpoint untuk mengarsipkan kuis"""
+    quiz = db.session.get(Quiz, quiz_id)
+    if not quiz:
+        return jsonify({'success': False, 'message': 'Kuis tidak ditemukan'}), 404
+
+    if quiz.course.teacher_id != current_user.id:
+        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
+
+    quiz.is_archived = True
+    db.session.commit()
+
+    return jsonify({'success': True, 'message': 'Kuis berhasil diarsipkan'})
+
+
+@quiz_bp.route('/quiz/<int:quiz_id>/restore', methods=['POST'])
+@login_required
+def api_restore_quiz(quiz_id):
+    """API endpoint untuk memulihkan kuis dari arsip"""
+    quiz = db.session.get(Quiz, quiz_id)
+    if not quiz:
+        return jsonify({'success': False, 'message': 'Kuis tidak ditemukan'}), 404
+
+    if quiz.course.teacher_id != current_user.id:
+        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
+
+    quiz.is_archived = False
+    db.session.commit()
+
+    return jsonify({'success': True, 'message': 'Kuis berhasil dipulihkan'})
+
+
+@quiz_bp.route('/quiz/<int:quiz_id>', methods=['DELETE'])
+@login_required
+def api_delete_quiz(quiz_id):
+    """Soft-delete kuis ke Ruang TPS (dipanggil oleh tombol Hapus di daftar materi)."""
+    quiz = db.session.get(Quiz, quiz_id)
+    if not quiz:
+        return jsonify({'success': False, 'message': 'Kuis tidak ditemukan'}), 404
+    if quiz.course.teacher_id != current_user.id:
+        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
+
+    quiz.is_trashed = True
+    quiz.trashed_at = _trash_now()
+    db.session.commit()
+    return jsonify({'success': True, 'message': 'Kuis dipindahkan ke Ruang TPS'})
+
+
 # --- Helper Functions ---
 
 def get_quiz_or_abort(quiz_id, check_teacher=True):

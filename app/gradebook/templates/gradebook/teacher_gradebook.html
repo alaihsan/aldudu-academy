@@ -13,7 +13,7 @@
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
         <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-8 py-4 sticky top-0 z-30 gap-4">
             <div class="flex items-center space-x-4">
-                <a href="{{ url_for('main.course_detail', course_id=course.id) }}" class="p-2 text-gray-400 dark:text-gray-500 hover:text-theme transition-colors" aria-label="Kembali">
+                <a href="{{ url_for('courses_pages.course_detail', course_id=course.id) }}" class="p-2 text-gray-400 dark:text-gray-500 hover:text-theme transition-colors" aria-label="Kembali">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>

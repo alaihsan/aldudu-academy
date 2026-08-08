@@ -58,7 +58,7 @@
     <!-- Question Image Display -->
     {% if question.image %}
     <div class="relative w-full max-w-2xl mb-8 group/img overflow-hidden rounded-2xl border border-gray-100 shadow-sm">
-        <img src="{{ url_for('main.serve_question_image', course_id=question.quiz.course_id, filename=question.image) }}" 
+        <img src="{{ url_for('content_files.serve_question_image', course_id=question.quiz.course_id, filename=question.image) }}" 
              class="w-full h-auto object-cover" 
              alt="Gambar Pertanyaan">
         <div class="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center space-x-4">

@@ -2,7 +2,7 @@ from app.core.extensions import db
 
 from .school import School, SchoolStatus
 from .user import User, UserRole
-from .course import Course, AcademicYear, enrollments, UserCourseOrder
+from app.courses.models import Course, AcademicYear, enrollments, UserCourseOrder
 from app.kbm.models import KbmNote, KbmActivityType
 from app.content.models import ContentFolder, Link, File
 from app.quiz.models import (

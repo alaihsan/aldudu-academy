@@ -1,22 +1,10 @@
-from flask import Blueprint, render_template, redirect, url_for, abort, request
+from flask import Blueprint, render_template, redirect, url_for, request, jsonify
 from flask_login import login_required, current_user
-from app.models import (
-    db, Course, Quiz, Question, Option,
-    QuestionType, UserRole, Link, File,
-    QuizSubmission, Answer, QuizStatus, ActivityLog,
-    Assignment, AssignmentStatus
-)
-from app.quiz.models import BloomLevel
-from app.helpers import get_jakarta_now
-
-
-def _trash_now():
-    n = get_jakarta_now()
-    return n.replace(tzinfo=None) if getattr(n, 'tzinfo', None) else n
-
-from app.core.authorization import get_school_id_or_abort, verify_course_in_school
+from app.core.extensions import db
+from app.models import UserRole
 
 main_bp = Blueprint('main', __name__)
+
 
 @main_bp.route('/')
 def index():
@@ -24,174 +12,18 @@ def index():
         return redirect(url_for('main.dashboard'))
     return render_template('index.html')
 
+
 @main_bp.route('/dashboard')
 @login_required
 def dashboard():
     return render_template('index.html')
 
-@main_bp.route('/kelas/<int:course_id>')
-@login_required
-def course_detail(course_id):
-    from sqlalchemy.orm import selectinload
-    from app.models import Course, QuizStatus, AssignmentStatus
-
-    # Optimize with selectinload for all related content
-    course = db.session.query(Course).options(
-        selectinload(Course.quizzes),
-        selectinload(Course.assignments),
-        selectinload(Course.files),
-        selectinload(Course.links),
-        selectinload(Course.discussions)
-    ).filter(Course.id == course_id).first()
-    
-    if course is None:
-        abort(404)
-
-    school_id = get_school_id_or_abort()
-    verify_course_in_school(course, school_id)
-    is_teacher = (current_user.id == course.teacher_id)
-    is_student = current_user in course.students
-    is_admin = current_user.role in (UserRole.ADMIN, UserRole.SUPER_ADMIN)
-
-    if not (is_teacher or is_student or is_admin):
-        abort(403, description='Anda tidak memiliki akses ke kelas ini.')
-
-    # Filter: arsip + Ruang TPS dikeluarkan dari daftar materi utama
-    def _live(x):
-        return (not getattr(x, 'is_archived', False)) and (not getattr(x, 'is_trashed', False))
-
-    if is_teacher:
-        quizzes = [q for q in course.quizzes if _live(q)]
-        assignments = [a for a in course.assignments if _live(a)]
-    else:
-        quizzes = [q for q in course.quizzes if q.status == QuizStatus.PUBLISHED and _live(q)]
-        assignments = [a for a in course.assignments if a.status == AssignmentStatus.PUBLISHED and _live(a)]
-
-    links = [l for l in course.links if _live(l)]
-    files = [f for f in course.files if _live(f)]
-    discussions = course.discussions
-
-    topics = []
-    for quiz in quizzes:
-        topics.append({
-            'id': quiz.id,
-            'name': quiz.name,
-            'type': 'Kuis',
-            'url': url_for('main.quiz_detail', quiz_id=quiz.id),
-            'created_at': quiz.created_at,
-            'folder_id': quiz.folder_id
-        })
-    # ... (rest of the processing logic remains the same)
-    for assignment in assignments:
-        topics.append({
-            'id': assignment.id,
-            'name': assignment.title,
-            'type': 'Tugas',
-            'url': url_for('assignment.detail', assignment_id=assignment.id),
-            'description': assignment.description or '',
-            'created_at': assignment.created_at,
-            'folder_id': assignment.folder_id
-        })
-    for link in links:
-        topics.append({
-            'id': link.id,
-            'name': link.name,
-            'type': 'Link',
-            'url': link.url,
-            'description': link.description or '',
-            'created_at': link.created_at,
-            'folder_id': getattr(link, 'folder_id', None)
-        })
-    for file in files:
-        topics.append({
-            'id': file.id,
-            'name': file.name,
-            'type': 'Berkas',
-            'url': url_for('main.serve_file', file_id=file.id),
-            'filename': file.filename,
-            'description': file.description or '',
-            'created_at': file.created_at,
-            'folder_id': getattr(file, 'folder_id', None)
-        })
-    for discussion in discussions:
-        topics.append({
-            'id': discussion.id,
-            'name': discussion.title,
-            'type': 'Diskusi',
-            'url': url_for('main.discussion_detail', course_id=course.id, discussion_id=discussion.id),
-            'created_at': discussion.created_at,
-            'folder_id': None
-        })
-    
-    from datetime import datetime
-    epoch = datetime(1970, 1, 1)
-    topics.sort(key=lambda x: x['created_at'] or epoch, reverse=True)
-
-    # JSON-safe version for JavaScript (datetime → isoformat string)
-    topics_json = [
-        {**t, 'created_at': t['created_at'].isoformat() if t['created_at'] else None}
-        for t in topics
-    ]
-
-    return render_template(
-        'course_detail.html',
-        course=course,
-        is_teacher=is_teacher,
-        topics=topics,
-        topics_json=topics_json
-    )
-
-@main_bp.route('/quiz/<int:quiz_id>')
-@login_required
-def quiz_detail(quiz_id):
-    quiz = db.session.get(Quiz, quiz_id)
-    if quiz is None:
-        abort(404)
-
-    course = quiz.course
-    school_id = get_school_id_or_abort()
-    verify_course_in_school(course, school_id)
-    is_teacher = (current_user.id == course.teacher_id)
-    is_preview = request.args.get('preview') == 'true'
-
-    if not is_teacher and current_user not in course.students:
-        abort(403)
-
-    if not is_teacher and quiz.status != QuizStatus.PUBLISHED:
-        abort(403, description='Kuis ini belum tersedia.')
-
-    # For teachers: show editor by default, show preview only when preview=true
-    if is_teacher and not is_preview:
-        return render_template('quiz/quiz_editor.html', quiz=quiz, QuestionType=QuestionType, Question=Question, Option=Option, BloomLevel=BloomLevel)
-    else:
-        questions = quiz.questions.order_by(Question.order).all()
-        if quiz.shuffle_questions:
-            import secrets
-            secrets.SystemRandom().shuffle(questions)
-        return render_template(
-            'quiz/quiz_detail.html',
-            quiz=quiz,
-            course=course,
-            is_teacher=is_teacher,
-            is_preview=is_preview,
-            questions=questions,
-            QuestionType=QuestionType,
-            Option=Option
-        )
-
-@main_bp.route('/quiz/<int:quiz_id>/saved', methods=['GET'])
-@login_required
-def quiz_saved(quiz_id):
-    quiz = db.session.get(Quiz, quiz_id)
-    if quiz is None:
-        abort(404)
-    course = quiz.course
-    return redirect(url_for('main.course_detail', course_id=course.id))
 
 @main_bp.route('/settings')
 @login_required
 def settings():
     return render_template('settings.html')
+
 
 @main_bp.route('/history')
 @login_required
@@ -199,21 +31,23 @@ def history():
     is_teacher = current_user.role in (UserRole.GURU, UserRole.ADMIN)
     return render_template('history.html', is_teacher=is_teacher)
 
+
 @main_bp.route('/privacy-policy')
 @login_required
 def privacy_policy():
     return render_template('privacy_policy.html')
+
 
 @main_bp.route('/sponsor')
 @login_required
 def sponsor():
     return render_template('sponsor.html')
 
+
 @main_bp.route('/api/set-language', methods=['POST'])
 @login_required
 def set_language():
     """API endpoint untuk mengubah bahasa preferensi user"""
-    from flask import jsonify
     data = request.get_json()
     lang_code = data.get('language', 'id')
 
@@ -230,273 +64,6 @@ def set_language():
         'message': 'Bahasa berhasil diubah',
         'language': lang_code
     })
-
-
-@main_bp.route('/api/courses', methods=['GET'])
-@login_required
-def api_get_courses():
-    """API endpoint untuk mendapatkan daftar kelas user"""
-    from flask import jsonify
-    from app.models import Course
-
-    # Get all courses where user is teacher or student
-    if current_user.role.value == 'guru':
-        courses = Course.query.filter_by(teacher_id=current_user.id).all()
-    elif current_user.role.value == 'murid':
-        courses = Course.query.filter(Course.students.contains(current_user)).all()
-    else:
-        # Admin and super admin see all courses
-        courses = Course.query.all()
-
-    return jsonify({
-        'success': True,
-        'courses': [{
-            'id': c.id,
-            'name': c.name,
-            'color': c.color,
-            'teacher_name': c.teacher.name if c.teacher else '-',
-            'class_code': c.class_code
-        } for c in courses]
-    })
-
-
-@main_bp.route('/api/courses/<int:course_id>/students', methods=['GET'])
-@login_required
-def api_get_course_students(course_id):
-    """API endpoint untuk mendapatkan daftar siswa dalam course"""
-    from flask import jsonify
-    from app.models import Course, UserRole
-
-    course = Course.query.get(course_id)
-    if not course:
-        return jsonify({'success': False, 'message': 'Course not found'}), 404
-
-    # Check permission - only teacher or super admin can access
-    if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
-
-    students = sorted(course.students, key=lambda s: (s.name or '').lower())
-    return jsonify({
-        'success': True,
-        'students': [{
-            'id': s.id,
-            'name': s.name,
-            'email': s.email,
-            'nis': s.nis,
-            'gender': s.gender,
-        } for s in students]
-    })
-
-
-@main_bp.route('/api/quiz/<int:quiz_id>/archive', methods=['POST'])
-@login_required
-def api_archive_quiz(quiz_id):
-    """API endpoint untuk mengarsipkan kuis"""
-    from flask import jsonify
-    from app.models import Quiz
-
-    quiz = db.session.get(Quiz, quiz_id)
-    if not quiz:
-        return jsonify({'success': False, 'message': 'Kuis tidak ditemukan'}), 404
-
-    if quiz.course.teacher_id != current_user.id:
-        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
-
-    quiz.is_archived = True
-    db.session.commit()
-
-    return jsonify({'success': True, 'message': 'Kuis berhasil diarsipkan'})
-
-
-@main_bp.route('/api/assignment/<int:assignment_id>/archive', methods=['POST'])
-@login_required
-def api_archive_assignment(assignment_id):
-    """API endpoint untuk mengarsipkan tugas"""
-    from flask import jsonify
-    from app.models import Assignment, AssignmentStatus
-
-    assignment = db.session.get(Assignment, assignment_id)
-    if not assignment:
-        return jsonify({'success': False, 'message': 'Tugas tidak ditemukan'}), 404
-
-    if assignment.course.teacher_id != current_user.id:
-        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
-
-    assignment.status = AssignmentStatus.ARCHIVED
-    db.session.commit()
-
-    return jsonify({'success': True, 'message': 'Tugas berhasil diarsipkan'})
-
-
-@main_bp.route('/api/quiz/<int:quiz_id>/restore', methods=['POST'])
-@login_required
-def api_restore_quiz(quiz_id):
-    """API endpoint untuk memulihkan kuis dari arsip"""
-    from flask import jsonify
-    from app.models import Quiz
-
-    quiz = db.session.get(Quiz, quiz_id)
-    if not quiz:
-        return jsonify({'success': False, 'message': 'Kuis tidak ditemukan'}), 404
-
-    if quiz.course.teacher_id != current_user.id:
-        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
-
-    quiz.is_archived = False
-    db.session.commit()
-
-    return jsonify({'success': True, 'message': 'Kuis berhasil dipulihkan'})
-
-
-@main_bp.route('/api/assignment/<int:assignment_id>/restore', methods=['POST'])
-@login_required
-def api_restore_assignment(assignment_id):
-    """API endpoint untuk memulihkan tugas dari arsip"""
-    from flask import jsonify
-    from app.models import Assignment, AssignmentStatus
-
-    assignment = db.session.get(Assignment, assignment_id)
-    if not assignment:
-        return jsonify({'success': False, 'message': 'Tugas tidak ditemukan'}), 404
-
-    if assignment.course.teacher_id != current_user.id:
-        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
-
-    assignment.status = AssignmentStatus.PUBLISHED
-    db.session.commit()
-
-    return jsonify({'success': True, 'message': 'Tugas berhasil dipulihkan'})
-
-
-@main_bp.route('/api/quiz/<int:quiz_id>', methods=['DELETE'])
-@login_required
-def api_delete_quiz(quiz_id):
-    """Soft-delete kuis ke Ruang TPS (dipanggil oleh tombol Hapus di daftar materi)."""
-    from flask import jsonify
-    from app.models import Quiz
-
-    quiz = db.session.get(Quiz, quiz_id)
-    if not quiz:
-        return jsonify({'success': False, 'message': 'Kuis tidak ditemukan'}), 404
-    if quiz.course.teacher_id != current_user.id:
-        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
-
-    quiz.is_trashed = True
-    quiz.trashed_at = _trash_now()
-    db.session.commit()
-    return jsonify({'success': True, 'message': 'Kuis dipindahkan ke Ruang TPS'})
-
-
-@main_bp.route('/api/assignment/<int:assignment_id>', methods=['DELETE'])
-@login_required
-def api_delete_assignment(assignment_id):
-    """Soft-delete tugas ke Ruang TPS."""
-    from flask import jsonify
-    from app.models import Assignment
-
-    assignment = db.session.get(Assignment, assignment_id)
-    if not assignment:
-        return jsonify({'success': False, 'message': 'Tugas tidak ditemukan'}), 404
-    if assignment.course.teacher_id != current_user.id:
-        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
-
-    assignment.is_trashed = True
-    assignment.trashed_at = _trash_now()
-    db.session.commit()
-    return jsonify({'success': True, 'message': 'Tugas dipindahkan ke Ruang TPS'})
-
-
-@main_bp.route('/api/course/<int:course_id>/theme', methods=['PUT'])
-@login_required
-def api_update_course_theme(course_id):
-    """API endpoint untuk update warna tema kelas"""
-    from flask import jsonify, request
-    from app.models import Course
-
-    course = db.session.get(Course, course_id)
-    if not course:
-        return jsonify({'success': False, 'message': 'Kelas tidak ditemukan'}), 404
-
-    if course.teacher_id != current_user.id:
-        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
-
-    data = request.get_json()
-    color = data.get('color')
-
-    if not color:
-        return jsonify({'success': False, 'message': 'Warna tidak valid'}), 400
-
-    # Validate hex color format
-    import re
-    if not re.match(r'^#[0-9A-Fa-f]{6}$', color):
-        return jsonify({'success': False, 'message': 'Format warna tidak valid'}), 400
-
-    course.color = color
-    db.session.commit()
-
-    return jsonify({'success': True, 'message': 'Warna tema berhasil diubah'})
-
-
-@main_bp.route('/kelas/<int:course_id>/arsip')
-@login_required
-def course_archives(course_id):
-    """Halaman arsip untuk kelas - menampilkan kuis, tugas, dan file yang diarsipkan"""
-    from app.models import Course, Quiz, Assignment, File, Link, AssignmentStatus, UserRole
-
-    course = db.session.get(Course, course_id)
-    if course is None:
-        abort(404, description='Kelas tidak ditemukan.')
-
-    school_id = get_school_id_or_abort()
-    verify_course_in_school(course, school_id)
-
-    # Teacher, admin, and enrolled students can access archives
-    is_teacher = (current_user.id == course.teacher_id)
-    is_student = current_user in course.students
-    is_admin = (current_user.role == UserRole.ADMIN)
-    if not (is_teacher or is_student or is_admin):
-        abort(403, description='Anda tidak memiliki akses ke arsip kelas ini.')
-
-    # Get archived items (kecualikan yang sudah masuk Ruang TPS)
-    archived_quizzes = Quiz.query.filter_by(course_id=course.id, is_archived=True, is_trashed=False).order_by(Quiz.updated_at.desc()).all()
-    archived_assignments = Assignment.query.filter_by(course_id=course.id, status=AssignmentStatus.ARCHIVED, is_trashed=False).order_by(Assignment.updated_at.desc()).all()
-    archived_files = File.query.filter_by(course_id=course.id, is_archived=True, is_trashed=False).order_by(File.created_at.desc()).all()
-    archived_links = Link.query.filter_by(course_id=course.id, is_archived=True, is_trashed=False).order_by(Link.created_at.desc()).all()
-
-    return render_template('course_archives.html',
-                          course=course,
-                          archived_quizzes=archived_quizzes,
-                          archived_assignments=archived_assignments,
-                          archived_files=archived_files,
-                          archived_links=archived_links,
-                          is_teacher=is_teacher or is_admin)
-
-
-@main_bp.route('/kelas/<int:course_id>/impor')
-@login_required
-def course_import(course_id):
-    """Halaman Impor Konten dari kelas lain"""
-    from app.models import Course
-    
-    course = db.session.get(Course, course_id)
-    if course is None:
-        abort(404, description='Kelas tidak ditemukan.')
-
-    school_id = get_school_id_or_abort()
-    verify_course_in_school(course, school_id)
-
-    # Only teacher of the class can import content
-    is_teacher = (current_user.id == course.teacher_id)
-    if not is_teacher:
-        abort(403, description='Hanya guru pengajar yang dapat mengakses menu ini.')
-
-    # Get all OTHER courses taught by this teacher (to import FROM)
-    other_courses = Course.query.filter(Course.teacher_id == current_user.id, Course.id != course_id).all()
-
-    return render_template('course_import.html',
-                           course=course,
-                           other_courses=other_courses,
-                           is_teacher=is_teacher)
 
 
 @main_bp.errorhandler(403)
