@@ -3,7 +3,7 @@ from typing import List, Optional
 from flask_login import UserMixin
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from werkzeug.security import check_password_hash, generate_password_hash
-from app.extensions import db
+from app.core.extensions import db
 
 
 class UserRole(enum.Enum):

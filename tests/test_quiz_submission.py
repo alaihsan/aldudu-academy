@@ -4,7 +4,7 @@ Test Quiz Submission & Grading
 import pytest
 from datetime import datetime
 from app.models import Quiz, QuizSubmission, QuizStatus, Question, Answer, User
-from app.extensions import db
+from app.core.extensions import db
 
 
 class TestQuizSubmission:
@@ -12,7 +12,7 @@ class TestQuizSubmission:
 
     def test_create_quiz_submission(self, client, quiz, student_user):
         """Test creating a quiz submission"""
-        from app.extensions import db
+        from app.core.extensions import db
         
         submission = QuizSubmission(
             quiz_id=quiz.id,
@@ -29,7 +29,7 @@ class TestQuizSubmission:
 
     def test_quiz_submission_auto_grade(self, client, quiz, student_user):
         """Test automatic grading of quiz submission"""
-        from app.extensions import db
+        from app.core.extensions import db
         
         # Create a question
         question = Question(
@@ -71,7 +71,7 @@ class TestQuizSubmission:
 
     def test_quiz_submission_status_transitions(self, quiz, student_user):
         """Test quiz submission status transitions"""
-        from app.extensions import db
+        from app.core.extensions import db
         
         submission = QuizSubmission(
             quiz_id=quiz.id,
@@ -93,7 +93,7 @@ class TestQuizSubmission:
 
     def test_quiz_submission_duplicate_prevention(self, client, quiz, student_user):
         """Test preventing duplicate quiz submissions"""
-        from app.extensions import db
+        from app.core.extensions import db
         
         # Create first submission
         submission1 = QuizSubmission(
@@ -119,7 +119,7 @@ class TestQuizGradeCalculation:
 
     def test_calculate_quiz_percentage(self, quiz, student_user):
         """Test calculating quiz percentage"""
-        from app.extensions import db
+        from app.core.extensions import db
         
         submission = QuizSubmission(
             quiz_id=quiz.id,
@@ -136,7 +136,7 @@ class TestQuizGradeCalculation:
 
     def test_quiz_grade_sync_to_gradebook(self, client, quiz, student_user, grade_item):
         """Test syncing quiz grade to gradebook"""
-        from app.extensions import db
+        from app.core.extensions import db
         from app.models.gradebook import GradeEntry
         
         # Create submission
@@ -173,7 +173,7 @@ class TestQuizAPI:
 
     def test_submit_quiz(self, client, quiz, student_user):
         """Test submitting quiz answers"""
-        from app.extensions import db
+        from app.core.extensions import db
         
         # Login as student
         client.post('/api/login', json={

@@ -3,7 +3,7 @@ Tests for Gradebook Feature Integration
 """
 import pytest
 from flask import url_for
-from app.extensions import db
+from app.core.extensions import db
 from app.models import User, UserRole, Course, Quiz, QuizSubmission, QuizStatus
 from app.models import Assignment, AssignmentSubmission, AssignmentStatus
 from app.models.gradebook import GradeCategory, GradeCategoryType, GradeItem, GradeEntry

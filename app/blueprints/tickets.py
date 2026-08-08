@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, render_template, g, abort
 from flask_login import login_required, current_user
-from app.extensions import db
+from app.core.extensions import db
 from app.models import Ticket, TicketMessage, TicketStatus, TicketPriority, TicketCategory, UserRole
 from app.helpers import sanitize_text
 from app.services.ticket_service import generate_ticket_number, transition_status

@@ -11,7 +11,7 @@ def register_cli_commands(app):
     @app.cli.command('init-db')
     def init_db_command():
         """Initialize the database by creating all tables."""
-        from app.extensions import db
+        from app.core.extensions import db
         db.create_all()
         print('Initialized the database.')
 
@@ -19,7 +19,7 @@ def register_cli_commands(app):
     def create_superadmin_command():
         """Create a new super admin user interactively."""
         import click
-        from app.extensions import db
+        from app.core.extensions import db
         from app.models import User, UserRole
 
         email = click.prompt('Email')

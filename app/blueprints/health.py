@@ -23,7 +23,7 @@ def health_dashboard():
     """Health Status Dashboard for Superadmin."""
     from app.models import User, UserRole, School, SchoolStatus
     from sqlalchemy import func
-    from app.extensions import db
+    from app.core.extensions import db
 
     stats = {
         'total_users': User.query.count(),
@@ -43,7 +43,7 @@ def api_health_checks():
     """Comprehensive health checks for all services."""
     import redis
     from sqlalchemy import text
-    from app.extensions import db, mail
+    from app.core.extensions import db, mail
     from flask import current_app
 
     checks = {}
@@ -160,7 +160,7 @@ def api_health_stats():
     """Get application statistics."""
     from app.models import User, UserRole, School, SchoolStatus, Course, Quiz, Assignment, ActivityLog
     from sqlalchemy import func
-    from app.extensions import db
+    from app.core.extensions import db
 
     # Database stats
     users_by_role = db.session.query(

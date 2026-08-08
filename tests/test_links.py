@@ -1,6 +1,6 @@
 import pytest
 from app.models import Link
-from app.extensions import db
+from app.core.extensions import db
 
 def test_create_link_normalization(client, teacher_user, course):
     # Log in as teacher

@@ -24,7 +24,7 @@ def api_metrics_data():
     from flask import current_app
     from app.models import User, UserRole, School, SchoolStatus, Course
     from sqlalchemy import func
-    from app.extensions import db
+    from app.core.extensions import db
 
     # Get Prometheus metrics if available
     prom_metrics = current_app.config.get('PROMETHEUS_METRICS', {})

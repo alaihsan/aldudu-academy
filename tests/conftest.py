@@ -29,7 +29,7 @@ def app():
     })
     
     with app.app_context():
-        from app.extensions import db
+        from app.core.extensions import db
         # Drop all tables first to ensure clean state
         db.drop_all()
         db.create_all()
@@ -41,7 +41,7 @@ def app():
 @pytest.fixture(scope='function')
 def db(app):
     """Create database session for testing"""
-    from app.extensions import db
+    from app.core.extensions import db
     with app.app_context():
         db.create_all()
         yield db
@@ -52,7 +52,7 @@ def db(app):
 @pytest.fixture
 def active_school(app):
     """Create an active school for authenticated user tests"""
-    from app.extensions import db
+    from app.core.extensions import db
     from app.models import School, SchoolStatus
 
     school = School(
@@ -70,7 +70,7 @@ def active_school(app):
 @pytest.fixture
 def teacher_user(app, active_school):
     """Create a teacher user for testing"""
-    from app.extensions import db
+    from app.core.extensions import db
     from app.models import User, UserRole
     
     user = User(
@@ -89,7 +89,7 @@ def teacher_user(app, active_school):
 @pytest.fixture
 def student_user(app, active_school):
     """Create a student user for testing"""
-    from app.extensions import db
+    from app.core.extensions import db
     from app.models import User, UserRole
     
     user = User(
@@ -108,7 +108,7 @@ def student_user(app, active_school):
 @pytest.fixture
 def course(app, teacher_user, active_school):
     """Create a course for testing"""
-    from app.extensions import db
+    from app.core.extensions import db
     from app.models import Course, AcademicYear, User
     
     # Create academic year first (required foreign key)
@@ -135,7 +135,7 @@ def course(app, teacher_user, active_school):
 @pytest.fixture
 def grade_category(app, course):
     """Create a grade category for testing"""
-    from app.extensions import db
+    from app.core.extensions import db
     from app.models.gradebook import GradeCategory, GradeCategoryType
     
     category = GradeCategory(
@@ -152,7 +152,7 @@ def grade_category(app, course):
 @pytest.fixture
 def learning_objective(app, course):
     """Create a learning objective for testing"""
-    from app.extensions import db
+    from app.core.extensions import db
     from app.models.gradebook import LearningObjective
     
     lo = LearningObjective(
@@ -168,7 +168,7 @@ def learning_objective(app, course):
 @pytest.fixture
 def grade_item(app, course, grade_category):
     """Create a grade item for testing"""
-    from app.extensions import db
+    from app.core.extensions import db
     from app.models.gradebook import GradeItem
     
     item = GradeItem(
@@ -186,7 +186,7 @@ def grade_item(app, course, grade_category):
 @pytest.fixture
 def grade_entry(app, grade_item, student_user):
     """Create a grade entry for testing"""
-    from app.extensions import db
+    from app.core.extensions import db
     from app.models.gradebook import GradeEntry
     
     entry = GradeEntry(
@@ -204,7 +204,7 @@ def grade_entry(app, grade_item, student_user):
 @pytest.fixture
 def quiz(app, course):
     """Create a quiz for testing"""
-    from app.extensions import db
+    from app.core.extensions import db
     from app.models import Quiz, QuizStatus
     
     quiz = Quiz(
@@ -222,7 +222,7 @@ def quiz(app, course):
 @pytest.fixture
 def assignment(app, course):
     """Create an assignment for testing"""
-    from app.extensions import db
+    from app.core.extensions import db
     from app.models import Assignment, AssignmentStatus
     
     assignment = Assignment(

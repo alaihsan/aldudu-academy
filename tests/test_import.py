@@ -1,6 +1,6 @@
 import pytest
 from app.models import Course, Quiz, Question, Option, Assignment, File, Link
-from app.extensions import db
+from app.core.extensions import db
 
 def test_course_import_feature(client, teacher_user, course):
     # Log in as teacher

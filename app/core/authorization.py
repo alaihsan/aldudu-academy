@@ -33,7 +33,7 @@ def verify_course_in_school(course, school_id):
 def verify_academic_year_in_school(year_id, school_id):
     """Verify an academic year belongs to the school."""
     from app.models import AcademicYear
-    from app.extensions import db
+    from app.core.extensions import db
     year = db.session.get(AcademicYear, year_id)
     if not year or year.school_id != school_id:
         abort(400, description='Tahun ajaran tidak valid untuk sekolah ini')

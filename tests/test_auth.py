@@ -11,7 +11,7 @@ class TestPasswordValidation:
 
     def test_password_too_short(self, client, app):
         """Test password less than 6 characters is rejected"""
-        from app.extensions import db
+        from app.core.extensions import db
         
         response = client.post('/api/register', json={
             'school_name': 'Test School',

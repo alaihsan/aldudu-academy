@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, jsonify, abort
 import re
 from flask_login import login_required, current_user
 from sqlalchemy import func
-from app.extensions import db
+from app.core.extensions import db
 from app.models import (
     User, UserRole, School, SchoolStatus,
     Ticket, TicketMessage, TicketStatus,
@@ -11,7 +11,7 @@ from app.models import (
 from app.helpers import get_jakarta_now, sanitize_text
 from app.services.email_service import send_school_approved_email, send_ticket_update_email, send_email
 from app.services.ticket_service import transition_status, TicketStatus as TStat
-from app.middleware import invalidate_school_cache
+from app.core.middleware import invalidate_school_cache
 
 superadmin_bp = Blueprint('superadmin', __name__, url_prefix='/superadmin')
 

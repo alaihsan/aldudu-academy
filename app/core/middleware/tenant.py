@@ -5,7 +5,7 @@ Handles multi-tenancy by resolving school from URL slug.
 """
 
 from flask import g, request, abort
-from app.extensions import cache
+from app.core.extensions import cache
 
 
 def register_tenant_middleware(app):

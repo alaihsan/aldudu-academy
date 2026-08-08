@@ -3,7 +3,7 @@ from datetime import datetime
 from flask import Blueprint, request, jsonify, abort, render_template, current_app, redirect, url_for, send_file
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
-from app.extensions import db
+from app.core.extensions import db
 from app.models import Assignment, AssignmentSubmission, AssignmentStatus, AssignmentSubmissionStatus, Course, GradeItem, GradeEntry, ActivityLog, UserRole
 from app.helpers import get_jakarta_now
 

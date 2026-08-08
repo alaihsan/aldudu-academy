@@ -16,7 +16,7 @@ Skenario yang diuji:
 import pytest
 from sqlalchemy.pool import StaticPool
 from app import create_app
-from app.extensions import db as _db
+from app.core.extensions import db as _db
 from app.models import (
     User, UserRole, School, SchoolStatus,
     AcademicYear, Course,

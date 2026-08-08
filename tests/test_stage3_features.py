@@ -2,7 +2,7 @@
 Tests for Stage 3 Features (GAP-6: Remedial, GAP-1: CTT Analysis)
 """
 import pytest
-from app.extensions import db
+from app.core.extensions import db
 from app.models import User, UserRole, Course, Quiz, QuizStatus
 from app.models.gradebook import GradeCategory, GradeCategoryType, GradeItem, GradeEntry, LearningObjective
 from app.services.gradebook_service import needs_remedial, get_remedial_label

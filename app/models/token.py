@@ -2,7 +2,7 @@ import secrets
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from app.extensions import db
+from app.core.extensions import db
 from app.helpers import get_jakarta_now
 
 

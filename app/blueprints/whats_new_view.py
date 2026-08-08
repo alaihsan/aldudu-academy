@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, jsonify
 from flask_login import login_required, current_user
 from app.models import WhatsNew
-from app.extensions import db
+from app.core.extensions import db
 
 whats_new_view_bp = Blueprint('whats_new_view', __name__)
 

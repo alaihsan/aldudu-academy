@@ -10,7 +10,7 @@ from app.models.gradebook import (
     GradeCategory, GradeCategoryType, LearningObjective, LearningGoal,
     GradeItem, GradeEntry
 )
-from app.extensions import db, cache
+from app.core.extensions import db, cache
 from app.services.gradebook_service import (
     calculate_student_grade, calculate_category_grade, calculate_course_statistics,
     import_quiz_to_gradebook, sync_quiz_grades, get_student_grades_summary,

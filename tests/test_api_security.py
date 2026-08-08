@@ -73,7 +73,7 @@ class TestInputValidation:
 
     def test_xss_prevention(self, client, teacher_user, course):
         """Test XSS prevention"""
-        from app.extensions import db
+        from app.core.extensions import db
         from app.models import Course
         
         # Login
@@ -149,7 +149,7 @@ class TestAuthorization:
 
     def test_idor_prevention(self, client, teacher_user, student_user, course):
         """Test Insecure Direct Object Reference (IDOR) prevention"""
-        from app.extensions import db
+        from app.core.extensions import db
         
         # Login as teacher
         client.post('/api/login', json={

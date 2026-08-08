@@ -13,7 +13,7 @@ import logging
 from datetime import timedelta
 from flask import Blueprint, render_template, jsonify, abort, current_app
 from flask_login import login_required, current_user
-from app.extensions import db
+from app.core.extensions import db
 from app.models import Course, Quiz, Assignment, File, Link, ContentFolder
 from app.helpers import get_jakarta_now
 from app.core.authorization import get_school_id_or_abort, verify_course_in_school

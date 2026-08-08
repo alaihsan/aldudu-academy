@@ -55,7 +55,7 @@ class TestFileUploadValidation:
 
     def test_file_size_limit(self, app):
         """Test file size limit enforcement"""
-        from app.config import Config
+        from app.core.config import Config
         
         # Default max is 16MB
         assert Config.MAX_CONTENT_LENGTH == 16 * 1024 * 1024
@@ -168,7 +168,7 @@ class TestFileStorage:
     def test_upload_folder_outside_instance(self, app):
         """Test that upload folder is within instance directory"""
         import os
-        from app.config import Config
+        from app.core.config import Config
         
         upload_folder = Config.UPLOAD_FOLDER
         instance_path = os.path.join(os.getcwd(), 'instance')

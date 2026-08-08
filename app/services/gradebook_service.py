@@ -6,7 +6,7 @@ from datetime import datetime
 from sqlalchemy import func
 from flask import current_app
 from flask_caching import Cache
-from app.extensions import db, cache
+from app.core.extensions import db, cache
 from app.models import (
     Course, User, Quiz, QuizSubmission, QuizStatus,
     GradeCategory, GradeCategoryType, LearningObjective, LearningGoal,
