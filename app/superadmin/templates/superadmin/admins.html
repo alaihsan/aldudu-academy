@@ -1,14 +1,14 @@
 {% extends "superadmin/base.html" %}
 {% block title %}Kelola Admin — Super Admin{% endblock %}
-{% block page_title %}Kelola Admin{% endblock %}
-{% block page_subtitle %}Daftar Admin & Super Admin{% endblock %}
+{% block page_title %}<span data-i18n="superadmin.manage_admins_page_title">Kelola Admin</span>{% endblock %}
+{% block page_subtitle %}<span data-i18n="superadmin.manage_admins_page_subtitle">Daftar Admin & Super Admin</span>{% endblock %}
 
 {% block content %}
 <!-- Filter Tabs -->
 <div class="flex items-center gap-2 mb-5">
-    <button class="sa-tab active" data-role="all">Semua</button>
-    <button class="sa-tab" data-role="super_admin">Super Admin</button>
-    <button class="sa-tab" data-role="admin">Admin Sekolah</button>
+    <button class="sa-tab active" data-role="all" data-i18n="superadmin.tab_all">Semua</button>
+    <button class="sa-tab" data-role="super_admin" data-i18n="superadmin.tagline">Super Admin</button>
+    <button class="sa-tab" data-role="admin" data-i18n="superadmin.school_admin_tab">Admin Sekolah</button>
 </div>
 
 <!-- Admin List -->
@@ -16,12 +16,12 @@
     <div class="p-5 border-b border-slate-100">
         <div class="flex items-center justify-between">
             <div>
-                <h3 class="text-sm font-black text-slate-900 dark:text-gray-100">Daftar Admin</h3>
-                <p class="text-xs text-slate-400 dark:text-gray-500 mt-0.5">Kelola akses admin dan super admin</p>
+                <h3 class="text-sm font-black text-slate-900 dark:text-gray-100" data-i18n="superadmin.admin_list_heading">Daftar Admin</h3>
+                <p class="text-xs text-slate-400 dark:text-gray-500 mt-0.5" data-i18n="superadmin.manage_admin_access_hint">Kelola akses admin dan super admin</p>
             </div>
             <div class="text-right">
                 <p class="text-2xl font-black text-indigo-600 dark:text-indigo-400" id="total-admins">0</p>
-                <p class="text-[10px] text-slate-400 dark:text-gray-500 uppercase tracking-widest font-bold">Total Admin</p>
+                <p class="text-[10px] text-slate-400 dark:text-gray-500 uppercase tracking-widest font-bold" data-i18n="superadmin.total_admin_label">Total Admin</p>
             </div>
         </div>
     </div>
@@ -30,12 +30,12 @@
         <table class="w-full">
             <thead class="bg-slate-50 dark:bg-gray-700">
                 <tr>
-                    <th class="text-left text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest px-5 py-3">Admin</th>
-                    <th class="text-left text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest px-5 py-3">Role</th>
-                    <th class="text-left text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest px-5 py-3">Sekolah</th>
-                    <th class="text-left text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest px-5 py-3">Status</th>
-                    <th class="text-left text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest px-5 py-3">Dibuat</th>
-                    <th class="text-center text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest px-5 py-3">Aksi</th>
+                    <th class="text-left text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest px-5 py-3" data-i18n="superadmin.admin_header">Admin</th>
+                    <th class="text-left text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest px-5 py-3" data-i18n="superadmin.role_header">Role</th>
+                    <th class="text-left text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest px-5 py-3" data-i18n="superadmin.nav_schools">Sekolah</th>
+                    <th class="text-left text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest px-5 py-3" data-i18n="superadmin.status_label">Status</th>
+                    <th class="text-left text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest px-5 py-3" data-i18n="superadmin.created_header">Dibuat</th>
+                    <th class="text-center text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest px-5 py-3" data-i18n="admin.action_header">Aksi</th>
                 </tr>
             </thead>
             <tbody id="admin-table-body" class="divide-y divide-slate-100 dark:divide-gray-700">
@@ -49,7 +49,7 @@
         <svg class="w-12 h-12 text-slate-200 dark:text-gray-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
         </svg>
-        <p class="text-sm text-slate-400 dark:text-gray-500 font-semibold">Tidak ada admin ditemukan</p>
+        <p class="text-sm text-slate-400 dark:text-gray-500 font-semibold" data-i18n="superadmin.no_admins_found">Tidak ada admin ditemukan</p>
     </div>
 </div>
 {% endblock %}
@@ -103,22 +103,27 @@
                    </div>`
                 : '<span class="text-xs text-slate-400 dark:text-gray-500">—</span>';
 
+            const activeLabel = window.LanguageManager ? window.LanguageManager.t('tickets.tab_active', 'Aktif') : 'Aktif';
+            const inactiveLabel = window.LanguageManager ? window.LanguageManager.t('admin.inactive_badge', 'Nonaktif') : 'Nonaktif';
+            const superAdminLabel = window.LanguageManager ? window.LanguageManager.t('superadmin.tagline', 'Super Admin') : 'Super Admin';
+            const schoolAdminLabel = window.LanguageManager ? window.LanguageManager.t('superadmin.school_admin_tab', 'Admin Sekolah') : 'Admin Sekolah';
+
             const statusBadge = admin.is_active
                 ? `<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-100 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold uppercase tracking-wider">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Aktif
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> ${activeLabel}
                    </span>`
                 : `<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-red-50 dark:bg-red-900/30 border border-red-100 dark:border-red-800 text-red-700 dark:text-red-400 text-[10px] font-bold uppercase tracking-wider">
-                    <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Nonaktif
+                    <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> ${inactiveLabel}
                    </span>`;
 
             const roleBadge = isSuperAdmin
                 ? `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800 text-indigo-700 dark:text-indigo-400 text-[10px] font-bold uppercase tracking-wider">
                     <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-                    Super Admin
+                    ${superAdminLabel}
                    </span>`
                 : `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-50 dark:bg-gray-700 border border-slate-100 dark:border-gray-600 text-slate-700 dark:text-gray-300 text-[10px] font-bold uppercase tracking-wider">
                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                    Admin Sekolah
+                    ${schoolAdminLabel}
                    </span>`;
 
             return `
@@ -168,15 +173,16 @@
 
     // Edit name
     async function editName(id, currentName) {
+        const t = (k, f) => window.LanguageManager ? window.LanguageManager.t(k, f) : f;
         const { value: newName } = await Swal.fire({
-            title: 'Edit Nama',
+            title: t('admin.edit_name_button', 'Edit Nama'),
             input: 'text',
-            inputLabel: 'Nama lengkap',
+            inputLabel: t('superadmin.full_name_input_label', 'Nama lengkap'),
             inputValue: currentName,
             inputAttributes: { maxlength: '100' },
             showCancelButton: true,
-            confirmButtonText: 'Simpan',
-            cancelButtonText: 'Batal',
+            confirmButtonText: t('common.save', 'Simpan'),
+            cancelButtonText: t('common.cancel', 'Batal'),
             confirmButtonColor: '#4f46e5',
         });
 
@@ -190,43 +196,44 @@
         const data = await res.json();
 
         if (data.success) {
-            Swal.fire({ icon: 'success', title: 'Berhasil', text: data.message, confirmButtonColor: '#4f46e5' });
+            Swal.fire({ icon: 'success', title: t('superadmin.success_title', 'Berhasil'), text: data.message, confirmButtonColor: '#4f46e5' });
             loadAdmins();
         } else {
-            Swal.fire({ icon: 'error', title: 'Gagal', text: data.message, confirmButtonColor: '#ef4444' });
+            Swal.fire({ icon: 'error', title: t('superadmin.failed_title', 'Gagal'), text: data.message, confirmButtonColor: '#ef4444' });
         }
     }
 
     // Reset password
     async function resetPassword(id, adminName) {
+        const t = (k, f) => window.LanguageManager ? window.LanguageManager.t(k, f) : f;
         const { value: formValues } = await Swal.fire({
-            title: `Reset Password: ${adminName}`,
+            title: `${t('superadmin.reset_password_prefix', 'Reset Password:')} ${adminName}`,
             html: `
                 <div style="text-align: left;">
-                    <p style="margin-bottom: 12px; font-size: 13px; color: #64748b;">Masukkan password baru (min. 6 karakter)</p>
-                    <input id="swal-password" type="password" class="swal2-input" placeholder="Password baru" style="margin-bottom: 8px;">
-                    <input id="swal-password-confirm" type="password" class="swal2-input" placeholder="Konfirmasi password">
+                    <p style="margin-bottom: 12px; font-size: 13px; color: #64748b;">${t('superadmin.enter_new_password_hint', 'Masukkan password baru (min. 6 karakter)')}</p>
+                    <input id="swal-password" type="password" class="swal2-input" placeholder="${t('superadmin.new_password_placeholder', 'Password baru')}" style="margin-bottom: 8px;">
+                    <input id="swal-password-confirm" type="password" class="swal2-input" placeholder="${t('superadmin.confirm_password_placeholder', 'Konfirmasi password')}">
                 </div>
             `,
             focusConfirm: false,
             showCancelButton: true,
-            confirmButtonText: 'Reset Password',
-            cancelButtonText: 'Batal',
+            confirmButtonText: t('superadmin.reset_password_button', 'Reset Password'),
+            cancelButtonText: t('common.cancel', 'Batal'),
             confirmButtonColor: '#f59e0b',
             preConfirm: () => {
                 const password = document.getElementById('swal-password').value;
                 const confirmPassword = document.getElementById('swal-password-confirm').value;
-                
+
                 if (!password) {
-                    Swal.showValidationMessage('Password tidak boleh kosong');
+                    Swal.showValidationMessage(t('superadmin.password_required_error', 'Password tidak boleh kosong'));
                     return false;
                 }
                 if (password.length < 6) {
-                    Swal.showValidationMessage('Password minimal 6 karakter');
+                    Swal.showValidationMessage(t('superadmin.password_min_length_error', 'Password minimal 6 karakter'));
                     return false;
                 }
                 if (password !== confirmPassword) {
-                    Swal.showValidationMessage('Password tidak cocok');
+                    Swal.showValidationMessage(t('superadmin.password_mismatch_error', 'Password tidak cocok'));
                     return false;
                 }
                 return password;
@@ -243,32 +250,36 @@
         const data = await res.json();
 
         if (data.success) {
-            Swal.fire({ 
-                icon: 'success', 
-                title: 'Password Direset', 
+            Swal.fire({
+                icon: 'success',
+                title: t('superadmin.password_reset_success_title', 'Password Direset'),
                 html: `<p style="margin-bottom: 8px;">${data.message}</p>
                        <div style="background: #fef3c7; padding: 10px; border-radius: 8px; font-size: 13px;">
-                        <strong>Password baru:</strong> <code style="background: #fff; padding: 4px 8px; border-radius: 4px;">${formValues}</code>
+                        <strong>${t('superadmin.new_password_colon_label', 'Password baru:')}</strong> <code style="background: #fff; padding: 4px 8px; border-radius: 4px;">${formValues}</code>
                        </div>
-                       <p style="margin-top: 8px; font-size: 12px; color: #64748b;">Simpan password ini dan berikan ke admin yang bersangkutan.</p>`,
+                       <p style="margin-top: 8px; font-size: 12px; color: #64748b;">${t('superadmin.save_password_hint', 'Simpan password ini dan berikan ke admin yang bersangkutan.')}</p>`,
                 confirmButtonColor: '#4f46e5',
-                confirmButtonText: 'OK',
+                confirmButtonText: t('superadmin.ok_button', 'OK'),
             });
         } else {
-            Swal.fire({ icon: 'error', title: 'Gagal', text: data.message, confirmButtonColor: '#ef4444' });
+            Swal.fire({ icon: 'error', title: t('superadmin.failed_title', 'Gagal'), text: data.message, confirmButtonColor: '#ef4444' });
         }
     }
 
     // Toggle active
     async function toggleActive(id, isActive, adminName) {
-        const action = isActive ? 'nonaktifkan' : 'aktifkan';
+        const t = (k, f) => window.LanguageManager ? window.LanguageManager.t(k, f) : f;
+        const titleKey = isActive ? 'superadmin.deactivate_account_title' : 'superadmin.activate_account_title';
+        const titleFallback = isActive ? 'Nonaktifkan Akun?' : 'Aktifkan Akun?';
+        const suffixKey = isActive ? 'superadmin.will_be_deactivated' : 'superadmin.will_be_activated';
+        const suffixFallback = isActive ? 'akan dinonaktifkan.' : 'akan diaktifkan.';
         const confirm = await Swal.fire({
-            title: `${isActive ? 'Nonaktifkan' : 'Aktifkan'} Akun?`,
-            text: `Akun ${adminName} akan ${isActive ? 'dinonaktifkan' : 'diaktifkan'}.`,
+            title: t(titleKey, titleFallback),
+            text: `${t('superadmin.account_prefix', 'Akun')} ${adminName} ${t(suffixKey, suffixFallback)}`,
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonText: 'Ya',
-            cancelButtonText: 'Batal',
+            confirmButtonText: t('common.yes', 'Ya'),
+            cancelButtonText: t('common.cancel', 'Batal'),
             confirmButtonColor: isActive ? '#ef4444' : '#10b981',
             reverseButtons: true,
         });
@@ -281,10 +292,10 @@
         const data = await res.json();
 
         if (data.success) {
-            Swal.fire({ icon: 'success', title: 'Berhasil', text: data.message, confirmButtonColor: '#4f46e5' });
+            Swal.fire({ icon: 'success', title: t('superadmin.success_title', 'Berhasil'), text: data.message, confirmButtonColor: '#4f46e5' });
             loadAdmins();
         } else {
-            Swal.fire({ icon: 'error', title: 'Gagal', text: data.message, confirmButtonColor: '#ef4444' });
+            Swal.fire({ icon: 'error', title: t('superadmin.failed_title', 'Gagal'), text: data.message, confirmButtonColor: '#ef4444' });
         }
     }
 

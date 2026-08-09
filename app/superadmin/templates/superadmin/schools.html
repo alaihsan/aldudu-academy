@@ -1,16 +1,16 @@
 {% extends "superadmin/base.html" %}
 {% block title %}Kelola Sekolah — Super Admin{% endblock %}
-{% block page_title %}Kelola Sekolah{% endblock %}
-{% block page_subtitle %}Daftar & manajemen semua sekolah{% endblock %}
+{% block page_title %}<span data-i18n="superadmin.manage_schools_page_title">Kelola Sekolah</span>{% endblock %}
+{% block page_subtitle %}<span data-i18n="superadmin.manage_schools_page_subtitle">Daftar & manajemen semua sekolah</span>{% endblock %}
 
 {% block content %}
 <!-- Filter Tabs -->
 <div class="flex items-center gap-2 mb-5 flex-wrap">
-    <button onclick="loadSchools(null)"        id="tab-all"       class="sa-tab active">Semua</button>
-    <button onclick="loadSchools('pending')"    id="tab-pending"   class="sa-tab">Belum Verifikasi</button>
-    <button onclick="loadSchools('verified')"   id="tab-verified"  class="sa-tab">Pending Approval</button>
-    <button onclick="loadSchools('active')"     id="tab-active"    class="sa-tab">Aktif</button>
-    <button onclick="loadSchools('suspended')"  id="tab-suspended" class="sa-tab">Suspended</button>
+    <button onclick="loadSchools(null)"        id="tab-all"       class="sa-tab active" data-i18n="superadmin.tab_all">Semua</button>
+    <button onclick="loadSchools('pending')"    id="tab-pending"   class="sa-tab" data-i18n="superadmin.tab_unverified">Belum Verifikasi</button>
+    <button onclick="loadSchools('verified')"   id="tab-verified"  class="sa-tab" data-i18n="superadmin.tab_pending_approval">Pending Approval</button>
+    <button onclick="loadSchools('active')"     id="tab-active"    class="sa-tab" data-i18n="tickets.tab_active">Aktif</button>
+    <button onclick="loadSchools('suspended')"  id="tab-suspended" class="sa-tab" data-i18n="superadmin.tab_suspended">Suspended</button>
 </div>
 
 <!-- Schools List -->

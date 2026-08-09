@@ -1,7 +1,7 @@
 {% extends "superadmin/base.html" %}
 {% block title %}Dashboard — Super Admin{% endblock %}
-{% block page_title %}Dashboard{% endblock %}
-{% block page_subtitle %}Ringkasan Platform Aldudu Academy{% endblock %}
+{% block page_title %}<span data-i18n="superadmin.nav_dashboard">Dashboard</span>{% endblock %}
+{% block page_subtitle %}<span data-i18n="superadmin.dashboard_page_subtitle">Ringkasan Platform Aldudu Academy</span>{% endblock %}
 
 {% block content %}
 <section class="sa-dashboard-shell space-y-6">
@@ -9,22 +9,22 @@
         <div class="sa-hero-copy">
             <div class="inline-flex items-center gap-2 rounded-xl bg-white/90 px-4 py-2 text-[11px] font-black uppercase tracking-[0.2em] text-[#58cc02] shadow-sm border-2 border-[#e5e5e5]">
                 <span class="h-2 w-2 rounded-full bg-[#58cc02]"></span>
-                Platform Control
+                <span data-i18n="superadmin.platform_control_badge">Platform Control</span>
             </div>
-            <h1 class="mt-8 text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#4b4b4b]">
+            <h1 class="mt-8 text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#4b4b4b]" data-i18n="superadmin.hero_heading">
                 Pantau semua sekolah dalam satu layar.
             </h1>
-            <p class="mt-6 max-w-2xl text-lg font-bold leading-relaxed text-[#afafaf]">
+            <p class="mt-6 max-w-2xl text-lg font-bold leading-relaxed text-[#afafaf]" data-i18n="superadmin.hero_subheading">
                 Prioritaskan persetujuan sekolah, tiket aktif, laporan masalah, dan pengumuman tanpa meninggalkan dashboard.
             </p>
             <div class="mt-10 flex flex-wrap gap-4">
                 <a href="/superadmin/schools" class="sa-hero-button sa-hero-button-primary">
-                    Kelola Sekolah
+                    <span data-i18n="superadmin.manage_schools_page_title">Kelola Sekolah</span>
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                     </svg>
                 </a>
-                <a href="/superadmin/tickets" class="sa-hero-button sa-hero-button-ghost">Lihat Tiket</a>
+                <a href="/superadmin/tickets" class="sa-hero-button sa-hero-button-ghost" data-i18n="superadmin.view_tickets_button">Lihat Tiket</a>
             </div>
         </div>
 
@@ -51,7 +51,7 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
             </div>
             <p class="sa-dash-stat-value">{{ stats.total_schools }}</p>
-            <p class="sa-dash-stat-label">Total Sekolah</p>
+            <p class="sa-dash-stat-label" data-i18n="superadmin.total_schools_label">Total Sekolah</p>
         </a>
 
         <a href="/superadmin/schools?status=active" class="sa-dash-stat sa-dash-stat-green">
@@ -59,7 +59,7 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             </div>
             <p class="sa-dash-stat-value">{{ stats.active_schools }}</p>
-            <p class="sa-dash-stat-label">Sekolah Aktif</p>
+            <p class="sa-dash-stat-label" data-i18n="superadmin.active_schools_label">Sekolah Aktif</p>
         </a>
 
         <a href="/superadmin/schools?status=pending" class="sa-dash-stat sa-dash-stat-yellow">
@@ -67,7 +67,7 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             </div>
             <p class="sa-dash-stat-value">{{ stats.pending_schools }}</p>
-            <p class="sa-dash-stat-label">Menunggu</p>
+            <p class="sa-dash-stat-label" data-i18n="superadmin.pending_label">Menunggu</p>
         </a>
 
         <a href="/superadmin/admins" class="sa-dash-stat sa-dash-stat-blue">
@@ -75,7 +75,7 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
             </div>
             <p class="sa-dash-stat-value">{{ stats.total_users }}</p>
-            <p class="sa-dash-stat-label">Total Users</p>
+            <p class="sa-dash-stat-label" data-i18n="superadmin.total_users_label">Total Users</p>
         </a>
 
         <a href="/superadmin/tickets" class="sa-dash-stat sa-dash-stat-red">
@@ -83,7 +83,7 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/></svg>
             </div>
             <p class="sa-dash-stat-value">{{ stats.open_tickets }}</p>
-            <p class="sa-dash-stat-label">Open Tickets</p>
+            <p class="sa-dash-stat-label" data-i18n="superadmin.open_tickets_label">Open Tickets</p>
         </a>
 
         <a href="/superadmin/issues" class="sa-dash-stat sa-dash-stat-orange">
@@ -91,7 +91,7 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
             </div>
             <p class="sa-dash-stat-value">{{ stats.open_issues }}</p>
-            <p class="sa-dash-stat-label">Open Issues</p>
+            <p class="sa-dash-stat-label" data-i18n="superadmin.open_issues_label">Open Issues</p>
         </a>
     </div>
 
@@ -100,8 +100,8 @@
         <!-- Quick Actions -->
         <div class="xl:col-span-1">
             <div class="sa-section-heading">
-                <span>Aksi Cepat</span>
-                <span class="sa-section-chip">Prioritas</span>
+                <span data-i18n="superadmin.quick_actions_heading">Aksi Cepat</span>
+                <span class="sa-section-chip" data-i18n="tickets.priority_label">Prioritas</span>
             </div>
 
             <div class="space-y-3">
@@ -111,8 +111,8 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     </div>
                     <div class="flex-1">
-                        <p class="sa-action-title">{{ stats.pending_schools }} Sekolah Menunggu</p>
-                        <p class="sa-action-desc">Perlu persetujuan</p>
+                        <p class="sa-action-title">{{ stats.pending_schools }} <span data-i18n="superadmin.schools_waiting_suffix">Sekolah Menunggu</span></p>
+                        <p class="sa-action-desc" data-i18n="superadmin.needs_approval_desc">Perlu persetujuan</p>
                     </div>
                     <span class="sa-action-arrow">→</span>
                 </a>
@@ -124,8 +124,8 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
                     </div>
                     <div class="flex-1">
-                        <p class="sa-action-title">{{ stats.open_tickets }} Tiket Aktif</p>
-                        <p class="sa-action-desc">Menunggu respon</p>
+                        <p class="sa-action-title">{{ stats.open_tickets }} <span data-i18n="superadmin.active_tickets_suffix">Tiket Aktif</span></p>
+                        <p class="sa-action-desc" data-i18n="superadmin.awaiting_response_desc">Menunggu respon</p>
                     </div>
                     <span class="sa-action-arrow">→</span>
                 </a>
@@ -136,8 +136,8 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16"/></svg>
                     </div>
                     <div class="flex-1">
-                        <p class="sa-action-title">Kelola Sekolah</p>
-                        <p class="sa-action-desc">{{ stats.total_schools }} sekolah terdaftar</p>
+                        <p class="sa-action-title" data-i18n="superadmin.manage_schools_page_title">Kelola Sekolah</p>
+                        <p class="sa-action-desc">{{ stats.total_schools }} <span data-i18n="superadmin.registered_schools_suffix">sekolah terdaftar</span></p>
                     </div>
                     <span class="sa-action-arrow">→</span>
                 </a>
@@ -147,8 +147,8 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                     </div>
                     <div class="flex-1">
-                        <p class="sa-action-title">Input What's New</p>
-                        <p class="sa-action-desc">Pengumuman platform</p>
+                        <p class="sa-action-title" data-i18n="superadmin.input_whats_new_title">Input What's New</p>
+                        <p class="sa-action-desc" data-i18n="superadmin.platform_announcement_desc">Pengumuman platform</p>
                     </div>
                     <span class="sa-action-arrow">→</span>
                 </a>
@@ -159,8 +159,8 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                     </div>
                     <div class="flex-1">
-                        <p class="sa-action-title">{{ stats.open_issues }} Laporan Aktif</p>
-                        <p class="sa-action-desc">Perlu ditangani</p>
+                        <p class="sa-action-title">{{ stats.open_issues }} <span data-i18n="superadmin.active_reports_suffix">Laporan Aktif</span></p>
+                        <p class="sa-action-desc" data-i18n="superadmin.needs_handling_desc">Perlu ditangani</p>
                     </div>
                     <span class="sa-action-arrow">→</span>
                 </a>
@@ -172,10 +172,10 @@
         <div class="xl:col-span-2 sa-activity-panel">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
                 <div>
-                    <p class="text-xs font-black text-emerald-600 uppercase tracking-[0.18em]">Aktivitas Terbaru</p>
-                    <h2 class="text-xl font-black text-slate-950 dark:text-gray-100 mt-1">Jejak perubahan platform</h2>
+                    <p class="text-xs font-black text-emerald-600 uppercase tracking-[0.18em]" data-i18n="superadmin.recent_activity_label">Aktivitas Terbaru</p>
+                    <h2 class="text-xl font-black text-slate-950 dark:text-gray-100 mt-1" data-i18n="superadmin.activity_log_heading">Jejak perubahan platform</h2>
                 </div>
-                <span class="sa-section-chip">20 terakhir</span>
+                <span class="sa-section-chip" data-i18n="superadmin.last_20_chip">20 terakhir</span>
             </div>
 
             <div class="space-y-1">
@@ -200,7 +200,7 @@
                     <div class="sa-empty-icon">
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
                     </div>
-                    <p class="text-sm font-bold text-slate-500 dark:text-gray-400">Belum ada aktivitas</p>
+                    <p class="text-sm font-bold text-slate-500 dark:text-gray-400" data-i18n="superadmin.no_activity_yet">Belum ada aktivitas</p>
                 </div>
                 {% endfor %}
             </div>

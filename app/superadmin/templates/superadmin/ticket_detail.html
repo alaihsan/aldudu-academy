@@ -10,10 +10,10 @@
     <div class="flex items-center justify-between mb-5 flex-wrap gap-3">
         <a href="/superadmin/tickets" class="inline-flex items-center gap-1.5 text-sm font-bold text-slate-500 hover:text-indigo-600 transition-colors">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-            Kembali ke Tiket
+            <span data-i18n="superadmin.back_to_tickets">Kembali ke Tiket</span>
         </a>
         <div class="flex items-center gap-3">
-            <label class="text-xs font-black text-slate-400 uppercase tracking-widest">Status</label>
+            <label class="text-xs font-black text-slate-400 uppercase tracking-widest" data-i18n="superadmin.status_label">Status</label>
             <select id="status-select" onchange="updateStatus()" class="px-3 py-2 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-600 rounded-xl text-sm font-bold text-slate-700 dark:text-gray-300 outline-none focus:border-indigo-400 transition-colors shadow-sm">
                 {% set statuses = [('open','Open'), ('in_queue','In Queue'), ('in_progress','In Progress'), ('waiting_user','Waiting User'), ('resolved','Resolved'), ('closed','Closed')] %}
                 {% for val, label in statuses %}
@@ -61,7 +61,7 @@
     {% if msgs %}
     <div class="sa-card mb-5 overflow-hidden">
         <div class="px-6 py-4 border-b border-slate-100 dark:border-gray-700">
-            <h3 class="text-xs font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest">Percakapan ({{ msgs|length }})</h3>
+            <h3 class="text-xs font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest"><span data-i18n="superadmin.conversation_prefix">Percakapan</span> ({{ msgs|length }})</h3>
         </div>
         <div class="divide-y divide-slate-50 dark:divide-gray-700">
             {% for msg in msgs %}
@@ -73,10 +73,10 @@
                         </div>
                         <span class="text-sm font-bold text-slate-900 dark:text-gray-100">{{ msg.user.name }}</span>
                         {% if msg.user.role.value == 'super_admin' %}
-                        <span class="sa-badge bg-indigo-50 text-indigo-600 border border-indigo-100">Admin</span>
+                        <span class="sa-badge bg-indigo-50 text-indigo-600 border border-indigo-100" data-i18n="superadmin.admin_badge">Admin</span>
                         {% endif %}
                         {% if msg.is_internal %}
-                        <span class="sa-badge bg-amber-50 text-amber-700 border border-amber-200">Internal</span>
+                        <span class="sa-badge bg-amber-50 text-amber-700 border border-amber-200" data-i18n="superadmin.internal_badge">Internal</span>
                         {% endif %}
                     </div>
                     <span class="text-[11px] text-slate-400 dark:text-gray-500 font-semibold">{{ msg.created_at.strftime('%d/%m %H:%M') }}</span>
@@ -90,18 +90,18 @@
 
     <!-- Reply Form -->
     <div class="sa-card p-6">
-        <h3 class="text-xs font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest mb-4">Balas Tiket</h3>
+        <h3 class="text-xs font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest mb-4" data-i18n="superadmin.reply_ticket_heading">Balas Tiket</h3>
         <form id="reply-form" class="space-y-4">
             <textarea id="reply-content" rows="4"
                 class="w-full px-4 py-3 bg-slate-50 dark:bg-gray-700 border border-slate-200 dark:border-gray-600 rounded-xl focus:border-indigo-400 focus:bg-white dark:focus:bg-gray-600 outline-none text-sm font-medium text-slate-700 dark:text-gray-300 transition-all resize-none placeholder-slate-300 dark:placeholder-gray-500"
-                placeholder="Tulis balasan untuk pengguna..."></textarea>
+                data-i18n-placeholder="superadmin.reply_to_user_placeholder" placeholder="Tulis balasan untuk pengguna..."></textarea>
             <div class="flex items-center justify-between flex-wrap gap-3">
                 <label class="flex items-center gap-2 cursor-pointer select-none">
                     <input type="checkbox" id="reply-internal" class="w-4 h-4 rounded accent-amber-500">
-                    <span class="text-xs font-bold text-slate-500">Catatan Internal <span class="text-slate-300">(tidak terlihat pengguna)</span></span>
+                    <span class="text-xs font-bold text-slate-500"><span data-i18n="superadmin.internal_note_label">Catatan Internal</span> <span class="text-slate-300" data-i18n="superadmin.not_visible_to_user_hint">(tidak terlihat pengguna)</span></span>
                 </label>
                 <button type="submit" id="reply-btn"
-                    class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-black text-xs uppercase tracking-widest transition-all active:scale-95 shadow-sm shadow-indigo-500/30 disabled:opacity-60">
+                    class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-black text-xs uppercase tracking-widest transition-all active:scale-95 shadow-sm shadow-indigo-500/30 disabled:opacity-60" data-i18n="discussion.send_reply_button">
                     Kirim Balasan
                 </button>
             </div>

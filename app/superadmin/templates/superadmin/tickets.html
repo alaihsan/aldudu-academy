@@ -1,14 +1,14 @@
 {% extends "superadmin/base.html" %}
 {% block title %}Tiket Support — Super Admin{% endblock %}
-{% block page_title %}Tiket Support{% endblock %}
-{% block page_subtitle %}Kelola semua tiket dari sekolah{% endblock %}
+{% block page_title %}<span data-i18n="superadmin.tickets_page_title">Tiket Support</span>{% endblock %}
+{% block page_subtitle %}<span data-i18n="superadmin.tickets_page_subtitle">Kelola semua tiket dari sekolah</span>{% endblock %}
 
 {% block content %}
 <!-- Filter Tabs -->
 <div class="flex items-center gap-2 mb-5 flex-wrap">
-    <button onclick="loadTickets('active')"   id="tab-active"   class="sa-tab active">Aktif</button>
-    <button onclick="loadTickets('resolved')" id="tab-resolved" class="sa-tab">Selesai</button>
-    <button onclick="loadTickets(null)"       id="tab-all"      class="sa-tab">Semua</button>
+    <button onclick="loadTickets('active')"   id="tab-active"   class="sa-tab active" data-i18n="tickets.tab_active">Aktif</button>
+    <button onclick="loadTickets('resolved')" id="tab-resolved" class="sa-tab" data-i18n="tickets.tab_resolved">Selesai</button>
+    <button onclick="loadTickets(null)"       id="tab-all"      class="sa-tab" data-i18n="superadmin.tab_all">Semua</button>
 </div>
 
 <div id="tickets-list"></div>
