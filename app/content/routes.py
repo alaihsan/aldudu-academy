@@ -14,6 +14,7 @@ from app.models import Course, UserRole, Quiz, Assignment, AssignmentStatus
 from app.content.models import ContentFolder, Link, File
 from app.helpers import sanitize_text, sanitize_rich_text, log_activity, get_jakarta_now
 from app.core.authorization import get_school_id_or_abort, verify_course_in_school
+from app.core.i18n import t
 
 logger = logging.getLogger(__name__)
 
@@ -82,9 +83,9 @@ def serve_file(file_id):
 
     now = get_jakarta_now()
     if file.start_date and now < file.start_date:
-        abort(403, description="File is not yet available.")
+        abort(403, description=t('content.messages.file_not_yet_available'))
     if file.end_date and now > file.end_date:
-        abort(403, description="File has expired.")
+        abort(403, description=t('content.messages.file_expired'))
 
     upload_folder = os.path.join(os.getcwd(), 'instance', 'uploads', str(course.id))
     return send_from_directory(upload_folder, file.filename, as_attachment=False)
@@ -118,19 +119,19 @@ def api_create_link(course_id):
 
     # 1. Validasi: Hanya guru yang bisa membuat link
     if current_user.role != UserRole.GURU:
-        return jsonify({'success': False, 'message': 'Hanya guru yang dapat membuat link'}), 403
+        return jsonify({'success': False, 'message': t('content.messages.only_teacher_create_link')}), 403
 
     # 2. Validasi: Temukan mata pelajarannya
     course = db.session.get(Course, course_id)
     if not course:
-        return jsonify({'success': False, 'message': 'Mata pelajaran tidak ditemukan'}), 404
+        return jsonify({'success': False, 'message': t('content.messages.course_not_found')}), 404
 
     school_id = get_school_id_or_abort()
     verify_course_in_school(course, school_id)
 
     # 3. Validasi Keamanan: Pastikan guru ini adalah pemilik mata pelajaran
     if course.teacher_id != current_user.id:
-        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin untuk menambah link di mata pelajaran ini'}), 403
+        return jsonify({'success': False, 'message': t('content.messages.no_permission_add_link')}), 403
 
     # 4. Ambil dan bersihkan data input
     data = request.get_json() or {}
@@ -141,14 +142,14 @@ def api_create_link(course_id):
     description = sanitize_rich_text(data.get('description') or '', max_len=5000) or None
 
     if not name:
-        return jsonify({'success': False, 'message': 'Nama link wajib diisi'}), 400
+        return jsonify({'success': False, 'message': t('content.messages.link_name_required')}), 400
 
     if not url:
-        return jsonify({'success': False, 'message': 'URL link wajib diisi'}), 400
+        return jsonify({'success': False, 'message': t('content.messages.link_url_required')}), 400
 
     # Basic URL validation
     if not url.startswith(('http://', 'https://')):
-        return jsonify({'success': False, 'message': 'URL harus dimulai dengan http:// atau https://'}), 400
+        return jsonify({'success': False, 'message': t('content.messages.url_must_start_with_protocol')}), 400
 
     # 5. Buat link di database
     try:
@@ -176,7 +177,7 @@ def api_create_link(course_id):
     except Exception as e:
         db.session.rollback()
         logger.error(f"Failed to create link for course {course_id}: {e}", exc_info=True)
-        return jsonify({'success': False, 'message': 'Terjadi kesalahan server'}), 500
+        return jsonify({'success': False, 'message': t('messages.server_error')}), 500
 
 
 @content_bp.route('/link/<int:link_id>/archive', methods=['POST'])
@@ -190,12 +191,12 @@ def api_archive_link(link_id):
     verify_course_in_school(course, school_id)
 
     if course.teacher_id != current_user.id:
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
 
     link.is_archived = True
     db.session.commit()
 
-    return jsonify({'success': True, 'message': 'Link berhasil diarsipkan'})
+    return jsonify({'success': True, 'message': t('content.messages.link_archived')})
 
 
 @content_bp.route('/link/<int:link_id>/restore', methods=['POST'])
@@ -209,12 +210,12 @@ def api_restore_link(link_id):
     verify_course_in_school(course, school_id)
 
     if course.teacher_id != current_user.id:
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
 
     link.is_archived = False
     db.session.commit()
 
-    return jsonify({'success': True, 'message': 'Link berhasil dipulihkan'})
+    return jsonify({'success': True, 'message': t('content.messages.link_restored')})
 
 
 @content_bp.route('/link/<int:link_id>', methods=['DELETE'])
@@ -228,13 +229,13 @@ def api_delete_link(link_id):
     verify_course_in_school(course, school_id)
 
     if course.teacher_id != current_user.id:
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
 
     link.is_trashed = True
     link.trashed_at = _trash_now()
     db.session.commit()
 
-    return jsonify({'success': True, 'message': 'Link dipindahkan ke Ruang TPS'})
+    return jsonify({'success': True, 'message': t('content.messages.link_moved_to_trash')})
 
 
 @content_bp.route('/link/<int:link_id>', methods=['PUT'])
@@ -244,24 +245,24 @@ def api_update_link(link_id):
     link = Link.query.get_or_404(link_id)
     course = Course.query.get(link.course_id)
     if not _verify_material_owner(course):
-        return jsonify({'success': False, 'message': 'Tidak memiliki izin'}), 403
+        return jsonify({'success': False, 'message': t('content.messages.no_permission_short')}), 403
     data = request.get_json() or {}
     if 'name' in data:
         name = sanitize_text(data.get('name'), max_len=200)
         if not name:
-            return jsonify({'success': False, 'message': 'Judul tidak boleh kosong'}), 400
+            return jsonify({'success': False, 'message': t('content.messages.title_required')}), 400
         link.name = name
     if 'url' in data:
         url = (data.get('url') or '').strip()
         if not url:
-            return jsonify({'success': False, 'message': 'URL tidak boleh kosong'}), 400
+            return jsonify({'success': False, 'message': t('content.messages.url_required')}), 400
         if not url.startswith(('http://', 'https://')):
             url = 'https://' + url
         link.url = url[:500]
     if 'description' in data:
         link.description = sanitize_rich_text(data.get('description') or '', max_len=5000) or None
     db.session.commit()
-    return jsonify({'success': True, 'message': 'Link diperbarui'})
+    return jsonify({'success': True, 'message': t('content.messages.link_updated')})
 
 
 # ─── Files ───────────────────────────────────────────────────────────────────
@@ -270,20 +271,20 @@ def api_update_link(link_id):
 @login_required
 def api_create_file(course_id):
     if current_user.role != UserRole.GURU:
-        return jsonify({'success': False, 'message': 'Hanya guru yang dapat mengunggah file'}), 403
+        return jsonify({'success': False, 'message': t('content.messages.only_teacher_upload_file')}), 403
 
     course = db.session.get(Course, course_id)
     if not course:
-        return jsonify({'success': False, 'message': 'Mata pelajaran tidak ditemukan'}), 404
+        return jsonify({'success': False, 'message': t('content.messages.course_not_found')}), 404
 
     school_id = get_school_id_or_abort()
     verify_course_in_school(course, school_id)
 
     if course.teacher_id != current_user.id:
-        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin untuk mengunggah file di mata pelajaran ini'}), 403
+        return jsonify({'success': False, 'message': t('content.messages.no_permission_upload_file')}), 403
 
     if 'file' not in request.files:
-        return jsonify({'success': False, 'message': 'Tidak ada file yang diunggah'}), 400
+        return jsonify({'success': False, 'message': t('content.messages.no_file_uploaded')}), 400
 
     file = request.files['file']
     name = request.form.get('name', '').strip()
@@ -292,10 +293,10 @@ def api_create_file(course_id):
     end_date_str = request.form.get('end_date')
 
     if not name:
-        return jsonify({'success': False, 'message': 'Nama file wajib diisi'}), 400
+        return jsonify({'success': False, 'message': t('content.messages.file_name_required')}), 400
 
     if file.filename == '':
-        return jsonify({'success': False, 'message': 'Tidak ada file yang dipilih'}), 400
+        return jsonify({'success': False, 'message': t('content.messages.no_file_selected')}), 400
 
     # Validate file extension
     if not allowed_file(file.filename):
@@ -322,14 +323,14 @@ def api_create_file(course_id):
         try:
             start_date = datetime.fromisoformat(start_date_str)
         except ValueError:
-            return jsonify({'success': False, 'message': 'Format tanggal mulai tidak valid'}), 400
+            return jsonify({'success': False, 'message': t('content.messages.invalid_start_date_format')}), 400
 
     end_date = None
     if end_date_str:
         try:
             end_date = datetime.fromisoformat(end_date_str)
         except ValueError:
-            return jsonify({'success': False, 'message': 'Format tanggal selesai tidak valid'}), 400
+            return jsonify({'success': False, 'message': t('content.messages.invalid_end_date_format')}), 400
 
     if file:
         # Generate secure filename with UUID
@@ -367,7 +368,7 @@ def api_create_file(course_id):
             }
         }), 201
 
-    return jsonify({'success': False, 'message': 'Terjadi kesalahan saat mengunggah file'}), 500
+    return jsonify({'success': False, 'message': t('content.messages.error_uploading_file')}), 500
 
 
 @content_bp.route('/file/<int:file_id>', methods=['PUT'])
@@ -377,17 +378,17 @@ def api_update_file(file_id):
     f = File.query.get_or_404(file_id)
     course = Course.query.get(f.course_id)
     if not _verify_material_owner(course):
-        return jsonify({'success': False, 'message': 'Tidak memiliki izin'}), 403
+        return jsonify({'success': False, 'message': t('content.messages.no_permission_short')}), 403
     data = request.get_json() or {}
     if 'name' in data:
         name = sanitize_text(data.get('name'), max_len=200)
         if not name:
-            return jsonify({'success': False, 'message': 'Judul tidak boleh kosong'}), 400
+            return jsonify({'success': False, 'message': t('content.messages.title_required')}), 400
         f.name = name
     if 'description' in data:
         f.description = sanitize_rich_text(data.get('description') or '', max_len=5000) or None
     db.session.commit()
-    return jsonify({'success': True, 'message': 'Berkas diperbarui'})
+    return jsonify({'success': True, 'message': t('content.messages.file_updated')})
 
 
 @content_bp.route('/file/<int:file_id>/archive', methods=['POST'])
@@ -396,15 +397,15 @@ def api_archive_file(file_id):
     """API endpoint untuk mengarsipkan file"""
     file = db.session.get(File, file_id)
     if not file:
-        return jsonify({'success': False, 'message': 'File tidak ditemukan'}), 404
+        return jsonify({'success': False, 'message': t('content.messages.file_not_found')}), 404
 
     if not _verify_material_owner(file.course):
-        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
+        return jsonify({'success': False, 'message': t('messages.no_permission')}), 403
 
     file.is_archived = True
     db.session.commit()
 
-    return jsonify({'success': True, 'message': 'File berhasil diarsipkan'})
+    return jsonify({'success': True, 'message': t('content.messages.file_archived')})
 
 
 @content_bp.route('/file/<int:file_id>/restore', methods=['POST'])
@@ -413,15 +414,15 @@ def api_restore_file(file_id):
     """API endpoint untuk memulihkan file dari arsip"""
     file = db.session.get(File, file_id)
     if not file:
-        return jsonify({'success': False, 'message': 'File tidak ditemukan'}), 404
+        return jsonify({'success': False, 'message': t('content.messages.file_not_found')}), 404
 
     if not _verify_material_owner(file.course):
-        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
+        return jsonify({'success': False, 'message': t('messages.no_permission')}), 403
 
     file.is_archived = False
     db.session.commit()
 
-    return jsonify({'success': True, 'message': 'File berhasil dipulihkan'})
+    return jsonify({'success': True, 'message': t('content.messages.file_restored')})
 
 
 @content_bp.route('/file/<int:file_id>', methods=['DELETE'])
@@ -430,14 +431,14 @@ def api_delete_file(file_id):
     """Soft-delete berkas ke Ruang TPS."""
     file = db.session.get(File, file_id)
     if not file:
-        return jsonify({'success': False, 'message': 'File tidak ditemukan'}), 404
+        return jsonify({'success': False, 'message': t('content.messages.file_not_found')}), 404
     if not _verify_material_owner(file.course):
-        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
+        return jsonify({'success': False, 'message': t('messages.no_permission')}), 403
 
     file.is_trashed = True
     file.trashed_at = _trash_now()
     db.session.commit()
-    return jsonify({'success': True, 'message': 'Berkas dipindahkan ke Ruang TPS'})
+    return jsonify({'success': True, 'message': t('content.messages.file_moved_to_trash')})
 
 
 # ─── Content reorder / move ──────────────────────────────────────────────────
@@ -446,11 +447,11 @@ def api_delete_file(file_id):
 @login_required
 def api_reorder_content(course_id):
     if current_user.role != UserRole.GURU:
-        return jsonify({'success': False, 'message': 'Hanya guru yang dapat mengatur urutan'}), 403
+        return jsonify({'success': False, 'message': t('content.messages.only_teacher_set_order')}), 403
 
     course = db.session.get(Course, course_id)
     if not course or course.teacher_id != current_user.id:
-        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
+        return jsonify({'success': False, 'message': t('messages.no_permission')}), 403
 
     data = request.get_json() or {}
     items = data.get('items', [])
@@ -487,18 +488,18 @@ def api_reorder_content(course_id):
     except Exception as e:
         db.session.rollback()
         logger.error(f"Failed to reorder content for course {course_id}: {e}", exc_info=True)
-        return jsonify({'success': False, 'message': 'Gagal menyimpan urutan'}), 500
+        return jsonify({'success': False, 'message': t('content.messages.failed_save_order')}), 500
 
 
 @content_bp.route('/courses/<int:course_id>/content/move-to-folder', methods=['POST'])
 @login_required
 def api_move_to_folder(course_id):
     if current_user.role != UserRole.GURU:
-        return jsonify({'success': False, 'message': 'Hanya guru yang dapat memindahkan konten'}), 403
+        return jsonify({'success': False, 'message': t('content.messages.only_teacher_move_content')}), 403
 
     course = db.session.get(Course, course_id)
     if not course or course.teacher_id != current_user.id:
-        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
+        return jsonify({'success': False, 'message': t('messages.no_permission')}), 403
 
     data = request.get_json() or {}
     item_id = data.get('item_id')
@@ -508,7 +509,7 @@ def api_move_to_folder(course_id):
     if folder_id:
         folder = db.session.get(ContentFolder, folder_id)
         if not folder or folder.course_id != course_id:
-            return jsonify({'success': False, 'message': 'Folder tidak valid'}), 400
+            return jsonify({'success': False, 'message': t('content.messages.invalid_folder')}), 400
 
     if item_type == 'quiz':
         obj = db.session.get(Quiz, item_id)
@@ -519,10 +520,10 @@ def api_move_to_folder(course_id):
     elif item_type == 'link':
         obj = db.session.get(Link, item_id)
     else:
-        return jsonify({'success': False, 'message': 'Tipe konten tidak valid'}), 400
+        return jsonify({'success': False, 'message': t('content.messages.invalid_content_type')}), 400
 
     if not obj:
-        return jsonify({'success': False, 'message': 'Konten tidak ditemukan'}), 404
+        return jsonify({'success': False, 'message': t('content.messages.content_not_found')}), 404
 
     obj.folder_id = folder_id
     db.session.commit()
@@ -547,7 +548,7 @@ def api_move_material(material_type, material_id):
     }
 
     if material_type not in material_map:
-        return jsonify({'success': False, 'message': 'Tipe material tidak valid'}), 400
+        return jsonify({'success': False, 'message': t('content.messages.invalid_material_type')}), 400
 
     Material = material_map[material_type]
     material = Material.query.get_or_404(material_id)
@@ -560,13 +561,13 @@ def api_move_material(material_type, material_id):
     verify_course_in_school(course, school_id)
 
     if course.teacher_id != current_user.id:
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
 
     # Verify folder belongs to same course
     if folder_id:
         target_folder = ContentFolder.query.get(folder_id)
         if not target_folder or target_folder.course_id != course_id:
-            return jsonify({'success': False, 'message': 'Target folder tidak valid'}), 400
+            return jsonify({'success': False, 'message': t('content.messages.invalid_target_folder')}), 400
 
     # Update material
     material.folder_id = folder_id
@@ -587,7 +588,7 @@ def api_reorder_materials(course_id):
     verify_course_in_school(course, school_id)
 
     if course.teacher_id != current_user.id:
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
 
     data = request.get_json() or {}
     order_list = data.get('order', [])
@@ -665,20 +666,20 @@ def api_create_folder(course_id):
 
     # Only teacher can create folders (not admin or super admin)
     if course.teacher_id != current_user.id:
-        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin untuk membuat folder'}), 403
+        return jsonify({'success': False, 'message': t('content.messages.no_permission_create_folder')}), 403
 
     data = request.get_json() or {}
     name = sanitize_text(data.get('name', ''), max_len=200).strip()
     parent_folder_id = data.get('parent_folder_id')
 
     if not name:
-        return jsonify({'success': False, 'message': 'Nama folder wajib diisi'}), 400
+        return jsonify({'success': False, 'message': t('content.messages.folder_name_required')}), 400
 
     # Verify parent folder belongs to same course
     if parent_folder_id:
         parent_folder = ContentFolder.query.get(parent_folder_id)
         if not parent_folder or parent_folder.course_id != course_id:
-            return jsonify({'success': False, 'message': 'Parent folder tidak valid'}), 400
+            return jsonify({'success': False, 'message': t('content.messages.invalid_parent_folder')}), 400
 
     # Get the next order number
     max_order = db.session.query(db.func.max(ContentFolder.order)).filter(
@@ -716,7 +717,7 @@ def api_update_folder(folder_id):
 
     # Only teacher can update folder
     if course.teacher_id != current_user.id:
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
 
     data = request.get_json() or {}
 
@@ -751,7 +752,7 @@ def api_delete_folder(folder_id):
 
     # Only teacher can delete folder
     if course.teacher_id != current_user.id:
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
 
     folder_id_val = folder.id
     parent_id = folder.parent_folder_id
@@ -784,7 +785,7 @@ def api_reorder_folders(course_id):
     verify_course_in_school(course, school_id)
 
     if course.teacher_id != current_user.id:
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
 
     data = request.get_json() or {}
     order_list = data.get('order', [])
@@ -815,13 +816,13 @@ def api_move_folder(folder_id):
     verify_course_in_school(course, school_id)
 
     if course.teacher_id != current_user.id:
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
 
     # Prevent moving folder into itself or its descendants
     if new_parent_id:
         child_ids = [f.id for f in ContentFolder.query.filter_by(parent_folder_id=folder_id).all()]
         if new_parent_id in child_ids or new_parent_id == folder_id:
-            return jsonify({'success': False, 'message': 'Invalid parent folder'}), 400
+            return jsonify({'success': False, 'message': t('content.messages.invalid_parent_folder')}), 400
 
     folder.parent_folder_id = new_parent_id
     db.session.commit()
@@ -839,11 +840,11 @@ def api_get_importable_materials(course_id):
     """Mendapatkan daftar materi dari kelas lain yang dapat diimpor"""
     course = db.session.get(Course, course_id)
     if not course:
-        return jsonify({'success': False, 'message': 'Kelas tidak ditemukan'}), 404
+        return jsonify({'success': False, 'message': t('content.messages.class_not_found')}), 404
 
     # Security check: must be the teacher of this course
     if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
 
     # We only import non-archived and non-trashed items
     quizzes = Quiz.query.filter_by(course_id=course_id, is_archived=False, is_trashed=False).all()
@@ -868,26 +869,26 @@ def api_import_materials(course_id):
 
     dest_course = db.session.get(Course, course_id)
     if not dest_course:
-        return jsonify({'success': False, 'message': 'Kelas tujuan tidak ditemukan'}), 404
+        return jsonify({'success': False, 'message': t('content.messages.target_class_not_found')}), 404
 
     # Verify destination course permission
     if dest_course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
 
     data = request.get_json() or {}
     source_course_id = data.get('source_course_id')
     items = data.get('items', [])  # List of {type: 'quiz'|'assignment'|'file'|'link', id: int}
 
     if not source_course_id:
-        return jsonify({'success': False, 'message': 'Kelas asal wajib ditentukan'}), 400
+        return jsonify({'success': False, 'message': t('content.messages.source_class_required')}), 400
 
     source_course = db.session.get(Course, source_course_id)
     if not source_course:
-        return jsonify({'success': False, 'message': 'Kelas asal tidak ditemukan'}), 404
+        return jsonify({'success': False, 'message': t('content.messages.source_class_not_found')}), 404
 
     # Verify source course permission
     if source_course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
 
     try:
         imported_count = 0
@@ -1018,4 +1019,4 @@ def api_import_materials(course_id):
     except Exception as e:
         db.session.rollback()
         logger.error(f"Failed to import materials: {e}", exc_info=True)
-        return jsonify({'success': False, 'message': 'Terjadi kesalahan server saat mengimpor'}), 500
+        return jsonify({'success': False, 'message': t('content.messages.import_server_error')}), 500
