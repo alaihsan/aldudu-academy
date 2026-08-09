@@ -330,7 +330,32 @@
         "required_by_default_desc": "New questions will be set as required",
         "autosave_toast": "Changes saved automatically",
         "delete_question_title": "Delete Question?",
-        "delete_question_warning": "This action cannot be undone."
+        "delete_question_warning": "This action cannot be undone.",
+        "messages": {
+            "quiz_not_yet_available": "This quiz is not yet available.",
+            "quiz_archived": "Quiz archived successfully",
+            "quiz_restored": "Quiz restored successfully",
+            "quiz_moved_to_trash": "Quiz moved to Trash",
+            "quiz_not_found": "Quiz not found.",
+            "no_access_to_quiz": "You don't have access to this quiz.",
+            "question_not_found": "Question not found.",
+            "no_access_to_question": "You don't have access to this question.",
+            "teacher_only_create_quiz": "Only teachers can create quizzes",
+            "word_file_required": "A Word file must be selected.",
+            "use_docx_format": "Use a Word file in .docx format.",
+            "invalid_or_corrupt_docx": "The .docx file is invalid or corrupted.",
+            "failed_import_word": "Failed to import the Word file.",
+            "invalid_score_format": "Invalid score format",
+            "score_required": "Score is required",
+            "unknown_field": "Unknown field",
+            "no_file": "No file",
+            "no_file_selected": "No file selected",
+            "quiz_not_yet_published": "This quiz has not been published yet.",
+            "max_attempts_reached": "Attempt limit ({0}x) has been reached.",
+            "invalid_answer_format": "Invalid answer format",
+            "quiz_submitted": "Quiz submitted successfully.",
+            "no_questions_parsed": "No questions could be read from the Word file."
+        }
     },
     "assignment": {
         "new_assignment": "New Assignment",

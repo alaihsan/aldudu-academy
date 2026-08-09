@@ -330,7 +330,32 @@
         "required_by_default_desc": "Patanyoan baru ka disetel manjadi wajib diisi",
         "autosave_toast": "Parubahan disimpan otomatis",
         "delete_question_title": "Hapuih Patanyoan?",
-        "delete_question_warning": "Tindakan ko indak bisa dibatalan."
+        "delete_question_warning": "Tindakan ko indak bisa dibatalan.",
+        "messages": {
+            "quiz_not_yet_available": "Kuis ko alun ado.",
+            "quiz_archived": "Kuis barasil diarsipkan",
+            "quiz_restored": "Kuis barasil dipulangkan",
+            "quiz_moved_to_trash": "Kuis dipindahkan ka Ruang TPS",
+            "quiz_not_found": "Kuis indak ditamukan.",
+            "no_access_to_quiz": "Sanak indak punyo akses ka kuis ko.",
+            "question_not_found": "Patanyoan indak ditamukan.",
+            "no_access_to_question": "Sanak indak punyo akses ka patanyoan ko.",
+            "teacher_only_create_quiz": "Hanyo guru nan bisa mambuek kuis",
+            "word_file_required": "File Word musti dipiliah.",
+            "use_docx_format": "Gunokan file Word format .docx.",
+            "invalid_or_corrupt_docx": "File .docx indak valid atau rusak.",
+            "failed_import_word": "Gagal mangimpor file Word.",
+            "invalid_score_format": "Format nilai indak valid",
+            "score_required": "Nilai musti diisi",
+            "unknown_field": "Field indak dikenal",
+            "no_file": "Indak ado file",
+            "no_file_selected": "Indak ado file nan dipiliah",
+            "quiz_not_yet_published": "Kuis ko alun dipublikasikan.",
+            "max_attempts_reached": "Batas mangarajokan ({0}x) lah tacapai.",
+            "invalid_answer_format": "Format jawaban indak valid",
+            "quiz_submitted": "Kuis barasil dikirim.",
+            "no_questions_parsed": "Indak ado soal nan tabaco dari file Word."
+        }
     },
     "assignment": {
         "new_assignment": "Tugas Baru",

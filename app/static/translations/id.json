@@ -330,7 +330,32 @@
         "required_by_default_desc": "Pertanyaan baru akan disetel sebagai wajib diisi",
         "autosave_toast": "Perubahan disimpan otomatis",
         "delete_question_title": "Hapus Pertanyaan?",
-        "delete_question_warning": "Tindakan ini tidak bisa dibatalkan."
+        "delete_question_warning": "Tindakan ini tidak bisa dibatalkan.",
+        "messages": {
+            "quiz_not_yet_available": "Kuis ini belum tersedia.",
+            "quiz_archived": "Kuis berhasil diarsipkan",
+            "quiz_restored": "Kuis berhasil dipulihkan",
+            "quiz_moved_to_trash": "Kuis dipindahkan ke Ruang TPS",
+            "quiz_not_found": "Kuis tidak ditemukan.",
+            "no_access_to_quiz": "Anda tidak memiliki akses ke kuis ini.",
+            "question_not_found": "Pertanyaan tidak ditemukan.",
+            "no_access_to_question": "Anda tidak memiliki akses ke pertanyaan ini.",
+            "teacher_only_create_quiz": "Hanya guru yang dapat membuat kuis",
+            "word_file_required": "File Word wajib dipilih.",
+            "use_docx_format": "Gunakan file Word berformat .docx.",
+            "invalid_or_corrupt_docx": "File .docx tidak valid atau rusak.",
+            "failed_import_word": "Gagal mengimpor file Word.",
+            "invalid_score_format": "Format nilai tidak valid",
+            "score_required": "Nilai wajib diisi",
+            "unknown_field": "Field tidak dikenal",
+            "no_file": "Tidak ada file",
+            "no_file_selected": "Tidak ada file dipilih",
+            "quiz_not_yet_published": "Kuis ini belum dipublikasikan.",
+            "max_attempts_reached": "Batas pengerjaan ({0}x) telah tercapai.",
+            "invalid_answer_format": "Format jawaban tidak valid",
+            "quiz_submitted": "Kuis berhasil dikirim.",
+            "no_questions_parsed": "Tidak ada soal yang terbaca dari file Word."
+        }
     },
     "assignment": {
         "new_assignment": "Tugas Baru",

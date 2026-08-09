@@ -330,7 +330,32 @@
         "required_by_default_desc": "Pitaken anyar jagi katata dados wajib kaisi",
         "autosave_toast": "Paubahan kasimpen otomatis",
         "delete_question_title": "Hapus Pitaken?",
-        "delete_question_warning": "Tindakan puniki nenten dados kabatalang."
+        "delete_question_warning": "Tindakan puniki nenten dados kabatalang.",
+        "messages": {
+            "quiz_not_yet_available": "Kuis puniki durung wenten.",
+            "quiz_archived": "Kuis prasida kaarsipang",
+            "quiz_restored": "Kuis prasida kawaliang",
+            "quiz_moved_to_trash": "Kuis kapindahang ka Ruang TPS",
+            "quiz_not_found": "Kuis nenten kapanggih.",
+            "no_access_to_quiz": "Ragane nenten madue akses ring kuis puniki.",
+            "question_not_found": "Pitaken nenten kapanggih.",
+            "no_access_to_question": "Ragane nenten madue akses ring pitaken puniki.",
+            "teacher_only_create_quiz": "Wantah guru sane prasida ngaryanin kuis",
+            "word_file_required": "File Word patut kapilih.",
+            "use_docx_format": "Anggen file Word format .docx.",
+            "invalid_or_corrupt_docx": "File .docx nenten becik utawi rusak.",
+            "failed_import_word": "Nenten prasida ngimpor file Word.",
+            "invalid_score_format": "Format nilai nenten becik",
+            "score_required": "Nilai patut kaisi",
+            "unknown_field": "Widang nenten kauningin",
+            "no_file": "Nenten wenten file",
+            "no_file_selected": "Nenten wenten file sane kapilih",
+            "quiz_not_yet_published": "Kuis puniki durung kapublikasiang.",
+            "max_attempts_reached": "Wates ngarap ({0}x) sampun kacapai.",
+            "invalid_answer_format": "Format pasaur nenten becik",
+            "quiz_submitted": "Kuis prasida kakirim.",
+            "no_questions_parsed": "Nenten wenten soal sane kawacen saking file Word."
+        }
     },
     "assignment": {
         "new_assignment": "Tugas Anyar",

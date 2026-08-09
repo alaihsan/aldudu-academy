@@ -330,7 +330,32 @@
         "required_by_default_desc": "Patarosan énggal bakal disetél janten wajib dieusian",
         "autosave_toast": "Parobihan disimpen otomatis",
         "delete_question_title": "Hapus Patarosan?",
-        "delete_question_warning": "Tindakan ieu teu tiasa dibatalkeun."
+        "delete_question_warning": "Tindakan ieu teu tiasa dibatalkeun.",
+        "messages": {
+            "quiz_not_yet_available": "Kuis ieu tacan sayaga.",
+            "quiz_archived": "Kuis suksés diarsipkeun",
+            "quiz_restored": "Kuis suksés dipulangkeun",
+            "quiz_moved_to_trash": "Kuis dipindahkeun ka Ruang TPS",
+            "quiz_not_found": "Kuis teu kapendak.",
+            "no_access_to_quiz": "Anjeun teu gaduh akses ka kuis ieu.",
+            "question_not_found": "Patarosan teu kapendak.",
+            "no_access_to_question": "Anjeun teu gaduh akses ka patarosan ieu.",
+            "teacher_only_create_quiz": "Ngan guru anu tiasa ngadamel kuis",
+            "word_file_required": "File Word wajib dipilih.",
+            "use_docx_format": "Anggo file Word format .docx.",
+            "invalid_or_corrupt_docx": "File .docx teu valid atanapi rusak.",
+            "failed_import_word": "Gagal ngimpor file Word.",
+            "invalid_score_format": "Format nilai teu valid",
+            "score_required": "Nilai wajib dieusian",
+            "unknown_field": "Widang teu dikenal",
+            "no_file": "Teu aya file",
+            "no_file_selected": "Teu aya file anu dipilih",
+            "quiz_not_yet_published": "Kuis ieu tacan dipublikasikeun.",
+            "max_attempts_reached": "Wates ngerjakeun ({0}x) parantos kahontal.",
+            "invalid_answer_format": "Format waleran teu valid",
+            "quiz_submitted": "Kuis suksés dikirim.",
+            "no_questions_parsed": "Teu aya soal anu kabaca tina file Word."
+        }
     },
     "assignment": {
         "new_assignment": "Tugas Anyar",

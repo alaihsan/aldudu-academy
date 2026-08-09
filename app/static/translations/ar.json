@@ -331,7 +331,32 @@
         "required_by_default_desc": "سيتم تعيين الأسئلة الجديدة كمطلوبة",
         "autosave_toast": "تم حفظ التغييرات تلقائيًا",
         "delete_question_title": "حذف السؤال؟",
-        "delete_question_warning": "لا يمكن التراجع عن هذا الإجراء."
+        "delete_question_warning": "لا يمكن التراجع عن هذا الإجراء.",
+        "messages": {
+            "quiz_not_yet_available": "هذا الاختبار غير متاح بعد.",
+            "quiz_archived": "تمت أرشفة الاختبار بنجاح",
+            "quiz_restored": "تمت استعادة الاختبار بنجاح",
+            "quiz_moved_to_trash": "تم نقل الاختبار إلى المهملات",
+            "quiz_not_found": "الاختبار غير موجود.",
+            "no_access_to_quiz": "ليس لديك صلاحية الوصول إلى هذا الاختبار.",
+            "question_not_found": "السؤال غير موجود.",
+            "no_access_to_question": "ليس لديك صلاحية الوصول إلى هذا السؤال.",
+            "teacher_only_create_quiz": "فقط المعلمون يمكنهم إنشاء الاختبارات",
+            "word_file_required": "يجب اختيار ملف Word.",
+            "use_docx_format": "استخدم ملف Word بصيغة .docx.",
+            "invalid_or_corrupt_docx": "ملف .docx غير صالح أو تالف.",
+            "failed_import_word": "فشل استيراد ملف Word.",
+            "invalid_score_format": "تنسيق الدرجة غير صالح",
+            "score_required": "الدرجة مطلوبة",
+            "unknown_field": "حقل غير معروف",
+            "no_file": "لا يوجد ملف",
+            "no_file_selected": "لم يتم اختيار ملف",
+            "quiz_not_yet_published": "لم يتم نشر هذا الاختبار بعد.",
+            "max_attempts_reached": "تم الوصول إلى الحد الأقصى للمحاولات ({0}x).",
+            "invalid_answer_format": "تنسيق الإجابة غير صالح",
+            "quiz_submitted": "تم إرسال الاختبار بنجاح.",
+            "no_questions_parsed": "لم يتم قراءة أي أسئلة من ملف Word."
+        }
     },
     "assignment": {
         "new_assignment": "واجب جديد",

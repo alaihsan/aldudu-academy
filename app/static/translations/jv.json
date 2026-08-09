@@ -330,7 +330,32 @@
         "required_by_default_desc": "Pertanyaan anyar bakal disetel dadi wajib diisi",
         "autosave_toast": "Owah-owahan disimpen otomatis",
         "delete_question_title": "Busak Pertanyaan?",
-        "delete_question_warning": "Tumindak iki ora bisa dibatalake."
+        "delete_question_warning": "Tumindak iki ora bisa dibatalake.",
+        "messages": {
+            "quiz_not_yet_available": "Kuis iki durung kasedhiya.",
+            "quiz_archived": "Kuis sukses diarsipake",
+            "quiz_restored": "Kuis sukses dibalekake",
+            "quiz_moved_to_trash": "Kuis dipindhah menyang Ruang TPS",
+            "quiz_not_found": "Kuis ora ditemokake.",
+            "no_access_to_quiz": "Sampeyan ora duwe akses menyang kuis iki.",
+            "question_not_found": "Pitakonan ora ditemokake.",
+            "no_access_to_question": "Sampeyan ora duwe akses menyang pitakonan iki.",
+            "teacher_only_create_quiz": "Mung guru sing bisa gawe kuis",
+            "word_file_required": "File Word wajib dipilih.",
+            "use_docx_format": "Gunakake file Word format .docx.",
+            "invalid_or_corrupt_docx": "File .docx ora valid utawa rusak.",
+            "failed_import_word": "Gagal ngimpor file Word.",
+            "invalid_score_format": "Format biji ora valid",
+            "score_required": "Biji wajib diisi",
+            "unknown_field": "Field ora dikenal",
+            "no_file": "Ora ana file",
+            "no_file_selected": "Ora ana file sing dipilih",
+            "quiz_not_yet_published": "Kuis iki durung dipublikasikake.",
+            "max_attempts_reached": "Wates nggarap ({0}x) wis kecapai.",
+            "invalid_answer_format": "Format jawaban ora valid",
+            "quiz_submitted": "Kuis sukses dikirim.",
+            "no_questions_parsed": "Ora ana soal sing kewaca saka file Word."
+        }
     },
     "assignment": {
         "new_assignment": "Tugas Anyar",

@@ -11,6 +11,7 @@ from werkzeug.utils import secure_filename
 from app.helpers import sanitize_rich_text
 from app.core.extensions import db
 from app.quiz.models import Option, Question, QuestionType
+from app.core.i18n import t
 
 
 DOCX_NS = {
@@ -113,7 +114,7 @@ def import_questions_from_docx(file_storage, quiz) -> dict:
         blocks = _read_document_blocks(docx)
         parsed_questions, warnings = _parse_question_blocks(blocks)
         if not parsed_questions:
-            return {'success': False, 'message': 'Tidak ada soal yang terbaca dari file Word.'}
+            return {'success': False, 'message': t('quiz.messages.no_questions_parsed')}
 
         upload_folder = os.path.join(os.getcwd(), 'instance', 'uploads', str(quiz.course_id))
         os.makedirs(upload_folder, exist_ok=True)

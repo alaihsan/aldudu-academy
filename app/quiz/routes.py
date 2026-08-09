@@ -15,6 +15,7 @@ from app.quiz.models import (
 from app.helpers import matching_pair, sanitize_text, sanitize_rich_text, log_activity
 from app.core.authorization import get_school_id_or_abort, verify_course_in_school
 from app.quiz.services import create_sample_docx_bytes, import_questions_from_docx
+from app.core.i18n import t
 import json
 import os
 import logging
@@ -53,7 +54,7 @@ def quiz_detail(quiz_id):
         abort(403)
 
     if not is_teacher and quiz.status != QuizStatus.PUBLISHED:
-        abort(403, description='Kuis ini belum tersedia.')
+        abort(403, description=t('quiz.messages.quiz_not_yet_available'))
 
     # For teachers: show editor by default, show preview only when preview=true
     if is_teacher and not is_preview:
@@ -95,7 +96,7 @@ def api_archive_quiz(quiz_id):
     quiz.is_archived = True
     db.session.commit()
 
-    return jsonify({'success': True, 'message': 'Kuis berhasil diarsipkan'})
+    return jsonify({'success': True, 'message': t('quiz.messages.quiz_archived')})
 
 
 @quiz_bp.route('/quiz/<int:quiz_id>/restore', methods=['POST'])
@@ -107,7 +108,7 @@ def api_restore_quiz(quiz_id):
     quiz.is_archived = False
     db.session.commit()
 
-    return jsonify({'success': True, 'message': 'Kuis berhasil dipulihkan'})
+    return jsonify({'success': True, 'message': t('quiz.messages.quiz_restored')})
 
 
 @quiz_bp.route('/quiz/<int:quiz_id>', methods=['DELETE'])
@@ -119,27 +120,27 @@ def api_delete_quiz(quiz_id):
     quiz.is_trashed = True
     quiz.trashed_at = _trash_now()
     db.session.commit()
-    return jsonify({'success': True, 'message': 'Kuis dipindahkan ke Ruang TPS'})
+    return jsonify({'success': True, 'message': t('quiz.messages.quiz_moved_to_trash')})
 
 
 # --- Helper Functions ---
 
 def get_quiz_or_abort(quiz_id, check_teacher=True):
     quiz = db.session.get(Quiz, quiz_id)
-    if not quiz: abort(404, description="Kuis tidak ditemukan.")
+    if not quiz: abort(404, description=t('quiz.messages.quiz_not_found'))
     school_id = get_school_id_or_abort()
     verify_course_in_school(quiz.course, school_id)
     if check_teacher and quiz.course.teacher_id != current_user.id:
-        abort(403, description="Anda tidak memiliki akses ke kuis ini.")
+        abort(403, description=t('quiz.messages.no_access_to_quiz'))
     return quiz
 
 def get_question_or_abort(question_id, check_teacher=True):
     question = db.session.get(Question, question_id)
-    if not question: abort(404, description="Pertanyaan tidak ditemukan.")
+    if not question: abort(404, description=t('quiz.messages.question_not_found'))
     school_id = get_school_id_or_abort()
     verify_course_in_school(question.quiz.course, school_id)
     if check_teacher and question.quiz.course.teacher_id != current_user.id:
-        abort(403, description="Anda tidak memiliki akses ke pertanyaan ini.")
+        abort(403, description=t('quiz.messages.no_access_to_question'))
     return question
 
 def parse_matching_pair(option_text):
@@ -160,17 +161,17 @@ def get_matching_pairs(question):
 def api_create_quiz(course_id):
     allowed_roles = [UserRole.GURU, UserRole.ADMIN, UserRole.SUPER_ADMIN]
     if current_user.role not in allowed_roles:
-        return jsonify({'success': False, 'message': 'Hanya guru yang dapat membuat kuis'}), 403
+        return jsonify({'success': False, 'message': t('quiz.messages.teacher_only_create_quiz')}), 403
 
     course = db.session.get(Course, course_id)
     if not course:
-        return jsonify({'success': False, 'message': 'Mata pelajaran tidak ditemukan'}), 404
+        return jsonify({'success': False, 'message': t('messages.course_not_found')}), 404
 
     school_id = get_school_id_or_abort()
     verify_course_in_school(course, school_id)
 
     if course.teacher_id != current_user.id and current_user.role not in [UserRole.ADMIN, UserRole.SUPER_ADMIN]:
-        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
+        return jsonify({'success': False, 'message': t('messages.no_permission')}), 403
 
     data = request.get_json() or {}
     name = sanitize_text(data.get('name', ''), max_len=200) or 'Kuis Tanpa Judul'
@@ -260,19 +261,19 @@ def api_import_quiz_docx(quiz_id):
     quiz = get_quiz_or_abort(quiz_id)
     file = request.files.get('file')
     if not file or not file.filename:
-        return jsonify({'success': False, 'message': 'File Word wajib dipilih.'}), 400
+        return jsonify({'success': False, 'message': t('quiz.messages.word_file_required')}), 400
 
     if not file.filename.lower().endswith('.docx'):
-        return jsonify({'success': False, 'message': 'Gunakan file Word berformat .docx.'}), 400
+        return jsonify({'success': False, 'message': t('quiz.messages.use_docx_format')}), 400
 
     try:
         result = import_questions_from_docx(file, quiz)
     except zipfile.BadZipFile:
-        return jsonify({'success': False, 'message': 'File .docx tidak valid atau rusak.'}), 400
+        return jsonify({'success': False, 'message': t('quiz.messages.invalid_or_corrupt_docx')}), 400
     except Exception as exc:
         db.session.rollback()
         current_app.logger.error('Failed importing quiz docx: %s', exc, exc_info=True)
-        return jsonify({'success': False, 'message': 'Gagal mengimpor file Word.'}), 500
+        return jsonify({'success': False, 'message': t('quiz.messages.failed_import_word')}), 500
 
     status = 200 if result.get('success') else 400
     return jsonify(result), status
@@ -551,9 +552,9 @@ def api_update_submission_score(submission_id):
             db.session.commit()
             return jsonify({'success': True})
         except ValueError:
-            return jsonify({'success': False, 'message': 'Invalid score format'}), 400
+            return jsonify({'success': False, 'message': t('quiz.messages.invalid_score_format')}), 400
     
-    return jsonify({'success': False, 'message': 'Score is required'}), 400
+    return jsonify({'success': False, 'message': t('quiz.messages.score_required')}), 400
 
 @quiz_bp.route('/quiz/<int:quiz_id>/stats', methods=['GET'])
 @login_required
@@ -709,7 +710,7 @@ def api_update_quiz_settings(quiz_id):
         val = str(value or '').strip()
         quiz.quiz_password = val if val else None
     else:
-        return jsonify({'success': False, 'message': 'Unknown field'}), 400
+        return jsonify({'success': False, 'message': t('quiz.messages.unknown_field')}), 400
 
     db.session.commit()
     return jsonify({'success': True})
@@ -726,7 +727,7 @@ def api_verify_quiz_password(quiz_id):
     data = request.get_json() or {}
     entered = str(data.get('password', '')).strip()
     if quiz.quiz_password and entered != quiz.quiz_password:
-        return jsonify({'success': False, 'message': 'Password salah'}), 403
+        return jsonify({'success': False, 'message': t('auth.messages.wrong_password')}), 403
     return jsonify({'success': True})
 
 
@@ -771,11 +772,11 @@ def api_update_upload_settings(question_id):
 def api_upload_question_image(question_id):
     question = get_question_or_abort(question_id)
     if 'image' not in request.files:
-        return jsonify({'success': False, 'message': 'Tidak ada file'}), 400
+        return jsonify({'success': False, 'message': t('quiz.messages.no_file')}), 400
     
     file = request.files['image']
     if file.filename == '':
-        return jsonify({'success': False, 'message': 'Tidak ada file dipilih'}), 400
+        return jsonify({'success': False, 'message': t('quiz.messages.no_file_selected')}), 400
     
     if file:
         filename = secure_filename(f"q_{question.id}_{file.filename}")
@@ -815,19 +816,19 @@ def api_remove_question_image(question_id):
 def api_submit_quiz(quiz_id):
     quiz = db.session.get(Quiz, quiz_id)
     if not quiz:
-        abort(404, description="Kuis tidak ditemukan.")
+        abort(404, description=t('quiz.messages.quiz_not_found'))
 
     school_id = get_school_id_or_abort()
     verify_course_in_school(quiz.course, school_id)
 
     if quiz.status != QuizStatus.PUBLISHED:
-        return jsonify({'success': False, 'message': 'Kuis ini belum dipublikasikan.'}), 403
+        return jsonify({'success': False, 'message': t('quiz.messages.quiz_not_yet_published')}), 403
 
     # Check max attempts
     if quiz.max_attempts > 0:
         attempt_count = QuizSubmission.query.filter_by(quiz_id=quiz.id, user_id=current_user.id).count()
         if attempt_count >= quiz.max_attempts:
-            return jsonify({'success': False, 'message': f'Batas pengerjaan ({quiz.max_attempts}x) telah tercapai.'}), 409
+            return jsonify({'success': False, 'message': t('quiz.messages.max_attempts_reached', quiz.max_attempts)}), 409
 
     # Handle both JSON and FormData
     if request.is_json:
@@ -839,7 +840,7 @@ def api_submit_quiz(quiz_id):
             answers_list = json.loads(request.form.get('answers', '[]'))
         except (json.JSONDecodeError, ValueError) as e:
             logger.error(f"Invalid JSON in quiz submission {quiz_id}: {e}", exc_info=True)
-            return jsonify({'success': False, 'message': 'Format jawaban tidak valid'}), 400
+            return jsonify({'success': False, 'message': t('quiz.messages.invalid_answer_format')}), 400
 
     # Create submission
     submission = QuizSubmission(
@@ -956,4 +957,4 @@ def api_submit_quiz(quiz_id):
 
     db.session.commit()
 
-    return jsonify({'success': True, 'score': submission.score, 'message': 'Kuis berhasil dikirim.'})
+    return jsonify({'success': True, 'score': submission.score, 'message': t('quiz.messages.quiz_submitted')})
