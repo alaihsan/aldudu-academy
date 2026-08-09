@@ -22,7 +22,7 @@
                     </div>
                     <div>
                         <p class="text-xs font-black uppercase tracking-[0.18em] text-emerald-700">Aldudu Academy</p>
-                        <h1 class="text-2xl sm:text-3xl font-black text-slate-950">Belajar terasa ringan</h1>
+                        <h1 class="text-2xl sm:text-3xl font-black text-slate-950" data-i18n="home.tagline">Belajar terasa ringan</h1>
                     </div>
                 </div>
 
@@ -47,43 +47,43 @@
                 <div class="grid grid-cols-3 gap-3">
                     <div class="ald-stat-pill bg-white/85">
                         <span class="text-xl font-black text-emerald-600">5m</span>
-                        <span class="text-[10px] font-black uppercase tracking-wider text-slate-500">Mulai</span>
+                        <span class="text-[10px] font-black uppercase tracking-wider text-slate-500" data-i18n="home.stat_start">Mulai</span>
                     </div>
                     <div class="ald-stat-pill bg-white/85">
                         <span class="text-xl font-black text-amber-500">XP</span>
-                        <span class="text-[10px] font-black uppercase tracking-wider text-slate-500">Progres</span>
+                        <span class="text-[10px] font-black uppercase tracking-wider text-slate-500" data-i18n="home.stat_progress">Progres</span>
                     </div>
                     <div class="ald-stat-pill bg-white/85">
                         <span class="text-xl font-black text-sky-600">✓</span>
-                        <span class="text-[10px] font-black uppercase tracking-wider text-slate-500">Tuntas</span>
+                        <span class="text-[10px] font-black uppercase tracking-wider text-slate-500" data-i18n="home.stat_complete">Tuntas</span>
                     </div>
                 </div>
             </section>
 
             <section class="ald-auth-panel">
                 <div class="text-center mb-7">
-                    <p class="text-xs font-black uppercase tracking-[0.22em] text-emerald-600 mb-2">Masuk kelas</p>
-                    <h2 class="text-3xl sm:text-4xl font-black text-slate-950 tracking-tight">Siap lanjut?</h2>
-                    <p class="text-slate-500 font-semibold mt-2">Gunakan akun sekolahmu untuk masuk.</p>
+                    <p class="text-xs font-black uppercase tracking-[0.22em] text-emerald-600 mb-2" data-i18n="home.login_eyebrow">Masuk kelas</p>
+                    <h2 class="text-3xl sm:text-4xl font-black text-slate-950 tracking-tight" data-i18n="home.login_heading">Siap lanjut?</h2>
+                    <p class="text-slate-500 font-semibold mt-2" data-i18n="home.login_subtitle">Gunakan akun sekolahmu untuk masuk.</p>
                 </div>
 
                 <!-- Login Card -->
                 <div id="login-card" class="animate-slide-up">
                     <form id="login-form" class="space-y-4">
                         <div>
-                            <label for="email" class="block text-sm font-black text-slate-700 mb-2">Email atau NIS</label>
-                            <input type="text" id="email" name="email" placeholder="nama@email.com atau NIS" required
+                            <label for="email" class="block text-sm font-black text-slate-700 mb-2" data-i18n="home.email_or_nis_label">Email atau NIS</label>
+                            <input type="text" id="email" name="email" placeholder="nama@email.com atau NIS" data-i18n-placeholder="home.email_or_nis_placeholder" required
                                 class="ald-auth-input">
                         </div>
 
                         <div>
-                            <label for="password" class="block text-sm font-black text-slate-700 mb-2">Password</label>
-                            <input type="password" id="password" name="password" placeholder="Password akun" required
+                            <label for="password" class="block text-sm font-black text-slate-700 mb-2" data-i18n="auth.password">Password</label>
+                            <input type="password" id="password" name="password" placeholder="Password akun" data-i18n-placeholder="home.password_placeholder" required
                                 class="ald-auth-input">
                         </div>
 
                         <div class="flex justify-end">
-                            <a href="/forgot-password" class="text-xs text-emerald-600 hover:text-emerald-700 font-black hover:underline transition-colors">Lupa password?</a>
+                            <a href="/forgot-password" class="text-xs text-emerald-600 hover:text-emerald-700 font-black hover:underline transition-colors" data-i18n="auth.forgot_password">Lupa password?</a>
                         </div>
 
                         <div id="login-error" class="hidden p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm"></div>
@@ -91,7 +91,7 @@
                         <button type="submit" id="login-btn"
                             class="btn-duo btn-duo-primary w-full h-14 text-lg">
                             <span class="btn-text inline-flex items-center justify-center gap-2">
-                                <span>MASUK SEKARANG</span>
+                                <span data-i18n="home.login_button">MASUK SEKARANG</span>
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                                 </svg>
@@ -105,7 +105,7 @@
                         </button>
                     </form>
                     <div class="mt-6 text-center">
-                        <p class="text-sm text-slate-500 font-semibold">Belum punya akun? <a href="#" onclick="toggleAuthMode(event, 'register')" class="text-emerald-600 font-black hover:underline">Daftar sekarang</a></p>
+                        <p class="text-sm text-slate-500 font-semibold"><span data-i18n="auth.dont_have_account">Belum punya akun?</span> <a href="#" onclick="toggleAuthMode(event, 'register')" class="text-emerald-600 font-black hover:underline" data-i18n="home.register_now_link">Daftar sekarang</a></p>
                     </div>
                 </div>
 
@@ -113,36 +113,36 @@
                 <div id="register-card" class="hidden animate-slide-up">
                     <form id="register-form" class="space-y-3">
                         <div>
-                            <label class="block text-sm font-black text-slate-700 mb-1">Nama Lengkap</label>
+                            <label class="block text-sm font-black text-slate-700 mb-1" data-i18n="settings.full_name_label">Nama Lengkap</label>
                             <input type="text" name="name" required class="ald-auth-input ald-auth-input-compact">
                         </div>
                         <div>
-                            <label class="block text-sm font-black text-slate-700 mb-1">Email</label>
+                            <label class="block text-sm font-black text-slate-700 mb-1" data-i18n="auth.email">Email</label>
                             <input type="email" name="email" required class="ald-auth-input ald-auth-input-compact">
                         </div>
                         <div>
-                            <label class="block text-sm font-black text-slate-700 mb-1">Password</label>
+                            <label class="block text-sm font-black text-slate-700 mb-1" data-i18n="auth.password">Password</label>
                             <input type="password" name="password" required class="ald-auth-input ald-auth-input-compact">
                         </div>
                         <div>
-                            <label class="block text-sm font-black text-slate-700 mb-1">Daftar Sebagai</label>
+                            <label class="block text-sm font-black text-slate-700 mb-1" data-i18n="home.register_as_label">Daftar Sebagai</label>
                             <select name="role" class="ald-auth-input ald-auth-input-compact bg-white font-black">
-                                <option value="murid">Murid (Siswa)</option>
-                                <option value="guru">Guru (Pengajar)</option>
+                                <option value="murid" data-i18n="home.role_student_option">Murid (Siswa)</option>
+                                <option value="guru" data-i18n="home.role_teacher_option">Guru (Pengajar)</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-black text-slate-700 mb-1">Pilih Sekolah</label>
+                            <label class="block text-sm font-black text-slate-700 mb-1" data-i18n="home.select_school_label">Pilih Sekolah</label>
                             <select name="school_id" id="register-school" class="ald-auth-input ald-auth-input-compact bg-white font-black" required>
-                                <option value="">Pilih sekolah Anda...</option>
+                                <option value="" data-i18n="home.select_school_placeholder">Pilih sekolah Anda...</option>
                             </select>
-                            <p class="text-xs text-slate-400 mt-1 font-semibold">Pastikan memilih sekolah yang benar.</p>
+                            <p class="text-xs text-slate-400 mt-1 font-semibold" data-i18n="home.select_school_hint">Pastikan memilih sekolah yang benar.</p>
                         </div>
                         <div id="register-error" class="hidden p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs"></div>
-                        <button type="submit" class="ald-login-button">Daftar Akun</button>
+                        <button type="submit" class="ald-login-button" data-i18n="home.register_button">Daftar Akun</button>
                     </form>
                     <div class="mt-5 text-center">
-                        <p class="text-sm text-slate-500 font-semibold">Sudah punya akun? <a href="#" onclick="toggleAuthMode(event, 'login')" class="text-emerald-600 font-black hover:underline">Masuk di sini</a></p>
+                        <p class="text-sm text-slate-500 font-semibold"><span data-i18n="auth.already_have_account">Sudah punya akun?</span> <a href="#" onclick="toggleAuthMode(event, 'login')" class="text-emerald-600 font-black hover:underline" data-i18n="home.login_here_link">Masuk di sini</a></p>
                     </div>
                 </div>
             </section>
@@ -178,7 +178,7 @@
             <!-- Tahun Ajaran -->
             <div class="ml-auto h-full flex items-center">
                 <div class="flex items-center space-x-3 bg-[#f7f7f7] dark:bg-gray-800 px-6 py-3 rounded-l-2xl border-y-2 border-l-2 border-slate-100 dark:border-gray-800 shadow-sm">
-                    <span class="text-[11px] font-black text-[#afafaf] uppercase tracking-[0.15em]">Tahun Ajaran</span>
+                    <span class="text-[11px] font-black text-[#afafaf] uppercase tracking-[0.15em]" data-i18n="course.academic_year_label">Tahun Ajaran</span>
                     <span class="text-sm font-black text-[#4b4b4b] dark:text-white">2025/2026</span>
                 </div>
             </div>
@@ -191,7 +191,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     <div class="md:col-span-2 bg-[#1cb0f6] rounded-[2.5rem] p-10 text-white relative overflow-hidden shadow-[0_8px_0_#1899d6]">
                         <div class="relative z-10">
-                            <h1 id="welcome-title" class="text-3xl sm:text-4xl font-black mb-4">Selamat Datang! 👋</h1>
+                            <h1 id="welcome-title" class="text-3xl sm:text-4xl font-black mb-4" data-i18n="home.welcome_title">Selamat Datang! 👋</h1>
                             <p id="dynamic-quote" class="text-white/90 max-w-lg text-lg font-bold leading-relaxed">
                                 <span class="typing-text">Lanjutkan perjalanan belajarmu hari ini. Kamu memiliki beberapa aktivitas yang menunggu.</span>
                             </p>
@@ -200,7 +200,7 @@
                     
                     <div class="card-duo flex flex-col justify-between">
                         <div class="flex items-center justify-between mb-4">
-                            <span class="text-xs font-black text-[#afafaf] uppercase tracking-[0.2em]">Ringkasan</span>
+                            <span class="text-xs font-black text-[#afafaf] uppercase tracking-[0.2em]" data-i18n="home.summary_label">Ringkasan</span>
                             <div class="p-3 bg-[#ddf4ff] text-[#1cb0f6] rounded-2xl">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
@@ -210,11 +210,11 @@
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <p id="total-classes" class="text-4xl font-black text-[#4b4b4b] dark:text-white">0</p>
-                                <p class="text-[11px] text-[#afafaf] font-black uppercase tracking-wider mt-1">Kelas</p>
+                                <p class="text-[11px] text-[#afafaf] font-black uppercase tracking-wider mt-1" data-i18n="common.courses">Kelas</p>
                             </div>
                             <div>
                                 <p id="total-students" class="text-4xl font-black text-[#4b4b4b] dark:text-white">0</p>
-                                <p class="text-[11px] text-[#afafaf] font-black uppercase tracking-wider mt-1">Murid</p>
+                                <p class="text-[11px] text-[#afafaf] font-black uppercase tracking-wider mt-1" data-i18n="user.student">Murid</p>
                             </div>
                         </div>
                     </div>
@@ -230,14 +230,14 @@
                                 </svg>
                             </div>
                             <div>
-                                <h2 class="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100">Gabung Kelas Baru</h2>
-                                <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Gunakan kode kelas dari gurumu.</p>
+                                <h2 class="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100" data-i18n="home.join_new_class_heading">Gabung Kelas Baru</h2>
+                                <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400" data-i18n="home.join_class_subtitle">Gunakan kode kelas dari gurumu.</p>
                             </div>
                         </div>
                         <form id="enroll-form" class="flex flex-col sm:flex-row items-stretch sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
-                            <input type="text" id="class-code-input" placeholder="KODE-KELAS"
+                            <input type="text" id="class-code-input" placeholder="KODE-KELAS" data-i18n-placeholder="home.class_code_input_placeholder"
                                 class="flex-1 px-5 py-4 bg-gray-50 dark:bg-gray-700 border-none rounded-2xl focus:ring-2 focus:ring-primary-500 text-base sm:text-lg font-bold tracking-widest placeholder:font-normal placeholder:tracking-normal text-gray-900 dark:text-gray-100">
-                            <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white px-8 py-4 rounded-2xl font-bold transition-all shadow-lg shadow-primary-200 dark:shadow-primary-900/50 active:scale-95">
+                            <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white px-8 py-4 rounded-2xl font-bold transition-all shadow-lg shadow-primary-200 dark:shadow-primary-900/50 active:scale-95" data-i18n="home.join_button">
                                 Gabung
                             </button>
                         </form>
@@ -248,8 +248,8 @@
                 <section>
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
                         <div>
-                            <h2 class="text-2xl sm:text-3xl font-black text-gray-900 dark:text-gray-100 tracking-tight">Kelas Saya</h2>
-                            <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1 font-medium">Kelola dan pantau aktivitas belajar Anda.</p>
+                            <h2 class="text-2xl sm:text-3xl font-black text-gray-900 dark:text-gray-100 tracking-tight" data-i18n="nav.my_courses">Kelas Saya</h2>
+                            <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1 font-medium" data-i18n="home.my_classes_subtitle">Kelola dan pantau aktivitas belajar Anda.</p>
                         </div>
 
                         <div class="flex flex-wrap items-center gap-3">
@@ -258,17 +258,17 @@
                                 <button onclick="Dashboard.setSortMode('manual')" id="sort-manual"
                                     class="sort-btn px-3 sm:px-4 py-2 rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-[0.1em] sm:tracking-[0.15em] transition-all flex items-center space-x-1.5 sm:space-x-2 group shrink-0">
                                     <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/></svg>
-                                    <span>Manual</span>
+                                    <span data-i18n="home.sort_manual">Manual</span>
                                 </button>
                                 <button onclick="Dashboard.setSortMode('asc')" id="sort-asc"
                                     class="sort-btn px-3 sm:px-4 py-2 rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-[0.1em] sm:tracking-[0.15em] transition-all flex items-center space-x-1.5 sm:space-x-2 group shrink-0">
                                     <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"/></svg>
-                                    <span>A-Z</span>
+                                    <span data-i18n="home.sort_az">A-Z</span>
                                 </button>
                                 <button onclick="Dashboard.setSortMode('desc')" id="sort-desc"
                                     class="sort-btn px-3 sm:px-4 py-2 rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-[0.1em] sm:tracking-[0.15em] transition-all flex items-center space-x-1.5 sm:space-x-2 group shrink-0">
                                     <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"/></svg>
-                                    <span>Z-A</span>
+                                    <span data-i18n="home.sort_za">Z-A</span>
                                 </button>
                             </div>
 
@@ -276,13 +276,13 @@
                                 <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
                                 </svg>
-                                <span>Buat Kelas</span>
+                                <span data-i18n="home.create_class_button">Buat Kelas</span>
                             </button>
                             <a href="#" class="archive-btn px-6 py-3 bg-amber-100 text-amber-700 rounded-2xl font-bold text-xs sm:text-sm hover:bg-amber-200 transition-all flex items-center space-x-2 shadow-sm shrink-0" data-course-id="">
                                 <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
                                 </svg>
-                                <span>Arsip</span>
+                                <span data-i18n="home.archive_button">Arsip</span>
                             </a>
                         </div>
                     </div>
@@ -298,8 +298,8 @@
                                         </svg>
                                     </div>
                                     <div>
-                                        <h3 class="text-xl font-black">Pilih Kelas</h3>
-                                        <p class="text-amber-100 text-sm mt-0.5">Lihat arsip kelas yang diinginkan</p>
+                                        <h3 class="text-xl font-black" data-i18n="home.select_class_modal_title">Pilih Kelas</h3>
+                                        <p class="text-amber-100 text-sm mt-0.5" data-i18n="home.select_class_modal_subtitle">Lihat arsip kelas yang diinginkan</p>
                                     </div>
                                 </div>
                             </div>
@@ -307,7 +307,7 @@
                                 <div id="archive-class-list" class="space-y-2 max-h-96 overflow-y-auto">
                                     <!-- Class list will be populated here -->
                                 </div>
-                                <button onclick="closeArchiveModal()" class="w-full mt-4 px-5 py-3.5 bg-gray-100 text-gray-700 rounded-2xl font-bold hover:bg-gray-200 transition-all">
+                                <button onclick="closeArchiveModal()" class="w-full mt-4 px-5 py-3.5 bg-gray-100 text-gray-700 rounded-2xl font-bold hover:bg-gray-200 transition-all" data-i18n="common.cancel">
                                     Batal
                                 </button>
                             </div>
@@ -334,9 +334,9 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
                             </svg>
                         </div>
-                        <h3 class="text-2xl font-black text-[#4b4b4b] mb-3">Belum ada kelas</h3>
-                        <p class="text-[#afafaf] font-bold mb-10 max-w-sm mx-auto">Mulai perjalanan belajarmu dengan bergabung atau membuat kelas pertama.</p>
-                        <button id="empty-create-btn" class="btn-duo btn-duo-primary h-16 px-12 text-lg">
+                        <h3 class="text-2xl font-black text-[#4b4b4b] mb-3" data-i18n="home.no_classes_title">Belum ada kelas</h3>
+                        <p class="text-[#afafaf] font-bold mb-10 max-w-sm mx-auto" data-i18n="home.no_classes_subtitle">Mulai perjalanan belajarmu dengan bergabung atau membuat kelas pertama.</p>
+                        <button id="empty-create-btn" class="btn-duo btn-duo-primary h-16 px-12 text-lg" data-i18n="home.create_first_class_button">
                             BUAT KELAS PERTAMA
                         </button>
                     </div>
@@ -352,18 +352,18 @@
         <form id="add-class-form">
             <div class="bg-[#1cb0f6] px-8 py-8 text-white relative overflow-hidden">
                 <div class="relative z-10">
-                    <h3 class="text-2xl font-black">Buat Kelas Baru</h3>
-                    <p class="text-white/80 text-sm font-bold mt-1">Buat identitas unik untuk kelasmu.</p>
+                    <h3 class="text-2xl font-black" data-i18n="course.create_course">Buat Kelas Baru</h3>
+                    <p class="text-white/80 text-sm font-bold mt-1" data-i18n="home.create_class_modal_subtitle">Buat identitas unik untuk kelasmu.</p>
                 </div>
             </div>
             <div class="p-8 space-y-6">
                 <div>
-                    <label for="course-name" class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2">Nama Kelas</label>
-                    <input type="text" id="course-name" name="course-name" required placeholder="Contoh: Kimia XII - IPA 1" 
+                    <label for="course-name" class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2" data-i18n="course.course_name">Nama Kelas</label>
+                    <input type="text" id="course-name" name="course-name" required placeholder="Contoh: Kimia XII - IPA 1" data-i18n-placeholder="home.course_name_placeholder"
                         class="w-full px-6 py-4 bg-[#f7f7f7] border-2 border-[#e5e5e5] rounded-2xl focus:border-[#1cb0f6] outline-none transition-all font-black text-[#4b4b4b]">
                 </div>
                 <div>
-                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-3">Pilih Warna Kelas</label>
+                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-3" data-i18n="home.choose_color_label">Pilih Warna Kelas</label>
                     <div class="flex flex-wrap gap-3">
                         <input type="hidden" id="add-color-input" name="color" value="#58cc02">
                         <button type="button" onclick="Dashboard.selectColor(this, '#58cc02')" class="color-dot w-10 h-10 rounded-full bg-[#58cc02] border-4 border-white shadow-md active:scale-95 transition-all ring-2 ring-[#58cc02]"></button>
@@ -376,8 +376,8 @@
                 <div id="add-modal-error" class="hidden mt-2 text-[#ff4b4b] text-sm font-black"></div>
             </div>
             <div class="px-8 pb-8 flex flex-col gap-3">
-                <button type="submit" class="btn-duo btn-duo-primary h-14 text-sm">SIMPAN KELAS</button>
-                <button type="button" id="add-cancel-button" class="btn-duo btn-duo-ghost h-14 text-sm">BATAL</button>
+                <button type="submit" class="btn-duo btn-duo-primary h-14 text-sm" data-i18n="home.save_class_button">SIMPAN KELAS</button>
+                <button type="button" id="add-cancel-button" class="btn-duo btn-duo-ghost h-14 text-sm" data-i18n="course.delete_modal_cancel">BATAL</button>
             </div>
         </form>
     </div>
@@ -392,12 +392,12 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
                 </svg>
             </div>
-            <h3 class="text-2xl font-black text-[#4b4b4b] mb-2">Kelas Siap! 🚀</h3>
-            <p class="text-[#afafaf] font-bold mb-8">Bagikan kode ini kepada muridmu.</p>
+            <h3 class="text-2xl font-black text-[#4b4b4b] mb-2" data-i18n="home.class_ready_title">Kelas Siap! 🚀</h3>
+            <p class="text-[#afafaf] font-bold mb-8" data-i18n="home.share_code_subtitle">Bagikan kode ini kepada muridmu.</p>
             <div id="generated-class-code" class="bg-[#f7f7f7] border-2 border-[#e5e5e5] rounded-2xl p-6 mb-8">
                 <span class="text-3xl font-mono font-black text-[#1cb0f6] tracking-[0.2em]"></span>
             </div>
-            <button type="button" id="close-code-modal-button" class="btn-duo btn-duo-primary w-full h-14 text-sm">
+            <button type="button" id="close-code-modal-button" class="btn-duo btn-duo-primary w-full h-14 text-sm" data-i18n="home.done_button">
                 SELESAI
             </button>
         </div>
@@ -409,17 +409,17 @@
     <div class="card-duo w-full max-w-md overflow-hidden animate-slide-up p-0 border-none shadow-2xl">
         <form id="edit-class-form">
             <div class="bg-[#ff9600] px-8 py-8 text-white">
-                <h3 class="text-2xl font-black">Edit Kelas</h3>
-                <p class="text-white/80 text-sm font-bold mt-1">Sesuaikan kembali detail kelasmu.</p>
+                <h3 class="text-2xl font-black" data-i18n="home.edit_class_title">Edit Kelas</h3>
+                <p class="text-white/80 text-sm font-bold mt-1" data-i18n="home.edit_class_subtitle">Sesuaikan kembali detail kelasmu.</p>
             </div>
             <div class="p-8 space-y-6">
                 <div>
-                    <label for="edit-course-name" class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2">Nama Kelas</label>
-                    <input type="text" id="edit-course-name" 
+                    <label for="edit-course-name" class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2" data-i18n="course.course_name">Nama Kelas</label>
+                    <input type="text" id="edit-course-name"
                         class="w-full px-6 py-4 bg-[#f7f7f7] border-2 border-[#e5e5e5] rounded-2xl focus:border-[#ff9600] outline-none transition-all font-black text-[#4b4b4b]">
                 </div>
                 <div>
-                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-3">Warna Latar</label>
+                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-3" data-i18n="home.background_color_label">Warna Latar</label>
                     <div class="flex flex-wrap gap-3">
                         <input type="hidden" id="edit-color-input" name="color" value="#58cc02">
                         <button type="button" data-color="#58cc02" onclick="Dashboard.selectColor(this, '#58cc02')" class="color-dot w-10 h-10 rounded-full bg-[#58cc02] border-4 border-white shadow-sm active:scale-95 transition-all"></button>
@@ -432,8 +432,8 @@
                 <div id="edit-modal-error" class="hidden text-[#ff4b4b] text-sm font-black"></div>
             </div>
             <div class="px-8 pb-8 flex flex-col gap-3">
-                <button type="submit" class="btn-duo btn-duo-yellow h-14 text-sm text-white">SIMPAN PERUBAHAN</button>
-                <button type="button" id="edit-cancel-button" class="btn-duo btn-duo-ghost h-14 text-sm">BATAL</button>
+                <button type="submit" class="btn-duo btn-duo-yellow h-14 text-sm text-white" data-i18n="settings.save_changes_button">SIMPAN PERUBAHAN</button>
+                <button type="button" id="edit-cancel-button" class="btn-duo btn-duo-ghost h-14 text-sm" data-i18n="course.delete_modal_cancel">BATAL</button>
             </div>
         </form>
     </div>

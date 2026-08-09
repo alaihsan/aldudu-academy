@@ -274,7 +274,12 @@ var Dashboard = {
 
         const user = this.state.currentUser;
         if (this.elements.userNameSidebar) this.elements.userNameSidebar.textContent = user.name;
-        if (this.elements.welcomeTitle) this.elements.welcomeTitle.textContent = `Selamat Datang, ${user.name.split(' ')[0]}!`;
+        if (this.elements.welcomeTitle) {
+            const template = window.LanguageManager
+                ? window.LanguageManager.t('home.welcome_with_name', 'Selamat Datang, {0}!')
+                : 'Selamat Datang, {0}!';
+            this.elements.welcomeTitle.textContent = template.replace('{0}', user.name.split(' ')[0]);
+        }
         
         if (this.state.isTeacher) {
             this.elements.teacherNav?.classList.remove('hidden');
