@@ -50,9 +50,9 @@
                     {% if quiz.status.value == 'published' %} bg-green-100 text-green-600
                     {% elif quiz.status.value == 'unpublished' %} bg-red-100 text-red-600
                     {% else %} bg-amber-100 text-amber-600 {% endif %}">
-                    {% if quiz.status.value == 'published' %} Publikasikan
-                    {% elif quiz.status.value == 'unpublished' %} Tidak Diterbitkan
-                    {% else %} Draft {% endif %}
+                    {% if quiz.status.value == 'published' %} <span data-i18n="quiz.status_published">Publikasikan</span>
+                    {% elif quiz.status.value == 'unpublished' %} <span data-i18n="quiz.status_unpublished">Tidak Diterbitkan</span>
+                    {% else %} <span data-i18n="quiz.status_draft">Draft</span> {% endif %}
                 </div>
             </div>
         </div>
@@ -65,7 +65,7 @@
             </a>
             <div class="relative">
                 <button onclick="togglePublishDropdown()" class="flex items-center space-x-2 bg-primary-600 hover:bg-primary-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-primary-100 transition-all active:scale-95" id="publish-main-btn">
-                    <span>Ubah Status</span>
+                    <span data-i18n="quiz.change_status_button">Ubah Status</span>
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"/></svg>
                 </button>
 
@@ -75,8 +75,8 @@
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                         </div>
                         <div>
-                            <p class="font-bold text-gray-800 text-sm">Publikasikan</p>
-                            <p class="text-[10px] text-gray-400">Terlihat oleh murid</p>
+                            <p class="font-bold text-gray-800 text-sm" data-i18n="quiz.status_published">Publikasikan</p>
+                            <p class="text-[10px] text-gray-400" data-i18n="quiz.visible_to_students_desc">Terlihat oleh murid</p>
                         </div>
                     </button>
                     <button onclick="setQuizStatus('unpublished')" class="publish-item group">
@@ -84,8 +84,8 @@
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>
                         </div>
                         <div>
-                            <p class="font-bold text-gray-800 text-sm">Tidak Diterbitkan</p>
-                            <p class="text-[10px] text-gray-400">Menyembunyikan kuis</p>
+                            <p class="font-bold text-gray-800 text-sm" data-i18n="quiz.status_unpublished">Tidak Diterbitkan</p>
+                            <p class="text-[10px] text-gray-400" data-i18n="quiz.hides_quiz_desc">Menyembunyikan kuis</p>
                         </div>
                     </button>
                     <button onclick="setQuizStatus('draft')" class="publish-item group border-t border-gray-50">
@@ -93,8 +93,8 @@
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                         </div>
                         <div>
-                            <p class="font-bold text-gray-800 text-sm">Simpan Draft</p>
-                            <p class="text-[10px] text-gray-400">Tahap pengerjaan</p>
+                            <p class="font-bold text-gray-800 text-sm" data-i18n="quiz.save_draft_button">Simpan Draft</p>
+                            <p class="text-[10px] text-gray-400" data-i18n="quiz.draft_stage_desc">Tahap pengerjaan</p>
                         </div>
                     </button>
                 </div>
@@ -103,9 +103,9 @@
     </div>
     <!-- Tabs -->
     <div class="flex justify-center border-t border-gray-100">
-        <button onclick="switchMode('questions')" id="tab-questions" class="nav-tab active">Pertanyaan</button>
-        <button onclick="switchMode('results')" id="tab-results" class="nav-tab">Jawaban</button>
-        <button onclick="switchMode('settings')" id="tab-settings" class="nav-tab">Setelan</button>
+        <button onclick="switchMode('questions')" id="tab-questions" class="nav-tab active" data-i18n="quiz.questions">Pertanyaan</button>
+        <button onclick="switchMode('results')" id="tab-results" class="nav-tab" data-i18n="quiz.answers_tab">Jawaban</button>
+        <button onclick="switchMode('settings')" id="tab-settings" class="nav-tab" data-i18n="quiz.settings_tab">Setelan</button>
     </div>
 </div>
 
@@ -157,27 +157,27 @@
         <div class="form-card p-8">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8 text-center md:text-left">
                 <div class="md:border-r border-gray-100 pr-4">
-                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Total Jawaban</p>
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1" data-i18n="quiz.total_answers_label">Total Jawaban</p>
                     <h2 class="text-3xl font-black text-gray-800" id="total-responses">0</h2>
                 </div>
                 <div class="md:border-r border-gray-100 px-4">
-                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Rata-rata Skor</p>
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1" data-i18n="quiz.average_score_label">Rata-rata Skor</p>
                     <h2 class="text-3xl font-black text-primary-600" id="avg-score">0%</h2>
                 </div>
                 <div class="md:border-r border-gray-100 px-4">
-                    <p class="text-[10px] font-black text-green-400 uppercase tracking-widest mb-1">Nilai Tertinggi</p>
+                    <p class="text-[10px] font-black text-green-400 uppercase tracking-widest mb-1" data-i18n="quiz.highest_score_label">Nilai Tertinggi</p>
                     <h2 class="text-3xl font-black text-green-600" id="max-score">0%</h2>
                 </div>
                 <div class="pl-4">
-                    <p class="text-[10px] font-black text-red-400 uppercase tracking-widest mb-1">Nilai Terendah</p>
+                    <p class="text-[10px] font-black text-red-400 uppercase tracking-widest mb-1" data-i18n="quiz.lowest_score_label">Nilai Terendah</p>
                     <h2 class="text-3xl font-black text-red-600" id="min-score">0%</h2>
                 </div>
             </div>
-            <div id="no-responses-view" class="text-center py-10 text-gray-400">Belum ada jawaban.</div>
+            <div id="no-responses-view" class="text-center py-10 text-gray-400" data-i18n="quiz.no_answers_yet">Belum ada jawaban.</div>
         </div>
         <div id="question-breakdown" class="space-y-4"></div>
         <div id="student-results-list" class="form-card overflow-hidden hidden">
-            <div class="p-6 bg-gray-50 border-b border-gray-100 font-bold text-gray-700">Daftar Nilai Murid</div>
+            <div class="p-6 bg-gray-50 border-b border-gray-100 font-bold text-gray-700" data-i18n="quiz.student_scores_list_label">Daftar Nilai Murid</div>
             <div class="divide-y divide-gray-100" id="student-rows"></div>
         </div>
     </div>
@@ -186,7 +186,7 @@
 <!-- Theme Panel -->
 <div id="theme-panel">
     <div class="flex items-center justify-between mb-8 pb-4 border-b">
-        <h3 class="font-black text-gray-800 uppercase tracking-tighter text-sm">Opsi Tema</h3>
+        <h3 class="font-black text-gray-800 uppercase tracking-tighter text-sm" data-i18n="quiz.theme_options_heading">Opsi Tema</h3>
         <button onclick="toggleThemePanel()" class="p-2 hover:bg-gray-100 rounded-full transition-colors">
             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
@@ -194,16 +194,16 @@
     <div class="space-y-8">
         <!-- Color Picker -->
         <div>
-            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Warna Tema</label>
+            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3" data-i18n="quiz.theme_color_label">Warna Tema</label>
             <input type="color" id="theme-color-input" value="{{ quiz.theme_color or '#673ab7' }}"
                 onchange="updateQuizTheme()" class="w-full h-10 rounded-lg cursor-pointer border-none bg-transparent">
         </div>
 
         <!-- Font Selector -->
         <div>
-            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Font Pertanyaan</label>
+            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3" data-i18n="quiz.question_font_label">Font Pertanyaan</label>
             <select id="font-q-select" onchange="updateQuizTheme()" class="w-full p-2 bg-gray-50 border rounded-lg text-sm font-bold">
-                <option value="Inter" {% if quiz.font_question == 'Inter' %}selected{% endif %}>Standard (Inter)</option>
+                <option value="Inter" {% if quiz.font_question == 'Inter' %}selected{% endif %} data-i18n="quiz.font_standard_label">Standard (Inter)</option>
                 <option value="Roboto" {% if quiz.font_question == 'Roboto' %}selected{% endif %}>Roboto</option>
                 <option value="Poppins" {% if quiz.font_question == 'Poppins' %}selected{% endif %}>Poppins</option>
                 <option value="Merriweather" {% if quiz.font_question == 'Merriweather' %}selected{% endif %}>Merriweather</option>
@@ -212,7 +212,7 @@
 
         <!-- Background Illustration -->
         <div>
-            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Ilustrasi Latar</label>
+            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3" data-i18n="quiz.bg_illustration_label">Ilustrasi Latar</label>
             <div class="grid grid-cols-4 gap-2" id="bg-pattern-grid">
                 {% set patterns = [
                     ('none', 'Tanpa'),
@@ -238,7 +238,7 @@
 
         <!-- Opacity Slider -->
         <div id="opacity-slider-section" class="{% if not quiz.bg_pattern or quiz.bg_pattern == 'none' %}hidden{% endif %}">
-            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Opasitas Latar</label>
+            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3" data-i18n="quiz.bg_opacity_label">Opasitas Latar</label>
             <div class="flex items-center space-x-3">
                 <input type="range" id="bg-opacity-slider" min="0" max="100" value="{{ quiz.bg_opacity or 60 }}"
                     class="flex-1"
@@ -256,8 +256,8 @@
         <div class="form-card p-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <h3 class="font-bold text-gray-800 text-lg">Jadikan ini sebagai kuis</h3>
-                    <p class="text-sm text-gray-500">Tetapkan nilai poin, tetapkan jawaban, dan berikan masukan secara otomatis</p>
+                    <h3 class="font-bold text-gray-800 text-lg" data-i18n="quiz.make_this_a_quiz_label">Jadikan ini sebagai kuis</h3>
+                    <p class="text-sm text-gray-500" data-i18n="quiz.make_quiz_desc">Tetapkan nilai poin, tetapkan jawaban, dan berikan masukan secara otomatis</p>
                 </div>
                 <label class="relative inline-flex items-center cursor-pointer">
                     <input type="checkbox" {% if quiz.is_quiz %}checked{% endif %} class="sr-only peer"
@@ -270,14 +270,14 @@
         <!-- Umum Settings -->
         <div class="form-card overflow-hidden">
             <div class="p-6 border-b border-gray-100 bg-gray-50/30">
-                <h4 class="font-bold text-primary-600 uppercase tracking-widest text-[10px]">Umum</h4>
-                <p class="text-xs text-gray-400">Kelola setelan umum kuis</p>
+                <h4 class="font-bold text-primary-600 uppercase tracking-widest text-[10px]" data-i18n="quiz.general_heading">Umum</h4>
+                <p class="text-xs text-gray-400" data-i18n="quiz.general_desc">Kelola setelan umum kuis</p>
             </div>
             <div class="divide-y divide-gray-100">
                 <div class="p-6 flex items-center justify-between">
                     <div>
-                        <p class="font-medium text-gray-700">Durasi Pengerjaan (Menit)</p>
-                        <p class="text-xs text-gray-400">Isi 0 untuk tanpa batas waktu</p>
+                        <p class="font-medium text-gray-700" data-i18n="quiz.duration_minutes_label">Durasi Pengerjaan (Menit)</p>
+                        <p class="text-xs text-gray-400" data-i18n="quiz.duration_hint">Isi 0 untuk tanpa batas waktu</p>
                     </div>
                     <div class="flex items-center border-b border-primary-500 pb-1">
                         <input type="number" id="quiz-duration" value="{{ quiz.duration }}"
@@ -287,26 +287,26 @@
                 </div>
                 <div class="p-6 flex items-center justify-between">
                     <div>
-                        <p class="font-medium text-gray-700">Kumpulkan alamat email</p>
-                        <p class="text-xs text-gray-400">Responden akan diminta masuk ke Aldudu Academy</p>
+                        <p class="font-medium text-gray-700" data-i18n="quiz.collect_email_label">Kumpulkan alamat email</p>
+                        <p class="text-xs text-gray-400" data-i18n="quiz.collect_email_desc">Responden akan diminta masuk ke Aldudu Academy</p>
                     </div>
                     <select class="bg-gray-50 border border-gray-200 text-sm rounded-lg p-2 outline-none"
                         onchange="updateSetting('collect_email', this.value)">
-                        <option value="none" {% if quiz.collect_email == 'none' %}selected{% endif %}>Jangan kumpulkan</option>
-                        <option value="verified" {% if quiz.collect_email != 'none' %}selected{% endif %}>Terverifikasi</option>
+                        <option value="none" {% if quiz.collect_email == 'none' %}selected{% endif %} data-i18n="quiz.dont_collect_option">Jangan kumpulkan</option>
+                        <option value="verified" {% if quiz.collect_email != 'none' %}selected{% endif %} data-i18n="quiz.verified_option">Terverifikasi</option>
                     </select>
                 </div>
                 <div class="p-6 flex items-center justify-between">
                     <div>
-                        <p class="font-medium text-gray-700">Batas pengerjaan</p>
-                        <p class="text-xs text-gray-400">Jumlah maksimal murid mengerjakan kuis</p>
+                        <p class="font-medium text-gray-700" data-i18n="quiz.attempt_limit_label">Batas pengerjaan</p>
+                        <p class="text-xs text-gray-400" data-i18n="quiz.attempt_limit_desc">Jumlah maksimal murid mengerjakan kuis</p>
                     </div>
                     <select id="quiz-max-attempts" class="bg-gray-50 border border-gray-200 text-sm rounded-lg p-2 outline-none font-bold"
                             onchange="updateMaxAttempts(this.value)">
-                        <option value="1" {% if quiz.max_attempts == 1 %}selected{% endif %}>1 kali</option>
-                        <option value="2" {% if quiz.max_attempts == 2 %}selected{% endif %}>2 kali</option>
-                        <option value="3" {% if quiz.max_attempts == 3 %}selected{% endif %}>3 kali</option>
-                        <option value="0" {% if quiz.max_attempts == 0 %}selected{% endif %}>Tidak terbatas</option>
+                        <option value="1" {% if quiz.max_attempts == 1 %}selected{% endif %} data-i18n="quiz.attempt_once">1 kali</option>
+                        <option value="2" {% if quiz.max_attempts == 2 %}selected{% endif %} data-i18n="quiz.attempt_twice">2 kali</option>
+                        <option value="3" {% if quiz.max_attempts == 3 %}selected{% endif %} data-i18n="quiz.attempt_thrice">3 kali</option>
+                        <option value="0" {% if quiz.max_attempts == 0 %}selected{% endif %} data-i18n="quiz.unlimited_option">Tidak terbatas</option>
                     </select>
                 </div>
             </div>
@@ -315,13 +315,13 @@
         <!-- Presentasi Settings -->
         <div class="form-card overflow-hidden">
             <div class="p-6 border-b border-gray-100 bg-gray-50/30">
-                <h4 class="font-bold text-primary-600 uppercase tracking-widest text-[10px]">Presentasi</h4>
-                <p class="text-xs text-gray-400">Kelola cara formulir dan jawaban ditampilkan</p>
+                <h4 class="font-bold text-primary-600 uppercase tracking-widest text-[10px]" data-i18n="quiz.presentation_heading">Presentasi</h4>
+                <p class="text-xs text-gray-400" data-i18n="quiz.presentation_desc">Kelola cara formulir dan jawaban ditampilkan</p>
             </div>
             <div class="divide-y divide-gray-100">
                 <div class="p-6 flex items-center justify-between">
                     <div>
-                        <p class="font-medium text-gray-700">Acak urutan pertanyaan</p>
+                        <p class="font-medium text-gray-700" data-i18n="quiz.shuffle_questions_label">Acak urutan pertanyaan</p>
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
                         <input type="checkbox" {% if quiz.shuffle_questions %}checked{% endif %} class="sr-only peer"
@@ -331,15 +331,15 @@
                 </div>
                 <div class="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <p class="font-medium text-gray-700">Tampilan soal</p>
-                        <p class="text-xs text-gray-400">Atur jumlah soal yang tampil dalam satu halaman pengerjaan</p>
+                        <p class="font-medium text-gray-700" data-i18n="quiz.question_display_label">Tampilan soal</p>
+                        <p class="text-xs text-gray-400" data-i18n="quiz.question_display_desc">Atur jumlah soal yang tampil dalam satu halaman pengerjaan</p>
                     </div>
                     <div class="flex items-center gap-3">
                         <select id="questions-page-mode" class="bg-gray-50 border border-gray-200 text-sm rounded-lg p-2 outline-none font-bold"
                                 onchange="setQuestionsPerPageMode(this.value)">
-                            <option value="0" {% if not quiz.questions_per_page %}selected{% endif %}>Semua soal</option>
-                            <option value="1" {% if quiz.questions_per_page == 1 %}selected{% endif %}>1 soal per halaman</option>
-                            <option value="custom" {% if quiz.questions_per_page and quiz.questions_per_page > 1 %}selected{% endif %}>Custom</option>
+                            <option value="0" {% if not quiz.questions_per_page %}selected{% endif %} data-i18n="quiz.all_questions_option">Semua soal</option>
+                            <option value="1" {% if quiz.questions_per_page == 1 %}selected{% endif %} data-i18n="quiz.one_question_per_page_option">1 soal per halaman</option>
+                            <option value="custom" {% if quiz.questions_per_page and quiz.questions_per_page > 1 %}selected{% endif %} data-i18n="quiz.custom_option">Custom</option>
                         </select>
                         <input type="number" id="questions-per-page-input"
                             min="2"
@@ -349,7 +349,7 @@
                     </div>
                 </div>
                 <div class="p-6">
-                    <p class="font-medium text-gray-700 mb-2">Pesan konfirmasi</p>
+                    <p class="font-medium text-gray-700 mb-2" data-i18n="quiz.confirmation_message_label">Pesan konfirmasi</p>
                     <input type="text" id="setting-confirmation-msg"
                         value="{{ quiz.confirmation_message or 'Jawaban Anda telah direkam.' }}"
                         class="w-full text-sm text-gray-500 bg-gray-50 border border-gray-200 rounded-lg p-2.5 focus:ring-2 focus:ring-primary-500 focus:text-gray-800 outline-none"
@@ -361,17 +361,17 @@
         <!-- Import Word -->
         <div class="form-card overflow-hidden">
             <div class="p-6 border-b border-gray-100 bg-gray-50/30">
-                <h4 class="font-bold text-primary-600 uppercase tracking-widest text-[10px]">Import Soal</h4>
-                <p class="text-xs text-gray-400">Unggah file Word berisi soal, opsi jawaban, dan gambar soal</p>
+                <h4 class="font-bold text-primary-600 uppercase tracking-widest text-[10px]" data-i18n="quiz.import_questions_heading">Import Soal</h4>
+                <p class="text-xs text-gray-400" data-i18n="quiz.import_questions_desc">Unggah file Word berisi soal, opsi jawaban, dan gambar soal</p>
             </div>
             <div class="p-6 space-y-4">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <p class="font-medium text-gray-700">Upload soal dari Word (.docx)</p>
-                        <p class="text-xs text-gray-400">Soal hasil import akan ditambahkan ke daftar soal yang sudah ada.</p>
+                        <p class="font-medium text-gray-700" data-i18n="quiz.upload_word_label">Upload soal dari Word (.docx)</p>
+                        <p class="text-xs text-gray-400" data-i18n="quiz.import_result_note">Soal hasil import akan ditambahkan ke daftar soal yang sudah ada.</p>
                     </div>
                     <a href="/api/quiz/import-sample-format"
-                       class="text-sm font-bold text-primary-600 hover:underline">
+                       class="text-sm font-bold text-primary-600 hover:underline" data-i18n="quiz.download_sample_format">
                         Download contoh format
                     </a>
                 </div>
@@ -380,7 +380,7 @@
                         class="flex-1 bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm outline-none">
                     <button type="button" id="quiz-docx-import-btn"
                         onclick="importQuizDocx()"
-                        class="px-6 py-3 bg-primary-600 text-white rounded-xl font-bold hover:bg-primary-700 transition-all">
+                        class="px-6 py-3 bg-primary-600 text-white rounded-xl font-bold hover:bg-primary-700 transition-all" data-i18n="quiz.import_button">
                         Import
                     </button>
                 </div>
@@ -391,13 +391,13 @@
         <!-- Nilai Default -->
         <div class="form-card overflow-hidden">
             <div class="p-6 border-b border-gray-100 bg-gray-50/30">
-                <h4 class="font-bold text-primary-600 uppercase tracking-widest text-[10px]">Default</h4>
-                <p class="text-xs text-gray-400">Setelan yang diterapkan ke formulir ini dan formulir baru</p>
+                <h4 class="font-bold text-primary-600 uppercase tracking-widest text-[10px]" data-i18n="quiz.default_heading">Default</h4>
+                <p class="text-xs text-gray-400" data-i18n="quiz.default_settings_desc">Setelan yang diterapkan ke formulir ini dan formulir baru</p>
             </div>
             <div class="divide-y divide-gray-100">
                 <div class="p-6 flex items-center justify-between">
                     <div>
-                        <p class="font-medium text-gray-700">Nilai poin default kuis</p>
+                        <p class="font-medium text-gray-700" data-i18n="quiz.default_points_label">Nilai poin default kuis</p>
                     </div>
                     <div class="flex items-center border-b border-primary-500 pb-1">
                         <input type="number" value="{{ quiz.default_points }}"
@@ -407,8 +407,8 @@
                 </div>
                 <div class="p-6 flex items-center justify-between">
                     <div>
-                        <p class="font-medium text-gray-700">Wajib diisi secara default</p>
-                        <p class="text-xs text-gray-400">Pertanyaan baru akan disetel sebagai wajib diisi</p>
+                        <p class="font-medium text-gray-700" data-i18n="quiz.required_by_default_label">Wajib diisi secara default</p>
+                        <p class="text-xs text-gray-400" data-i18n="quiz.required_by_default_desc">Pertanyaan baru akan disetel sebagai wajib diisi</p>
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
                         <input type="checkbox" {% if quiz.required_by_default %}checked{% endif %} class="sr-only peer"
@@ -423,7 +423,7 @@
 
 <div id="save-indicator" class="save-toast">
     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-    <span>Perubahan disimpan otomatis</span>
+    <span data-i18n="quiz.autosave_toast">Perubahan disimpan otomatis</span>
 </div>
 
 <!-- Modal Delete -->
@@ -433,12 +433,12 @@
             <div class="w-20 h-20 bg-red-50 text-red-500 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-inner">
                 <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
             </div>
-            <h3 class="text-xl font-black text-gray-900 mb-2">Hapus Pertanyaan?</h3>
-            <p class="text-sm text-gray-500">Tindakan ini tidak bisa dibatalkan.</p>
+            <h3 class="text-xl font-black text-gray-900 mb-2" data-i18n="quiz.delete_question_title">Hapus Pertanyaan?</h3>
+            <p class="text-sm text-gray-500" data-i18n="quiz.delete_question_warning">Tindakan ini tidak bisa dibatalkan.</p>
         </div>
         <div class="px-8 pb-8 flex space-x-3">
-            <button type="button" onclick="closeDeleteQModal()" class="flex-1 px-6 py-3.5 text-gray-500 bg-gray-50 rounded-2xl font-bold">Batal</button>
-            <button type="button" id="confirm-delete-q-btn" class="flex-1 px-6 py-3.5 bg-red-600 text-white rounded-2xl font-bold shadow-lg shadow-red-200">Hapus</button>
+            <button type="button" onclick="closeDeleteQModal()" class="flex-1 px-6 py-3.5 text-gray-500 bg-gray-50 rounded-2xl font-bold" data-i18n="common.cancel">Batal</button>
+            <button type="button" id="confirm-delete-q-btn" class="flex-1 px-6 py-3.5 bg-red-600 text-white rounded-2xl font-bold shadow-lg shadow-red-200" data-i18n="common.delete">Hapus</button>
         </div>
     </div>
 </div>
