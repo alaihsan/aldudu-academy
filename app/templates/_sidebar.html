@@ -19,7 +19,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                 </svg>
             </div>
-            Dashboard
+            <span data-i18n="common.dashboard">Dashboard</span>
         </a>
 
         <a href="{{ url_for('classroom_pages.classroom_page') }}" class="nav-link-duo {% if request.endpoint == 'classroom_pages.classroom_page' %}active{% endif %}">
@@ -33,31 +33,31 @@
 
         {% if current_user.is_authenticated and current_user.role.value in ['admin', 'super_admin'] %}
         <div class="pt-6">
-            <p class="px-4 pb-2 text-[11px] font-black text-[#afafaf] uppercase tracking-[0.15em] sidebar-hide">Panel Control</p>
+            <p class="px-4 pb-2 text-[11px] font-black text-[#afafaf] uppercase tracking-[0.15em] sidebar-hide" data-i18n="admin.section_heading">Panel Control</p>
             <a href="{{ url_for('admin.dashboard') }}" class="nav-link-duo {% if 'admin.dashboard' in request.endpoint %}active{% endif %}">
                 <div class="nav-icon-duo bg-[#2b70c9]">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z"/></svg>
                 </div>
-                Admin Panel
+                <span data-i18n="nav.admin_panel">Admin Panel</span>
             </a>
             <a href="{{ url_for('admin.user_management') }}" class="nav-link-duo {% if 'admin.user_management' in request.endpoint %}active{% endif %}">
                 <div class="nav-icon-duo bg-[#ff9600]">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                 </div>
-                Manajemen User
+                <span data-i18n="admin.user_management">Manajemen User</span>
             </a>
             <a href="{{ url_for('admin.classes_management') }}" class="nav-link-duo {% if request.endpoint in ['admin.classes_management', 'admin.class_detail'] %}active{% endif %}">
                 <div class="nav-icon-duo bg-[#58cc02]">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
                 </div>
-                Manajemen Kelas
+                <span data-i18n="admin.class_management">Manajemen Kelas</span>
             </a>
         </div>
         {% endif %}
 
         {% if course %}
         <div class="pt-6">
-            <p class="px-4 pb-2 text-[11px] font-black text-[#afafaf] uppercase tracking-[0.15em] sidebar-hide">Navigasi Kelas</p>
+            <p class="px-4 pb-2 text-[11px] font-black text-[#afafaf] uppercase tracking-[0.15em] sidebar-hide" data-i18n="course.navigation_heading">Navigasi Kelas</p>
 
             <a href="{{ url_for('courses_pages.course_detail', course_id=course.id) }}"
                class="nav-link-duo {% if request.endpoint == 'courses_pages.course_detail' %}active{% endif %}">
@@ -66,7 +66,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                     </svg>
                 </div>
-                Materi & Tugas
+                <span data-i18n="course.materials_and_assignments">Materi & Tugas</span>
             </a>
 
             {% if current_user.role.value in ['guru', 'admin', 'super_admin'] %}
@@ -77,7 +77,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                     </svg>
                 </div>
-                Buku Nilai
+                <span data-i18n="nav.gradebook">Buku Nilai</span>
             </a>
 
             {% endif %}
@@ -89,7 +89,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
                     </svg>
                 </div>
-                Arsip Kelas
+                <span data-i18n="course.archive_class">Arsip Kelas</span>
             </a>
 
             {% if current_user.role.value in ['guru', 'admin', 'super_admin'] and course.teacher_id == current_user.id %}
@@ -100,7 +100,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
                     </svg>
                 </div>
-                Impor Konten
+                <span data-i18n="course.import_content">Impor Konten</span>
             </a>
 
             <a href="{{ url_for('trash.course_tps', course_id=course.id) }}"
@@ -110,7 +110,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                     </svg>
                 </div>
-                Ruang TPS
+                <span data-i18n="trash.title">Ruang TPS</span>
             </a>
             {% endif %}
         </div>
@@ -118,14 +118,14 @@
 
         <!-- Bantuan & Masalah -->
         <div class="pt-6">
-            <p class="px-4 pb-2 text-[11px] font-black text-[#afafaf] uppercase tracking-[0.15em] sidebar-hide">Bantuan</p>
+            <p class="px-4 pb-2 text-[11px] font-black text-[#afafaf] uppercase tracking-[0.15em] sidebar-hide" data-i18n="nav.help">Bantuan</p>
             <a href="{{ url_for('issues_pages.issues_page') }}" class="nav-link-duo {% if request.endpoint == 'issues_pages.issues_page' %}active{% endif %}">
                 <div class="nav-icon-duo bg-[#ff4b4b]">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                     </svg>
                 </div>
-                Laporan Masalah
+                <span data-i18n="nav.report_issue">Laporan Masalah</span>
             </a>
         </div>
 
@@ -155,7 +155,7 @@
         </div>
         <button onclick="showLogoutModal()" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-red-50 text-red-500 hover:bg-red-100 transition-all text-xs font-black uppercase tracking-wider border-2 border-red-100">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-            Keluar
+            <span data-i18n="common.logout">Keluar</span>
         </button>
     </div>
 </aside>
@@ -169,17 +169,17 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                 </svg>
             </div>
-            <h3 class="text-2xl font-black text-gray-900 dark:text-gray-100 mb-3">Sampai Jumpa Lagi! 👋</h3>
+            <h3 class="text-2xl font-black text-gray-900 dark:text-gray-100 mb-3" data-i18n="auth.logout_title">Sampai Jumpa Lagi! 👋</h3>
             <p class="text-gray-600 dark:text-gray-400 font-medium leading-relaxed">
-                Terima kasih telah menggunakan Aldudu Academy.<br>
-                Silakan login kembali kapan saja untuk melanjutkan pengalaman belajar yang menarik!
+                <span data-i18n="auth.logout_message_line1">Terima kasih telah menggunakan Aldudu Academy.</span><br>
+                <span data-i18n="auth.logout_message_line2">Silakan login kembali kapan saja untuk melanjutkan pengalaman belajar yang menarik!</span>
             </p>
         </div>
         <div class="px-8 pb-10 flex flex-col space-y-3">
-            <button onclick="handleGlobalLogout()" class="w-full py-4 bg-primary-600 text-white rounded-2xl font-bold shadow-lg shadow-primary-200 dark:shadow-primary-900/50 hover:bg-primary-700 transition-all active:scale-95">
+            <button onclick="handleGlobalLogout()" class="w-full py-4 bg-primary-600 text-white rounded-2xl font-bold shadow-lg shadow-primary-200 dark:shadow-primary-900/50 hover:bg-primary-700 transition-all active:scale-95" data-i18n="auth.logout_confirm">
                 Ya, Sampai Jumpa!
             </button>
-            <button id="close-logout-modal" class="w-full py-4 text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-700 rounded-2xl font-bold hover:bg-gray-100 dark:hover:bg-gray-600 transition-all active:scale-95">
+            <button id="close-logout-modal" class="w-full py-4 text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-700 rounded-2xl font-bold hover:bg-gray-100 dark:hover:bg-gray-600 transition-all active:scale-95" data-i18n="auth.logout_cancel">
                 Tetap Login
             </button>
         </div>

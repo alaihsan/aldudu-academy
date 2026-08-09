@@ -33,7 +33,8 @@
         "yes": "نعم",
         "no": "لا",
         "ok": "موافق",
-        "language": "اللغة"
+        "language": "اللغة",
+        "irreversible_action": "لا يمكن التراجع عن هذا الإجراء"
     },
     "nav": {
         "my_courses": "دوراتي",
@@ -65,7 +66,17 @@
         "topics": "المواضيع",
         "no_content": "لا يوجد محتوى بعد",
         "join_class": "انضم للفصل",
-        "enter_code": "أدخل رمز الفصل"
+        "enter_code": "أدخل رمز الفصل",
+        "navigation_heading": "التنقل بين الفصول",
+        "materials_and_assignments": "المواد والواجبات",
+        "archive_class": "الفصول المؤرشفة",
+        "import_content": "استيراد المحتوى",
+        "delete_class_title": "حذف الفصل؟",
+        "delete_class_warning": "تحذير: ستُفقد جميع الدرجات والواجبات والمواد نهائيًا.",
+        "delete_confirm_label": "تأكيد الحذف",
+        "delete_confirm_placeholder": "اكتب 'موافق' هنا...",
+        "delete_now_button": "احذف الآن",
+        "delete_modal_cancel": "إلغاء"
     },
     "quiz": {
         "start_quiz": "ابدأ الاختبار",
@@ -127,7 +138,14 @@
         "dont_have_account": "ليس لديك حساب؟",
         "already_have_account": "لديك حساب بالفعل؟",
         "verify_email": "تحقق من البريد الإلكتروني",
-        "check_inbox": "تحقق من صندوق الوارد الخاص بك"
+        "check_inbox": "تحقق من صندوق الوارد الخاص بك",
+        "logout_title": "إلى اللقاء! 👋",
+        "logout_message_line1": "شكرًا لاستخدامك Aldudu Academy.",
+        "logout_message_line2": "يمكنك تسجيل الدخول مرة أخرى في أي وقت لمواصلة رحلة التعلم الممتعة!",
+        "logout_confirm": "نعم، إلى اللقاء!",
+        "logout_cancel": "ابقَ مسجلاً",
+        "logout_page_message": "يمكنك تسجيل الدخول مرة أخرى في أي وقت لمواصلة التعلم.",
+        "logout_from_account_button": "تسجيل الخروج من الحساب"
     },
     "messages": {
         "success_saved": "تم الحفظ بنجاح!",
@@ -175,5 +193,47 @@
         "loading": "جارٍ التحميل…",
         "empty_title": "لا توجد عناصر",
         "empty_subtitle": "لقد أنجزت كل أعمالك! أحسنت."
+    },
+    "issues": {
+        "floating_subtitle": "هل تواجه مشكلة؟ أخبرنا.",
+        "title_label": "عنوان المشكلة",
+        "title_placeholder": "ما هي المشكلة؟",
+        "description_label": "الوصف",
+        "description_placeholder": "اشرح بإيجاز...",
+        "submit_label": "إرسال التقرير"
+    },
+    "admin": {
+        "section_heading": "لوحة التحكم",
+        "user_management": "إدارة المستخدمين",
+        "class_management": "إدارة الفصول"
+    },
+    "trash": {
+        "title": "سلة المهملات"
+    },
+    "settings": {
+        "profile_subtitle": "معلومات حسابك",
+        "full_name_label": "الاسم الكامل",
+        "full_name_placeholder": "اسمك",
+        "save_changes_button": "حفظ التغييرات",
+        "security_heading": "الأمان",
+        "security_subtitle": "تغيير كلمة مرور حسابك",
+        "old_password_label": "كلمة المرور القديمة",
+        "old_password_placeholder": "أدخل كلمة المرور القديمة",
+        "new_password_label": "كلمة المرور الجديدة",
+        "new_password_placeholder": "6 أحرف على الأقل",
+        "change_password_button": "تغيير كلمة المرور",
+        "manage_classes_subtitle": "إدارة أو حذف الفصول التي تُدرّسها",
+        "theme_heading": "المظهر المرئي",
+        "theme_subtitle": "خصّص مظهر الواجهة",
+        "theme_light": "فاتح",
+        "theme_dark": "داكن",
+        "theme_active_light": "المظهر النشط: فاتح",
+        "theme_active_dark": "المظهر النشط: داكن",
+        "language_subtitle": "اختر لغة عرض التطبيق",
+        "other_heading": "أخرى",
+        "other_subtitle": "قائمة إضافية",
+        "activity_history_link": "سجل النشاط",
+        "whats_new_link": "الجديد",
+        "sponsor_link": "ادعمنا (الرعاية)"
     }
 }

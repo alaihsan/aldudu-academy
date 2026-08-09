@@ -32,7 +32,8 @@
         "yes": "Ya",
         "no": "Ora",
         "ok": "Oke",
-        "language": "Basa"
+        "language": "Basa",
+        "irreversible_action": "Tumindak Iki Ora Bisa Dibatalake"
     },
     "nav": {
         "my_courses": "Kelasku",
@@ -64,7 +65,17 @@
         "topics": "Topik",
         "no_content": "Durung ana konten",
         "join_class": "Gabung Kelas",
-        "enter_code": "Ketik kode kelas"
+        "enter_code": "Ketik kode kelas",
+        "navigation_heading": "Navigasi Kelas",
+        "materials_and_assignments": "Materi & Tugas",
+        "archive_class": "Arsip Kelas",
+        "import_content": "Impor Konten",
+        "delete_class_title": "Busak Kelas?",
+        "delete_class_warning": "PERHATOSAN: Kabeh data nilai, tugas, lan materi bakal ilang salawase.",
+        "delete_confirm_label": "Konfirmasi mbusak",
+        "delete_confirm_placeholder": "Ketik 'setuju' ing kene...",
+        "delete_now_button": "BUSAK SAIKI",
+        "delete_modal_cancel": "BATAL"
     },
     "quiz": {
         "start_quiz": "Miwiti Kuis",
@@ -126,7 +137,14 @@
         "dont_have_account": "Durung duwe akun?",
         "already_have_account": "Wis duwe akun?",
         "verify_email": "Verifikasi Email",
-        "check_inbox": "Priksa kothak mlebu sampeyan"
+        "check_inbox": "Priksa kothak mlebu sampeyan",
+        "logout_title": "Ketemu Maneh! 👋",
+        "logout_message_line1": "Matur nuwun wis nganggo Aldudu Academy.",
+        "logout_message_line2": "Mangga mlebu maneh kapan wae kanggo nerusake sinau sing nyenengake!",
+        "logout_confirm": "Iyo, Ketemu Maneh!",
+        "logout_cancel": "Tetep Mlebu",
+        "logout_page_message": "Kowe bisa mlebu maneh kapan wae kanggo nerusake sinau.",
+        "logout_from_account_button": "METU SAKA AKUN"
     },
     "messages": {
         "success_saved": "Berhasil disimpen!",
@@ -174,5 +192,47 @@
         "loading": "Ngemot…",
         "empty_title": "Ora ana item",
         "empty_subtitle": "Tugasmu wis kabeh rampung! Apik banget."
+    },
+    "issues": {
+        "floating_subtitle": "Ana masalah? Kandhani kita.",
+        "title_label": "Judul Masalah",
+        "title_placeholder": "Apa masalahe?",
+        "description_label": "Katrangan",
+        "description_placeholder": "Jelasna sethithik...",
+        "submit_label": "Kirim Laporan"
+    },
+    "admin": {
+        "section_heading": "Panel Kontrol",
+        "user_management": "Manajemen User",
+        "class_management": "Manajemen Kelas"
+    },
+    "trash": {
+        "title": "Panggonan Sampah"
+    },
+    "settings": {
+        "profile_subtitle": "Informasi akunmu",
+        "full_name_label": "Jeneng Lengkap",
+        "full_name_placeholder": "Jenengmu",
+        "save_changes_button": "SIMPEN PERUBAHAN",
+        "security_heading": "Keamanan",
+        "security_subtitle": "Ganti password akunmu",
+        "old_password_label": "Password Lawas",
+        "old_password_placeholder": "Lebokna password lawas",
+        "new_password_label": "Password Anyar",
+        "new_password_placeholder": "Minimal 6 aksara",
+        "change_password_button": "GANTI PASSWORD",
+        "manage_classes_subtitle": "Ngatur utawa mbusak kelas sing kokwulang",
+        "theme_heading": "Tema Visual",
+        "theme_subtitle": "Sesuaikna tampilan antarmuka",
+        "theme_light": "Padhang",
+        "theme_dark": "Peteng",
+        "theme_active_light": "Tema aktif: Padhang",
+        "theme_active_dark": "Tema aktif: Peteng",
+        "language_subtitle": "Pilih basa tampilan aplikasi",
+        "other_heading": "Liya-liyane",
+        "other_subtitle": "Menu tambahan",
+        "activity_history_link": "RIWAYAT AKTIVITAS",
+        "whats_new_link": "PENGUMUMAN ANYAR",
+        "sponsor_link": "DUKUNG KITA (SPONSOR)"
     }
 }

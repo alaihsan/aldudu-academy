@@ -32,7 +32,8 @@
         "yes": "Ya",
         "no": "Tidak",
         "ok": "Oke",
-        "language": "Bahasa"
+        "language": "Bahasa",
+        "irreversible_action": "Aksi Tidak Dapat Diurungkan"
     },
     "nav": {
         "my_courses": "Kelas Saya",
@@ -64,7 +65,17 @@
         "topics": "Topik",
         "no_content": "Belum ada konten",
         "join_class": "Gabung Kelas",
-        "enter_code": "Masukkan kode kelas"
+        "enter_code": "Masukkan kode kelas",
+        "navigation_heading": "Navigasi Kelas",
+        "materials_and_assignments": "Materi & Tugas",
+        "archive_class": "Arsip Kelas",
+        "import_content": "Impor Konten",
+        "delete_class_title": "Hapus Kelas?",
+        "delete_class_warning": "PERHATIAN: Seluruh data nilai, tugas, dan materi akan hilang selamanya.",
+        "delete_confirm_label": "Konfirmasi penghapusan",
+        "delete_confirm_placeholder": "Ketik 'setuju' di sini...",
+        "delete_now_button": "HAPUS SEKARANG",
+        "delete_modal_cancel": "BATAL"
     },
     "quiz": {
         "start_quiz": "Mulai Kuis",
@@ -126,7 +137,14 @@
         "dont_have_account": "Belum punya akun?",
         "already_have_account": "Sudah punya akun?",
         "verify_email": "Verifikasi Email",
-        "check_inbox": "Periksa kotak masuk Anda"
+        "check_inbox": "Periksa kotak masuk Anda",
+        "logout_title": "Sampai Jumpa Lagi! 👋",
+        "logout_message_line1": "Terima kasih telah menggunakan Aldudu Academy.",
+        "logout_message_line2": "Silakan login kembali kapan saja untuk melanjutkan pengalaman belajar yang menarik!",
+        "logout_confirm": "Ya, Sampai Jumpa!",
+        "logout_cancel": "Tetap Login",
+        "logout_page_message": "Anda dapat masuk kembali kapan saja untuk melanjutkan belajar.",
+        "logout_from_account_button": "KELUAR DARI AKUN"
     },
     "messages": {
         "success_saved": "Berhasil disimpan!",
@@ -174,5 +192,47 @@
         "loading": "Memuat…",
         "empty_title": "Tidak ada item",
         "empty_subtitle": "Semua tugas Anda sudah selesai! Bagus sekali."
+    },
+    "issues": {
+        "floating_subtitle": "Ada kendala? Beritahu kami.",
+        "title_label": "Judul Masalah",
+        "title_placeholder": "Apa masalahnya?",
+        "description_label": "Deskripsi",
+        "description_placeholder": "Jelaskan secara singkat...",
+        "submit_label": "Kirim Laporan"
+    },
+    "admin": {
+        "section_heading": "Panel Kontrol",
+        "user_management": "Manajemen User",
+        "class_management": "Manajemen Kelas"
+    },
+    "trash": {
+        "title": "Ruang TPS"
+    },
+    "settings": {
+        "profile_subtitle": "Informasi akun Anda",
+        "full_name_label": "Nama Lengkap",
+        "full_name_placeholder": "Nama Anda",
+        "save_changes_button": "SIMPAN PERUBAHAN",
+        "security_heading": "Keamanan",
+        "security_subtitle": "Ubah password akun Anda",
+        "old_password_label": "Password Lama",
+        "old_password_placeholder": "Masukkan password lama",
+        "new_password_label": "Password Baru",
+        "new_password_placeholder": "Minimal 6 karakter",
+        "change_password_button": "GANTI PASSWORD",
+        "manage_classes_subtitle": "Kelola atau hapus kelas yang Anda ajar",
+        "theme_heading": "Tema Visual",
+        "theme_subtitle": "Sesuaikan tampilan antarmuka",
+        "theme_light": "Terang",
+        "theme_dark": "Gelap",
+        "theme_active_light": "Tema aktif: Terang",
+        "theme_active_dark": "Tema aktif: Gelap",
+        "language_subtitle": "Pilih bahasa tampilan aplikasi",
+        "other_heading": "Lainnya",
+        "other_subtitle": "Menu tambahan",
+        "activity_history_link": "RIWAYAT AKTIVITAS",
+        "whats_new_link": "PENGUMUMAN BARU",
+        "sponsor_link": "DUKUNG KAMI (SPONSOR)"
     }
 }

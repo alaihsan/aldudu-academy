@@ -32,7 +32,8 @@
         "yes": "Enya",
         "no": "Henteu",
         "ok": "Oke",
-        "language": "Basa"
+        "language": "Basa",
+        "irreversible_action": "Tindakan Ieu Teu Tiasa Dibatalkeun"
     },
     "nav": {
         "my_courses": "Kelas Abdi",
@@ -64,7 +65,17 @@
         "topics": "Topik",
         "no_content": "Can aya konten",
         "join_class": "Gabung Kelas",
-        "enter_code": "Lebetkeun kode kelas"
+        "enter_code": "Lebetkeun kode kelas",
+        "navigation_heading": "Navigasi Kelas",
+        "materials_and_assignments": "Matéri & Tugas",
+        "archive_class": "Arsip Kelas",
+        "import_content": "Impor Eusi",
+        "delete_class_title": "Hapus Kelas?",
+        "delete_class_warning": "PERHATOSAN: Sadaya data nilai, tugas, sareng matéri bakal leungit salamina.",
+        "delete_confirm_label": "Konfirmasi ngahapus",
+        "delete_confirm_placeholder": "Ketik 'satuju' di dieu...",
+        "delete_now_button": "HAPUS AYEUNA",
+        "delete_modal_cancel": "BATAL"
     },
     "quiz": {
         "start_quiz": "Mimitian Kuis",
@@ -126,7 +137,14 @@
         "dont_have_account": "Can boga akun?",
         "already_have_account": "Geus boga akun?",
         "verify_email": "Verifikasi Email",
-        "check_inbox": "Pariksa kotak asup anjeun"
+        "check_inbox": "Pariksa kotak asup anjeun",
+        "logout_title": "Tepang Deui! 👋",
+        "logout_message_line1": "Nuhun parantos ngagunakeun Aldudu Academy.",
+        "logout_message_line2": "Mangga lebet deui iraha waé pikeun neraskeun pangalaman diajar anu pikaresepeun!",
+        "logout_confirm": "Muhun, Tepang Deui!",
+        "logout_cancel": "Tetep Lebet",
+        "logout_page_message": "Anjeun tiasa lebet deui iraha waé pikeun neraskeun diajar.",
+        "logout_from_account_button": "KALUAR TI AKUN"
     },
     "messages": {
         "success_saved": "Berhasil disimpen!",
@@ -174,5 +192,47 @@
         "loading": "Ngamuatan…",
         "empty_title": "Teu aya item",
         "empty_subtitle": "Sadaya tugas anjeun parantos réngsé! Mantap."
+    },
+    "issues": {
+        "floating_subtitle": "Aya masalah? Wartosan abdi.",
+        "title_label": "Judul Masalah",
+        "title_placeholder": "Naon masalahna?",
+        "description_label": "Katerangan",
+        "description_placeholder": "Jéntrékeun sakedik...",
+        "submit_label": "Kintun Laporan"
+    },
+    "admin": {
+        "section_heading": "Panel Kontrol",
+        "user_management": "Manajemén Pamaké",
+        "class_management": "Manajemén Kelas"
+    },
+    "trash": {
+        "title": "Tempat Runtah"
+    },
+    "settings": {
+        "profile_subtitle": "Inpormasi akun anjeun",
+        "full_name_label": "Nami Lengkep",
+        "full_name_placeholder": "Nami anjeun",
+        "save_changes_button": "SIMPEN PARUBAHAN",
+        "security_heading": "Kaamanan",
+        "security_subtitle": "Robih kecap konci akun anjeun",
+        "old_password_label": "Kecap Konci Lami",
+        "old_password_placeholder": "Lebetkeun kecap konci lami",
+        "new_password_label": "Kecap Konci Anyar",
+        "new_password_placeholder": "Minimal 6 karakter",
+        "change_password_button": "ROBIH KECAP KONCI",
+        "manage_classes_subtitle": "Kokolakeun atanapi hapus kelas anu diajar ku anjeun",
+        "theme_heading": "Téma Visual",
+        "theme_subtitle": "Luyukeun tampilan antarmuka",
+        "theme_light": "Caang",
+        "theme_dark": "Poék",
+        "theme_active_light": "Téma aktif: Caang",
+        "theme_active_dark": "Téma aktif: Poék",
+        "language_subtitle": "Pilih basa tampilan aplikasi",
+        "other_heading": "Sanésna",
+        "other_subtitle": "Menu tambihan",
+        "activity_history_link": "RIWAYAT AKTIVITAS",
+        "whats_new_link": "WARTA ANYAR",
+        "sponsor_link": "DUKUNG ABDI (SPONSOR)"
     }
 }

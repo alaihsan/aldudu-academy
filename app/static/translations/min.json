@@ -32,7 +32,8 @@
         "yes": "Yo",
         "no": "Indak",
         "ok": "Oke",
-        "language": "Bahaso"
+        "language": "Bahaso",
+        "irreversible_action": "Tindakan Iko Indak Bisa Dibatalan"
     },
     "nav": {
         "my_courses": "Kelasku",
@@ -64,7 +65,17 @@
         "topics": "Topik",
         "no_content": "Belum ado konten",
         "join_class": "Gabuang Kelas",
-        "enter_code": "Masuakan kode kelas"
+        "enter_code": "Masuakan kode kelas",
+        "navigation_heading": "Navigasi Kelas",
+        "materials_and_assignments": "Materi & Tugas",
+        "archive_class": "Arsip Kelas",
+        "import_content": "Impor Konten",
+        "delete_class_title": "Hapuih Kelas?",
+        "delete_class_warning": "PARHATIAN: Sadonyo data nilai, tugas, jo materi ka ilang salamonyo.",
+        "delete_confirm_label": "Konfirmasi panghapusan",
+        "delete_confirm_placeholder": "Ketik 'satuju' disiko...",
+        "delete_now_button": "HAPUIH KINI",
+        "delete_modal_cancel": "BATAL"
     },
     "quiz": {
         "start_quiz": "Muloi Kuis",
@@ -126,7 +137,14 @@
         "dont_have_account": "Belum punyo akun?",
         "already_have_account": "Alah punyo akun?",
         "verify_email": "Verifikasi Email",
-        "check_inbox": "Pariksa kotak masuak anda"
+        "check_inbox": "Pariksa kotak masuak anda",
+        "logout_title": "Basuo Baliak! 👋",
+        "logout_message_line1": "Tarimo kasih lah manggunoan Aldudu Academy.",
+        "logout_message_line2": "Silahkan masuak baliak bilo se untuak malanjuikan pangalaman baraja nan manari!",
+        "logout_confirm": "Iyo, Basuo Baliak!",
+        "logout_cancel": "Tatap Masuak",
+        "logout_page_message": "Angku bisa masuak baliak bilo se untuak malanjuikan baraja.",
+        "logout_from_account_button": "KALUA DARI AKUN"
     },
     "messages": {
         "success_saved": "Barasia disimpan!",
@@ -174,5 +192,47 @@
         "loading": "Manunggu…",
         "empty_title": "Indak ado item",
         "empty_subtitle": "Sadonyo tugas Angku lah salasai! Rancak bana."
+    },
+    "issues": {
+        "floating_subtitle": "Ado masalah? Agiah tau kami.",
+        "title_label": "Judul Masalah",
+        "title_placeholder": "A masalahnyo?",
+        "description_label": "Katarangan",
+        "description_placeholder": "Jalehkan singkek...",
+        "submit_label": "Kirim Laporan"
+    },
+    "admin": {
+        "section_heading": "Panel Kontrol",
+        "user_management": "Manajemen Pangguno",
+        "class_management": "Manajemen Kelas"
+    },
+    "trash": {
+        "title": "Tampek Sarok"
+    },
+    "settings": {
+        "profile_subtitle": "Informasi akun Angku",
+        "full_name_label": "Namo Lengkap",
+        "full_name_placeholder": "Namo Angku",
+        "save_changes_button": "SIMPAN PARUBAHAN",
+        "security_heading": "Kaamanan",
+        "security_subtitle": "Ganti kato sandi akun Angku",
+        "old_password_label": "Kato Sandi Lamo",
+        "old_password_placeholder": "Masuakan kato sandi lamo",
+        "new_password_label": "Kato Sandi Baru",
+        "new_password_placeholder": "Minimal 6 karakter",
+        "change_password_button": "GANTI KATO SANDI",
+        "manage_classes_subtitle": "Kola atau hapuih kelas nan Angku ajaan",
+        "theme_heading": "Tema Visual",
+        "theme_subtitle": "Sasuaian tampilan antarmuko",
+        "theme_light": "Taráng",
+        "theme_dark": "Kalam",
+        "theme_active_light": "Tema aktif: Taráng",
+        "theme_active_dark": "Tema aktif: Kalam",
+        "language_subtitle": "Piliah bahaso tampilan aplikasi",
+        "other_heading": "Lainnyo",
+        "other_subtitle": "Menu tambahan",
+        "activity_history_link": "RIWAYAT AKTIVITAS",
+        "whats_new_link": "PENGUMUMAN BARU",
+        "sponsor_link": "DUKUANG KAMI (SPONSOR)"
     }
 }

@@ -32,7 +32,8 @@
         "yes": "Yes",
         "no": "No",
         "ok": "OK",
-        "language": "Language"
+        "language": "Language",
+        "irreversible_action": "This Action Cannot Be Undone"
     },
     "nav": {
         "my_courses": "My Courses",
@@ -64,7 +65,17 @@
         "topics": "Topics",
         "no_content": "No content yet",
         "join_class": "Join Class",
-        "enter_code": "Enter class code"
+        "enter_code": "Enter class code",
+        "navigation_heading": "Class Navigation",
+        "materials_and_assignments": "Materials & Assignments",
+        "archive_class": "Archived Classes",
+        "import_content": "Import Content",
+        "delete_class_title": "Delete Class?",
+        "delete_class_warning": "WARNING: All grades, assignments, and materials will be permanently lost.",
+        "delete_confirm_label": "Confirm deletion",
+        "delete_confirm_placeholder": "Type 'agree' here...",
+        "delete_now_button": "DELETE NOW",
+        "delete_modal_cancel": "CANCEL"
     },
     "quiz": {
         "start_quiz": "Start Quiz",
@@ -126,7 +137,14 @@
         "dont_have_account": "Don't have an account?",
         "already_have_account": "Already have an account?",
         "verify_email": "Verify Email",
-        "check_inbox": "Check your inbox"
+        "check_inbox": "Check your inbox",
+        "logout_title": "See You Again! 👋",
+        "logout_message_line1": "Thank you for using Aldudu Academy.",
+        "logout_message_line2": "Feel free to log back in anytime to continue your learning journey!",
+        "logout_confirm": "Yes, See You!",
+        "logout_cancel": "Stay Logged In",
+        "logout_page_message": "You can log back in anytime to continue learning.",
+        "logout_from_account_button": "LOG OUT OF ACCOUNT"
     },
     "messages": {
         "success_saved": "Successfully saved!",
@@ -174,5 +192,47 @@
         "loading": "Loading…",
         "empty_title": "No items",
         "empty_subtitle": "All your work is done! Great job."
+    },
+    "issues": {
+        "floating_subtitle": "Having trouble? Let us know.",
+        "title_label": "Issue Title",
+        "title_placeholder": "What's the problem?",
+        "description_label": "Description",
+        "description_placeholder": "Briefly explain...",
+        "submit_label": "Send Report"
+    },
+    "admin": {
+        "section_heading": "Control Panel",
+        "user_management": "User Management",
+        "class_management": "Class Management"
+    },
+    "trash": {
+        "title": "Trash"
+    },
+    "settings": {
+        "profile_subtitle": "Your account information",
+        "full_name_label": "Full Name",
+        "full_name_placeholder": "Your name",
+        "save_changes_button": "SAVE CHANGES",
+        "security_heading": "Security",
+        "security_subtitle": "Change your account password",
+        "old_password_label": "Old Password",
+        "old_password_placeholder": "Enter your old password",
+        "new_password_label": "New Password",
+        "new_password_placeholder": "At least 6 characters",
+        "change_password_button": "CHANGE PASSWORD",
+        "manage_classes_subtitle": "Manage or delete the classes you teach",
+        "theme_heading": "Visual Theme",
+        "theme_subtitle": "Customize the interface appearance",
+        "theme_light": "Light",
+        "theme_dark": "Dark",
+        "theme_active_light": "Active theme: Light",
+        "theme_active_dark": "Active theme: Dark",
+        "language_subtitle": "Choose the app display language",
+        "other_heading": "Other",
+        "other_subtitle": "Additional menu",
+        "activity_history_link": "ACTIVITY HISTORY",
+        "whats_new_link": "WHAT'S NEW",
+        "sponsor_link": "SUPPORT US (SPONSOR)"
     }
 }

@@ -32,7 +32,8 @@
         "yes": "Inggih",
         "no": "Nenten",
         "ok": "Oke",
-        "language": "Basa"
+        "language": "Basa",
+        "irreversible_action": "Tindakan Puniki Nenten Dados Kabatalang"
     },
     "nav": {
         "my_courses": "Kelasku",
@@ -64,7 +65,17 @@
         "topics": "Topik",
         "no_content": "Durung wénten konten",
         "join_class": "Gabung Kelas",
-        "enter_code": "Ketis kode kelas"
+        "enter_code": "Ketis kode kelas",
+        "navigation_heading": "Navigasi Kelas",
+        "materials_and_assignments": "Materi & Tugas",
+        "archive_class": "Arsip Kelas",
+        "import_content": "Impor Konten",
+        "delete_class_title": "Hapus Kelas?",
+        "delete_class_warning": "PITINGET: Makasami data nilai, tugas, lan materi bakal ical salawasnyane.",
+        "delete_confirm_label": "Konfirmasi ngapus",
+        "delete_confirm_placeholder": "Ketik 'satinut' driki...",
+        "delete_now_button": "HAPUS DAWEG",
+        "delete_modal_cancel": "BATAL"
     },
     "quiz": {
         "start_quiz": "Miwiti Kuis",
@@ -126,7 +137,14 @@
         "dont_have_account": "Durung madué akun?",
         "already_have_account": "Suba madué akun?",
         "verify_email": "Verifikasi Email",
-        "check_inbox": "Periksa kotak mlebu ida dane"
+        "check_inbox": "Periksa kotak mlebu ida dane",
+        "logout_title": "Kacunduk Malih! 👋",
+        "logout_message_line1": "Suksma sampun nganggen Aldudu Academy.",
+        "logout_message_line2": "Ngiring malih login napi je masih anggen nglanturang pangalaman melajah sane ngresepin!",
+        "logout_confirm": "Inggih, Kacunduk Malih!",
+        "logout_cancel": "Tetep Login",
+        "logout_page_message": "Ragane dados login malih napi je masih anggen nglanturang malajah.",
+        "logout_from_account_button": "MEDAL SAKING AKUN"
     },
     "messages": {
         "success_saved": "Berhasil kasimpen!",
@@ -174,5 +192,47 @@
         "loading": "Ngamuat…",
         "empty_title": "Nenten wenten item",
         "empty_subtitle": "Makasami tugas ragane sampun puput! Becik pisan."
+    },
+    "issues": {
+        "floating_subtitle": "Wenten pikobet? Baosin tiang.",
+        "title_label": "Judul Pikobet",
+        "title_placeholder": "Napi pikobetnyane?",
+        "description_label": "Katerangan",
+        "description_placeholder": "Jelasang cutet...",
+        "submit_label": "Kirim Laporan"
+    },
+    "admin": {
+        "section_heading": "Panel Kontrol",
+        "user_management": "Manajemén Pangguna",
+        "class_management": "Manajemén Kelas"
+    },
+    "trash": {
+        "title": "Genah Sampah"
+    },
+    "settings": {
+        "profile_subtitle": "Informasi akun ragane",
+        "full_name_label": "Wasta Jangkep",
+        "full_name_placeholder": "Wastan ragane",
+        "save_changes_button": "SIMPAN PAUBAHAN",
+        "security_heading": "Kaamanan",
+        "security_subtitle": "Ubah sandi akun ragane",
+        "old_password_label": "Sandi Lawas",
+        "old_password_placeholder": "Ripin sandi lawas",
+        "new_password_label": "Sandi Anyar",
+        "new_password_placeholder": "Minimal 6 aksara",
+        "change_password_button": "UBAH SANDI",
+        "manage_classes_subtitle": "Kelola utawi hapus kelas sane kaajahin ragane",
+        "theme_heading": "Téma Visual",
+        "theme_subtitle": "Sesuaiang tampilan antarmuka",
+        "theme_light": "Galang",
+        "theme_dark": "Peteng",
+        "theme_active_light": "Téma aktif: Galang",
+        "theme_active_dark": "Téma aktif: Peteng",
+        "language_subtitle": "Pilih basa tampilan aplikasi",
+        "other_heading": "Lianan",
+        "other_subtitle": "Menu tambahan",
+        "activity_history_link": "RIWAYAT AKTIVITAS",
+        "whats_new_link": "PENGUMUMAN ANYAR",
+        "sponsor_link": "DUKUNG TIANG (SPONSOR)"
     }
 }

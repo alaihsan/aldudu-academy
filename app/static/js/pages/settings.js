@@ -171,14 +171,16 @@ function initSettingsPage() {
             btn.classList.add('btn-duo-ghost');
         });
 
+        const t = window.LanguageManager ? window.LanguageManager.t : (key, fallback) => fallback;
+
         if (isDark) {
             darkBtn.classList.remove('btn-duo-ghost');
             darkBtn.classList.add('border-[#1cb0f6]', 'bg-[#ddf4ff]', 'dark:bg-gray-700');
-            activeText.textContent = 'Tema aktif: Gelap';
+            activeText.textContent = t('settings.theme_active_dark', 'Tema aktif: Gelap');
         } else {
             lightBtn.classList.remove('btn-duo-ghost');
             lightBtn.classList.add('border-[#1cb0f6]', 'bg-[#ddf4ff]');
-            activeText.textContent = 'Tema aktif: Terang';
+            activeText.textContent = t('settings.theme_active_light', 'Tema aktif: Terang');
         }
     }
 
