@@ -1273,5 +1273,93 @@
             "language_not_supported": "Language not supported",
             "language_changed": "Language changed successfully"
         }
+    },
+    "emails": {
+        "common": {
+            "footer_tagline": "Digital School Management Platform",
+            "footer_copyright": "© 2025 Aldudu Academy. All rights reserved."
+        },
+        "verify_email": {
+            "subject": "Verify Your Email - {0} | Aldudu Academy",
+            "title": "Verify Email – Aldudu Academy",
+            "banner_subtitle": "Registration Email Verification",
+            "step_register": "REGISTER",
+            "step_verify": "VERIFY",
+            "step_approval": "APPROVAL",
+            "step_login": "LOGIN",
+            "greeting": "Hi, {0}!",
+            "body_pre": "Thank you for registering",
+            "body_post": "on the Aldudu Academy platform. One more step — please verify your email address to continue the registration process.",
+            "cta_button": "Verify Email Now",
+            "info_box_title": "⏳ This link is valid for 24 hours.",
+            "info_box_body": "If you did not register this school, ignore this email — no action is needed.",
+            "fallback_text": "Button not working? Copy the URL below into your browser:"
+        },
+        "reset_password": {
+            "subject": "Reset Password - Aldudu Academy",
+            "title": "Reset Password – Aldudu Academy",
+            "header_title": "Reset Password",
+            "header_subtitle": "Password reset request for your account",
+            "greeting": "Hi, {0}!",
+            "body_pre": "We received a request to",
+            "body_bold": "reset the password",
+            "body_post": "for your Aldudu Academy account. Click the button below to create a new, secure password.",
+            "cta_button": "Reset Password Now",
+            "info_expiry_label": "⏳ Valid For",
+            "info_expiry_value": "1 Hour",
+            "info_expiry_note": "Since this email was sent",
+            "info_usage_label": "🔒 Usage",
+            "info_usage_value": "One-Time Use",
+            "info_usage_note": "Token expires after use",
+            "security_title": "⚠️ Security Notice",
+            "security_body_pre": "If you",
+            "security_body_bold": "did not request a password reset",
+            "security_body_post": "ignore this email. No changes have been made to your account.",
+            "fallback_text": "Button not working? Copy this URL into your browser:"
+        },
+        "school_approved": {
+            "subject": "School Approved - {0} | Aldudu Academy",
+            "title": "Congratulations! Your School Has Been Approved – Aldudu Academy",
+            "header_title": "Welcome Aboard!",
+            "header_subtitle": "Your School Is Now Officially Active on Aldudu Academy",
+            "greeting": "Hi, {0}!",
+            "body_pre": "We are proud to announce that",
+            "body_post": "is now officially registered and active as part of the Aldudu Academy digital ecosystem. Starting now, you can manage your school, students, teachers, and academic years digitally.",
+            "info_card_title": "🏫 School Information",
+            "info_school_name_label": "School Name",
+            "info_dashboard_url_label": "Dashboard URL",
+            "info_status_label": "Status",
+            "info_status_value": "ACTIVE",
+            "cta_button": "Login &amp; Start Managing Your School",
+            "quick_start_title": "🚀 Recommended First Steps:",
+            "quick_start_step1": "Create a new <strong>Academic Year</strong> to start academic activities",
+            "quick_start_step2": "Import <strong>Student Data</strong> using the available CSV template",
+            "quick_start_step3": "Add <strong>Teacher</strong> accounts and grant access to their respective classes",
+            "support_banner_pre": "Need help? Open the",
+            "support_banner_bold": "Support Ticket",
+            "support_banner_post": "menu from your dashboard or contact us at"
+        },
+        "ticket_update": {
+            "subject": "Ticket Update {0} - Aldudu Academy",
+            "header_subtitle": "Ticket Update",
+            "resolved_notice": "Ticket has been resolved."
+        },
+        "new_school_notification": {
+            "subject": "[New Registration] {0} Awaiting Approval",
+            "title": "New School Registration – Aldudu Academy",
+            "badge_label": "NEW REGISTRATION",
+            "header_title": "New School Awaiting Review",
+            "header_subtitle": "Action required from Superadmin",
+            "greeting": "Hi, Admin!",
+            "body": "A new school has completed email verification and is <strong>awaiting your approval</strong> to be activated.",
+            "info_card_title": "Registration Details",
+            "info_school_name_label": "School Name",
+            "info_slug_label": "Slug / URL",
+            "info_admin_email_label": "Admin Email",
+            "info_registered_at_label": "Registered At",
+            "cta_button": "Review in Superadmin Dashboard",
+            "footer_title": "Aldudu Academy &mdash; System Notification",
+            "footer_note": "This email was sent automatically. Do not reply to this email."
+        }
     }
 }

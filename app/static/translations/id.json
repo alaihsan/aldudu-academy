@@ -1273,5 +1273,93 @@
             "language_not_supported": "Bahasa tidak didukung",
             "language_changed": "Bahasa berhasil diubah"
         }
+    },
+    "emails": {
+        "common": {
+            "footer_tagline": "Platform Manajemen Sekolah Digital",
+            "footer_copyright": "© 2025 Aldudu Academy. Seluruh hak dilindungi."
+        },
+        "verify_email": {
+            "subject": "Verifikasi Email - {0} | Aldudu Academy",
+            "title": "Verifikasi Email – Aldudu Academy",
+            "banner_subtitle": "Verifikasi Email Pendaftaran",
+            "step_register": "DAFTAR",
+            "step_verify": "VERIFIKASI",
+            "step_approval": "APPROVAL",
+            "step_login": "LOGIN",
+            "greeting": "Halo, {0}!",
+            "body_pre": "Terima kasih telah mendaftarkan",
+            "body_post": "ke platform Aldudu Academy. Satu langkah lagi — silakan verifikasi alamat email Anda untuk melanjutkan proses pendaftaran.",
+            "cta_button": "Verifikasi Email Sekarang",
+            "info_box_title": "⏳ Link berlaku selama 24 jam.",
+            "info_box_body": "Jika Anda tidak mendaftarkan sekolah ini, abaikan email ini — tidak ada tindakan yang diperlukan.",
+            "fallback_text": "Tombol tidak berfungsi? Salin URL berikut ke browser Anda:"
+        },
+        "reset_password": {
+            "subject": "Reset Password - Aldudu Academy",
+            "title": "Reset Password – Aldudu Academy",
+            "header_title": "Reset Password",
+            "header_subtitle": "Permintaan reset password akun Anda",
+            "greeting": "Halo, {0}!",
+            "body_pre": "Kami menerima permintaan untuk",
+            "body_bold": "mereset password",
+            "body_post": "akun Aldudu Academy Anda. Klik tombol di bawah untuk membuat password baru yang aman.",
+            "cta_button": "Reset Password Sekarang",
+            "info_expiry_label": "⏳ Berlaku Selama",
+            "info_expiry_value": "1 Jam",
+            "info_expiry_note": "Sejak email ini dikirim",
+            "info_usage_label": "🔒 Penggunaan",
+            "info_usage_value": "Sekali Pakai",
+            "info_usage_note": "Token hangus setelah dipakai",
+            "security_title": "⚠️ Pemberitahuan Keamanan",
+            "security_body_pre": "Jika Anda",
+            "security_body_bold": "tidak meminta reset password",
+            "security_body_post": "abaikan email ini. Tidak ada perubahan yang terjadi pada akun Anda.",
+            "fallback_text": "Tombol tidak berfungsi? Salin URL ini ke browser:"
+        },
+        "school_approved": {
+            "subject": "Sekolah Disetujui - {0} | Aldudu Academy",
+            "title": "Selamat! Sekolah Anda Telah Disetujui – Aldudu Academy",
+            "header_title": "Selamat Bergabung!",
+            "header_subtitle": "Sekolah Anda Telah Resmi Aktif di Aldudu Academy",
+            "greeting": "Halo, {0}!",
+            "body_pre": "Kami dengan bangga mengumumkan bahwa",
+            "body_post": "kini telah resmi terdaftar dan aktif sebagai bagian dari ekosistem digital Aldudu Academy. Mulai sekarang Anda bisa mengelola sekolah, siswa, guru, dan tahun ajaran secara digital.",
+            "info_card_title": "🏫 Informasi Sekolah",
+            "info_school_name_label": "Nama Sekolah",
+            "info_dashboard_url_label": "URL Dashboard",
+            "info_status_label": "Status",
+            "info_status_value": "AKTIF",
+            "cta_button": "Login &amp; Mulai Kelola Sekolah",
+            "quick_start_title": "🚀 Langkah Awal yang Disarankan:",
+            "quick_start_step1": "Buat <strong>Tahun Ajaran</strong> baru untuk memulai aktivitas akademik",
+            "quick_start_step2": "Import <strong>Data Siswa</strong> menggunakan template CSV yang tersedia",
+            "quick_start_step3": "Tambahkan akun <strong>Guru</strong> dan berikan akses ke kelas masing-masing",
+            "support_banner_pre": "Butuh bantuan? Buka menu",
+            "support_banner_bold": "Tiket Support",
+            "support_banner_post": "dari dashboard Anda atau hubungi kami di"
+        },
+        "ticket_update": {
+            "subject": "Update Ticket {0} - Aldudu Academy",
+            "header_subtitle": "Update Ticket",
+            "resolved_notice": "Ticket telah diselesaikan."
+        },
+        "new_school_notification": {
+            "subject": "[Pendaftaran Baru] {0} Menunggu Approval",
+            "title": "Pendaftaran Sekolah Baru – Aldudu Academy",
+            "badge_label": "PENDAFTARAN BARU",
+            "header_title": "Sekolah Baru Menunggu Review",
+            "header_subtitle": "Tindakan diperlukan dari Superadmin",
+            "greeting": "Halo, Admin!",
+            "body": "Ada sekolah baru yang telah menyelesaikan verifikasi email dan <strong>menunggu persetujuan Anda</strong> untuk diaktifkan.",
+            "info_card_title": "Detail Pendaftaran",
+            "info_school_name_label": "Nama Sekolah",
+            "info_slug_label": "Slug / URL",
+            "info_admin_email_label": "Email Admin",
+            "info_registered_at_label": "Waktu Daftar",
+            "cta_button": "Review di Dashboard Superadmin",
+            "footer_title": "Aldudu Academy &mdash; Notifikasi Sistem",
+            "footer_note": "Email ini dikirim otomatis. Jangan balas email ini."
+        }
     }
 }

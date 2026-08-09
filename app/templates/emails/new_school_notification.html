@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="{{ lang }}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pendaftaran Sekolah Baru – Aldudu Academy</title>
+  <title>{{ t('emails.new_school_notification.title', lang) }}</title>
 </head>
 <body style="margin:0;padding:0;background-color:#fffbeb;font-family:'Inter',Arial,sans-serif;">
 
@@ -19,29 +19,28 @@
               <span style="font-size:26px;line-height:52px;display:block;text-align:center;">&#128274;</span>
             </div>
             <div style="display:inline-block;background:#fbbf24;border-radius:20px;padding:4px 14px;margin-bottom:10px;">
-              <span style="color:#78350f;font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;">PENDAFTARAN BARU</span>
+              <span style="color:#78350f;font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;">{{ t('emails.new_school_notification.badge_label', lang) }}</span>
             </div>
-            <h1 style="color:#fff;font-size:20px;font-weight:800;margin:0;">Sekolah Baru Menunggu Review</h1>
-            <p style="color:#fcd34d;font-size:12px;margin:6px 0 0;">Tindakan diperlukan dari Superadmin</p>
+            <h1 style="color:#fff;font-size:20px;font-weight:800;margin:0;">{{ t('emails.new_school_notification.header_title', lang) }}</h1>
+            <p style="color:#fcd34d;font-size:12px;margin:6px 0 0;">{{ t('emails.new_school_notification.header_subtitle', lang) }}</p>
           </td>
         </tr>
 
         <!-- Body -->
         <tr>
           <td style="background:#fff;padding:32px 40px;border-left:1px solid #fde68a;border-right:1px solid #fde68a;">
-            <p style="color:#0f172a;font-size:15px;font-weight:600;margin:0 0 6px;">Halo, Admin!</p>
+            <p style="color:#0f172a;font-size:15px;font-weight:600;margin:0 0 6px;">{{ t('emails.new_school_notification.greeting', lang) }}</p>
             <p style="color:#475569;font-size:14px;line-height:1.7;margin:0 0 24px;">
-              Ada sekolah baru yang telah menyelesaikan verifikasi email dan
-              <strong style="color:#92400e;">menunggu persetujuan Anda</strong> untuk diaktifkan.
+              {{ t('emails.new_school_notification.body', lang) | safe }}
             </p>
 
             <!-- School Info Card -->
             <div style="background:#fffbeb;border:1px solid #fde68a;border-left:4px solid #f59e0b;border-radius:8px;padding:18px 20px;margin-bottom:24px;">
-              <p style="color:#78350f;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin:0 0 12px;">Detail Pendaftaran</p>
+              <p style="color:#78350f;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin:0 0 12px;">{{ t('emails.new_school_notification.info_card_title', lang) }}</p>
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td style="padding:5px 0;width:40%;">
-                    <span style="color:#92400e;font-size:12px;font-weight:600;">Nama Sekolah</span>
+                    <span style="color:#92400e;font-size:12px;font-weight:600;">{{ t('emails.new_school_notification.info_school_name_label', lang) }}</span>
                   </td>
                   <td style="padding:5px 0;">
                     <strong style="color:#1e293b;font-size:13px;">{{ school_name }}</strong>
@@ -49,7 +48,7 @@
                 </tr>
                 <tr>
                   <td style="padding:5px 0;">
-                    <span style="color:#92400e;font-size:12px;font-weight:600;">Slug / URL</span>
+                    <span style="color:#92400e;font-size:12px;font-weight:600;">{{ t('emails.new_school_notification.info_slug_label', lang) }}</span>
                   </td>
                   <td style="padding:5px 0;">
                     <span style="color:#475569;font-size:12px;">/s/{{ school_slug }}/</span>
@@ -57,7 +56,7 @@
                 </tr>
                 <tr>
                   <td style="padding:5px 0;">
-                    <span style="color:#92400e;font-size:12px;font-weight:600;">Email Admin</span>
+                    <span style="color:#92400e;font-size:12px;font-weight:600;">{{ t('emails.new_school_notification.info_admin_email_label', lang) }}</span>
                   </td>
                   <td style="padding:5px 0;">
                     <span style="color:#475569;font-size:12px;">{{ school_admin_email }}</span>
@@ -65,7 +64,7 @@
                 </tr>
                 <tr>
                   <td style="padding:5px 0;">
-                    <span style="color:#92400e;font-size:12px;font-weight:600;">Waktu Daftar</span>
+                    <span style="color:#92400e;font-size:12px;font-weight:600;">{{ t('emails.new_school_notification.info_registered_at_label', lang) }}</span>
                   </td>
                   <td style="padding:5px 0;">
                     <span style="color:#475569;font-size:12px;">{{ registered_at }}</span>
@@ -80,7 +79,7 @@
                 <td align="center">
                   <a href="{{ dashboard_url }}"
                      style="display:inline-block;background:linear-gradient(135deg,#d97706,#b45309);color:#fff;text-decoration:none;padding:14px 36px;border-radius:12px;font-weight:700;font-size:14px;letter-spacing:0.5px;box-shadow:0 4px 12px rgba(217,119,6,0.35);">
-                    &#128269;&nbsp; Review di Dashboard Superadmin
+                    &#128269;&nbsp; {{ t('emails.new_school_notification.cta_button', lang) }}
                   </a>
                 </td>
               </tr>
@@ -91,8 +90,8 @@
         <!-- Footer -->
         <tr>
           <td style="background:#f8fafc;border:1px solid #e2e8f0;border-top:none;border-radius:0 0 16px 16px;padding:18px 40px;text-align:center;">
-            <p style="color:#1e1b4b;font-size:12px;font-weight:700;margin:0 0 4px;">Aldudu Academy &mdash; Notifikasi Sistem</p>
-            <p style="color:#94a3b8;font-size:11px;margin:0;">Email ini dikirim otomatis. Jangan balas email ini.</p>
+            <p style="color:#1e1b4b;font-size:12px;font-weight:700;margin:0 0 4px;">{{ t('emails.new_school_notification.footer_title', lang) | safe }}</p>
+            <p style="color:#94a3b8;font-size:11px;margin:0;">{{ t('emails.new_school_notification.footer_note', lang) }}</p>
           </td>
         </tr>
 

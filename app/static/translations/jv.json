@@ -1273,5 +1273,93 @@
             "language_not_supported": "Basa ora didhukung",
             "language_changed": "Basa sukses diowahi"
         }
+    },
+    "emails": {
+        "common": {
+            "footer_tagline": "Platform Manajemen Sekolah Digital",
+            "footer_copyright": "© 2025 Aldudu Academy. Kabeh hak dilindhungi."
+        },
+        "verify_email": {
+            "subject": "Verifikasi Email - {0} | Aldudu Academy",
+            "title": "Verifikasi Email – Aldudu Academy",
+            "banner_subtitle": "Verifikasi Email Pendaftaran",
+            "step_register": "DAFTAR",
+            "step_verify": "VERIFIKASI",
+            "step_approval": "APPROVAL",
+            "step_login": "LOGIN",
+            "greeting": "Halo, {0}!",
+            "body_pre": "Matur nuwun sampeyan wis ndaftarke",
+            "body_post": "menyang platform Aldudu Academy. Siji langkah maneh — priksa alamat email sampeyan kanggo nerusake proses pendaftaran.",
+            "cta_button": "Verifikasi Email Saiki",
+            "info_box_title": "⏳ Link laku 24 jam.",
+            "info_box_body": "Yen sampeyan ora ndaftarke sekolah iki, lirwakke email iki — ora ana tindakan sing dibutuhake.",
+            "fallback_text": "Tombol ora bisa dienggo? Salin URL iki menyang browser sampeyan:"
+        },
+        "reset_password": {
+            "subject": "Reset Password - Aldudu Academy",
+            "title": "Reset Password – Aldudu Academy",
+            "header_title": "Reset Password",
+            "header_subtitle": "Panjaluk reset password akun sampeyan",
+            "greeting": "Halo, {0}!",
+            "body_pre": "Kita nampa panjaluk kanggo",
+            "body_bold": "reset password",
+            "body_post": "akun Aldudu Academy sampeyan. Klik tombol ing ngisor iki kanggo gawe password anyar sing aman.",
+            "cta_button": "Reset Password Saiki",
+            "info_expiry_label": "⏳ Laku Sajrone",
+            "info_expiry_value": "1 Jam",
+            "info_expiry_note": "Wiwit email iki dikirim",
+            "info_usage_label": "🔒 Panganggo",
+            "info_usage_value": "Sepisan Dienggo",
+            "info_usage_note": "Token entek sawise dienggo",
+            "security_title": "⚠️ Pengumuman Keamanan",
+            "security_body_pre": "Yen sampeyan",
+            "security_body_bold": "ora njaluk reset password",
+            "security_body_post": "lirwakke email iki. Ora ana owahan sing kedadeyan ing akun sampeyan.",
+            "fallback_text": "Tombol ora bisa dienggo? Salin URL iki menyang browser:"
+        },
+        "school_approved": {
+            "subject": "Sekolah Disetujoni - {0} | Aldudu Academy",
+            "title": "Sugeng! Sekolah Sampeyan Wis Disetujoni – Aldudu Academy",
+            "header_title": "Sugeng Rawuh!",
+            "header_subtitle": "Sekolah Sampeyan Wis Resmi Aktif ing Aldudu Academy",
+            "greeting": "Halo, {0}!",
+            "body_pre": "Kita kanthi bangga ngumumake yen",
+            "body_post": "saiki wis resmi kedaftar lan aktif dadi bagean saka ekosistem digital Aldudu Academy. Wiwit saiki sampeyan bisa ngatur sekolah, siswa, guru, lan taun ajaran kanthi digital.",
+            "info_card_title": "🏫 Informasi Sekolah",
+            "info_school_name_label": "Jeneng Sekolah",
+            "info_dashboard_url_label": "URL Dashboard",
+            "info_status_label": "Status",
+            "info_status_value": "AKTIF",
+            "cta_button": "Login &amp; Wiwiti Ngatur Sekolah",
+            "quick_start_title": "🚀 Langkah Awal sing Disaranake:",
+            "quick_start_step1": "Gawe <strong>Taun Ajaran</strong> anyar kanggo miwiti aktivitas akademik",
+            "quick_start_step2": "Import <strong>Data Siswa</strong> nganggo template CSV sing kasedhiya",
+            "quick_start_step3": "Tambahake akun <strong>Guru</strong> lan wenehi akses menyang kelas dhewe-dhewe",
+            "support_banner_pre": "Butuh bantuan? Bukak menu",
+            "support_banner_bold": "Tiket Support",
+            "support_banner_post": "saka dashboard sampeyan utawa hubungi kita ing"
+        },
+        "ticket_update": {
+            "subject": "Update Ticket {0} - Aldudu Academy",
+            "header_subtitle": "Update Ticket",
+            "resolved_notice": "Ticket wis rampung."
+        },
+        "new_school_notification": {
+            "subject": "[Pendaftaran Anyar] {0} Ngenteni Approval",
+            "title": "Pendaftaran Sekolah Anyar – Aldudu Academy",
+            "badge_label": "PENDAFTARAN ANYAR",
+            "header_title": "Sekolah Anyar Ngenteni Review",
+            "header_subtitle": "Tindakan dibutuhake saka Superadmin",
+            "greeting": "Halo, Admin!",
+            "body": "Ana sekolah anyar sing wis rampung verifikasi email lan <strong>ngenteni persetujuan sampeyan</strong> kanggo diaktifake.",
+            "info_card_title": "Detail Pendaftaran",
+            "info_school_name_label": "Jeneng Sekolah",
+            "info_slug_label": "Slug / URL",
+            "info_admin_email_label": "Email Admin",
+            "info_registered_at_label": "Wektu Daftar",
+            "cta_button": "Review ing Dashboard Superadmin",
+            "footer_title": "Aldudu Academy &mdash; Notifikasi Sistem",
+            "footer_note": "Email iki dikirim otomatis. Aja mangsuli email iki."
+        }
     }
 }

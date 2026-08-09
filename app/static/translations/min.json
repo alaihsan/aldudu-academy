@@ -1273,5 +1273,93 @@
             "language_not_supported": "Bahaso indak didukuang",
             "language_changed": "Bahaso barasil diubah"
         }
+    },
+    "emails": {
+        "common": {
+            "footer_tagline": "Platform Manajemen Sikola Digital",
+            "footer_copyright": "© 2025 Aldudu Academy. Sadonyo hak dilindungi."
+        },
+        "verify_email": {
+            "subject": "Verifikasi Email - {0} | Aldudu Academy",
+            "title": "Verifikasi Email – Aldudu Academy",
+            "banner_subtitle": "Verifikasi Email Pandaftaran",
+            "step_register": "DAFTAR",
+            "step_verify": "VERIFIKASI",
+            "step_approval": "APPROVAL",
+            "step_login": "LOGIN",
+            "greeting": "Halo, {0}!",
+            "body_pre": "Tarimo kasih lah mandaftarkan",
+            "body_post": "ka platform Aldudu Academy. Ciek langkah lai — caliak alamat email sanak untuak malanjuikan proses pandaftaran.",
+            "cta_button": "Verifikasi Email Kini",
+            "info_box_title": "⏳ Tautan balaku salamo 24 jam.",
+            "info_box_body": "Jiko sanak indak mandaftarkan sikola ko, abaikan email ko — indak ado tindakan nan dibutuahkan.",
+            "fallback_text": "Tombol indak bafungsi? Salin URL ko ka browser sanak:"
+        },
+        "reset_password": {
+            "subject": "Reset Password - Aldudu Academy",
+            "title": "Reset Password – Aldudu Academy",
+            "header_title": "Reset Kato Sandi",
+            "header_subtitle": "Pamintaan reset kato sandi akun sanak",
+            "greeting": "Halo, {0}!",
+            "body_pre": "Kami manarimo pamintaan untuak",
+            "body_bold": "maresek kato sandi",
+            "body_post": "akun Aldudu Academy sanak. Klik tombol dibawah untuak mambuek kato sandi baru nan aman.",
+            "cta_button": "Reset Kato Sandi Kini",
+            "info_expiry_label": "⏳ Balaku Salamo",
+            "info_expiry_value": "1 Jam",
+            "info_expiry_note": "Sajak email ko dikirim",
+            "info_usage_label": "🔒 Pamakaian",
+            "info_usage_value": "Sakali Pakai",
+            "info_usage_note": "Token abih sasudah dipakai",
+            "security_title": "⚠️ Pambaritahuan Kaamanan",
+            "security_body_pre": "Jiko sanak",
+            "security_body_bold": "indak mamintak reset kato sandi",
+            "security_body_post": "abaikan email ko. Indak ado parubahan nan tajadi di akun sanak.",
+            "fallback_text": "Tombol indak bafungsi? Salin URL ko ka browser:"
+        },
+        "school_approved": {
+            "subject": "Sikola Disatujui - {0} | Aldudu Academy",
+            "title": "Salamaik! Sikola Sanak Lah Disatujui – Aldudu Academy",
+            "header_title": "Salamaik Datang!",
+            "header_subtitle": "Sikola Sanak Lah Resmi Aktif di Aldudu Academy",
+            "greeting": "Halo, {0}!",
+            "body_pre": "Kami jo bangga mangumumkan bahaso",
+            "body_post": "kini lah resmi tadaftar sarato aktif sabagai bagian dari ekosistem digital Aldudu Academy. Muloi kini sanak bisa mangatur sikola, murik, guru, jo tahun ajaran sacaro digital.",
+            "info_card_title": "🏫 Informasi Sikola",
+            "info_school_name_label": "Namo Sikola",
+            "info_dashboard_url_label": "URL Dashboard",
+            "info_status_label": "Status",
+            "info_status_value": "AKTIF",
+            "cta_button": "Login &amp; Muloi Mangatur Sikola",
+            "quick_start_title": "🚀 Langkah Awal nan Disarankan:",
+            "quick_start_step1": "Mambuek <strong>Tahun Ajaran</strong> baru untuak mamuloi aktivitas akademik",
+            "quick_start_step2": "Impor <strong>Data Murik</strong> mamakai template CSV nan ado",
+            "quick_start_step3": "Tambahkan akun <strong>Guru</strong> jo agiah akses ka kelas masiang-masiang",
+            "support_banner_pre": "Butuah bantuan? Bukak menu",
+            "support_banner_bold": "Tiket Support",
+            "support_banner_post": "dari dashboard sanak atau hubungi kami di"
+        },
+        "ticket_update": {
+            "subject": "Update Tiket {0} - Aldudu Academy",
+            "header_subtitle": "Update Tiket",
+            "resolved_notice": "Tiket lah salasai."
+        },
+        "new_school_notification": {
+            "subject": "[Pandaftaran Baru] {0} Manunggu Approval",
+            "title": "Pandaftaran Sikola Baru – Aldudu Academy",
+            "badge_label": "PANDAFTARAN BARU",
+            "header_title": "Sikola Baru Manunggu Review",
+            "header_subtitle": "Tindakan dibutuahkan dari Superadmin",
+            "greeting": "Halo, Admin!",
+            "body": "Ado sikola baru nan lah salasai verifikasi email jo <strong>manunggu izin sanak</strong> untuak diaktifkan.",
+            "info_card_title": "Detail Pandaftaran",
+            "info_school_name_label": "Namo Sikola",
+            "info_slug_label": "Slug / URL",
+            "info_admin_email_label": "Email Admin",
+            "info_registered_at_label": "Wakatu Daftar",
+            "cta_button": "Review di Dashboard Superadmin",
+            "footer_title": "Aldudu Academy &mdash; Pambaritahuan Sistem",
+            "footer_note": "Email ko dikirim otomatis. Jan balehi email ko."
+        }
     }
 }

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="{{ lang }}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Selamat! Sekolah Anda Telah Disetujui – Aldudu Academy</title>
+  <title>{{ t('emails.school_approved.title', lang) }}</title>
 </head>
 <body style="margin:0;padding:0;background-color:#f0fdf4;font-family:'Inter',Arial,sans-serif;">
 
@@ -19,8 +19,8 @@
             <div style="width:64px;height:64px;background:rgba(255,255,255,0.15);border-radius:50%;margin:0 auto 16px;border:2px solid rgba(255,255,255,0.3);">
               <span style="font-size:32px;line-height:64px;display:block;text-align:center;">&#127881;</span>
             </div>
-            <h1 style="color:#fff;font-size:26px;font-weight:900;margin:0 0 6px;letter-spacing:-0.5px;">Selamat Bergabung!</h1>
-            <p style="color:#a7f3d0;font-size:14px;margin:0;letter-spacing:0.5px;">Sekolah Anda Telah Resmi Aktif di Aldudu Academy</p>
+            <h1 style="color:#fff;font-size:26px;font-weight:900;margin:0 0 6px;letter-spacing:-0.5px;">{{ t('emails.school_approved.header_title', lang) }}</h1>
+            <p style="color:#a7f3d0;font-size:14px;margin:0;letter-spacing:0.5px;">{{ t('emails.school_approved.header_subtitle', lang) }}</p>
             <!-- Brand badge -->
             <div style="display:inline-block;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:6px 16px;margin-top:16px;">
               <span style="color:#d1fae5;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;">ALDUDU ACADEMY</span>
@@ -31,20 +31,19 @@
         <!-- Main Content -->
         <tr>
           <td style="background:#fff;padding:36px 40px;border-left:1px solid #d1fae5;border-right:1px solid #d1fae5;">
-            <p style="color:#0f172a;font-size:18px;font-weight:700;margin:0 0 8px;">Halo, {{ admin_name }}!</p>
+            <p style="color:#0f172a;font-size:18px;font-weight:700;margin:0 0 8px;">{{ t('emails.school_approved.greeting', lang, None, admin_name) }}</p>
             <p style="color:#475569;font-size:15px;line-height:1.7;margin:0 0 28px;">
-              Kami dengan bangga mengumumkan bahwa <strong style="color:#065f46;">{{ school_name }}</strong>
-              kini telah resmi terdaftar dan aktif sebagai bagian dari ekosistem digital Aldudu Academy.
-              Mulai sekarang Anda bisa mengelola sekolah, siswa, guru, dan tahun ajaran secara digital.
+              {{ t('emails.school_approved.body_pre', lang) }} <strong style="color:#065f46;">{{ school_name }}</strong>
+              {{ t('emails.school_approved.body_post', lang) }}
             </p>
 
             <!-- School Info Card -->
             <div style="background:linear-gradient(135deg,#f0fdf4,#ecfdf5);border:1px solid #86efac;border-radius:12px;padding:20px 24px;margin-bottom:28px;">
-              <p style="color:#14532d;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin:0 0 12px;">&#127eb; Informasi Sekolah</p>
+              <p style="color:#14532d;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin:0 0 12px;">&#127eb; {{ t('emails.school_approved.info_card_title', lang) }}</p>
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td style="padding:4px 0;">
-                    <span style="color:#6b7280;font-size:13px;">Nama Sekolah</span>
+                    <span style="color:#6b7280;font-size:13px;">{{ t('emails.school_approved.info_school_name_label', lang) }}</span>
                   </td>
                   <td style="padding:4px 0;text-align:right;">
                     <strong style="color:#14532d;font-size:13px;">{{ school_name }}</strong>
@@ -52,7 +51,7 @@
                 </tr>
                 <tr>
                   <td style="padding:4px 0;">
-                    <span style="color:#6b7280;font-size:13px;">URL Dashboard</span>
+                    <span style="color:#6b7280;font-size:13px;">{{ t('emails.school_approved.info_dashboard_url_label', lang) }}</span>
                   </td>
                   <td style="padding:4px 0;text-align:right;">
                     <span style="color:#059669;font-size:12px;font-weight:600;">/s/{{ school_slug }}/dashboard</span>
@@ -60,10 +59,10 @@
                 </tr>
                 <tr>
                   <td style="padding:4px 0;">
-                    <span style="color:#6b7280;font-size:13px;">Status</span>
+                    <span style="color:#6b7280;font-size:13px;">{{ t('emails.school_approved.info_status_label', lang) }}</span>
                   </td>
                   <td style="padding:4px 0;text-align:right;">
-                    <span style="background:#dcfce7;color:#16a34a;font-size:11px;font-weight:700;padding:2px 10px;border-radius:20px;letter-spacing:0.5px;">AKTIF</span>
+                    <span style="background:#dcfce7;color:#16a34a;font-size:11px;font-weight:700;padding:2px 10px;border-radius:20px;letter-spacing:0.5px;">{{ t('emails.school_approved.info_status_value', lang) }}</span>
                   </td>
                 </tr>
               </table>
@@ -75,7 +74,7 @@
                 <td align="center">
                   <a href="{{ login_url }}"
                      style="display:inline-block;background:linear-gradient(135deg,#059669,#047857);color:#fff;text-decoration:none;padding:16px 44px;border-radius:12px;font-weight:700;font-size:15px;letter-spacing:0.5px;box-shadow:0 4px 15px rgba(5,150,105,0.4);">
-                    &#9654;&nbsp; Login &amp; Mulai Kelola Sekolah
+                    &#9654;&nbsp; {{ t('emails.school_approved.cta_button', lang) | safe }}
                   </a>
                 </td>
               </tr>
@@ -83,24 +82,24 @@
 
             <!-- Quick Start Steps -->
             <div style="border-top:1px solid #e2e8f0;padding-top:24px;">
-              <p style="color:#374151;font-size:13px;font-weight:700;margin:0 0 16px;letter-spacing:0.5px;">&#128640; Langkah Awal yang Disarankan:</p>
+              <p style="color:#374151;font-size:13px;font-weight:700;margin:0 0 16px;letter-spacing:0.5px;">&#128640; {{ t('emails.school_approved.quick_start_title', lang) }}</p>
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td style="vertical-align:top;padding:6px 0;">
                     <div style="width:24px;height:24px;background:#dcfce7;border-radius:50%;display:inline-block;text-align:center;line-height:24px;font-size:11px;font-weight:700;color:#16a34a;margin-right:10px;">1</div>
-                    <span style="color:#374151;font-size:13px;line-height:1.5;">Buat <strong>Tahun Ajaran</strong> baru untuk memulai aktivitas akademik</span>
+                    <span style="color:#374151;font-size:13px;line-height:1.5;">{{ t('emails.school_approved.quick_start_step1', lang) | safe }}</span>
                   </td>
                 </tr>
                 <tr>
                   <td style="vertical-align:top;padding:6px 0;">
                     <div style="width:24px;height:24px;background:#dcfce7;border-radius:50%;display:inline-block;text-align:center;line-height:24px;font-size:11px;font-weight:700;color:#16a34a;margin-right:10px;">2</div>
-                    <span style="color:#374151;font-size:13px;line-height:1.5;">Import <strong>Data Siswa</strong> menggunakan template CSV yang tersedia</span>
+                    <span style="color:#374151;font-size:13px;line-height:1.5;">{{ t('emails.school_approved.quick_start_step2', lang) | safe }}</span>
                   </td>
                 </tr>
                 <tr>
                   <td style="vertical-align:top;padding:6px 0;">
                     <div style="width:24px;height:24px;background:#dcfce7;border-radius:50%;display:inline-block;text-align:center;line-height:24px;font-size:11px;font-weight:700;color:#16a34a;margin-right:10px;">3</div>
-                    <span style="color:#374151;font-size:13px;line-height:1.5;">Tambahkan akun <strong>Guru</strong> dan berikan akses ke kelas masing-masing</span>
+                    <span style="color:#374151;font-size:13px;line-height:1.5;">{{ t('emails.school_approved.quick_start_step3', lang) | safe }}</span>
                   </td>
                 </tr>
               </table>
@@ -112,8 +111,8 @@
         <tr>
           <td style="background:#f0fdf4;border:1px solid #d1fae5;border-top:none;padding:16px 40px;text-align:center;border-left:1px solid #d1fae5;border-right:1px solid #d1fae5;">
             <p style="color:#065f46;font-size:13px;margin:0;line-height:1.6;">
-              Butuh bantuan? Buka menu <strong>Tiket Support</strong> dari dashboard Anda
-              atau hubungi kami di <span style="color:#059669;">support@aldudu.academy</span>
+              {{ t('emails.school_approved.support_banner_pre', lang) }} <strong>{{ t('emails.school_approved.support_banner_bold', lang) }}</strong>
+              {{ t('emails.school_approved.support_banner_post', lang) }} <span style="color:#059669;">support@aldudu.academy</span>
             </p>
           </td>
         </tr>
@@ -122,8 +121,8 @@
         <tr>
           <td style="background:#f8fafc;border:1px solid #e2e8f0;border-top:none;border-radius:0 0 16px 16px;padding:20px 40px;text-align:center;">
             <p style="color:#1e1b4b;font-size:13px;font-weight:700;margin:0 0 4px;">Aldudu Academy</p>
-            <p style="color:#94a3b8;font-size:11px;margin:0;">Platform Manajemen Sekolah Digital &bull; noreply@aldudu.academy</p>
-            <p style="color:#cbd5e1;font-size:10px;margin:12px 0 0;">&copy; 2025 Aldudu Academy. Seluruh hak dilindungi.</p>
+            <p style="color:#94a3b8;font-size:11px;margin:0;">{{ t('emails.common.footer_tagline', lang) }} &bull; noreply@aldudu.academy</p>
+            <p style="color:#cbd5e1;font-size:10px;margin:12px 0 0;">{{ t('emails.common.footer_copyright', lang) }}</p>
           </td>
         </tr>
 

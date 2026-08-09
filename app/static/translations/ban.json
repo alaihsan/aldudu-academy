@@ -1273,5 +1273,93 @@
             "language_not_supported": "Basa nenten kadukung",
             "language_changed": "Basa prasida kaubah"
         }
+    },
+    "emails": {
+        "common": {
+            "footer_tagline": "Platform Manajemen Sekolah Digital",
+            "footer_copyright": "© 2025 Aldudu Academy. Makasami hak kalindungin."
+        },
+        "verify_email": {
+            "subject": "Verifikasi Email - {0} | Aldudu Academy",
+            "title": "Verifikasi Email – Aldudu Academy",
+            "banner_subtitle": "Verifikasi Email Pendaptaran",
+            "step_register": "DAPTAR",
+            "step_verify": "VERIFIKASI",
+            "step_approval": "APPROVAL",
+            "step_login": "LOGIN",
+            "greeting": "Om Swastiastu, {0}!",
+            "body_pre": "Suksma sampun ngedaptarang",
+            "body_post": "ka platform Aldudu Academy. Anggen langkah malih — uratiang alamat email ragane antuk nglanturang proses pendaptaran.",
+            "cta_button": "Verifikasi Email Mangkin",
+            "info_box_title": "⏳ Tautan mlaku salami 24 jam.",
+            "info_box_body": "Yening ragane nenten ngedaptarang sekolah puniki, lirwayang email puniki — nenten wenten tindakan sane kabuatang.",
+            "fallback_text": "Tombol nenten mlaku? Salin tautan puniki ka browser ragane:"
+        },
+        "reset_password": {
+            "subject": "Reset Password - Aldudu Academy",
+            "title": "Reset Password – Aldudu Academy",
+            "header_title": "Reset Sandi",
+            "header_subtitle": "Pangidih reset sandi akun ragane",
+            "greeting": "Om Swastiastu, {0}!",
+            "body_pre": "Titiang nampi pangidih antuk",
+            "body_bold": "ngereset sandi",
+            "body_post": "akun Aldudu Academy ragane. Klik tombol ring sor antuk ngaryanin sandi anyar sane aman.",
+            "cta_button": "Reset Sandi Mangkin",
+            "info_expiry_label": "⏳ Mlaku Salami",
+            "info_expiry_value": "1 Jam",
+            "info_expiry_note": "Saking email puniki kakirim",
+            "info_usage_label": "🔒 Panganggen",
+            "info_usage_value": "Apisan Kanggen",
+            "info_usage_note": "Token telas sasampun kanggen",
+            "security_title": "⚠️ Pemberitahuan Kaamanan",
+            "security_body_pre": "Yening ragane",
+            "security_body_bold": "nenten ngidih reset sandi",
+            "security_body_post": "lirwayang email puniki. Nenten wenten paobahan sane wenten ring akun ragane.",
+            "fallback_text": "Tombol nenten mlaku? Salin tautan puniki ka browser:"
+        },
+        "school_approved": {
+            "subject": "Sekolah Kasetujuin - {0} | Aldudu Academy",
+            "title": "Selamat! Sekolah Ragane Sampun Kasetujuin – Aldudu Academy",
+            "header_title": "Rahajeng Rauh!",
+            "header_subtitle": "Sekolah Ragane Sampun Resmi Aktif ring Aldudu Academy",
+            "greeting": "Om Swastiastu, {0}!",
+            "body_pre": "Titiang bangga ngumumang inggih punika",
+            "body_post": "mangkin sampun resmi kadaptar tur aktif dados bagian saking ekosistem digital Aldudu Academy. Ngawit mangkin ragane prasida ngatur sekolah, sisia, guru, miwah warsa ajaran secara digital.",
+            "info_card_title": "🏫 Informasi Sekolah",
+            "info_school_name_label": "Wasta Sekolah",
+            "info_dashboard_url_label": "URL Dashboard",
+            "info_status_label": "Status",
+            "info_status_value": "AKTIF",
+            "cta_button": "Login &amp; Ngawitin Ngatur Sekolah",
+            "quick_start_title": "🚀 Langkah Ngawit sane Kasarankan:",
+            "quick_start_step1": "Ngaryanin <strong>Warsa Ajaran</strong> anyar antuk ngawitin aktivitas akademik",
+            "quick_start_step2": "Ngimpor <strong>Data Sisia</strong> nganggen template CSV sane wenten",
+            "quick_start_step3": "Nambahin akun <strong>Guru</strong> tur maicayang akses ka kelas suang-suang",
+            "support_banner_pre": "Merluang bantuan? Ampakang menu",
+            "support_banner_bold": "Tiket Support",
+            "support_banner_post": "saking dashboard ragane utawi uratiang titiang ring"
+        },
+        "ticket_update": {
+            "subject": "Update Tiket {0} - Aldudu Academy",
+            "header_subtitle": "Update Tiket",
+            "resolved_notice": "Tiket sampun kapuputang."
+        },
+        "new_school_notification": {
+            "subject": "[Pendaptaran Anyar] {0} Ngantosang Approval",
+            "title": "Pendaptaran Sekolah Anyar – Aldudu Academy",
+            "badge_label": "PENDAPTARAN ANYAR",
+            "header_title": "Sekolah Anyar Ngantosang Review",
+            "header_subtitle": "Tindakan kabuatang saking Superadmin",
+            "greeting": "Om Swastiastu, Admin!",
+            "body": "Wenten sekolah anyar sane sampun mragatang verifikasi email tur <strong>ngantosang lisensi ragane</strong> antuk kaaktifang.",
+            "info_card_title": "Detail Pendaptaran",
+            "info_school_name_label": "Wasta Sekolah",
+            "info_slug_label": "Slug / URL",
+            "info_admin_email_label": "Email Admin",
+            "info_registered_at_label": "Galah Daptar",
+            "cta_button": "Review ring Dashboard Superadmin",
+            "footer_title": "Aldudu Academy &mdash; Pemberitahuan Sistem",
+            "footer_note": "Email puniki kakirim otomatis. Sampunang nyaurin email puniki."
+        }
     }
 }

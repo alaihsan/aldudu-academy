@@ -1274,5 +1274,93 @@
             "language_not_supported": "اللغة غير مدعومة",
             "language_changed": "تم تغيير اللغة بنجاح"
         }
+    },
+    "emails": {
+        "common": {
+            "footer_tagline": "منصة إدارة المدارس الرقمية",
+            "footer_copyright": "© 2025 Aldudu Academy. جميع الحقوق محفوظة."
+        },
+        "verify_email": {
+            "subject": "تحقق من بريدك الإلكتروني - {0} | Aldudu Academy",
+            "title": "التحقق من البريد الإلكتروني – Aldudu Academy",
+            "banner_subtitle": "التحقق من بريد التسجيل",
+            "step_register": "التسجيل",
+            "step_verify": "التحقق",
+            "step_approval": "الموافقة",
+            "step_login": "تسجيل الدخول",
+            "greeting": "مرحباً، {0}!",
+            "body_pre": "شكراً لتسجيلك",
+            "body_post": "في منصة Aldudu Academy. خطوة واحدة أخرى — يرجى التحقق من بريدك الإلكتروني لمتابعة عملية التسجيل.",
+            "cta_button": "تحقق من البريد الإلكتروني الآن",
+            "info_box_title": "⏳ الرابط صالح لمدة 24 ساعة.",
+            "info_box_body": "إذا لم تقم بتسجيل هذه المدرسة، تجاهل هذا البريد الإلكتروني — لا حاجة لأي إجراء.",
+            "fallback_text": "الزر لا يعمل؟ انسخ الرابط أدناه إلى متصفحك:"
+        },
+        "reset_password": {
+            "subject": "إعادة تعيين كلمة المرور - Aldudu Academy",
+            "title": "إعادة تعيين كلمة المرور – Aldudu Academy",
+            "header_title": "إعادة تعيين كلمة المرور",
+            "header_subtitle": "طلب إعادة تعيين كلمة مرور حسابك",
+            "greeting": "مرحباً، {0}!",
+            "body_pre": "لقد تلقينا طلباً",
+            "body_bold": "لإعادة تعيين كلمة المرور",
+            "body_post": "لحساب Aldudu Academy الخاص بك. انقر على الزر أدناه لإنشاء كلمة مرور جديدة وآمنة.",
+            "cta_button": "إعادة تعيين كلمة المرور الآن",
+            "info_expiry_label": "⏳ صالح لمدة",
+            "info_expiry_value": "ساعة واحدة",
+            "info_expiry_note": "منذ إرسال هذا البريد الإلكتروني",
+            "info_usage_label": "🔒 الاستخدام",
+            "info_usage_value": "استخدام واحد فقط",
+            "info_usage_note": "تنتهي صلاحية الرمز بعد الاستخدام",
+            "security_title": "⚠️ إشعار أمني",
+            "security_body_pre": "إذا لم",
+            "security_body_bold": "تطلب إعادة تعيين كلمة المرور",
+            "security_body_post": "تجاهل هذا البريد الإلكتروني. لم يتم إجراء أي تغييرات على حسابك.",
+            "fallback_text": "الزر لا يعمل؟ انسخ هذا الرابط إلى متصفحك:"
+        },
+        "school_approved": {
+            "subject": "تمت الموافقة على المدرسة - {0} | Aldudu Academy",
+            "title": "تهانينا! تمت الموافقة على مدرستك – Aldudu Academy",
+            "header_title": "أهلاً بك!",
+            "header_subtitle": "مدرستك الآن نشطة رسمياً على Aldudu Academy",
+            "greeting": "مرحباً، {0}!",
+            "body_pre": "يسعدنا أن نعلن أن",
+            "body_post": "أصبحت الآن مسجلة رسمياً ونشطة كجزء من النظام الرقمي لـ Aldudu Academy. بدءاً من الآن، يمكنك إدارة مدرستك وطلابك ومعلميك وسنواتك الدراسية رقمياً.",
+            "info_card_title": "🏫 معلومات المدرسة",
+            "info_school_name_label": "اسم المدرسة",
+            "info_dashboard_url_label": "رابط لوحة التحكم",
+            "info_status_label": "الحالة",
+            "info_status_value": "نشط",
+            "cta_button": "تسجيل الدخول وبدء إدارة المدرسة",
+            "quick_start_title": "🚀 الخطوات الأولى الموصى بها:",
+            "quick_start_step1": "أنشئ <strong>سنة دراسية</strong> جديدة لبدء الأنشطة الأكاديمية",
+            "quick_start_step2": "استورد <strong>بيانات الطلاب</strong> باستخدام قالب CSV المتاح",
+            "quick_start_step3": "أضف حسابات <strong>المعلمين</strong> وامنحهم الوصول إلى فصولهم",
+            "support_banner_pre": "تحتاج مساعدة؟ افتح قائمة",
+            "support_banner_bold": "تذاكر الدعم",
+            "support_banner_post": "من لوحة التحكم الخاصة بك أو تواصل معنا على"
+        },
+        "ticket_update": {
+            "subject": "تحديث التذكرة {0} - Aldudu Academy",
+            "header_subtitle": "تحديث التذكرة",
+            "resolved_notice": "تم حل التذكرة."
+        },
+        "new_school_notification": {
+            "subject": "[تسجيل جديد] {0} في انتظار الموافقة",
+            "title": "تسجيل مدرسة جديدة – Aldudu Academy",
+            "badge_label": "تسجيل جديد",
+            "header_title": "مدرسة جديدة في انتظار المراجعة",
+            "header_subtitle": "مطلوب إجراء من المشرف العام",
+            "greeting": "مرحباً، أيها المشرف!",
+            "body": "أكملت مدرسة جديدة التحقق من البريد الإلكتروني وهي <strong>في انتظار موافقتك</strong> للتفعيل.",
+            "info_card_title": "تفاصيل التسجيل",
+            "info_school_name_label": "اسم المدرسة",
+            "info_slug_label": "الرابط المختصر / URL",
+            "info_admin_email_label": "بريد المشرف الإلكتروني",
+            "info_registered_at_label": "وقت التسجيل",
+            "cta_button": "المراجعة في لوحة تحكم المشرف العام",
+            "footer_title": "Aldudu Academy &mdash; إشعار النظام",
+            "footer_note": "تم إرسال هذا البريد الإلكتروني تلقائياً. لا ترد على هذا البريد."
+        }
     }
 }

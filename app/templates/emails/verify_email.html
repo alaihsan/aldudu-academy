@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="{{ lang }}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Verifikasi Email – Aldudu Academy</title>
+  <title>{{ t('emails.verify_email.title', lang) }}</title>
 </head>
 <body style="margin:0;padding:0;background-color:#f1f5f9;font-family:'Inter',Arial,sans-serif;">
 
@@ -20,7 +20,7 @@
               <span style="color:#a5b4fc;font-size:13px;font-weight:700;letter-spacing:3px;text-transform:uppercase;">ALDUDU</span>
               <span style="color:#fff;font-size:13px;font-weight:700;letter-spacing:3px;text-transform:uppercase;"> ACADEMY</span>
             </div>
-            <p style="color:#c7d2fe;font-size:12px;letter-spacing:2px;text-transform:uppercase;margin:0;font-weight:500;">Verifikasi Email Pendaftaran</p>
+            <p style="color:#c7d2fe;font-size:12px;letter-spacing:2px;text-transform:uppercase;margin:0;font-weight:500;">{{ t('emails.verify_email.banner_subtitle', lang) }}</p>
           </td>
         </tr>
 
@@ -34,7 +34,7 @@
                   <div style="width:28px;height:28px;background:#6366f1;border-radius:50%;margin:0 auto 6px;display:flex;align-items:center;justify-content:center;">
                     <span style="color:#fff;font-size:12px;font-weight:700;line-height:28px;display:block;text-align:center;">✓</span>
                   </div>
-                  <p style="color:#6366f1;font-size:10px;font-weight:600;margin:0;letter-spacing:0.5px;">DAFTAR</p>
+                  <p style="color:#6366f1;font-size:10px;font-weight:600;margin:0;letter-spacing:0.5px;">{{ t('emails.verify_email.step_register', lang) }}</p>
                 </td>
                 <!-- Line -->
                 <td width="4%"><div style="height:2px;background:#6366f1;margin-top:-14px;"></div></td>
@@ -43,7 +43,7 @@
                   <div style="width:28px;height:28px;background:#6366f1;border-radius:50%;margin:0 auto 6px;border:3px solid #c7d2fe;">
                     <span style="color:#fff;font-size:11px;font-weight:700;line-height:22px;display:block;text-align:center;">2</span>
                   </div>
-                  <p style="color:#4f46e5;font-size:10px;font-weight:700;margin:0;letter-spacing:0.5px;">VERIFIKASI</p>
+                  <p style="color:#4f46e5;font-size:10px;font-weight:700;margin:0;letter-spacing:0.5px;">{{ t('emails.verify_email.step_verify', lang) }}</p>
                 </td>
                 <!-- Line -->
                 <td width="4%"><div style="height:2px;background:#e2e8f0;margin-top:-14px;"></div></td>
@@ -52,7 +52,7 @@
                   <div style="width:28px;height:28px;background:#e2e8f0;border-radius:50%;margin:0 auto 6px;">
                     <span style="color:#94a3b8;font-size:11px;font-weight:600;line-height:28px;display:block;text-align:center;">3</span>
                   </div>
-                  <p style="color:#94a3b8;font-size:10px;font-weight:500;margin:0;letter-spacing:0.5px;">APPROVAL</p>
+                  <p style="color:#94a3b8;font-size:10px;font-weight:500;margin:0;letter-spacing:0.5px;">{{ t('emails.verify_email.step_approval', lang) }}</p>
                 </td>
                 <!-- Line -->
                 <td width="4%"><div style="height:2px;background:#e2e8f0;margin-top:-14px;"></div></td>
@@ -61,7 +61,7 @@
                   <div style="width:28px;height:28px;background:#e2e8f0;border-radius:50%;margin:0 auto 6px;">
                     <span style="color:#94a3b8;font-size:11px;font-weight:600;line-height:28px;display:block;text-align:center;">4</span>
                   </div>
-                  <p style="color:#94a3b8;font-size:10px;font-weight:500;margin:0;letter-spacing:0.5px;">LOGIN</p>
+                  <p style="color:#94a3b8;font-size:10px;font-weight:500;margin:0;letter-spacing:0.5px;">{{ t('emails.verify_email.step_login', lang) }}</p>
                 </td>
               </tr>
             </table>
@@ -78,10 +78,10 @@
         <!-- Body -->
         <tr>
           <td style="background:#fff;padding:0 40px 32px;border-left:1px solid #e2e8f0;border-right:1px solid #e2e8f0;">
-            <p style="color:#0f172a;font-size:22px;font-weight:800;margin:0 0 8px;">Halo, {{ user_name }}!</p>
+            <p style="color:#0f172a;font-size:22px;font-weight:800;margin:0 0 8px;">{{ t('emails.verify_email.greeting', lang, None, user_name) }}</p>
             <p style="color:#475569;font-size:15px;line-height:1.7;margin:0 0 16px;">
-              Terima kasih telah mendaftarkan <strong style="color:#1e1b4b;">{{ school_name }}</strong> ke platform Aldudu Academy.
-              Satu langkah lagi — silakan verifikasi alamat email Anda untuk melanjutkan proses pendaftaran.
+              {{ t('emails.verify_email.body_pre', lang) }} <strong style="color:#1e1b4b;">{{ school_name }}</strong>
+              {{ t('emails.verify_email.body_post', lang) }}
             </p>
 
             <!-- CTA Button -->
@@ -90,7 +90,7 @@
                 <td align="center">
                   <a href="{{ verify_url }}"
                      style="display:inline-block;background:linear-gradient(135deg,#4f46e5,#6366f1);color:#fff;text-decoration:none;padding:16px 40px;border-radius:12px;font-weight:700;font-size:15px;letter-spacing:0.5px;box-shadow:0 4px 15px rgba(79,70,229,0.35);">
-                    &#9993;&nbsp; Verifikasi Email Sekarang
+                    &#9993;&nbsp; {{ t('emails.verify_email.cta_button', lang) }}
                   </a>
                 </td>
               </tr>
@@ -99,14 +99,14 @@
             <!-- Info box -->
             <div style="background:#f8fafc;border:1px solid #e2e8f0;border-left:4px solid #6366f1;border-radius:8px;padding:14px 18px;">
               <p style="color:#475569;font-size:13px;margin:0;line-height:1.6;">
-                <strong style="color:#1e1b4b;">&#8987; Link berlaku selama 24 jam.</strong><br>
-                Jika Anda tidak mendaftarkan sekolah ini, abaikan email ini — tidak ada tindakan yang diperlukan.
+                <strong style="color:#1e1b4b;">&#8987; {{ t('emails.verify_email.info_box_title', lang) }}</strong><br>
+                {{ t('emails.verify_email.info_box_body', lang) }}
               </p>
             </div>
 
             <!-- Fallback URL -->
             <p style="color:#94a3b8;font-size:12px;margin:20px 0 0;line-height:1.6;">
-              Tombol tidak berfungsi? Salin URL berikut ke browser Anda:<br>
+              {{ t('emails.verify_email.fallback_text', lang) }}<br>
               <span style="color:#6366f1;word-break:break-all;font-size:11px;">{{ verify_url }}</span>
             </p>
           </td>
@@ -116,8 +116,8 @@
         <tr>
           <td style="background:#f8fafc;border:1px solid #e2e8f0;border-top:none;border-radius:0 0 16px 16px;padding:20px 40px;text-align:center;">
             <p style="color:#1e1b4b;font-size:13px;font-weight:700;margin:0 0 4px;">Aldudu Academy</p>
-            <p style="color:#94a3b8;font-size:11px;margin:0;">Platform Manajemen Sekolah Digital &bull; noreply@aldudu.academy</p>
-            <p style="color:#cbd5e1;font-size:10px;margin:12px 0 0;">&copy; 2025 Aldudu Academy. Seluruh hak dilindungi.</p>
+            <p style="color:#94a3b8;font-size:11px;margin:0;">{{ t('emails.common.footer_tagline', lang) }} &bull; noreply@aldudu.academy</p>
+            <p style="color:#cbd5e1;font-size:10px;margin:12px 0 0;">{{ t('emails.common.footer_copyright', lang) }}</p>
           </td>
         </tr>
 
