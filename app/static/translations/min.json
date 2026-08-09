@@ -526,7 +526,25 @@
         "be_first_hint": "Jadilah nan partamo mamulai diskusi di kelas ko!",
         "start_first_discussion_button": "Mulai Diskusi Partamo",
         "failed_load": "Indak bisa mamuek diskusi",
-        "failed_create": "Indak bisa mambuek diskusi"
+        "failed_create": "Indak bisa mambuek diskusi",
+        "messages": {
+            "no_permission_create_discussion": "Sanak indak punyo izin mambuek diskusi di kelas ko",
+            "title_and_content_required": "Judul jo isi diskusi musti diisi",
+            "failed_create_discussion": "Taradi kasalahan wakatu mambuek diskusi",
+            "no_permission_view_discussions": "Sanak indak punyo izin maliek diskusi di kelas ko",
+            "discussion_not_found": "Diskusi indak ditamukan",
+            "no_permission_view_discussion": "Sanak indak punyo izin maliek diskusi ko",
+            "discussion_closed": "Diskusi ko lah ditutuik",
+            "reply_content_required": "Isi balasan indak buliah kosong",
+            "post_not_found": "Post indak ditamukan",
+            "no_permission_delete_post": "Sanak indak punyo izin mahapuih post ko",
+            "posting_not_found": "Postingan indak ditamukan.",
+            "no_permission_edit_post": "Sanak indak punyo izin mangubah postingan ko.",
+            "content_required": "Konten indak buliah kosong.",
+            "post_updated": "Postingan barasil dipabaru.",
+            "only_creator_can_close": "Hanyo nan mambuek diskusi nan bisa manutuik",
+            "discussion_closed_success": "Diskusi lah ditutuik"
+        }
     },
     "auth": {
         "email": "Email",

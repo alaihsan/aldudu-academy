@@ -526,7 +526,25 @@
         "be_first_hint": "Be the first to start a discussion in this class!",
         "start_first_discussion_button": "Start First Discussion",
         "failed_load": "Failed to load discussions",
-        "failed_create": "Failed to create discussion"
+        "failed_create": "Failed to create discussion",
+        "messages": {
+            "no_permission_create_discussion": "You don't have permission to create a discussion in this class",
+            "title_and_content_required": "Discussion title and content are required",
+            "failed_create_discussion": "An error occurred while creating the discussion",
+            "no_permission_view_discussions": "You don't have permission to view discussions in this class",
+            "discussion_not_found": "Discussion not found",
+            "no_permission_view_discussion": "You don't have permission to view this discussion",
+            "discussion_closed": "This discussion is already closed",
+            "reply_content_required": "Reply content cannot be empty",
+            "post_not_found": "Post not found",
+            "no_permission_delete_post": "You don't have permission to delete this post",
+            "posting_not_found": "Post not found.",
+            "no_permission_edit_post": "You don't have permission to edit this post.",
+            "content_required": "Content cannot be empty.",
+            "post_updated": "Post updated successfully.",
+            "only_creator_can_close": "Only the discussion creator can close it",
+            "discussion_closed_success": "Discussion has been closed"
+        }
     },
     "auth": {
         "email": "Email",

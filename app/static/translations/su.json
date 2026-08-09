@@ -526,7 +526,25 @@
         "be_first_hint": "Jadi anu munggaran mimitian diskusi di kelas ieu!",
         "start_first_discussion_button": "Mimitian Diskusi Munggaran",
         "failed_load": "Gagal ngamuat diskusi",
-        "failed_create": "Gagal nyieun diskusi"
+        "failed_create": "Gagal nyieun diskusi",
+        "messages": {
+            "no_permission_create_discussion": "Anjeun teu gaduh idin ngadamel diskusi di kelas ieu",
+            "title_and_content_required": "Judul sareng eusi diskusi wajib dieusian",
+            "failed_create_discussion": "Aya kasalahan waktos ngadamel diskusi",
+            "no_permission_view_discussions": "Anjeun teu gaduh idin ningali diskusi di kelas ieu",
+            "discussion_not_found": "Diskusi teu kapendak",
+            "no_permission_view_discussion": "Anjeun teu gaduh idin ningali diskusi ieu",
+            "discussion_closed": "Diskusi ieu parantos ditutup",
+            "reply_content_required": "Eusi bales teu tiasa kosong",
+            "post_not_found": "Post teu kapendak",
+            "no_permission_delete_post": "Anjeun teu gaduh idin mupus post ieu",
+            "posting_not_found": "Postingan teu kapendak.",
+            "no_permission_edit_post": "Anjeun teu gaduh idin ngédit postingan ieu.",
+            "content_required": "Eusi teu tiasa kosong.",
+            "post_updated": "Postingan suksés dianyarkeun.",
+            "only_creator_can_close": "Ngan nu ngadamel diskusi anu tiasa nutup",
+            "discussion_closed_success": "Diskusi parantos ditutup"
+        }
     },
     "auth": {
         "email": "Email",

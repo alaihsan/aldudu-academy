@@ -526,7 +526,25 @@
         "be_first_hint": "Dados sane kapertama ngawitin diskusi ring kelas puniki!",
         "start_first_discussion_button": "Ngawitin Diskusi Kapertama",
         "failed_load": "Nenten prasida ngamuatang diskusi",
-        "failed_create": "Nenten prasida ngwentenang diskusi"
+        "failed_create": "Nenten prasida ngwentenang diskusi",
+        "messages": {
+            "no_permission_create_discussion": "Ragane nenten madue lisensi ngaryanin diskusi ring kelas puniki",
+            "title_and_content_required": "Judul lan daging diskusi patut kaisi",
+            "failed_create_discussion": "Wenten kaiwangan ritatkala ngaryanin diskusi",
+            "no_permission_view_discussions": "Ragane nenten madue lisensi ngeton diskusi ring kelas puniki",
+            "discussion_not_found": "Diskusi nenten kapanggih",
+            "no_permission_view_discussion": "Ragane nenten madue lisensi ngeton diskusi puniki",
+            "discussion_closed": "Diskusi puniki sampun katutup",
+            "reply_content_required": "Daging pasaur nenten dados kosong",
+            "post_not_found": "Post nenten kapanggih",
+            "no_permission_delete_post": "Ragane nenten madue lisensi ngapus post puniki",
+            "posting_not_found": "Postingan nenten kapanggih.",
+            "no_permission_edit_post": "Ragane nenten madue lisensi ngubah postingan puniki.",
+            "content_required": "Daging nenten dados kosong.",
+            "post_updated": "Postingan prasida kaanyarang.",
+            "only_creator_can_close": "Wantah sane ngaryanin diskusi sane prasida nutup",
+            "discussion_closed_success": "Diskusi sampun katutup"
+        }
     },
     "auth": {
         "email": "Email",

@@ -526,7 +526,25 @@
         "be_first_hint": "Dadi sing pisanan miwiti diskusi ing kelas iki!",
         "start_first_discussion_button": "Mulai Diskusi Pisanan",
         "failed_load": "Gagal ngemot diskusi",
-        "failed_create": "Gagal nggawe diskusi"
+        "failed_create": "Gagal nggawe diskusi",
+        "messages": {
+            "no_permission_create_discussion": "Sampeyan ora duwe izin gawe diskusi ing kelas iki",
+            "title_and_content_required": "Judul lan isi diskusi wajib diisi",
+            "failed_create_discussion": "Ana kesalahan pas gawe diskusi",
+            "no_permission_view_discussions": "Sampeyan ora duwe izin ndeleng diskusi ing kelas iki",
+            "discussion_not_found": "Diskusi ora ditemokake",
+            "no_permission_view_discussion": "Sampeyan ora duwe izin ndeleng diskusi iki",
+            "discussion_closed": "Diskusi iki wis ditutup",
+            "reply_content_required": "Isi balesan ora oleh kosong",
+            "post_not_found": "Post ora ditemokake",
+            "no_permission_delete_post": "Sampeyan ora duwe izin mbusak post iki",
+            "posting_not_found": "Postingan ora ditemokake.",
+            "no_permission_edit_post": "Sampeyan ora duwe izin ngowahi postingan iki.",
+            "content_required": "Konten ora oleh kosong.",
+            "post_updated": "Postingan sukses dianyari.",
+            "only_creator_can_close": "Mung sing gawe diskusi sing bisa nutup",
+            "discussion_closed_success": "Diskusi wis ditutup"
+        }
     },
     "auth": {
         "email": "Email",

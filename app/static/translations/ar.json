@@ -527,7 +527,25 @@
         "be_first_hint": "كن أول من يبدأ نقاشاً في هذا الفصل!",
         "start_first_discussion_button": "بدء أول نقاش",
         "failed_load": "فشل تحميل النقاشات",
-        "failed_create": "فشل إنشاء النقاش"
+        "failed_create": "فشل إنشاء النقاش",
+        "messages": {
+            "no_permission_create_discussion": "ليس لديك إذن لإنشاء نقاش في هذا الفصل",
+            "title_and_content_required": "عنوان ومحتوى النقاش مطلوبان",
+            "failed_create_discussion": "حدث خطأ أثناء إنشاء النقاش",
+            "no_permission_view_discussions": "ليس لديك إذن لعرض النقاشات في هذا الفصل",
+            "discussion_not_found": "النقاش غير موجود",
+            "no_permission_view_discussion": "ليس لديك إذن لعرض هذا النقاش",
+            "discussion_closed": "هذا النقاش مغلق بالفعل",
+            "reply_content_required": "محتوى الرد لا يمكن أن يكون فارغاً",
+            "post_not_found": "المنشور غير موجود",
+            "no_permission_delete_post": "ليس لديك إذن لحذف هذا المنشور",
+            "posting_not_found": "المنشور غير موجود.",
+            "no_permission_edit_post": "ليس لديك إذن لتعديل هذا المنشور.",
+            "content_required": "المحتوى لا يمكن أن يكون فارغاً.",
+            "post_updated": "تم تحديث المنشور بنجاح.",
+            "only_creator_can_close": "فقط منشئ النقاش يمكنه إغلاقه",
+            "discussion_closed_success": "تم إغلاق النقاش"
+        }
     },
     "auth": {
         "email": "البريد الإلكتروني",

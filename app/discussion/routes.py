@@ -10,6 +10,7 @@ from app.models import Course, UserRole
 from app.discussion.models import Discussion, Post, Like
 from app.helpers import sanitize_text
 from app.core.authorization import get_school_id_or_abort, verify_course_in_school
+from app.core.i18n import t
 
 logger = logging.getLogger(__name__)
 
@@ -60,20 +61,20 @@ def discussion_detail(course_id, discussion_id):
 def create_discussion(course_id):
     course = db.session.get(Course, course_id)
     if not course:
-        return jsonify({'success': False, 'message': 'Mata pelajaran tidak ditemukan'}), 404
+        return jsonify({'success': False, 'message': t('messages.course_not_found')}), 404
 
     school_id = get_school_id_or_abort()
     verify_course_in_school(course, school_id)
 
     if current_user.role != UserRole.GURU and current_user not in course.students:
-        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin untuk membuat diskusi di kelas ini'}), 403
+        return jsonify({'success': False, 'message': t('discussion.messages.no_permission_create_discussion')}), 403
 
     data = request.get_json() or {}
     title = sanitize_text(data.get('title', ''), max_len=200)
     content = sanitize_text(data.get('content', ''))
 
     if not title or not content:
-        return jsonify({'success': False, 'message': 'Judul dan isi diskusi wajib diisi'}), 400
+        return jsonify({'success': False, 'message': t('discussion.messages.title_and_content_required')}), 400
 
     try:
         new_discussion = Discussion(
@@ -96,7 +97,7 @@ def create_discussion(course_id):
     except Exception as e:
         db.session.rollback()
         logger.error(f"Failed to create discussion for course {course_id}: {e}", exc_info=True)
-        return jsonify({'success': False, 'message': 'Terjadi kesalahan saat membuat diskusi'}), 500
+        return jsonify({'success': False, 'message': t('discussion.messages.failed_create_discussion')}), 500
 
 
 @discussion_bp.route('/courses/<int:course_id>/discussions', methods=['GET'])
@@ -104,13 +105,13 @@ def create_discussion(course_id):
 def get_discussions(course_id):
     course = db.session.get(Course, course_id)
     if not course:
-        return jsonify({'success': False, 'message': 'Mata pelajaran tidak ditemukan'}), 404
+        return jsonify({'success': False, 'message': t('messages.course_not_found')}), 404
 
     school_id = get_school_id_or_abort()
     verify_course_in_school(course, school_id)
 
     if current_user.role != UserRole.GURU and current_user not in course.students:
-        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin untuk melihat diskusi di kelas ini'}), 403
+        return jsonify({'success': False, 'message': t('discussion.messages.no_permission_view_discussions')}), 403
 
     discussions = Discussion.query.filter_by(course_id=course_id)\
         .options(joinedload(Discussion.user), selectinload(Discussion.posts).joinedload(Post.user))\
@@ -123,10 +124,10 @@ def get_discussions(course_id):
 def get_posts(discussion_id):
     discussion = db.session.get(Discussion, discussion_id)
     if not discussion:
-        return jsonify({'success': False, 'message': 'Diskusi tidak ditemukan'}), 404
+        return jsonify({'success': False, 'message': t('discussion.messages.discussion_not_found')}), 404
 
     if current_user.role != UserRole.GURU and current_user not in discussion.course.students:
-        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin untuk melihat diskusi ini'}), 403
+        return jsonify({'success': False, 'message': t('discussion.messages.no_permission_view_discussion')}), 403
 
     posts = Post.query.filter_by(discussion_id=discussion_id)\
         .options(joinedload(Post.user), selectinload(Post.replies).joinedload(Post.user), selectinload(Post.likes).joinedload(Like.user))\
@@ -139,17 +140,17 @@ def get_posts(discussion_id):
 def add_post(discussion_id):
     discussion = db.session.get(Discussion, discussion_id)
     if not discussion:
-        return jsonify({'success': False, 'message': 'Diskusi tidak ditemukan'}), 404
+        return jsonify({'success': False, 'message': t('discussion.messages.discussion_not_found')}), 404
 
     if discussion.closed:
-        return jsonify({'success': False, 'message': 'Diskusi ini sudah ditutup'}), 403
+        return jsonify({'success': False, 'message': t('discussion.messages.discussion_closed')}), 403
 
     data = request.get_json() or {}
     content = sanitize_text(data.get('content', ''))
     parent_id = data.get('parent_id')
 
     if not content:
-        return jsonify({'success': False, 'message': 'Isi respon tidak boleh kosong'}), 400
+        return jsonify({'success': False, 'message': t('discussion.messages.reply_content_required')}), 400
 
     new_post = Post(
         content=content,
@@ -168,7 +169,7 @@ def add_post(discussion_id):
 def like_post(post_id):
     post = db.session.get(Post, post_id)
     if not post:
-        return jsonify({'success': False, 'message': 'Post tidak ditemukan'}), 404
+        return jsonify({'success': False, 'message': t('discussion.messages.post_not_found')}), 404
 
     like = Like.query.filter_by(post_id=post_id, user_id=current_user.id).first()
     if like:
@@ -187,14 +188,14 @@ def like_post(post_id):
 def delete_post(post_id):
     post = db.session.get(Post, post_id)
     if not post:
-        return jsonify({'success': False, 'message': 'Post tidak ditemukan'}), 404
+        return jsonify({'success': False, 'message': t('discussion.messages.post_not_found')}), 404
 
     school_id = get_school_id_or_abort()
     verify_course_in_school(post.discussion.course, school_id)
 
     # Allow deletion if user is the post author or the discussion creator (teacher)
     if current_user.id != post.user_id and current_user.id != post.discussion.user_id:
-        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin untuk menghapus post ini'}), 403
+        return jsonify({'success': False, 'message': t('discussion.messages.no_permission_delete_post')}), 403
 
     db.session.delete(post)
     db.session.commit()
@@ -207,24 +208,24 @@ def delete_post(post_id):
 def api_edit_post(post_id):
     post = db.session.get(Post, post_id)
     if not post:
-        abort(404, description="Postingan tidak ditemukan.")
+        abort(404, description=t('discussion.messages.posting_not_found'))
 
     school_id = get_school_id_or_abort()
     verify_course_in_school(post.discussion.course, school_id)
 
     if current_user.id != post.user_id:
-        abort(403, description="Anda tidak memiliki izin untuk mengedit postingan ini.")
+        abort(403, description=t('discussion.messages.no_permission_edit_post'))
 
     data = request.get_json()
     content = data.get('content', '').strip()
 
     if not content:
-        return jsonify({'success': False, 'message': 'Konten tidak boleh kosong.'}), 400
+        return jsonify({'success': False, 'message': t('discussion.messages.content_required')}), 400
 
     post.content = sanitize_text(content, max_len=5000)
     db.session.commit()
 
-    return jsonify({'success': True, 'message': 'Postingan berhasil diperbarui.'})
+    return jsonify({'success': True, 'message': t('discussion.messages.post_updated')})
 
 
 @discussion_bp.route('/discussions/<int:discussion_id>/close', methods=['POST'])
@@ -232,12 +233,12 @@ def api_edit_post(post_id):
 def close_discussion(discussion_id):
     discussion = db.session.get(Discussion, discussion_id)
     if not discussion:
-        return jsonify({'success': False, 'message': 'Diskusi tidak ditemukan'}), 404
+        return jsonify({'success': False, 'message': t('discussion.messages.discussion_not_found')}), 404
 
     if discussion.user_id != current_user.id:
-        return jsonify({'success': False, 'message': 'Hanya pembuat diskusi yang dapat menutupnya'}), 403
+        return jsonify({'success': False, 'message': t('discussion.messages.only_creator_can_close')}), 403
 
     discussion.closed = True
     db.session.commit()
 
-    return jsonify({'success': True, 'message': 'Diskusi telah ditutup'})
+    return jsonify({'success': True, 'message': t('discussion.messages.discussion_closed_success')})
