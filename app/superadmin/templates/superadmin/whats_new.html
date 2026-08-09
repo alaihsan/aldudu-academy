@@ -1,7 +1,7 @@
 {% extends "superadmin/base.html" %}
 {% block title %}Input What's New — Super Admin{% endblock %}
-{% block page_title %}Input What's New{% endblock %}
-{% block page_subtitle %}Buat pengumuman platform untuk semua user{% endblock %}
+{% block page_title %}<span data-i18n="superadmin.input_whats_new_title">Input What's New</span>{% endblock %}
+{% block page_subtitle %}<span data-i18n="superadmin.create_announcement_subtitle">Buat pengumuman platform untuk semua user</span>{% endblock %}
 
 {% block content %}
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -9,22 +9,23 @@
     <!-- Editor Section -->
     <div class="space-y-4">
         <div class="sa-card p-5">
-            <h3 class="text-sm font-black text-slate-900 dark:text-gray-100 mb-4">Editor</h3>
+            <h3 class="text-sm font-black text-slate-900 dark:text-gray-100 mb-4" data-i18n="superadmin.editor_heading">Editor</h3>
 
             <div class="space-y-4">
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 dark:text-gray-400 mb-2">Judul *</label>
+                    <label class="block text-xs font-bold text-slate-500 dark:text-gray-400 mb-2" data-i18n="superadmin.title_required_label">Judul *</label>
                     <input
                         type="text"
                         id="wn-title"
                         class="w-full px-4 py-3 bg-slate-50 dark:bg-gray-700 border-2 border-slate-200 dark:border-gray-600 rounded-xl focus:border-indigo-500 outline-none font-semibold text-slate-700 dark:text-gray-300 transition-all"
+                        data-i18n-placeholder="superadmin.announcement_title_placeholder"
                         placeholder="Masukkan judul pengumuman"
                         maxlength="200"
                     />
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 dark:text-gray-400 mb-2">Konten (Markdown) *</label>
+                    <label class="block text-xs font-bold text-slate-500 dark:text-gray-400 mb-2" data-i18n="superadmin.content_markdown_label">Konten (Markdown) *</label>
                     <textarea
                         id="wn-content"
                         rows="12"
@@ -38,34 +39,36 @@ Contoh:
 - List item
 [Link](url)"
                     ></textarea>
-                    <p class="text-[10px] text-slate-400 dark:text-gray-500 mt-2">
+                    <p class="text-[10px] text-slate-400 dark:text-gray-500 mt-2" data-i18n="superadmin.markdown_hint_text">
                         💡 Gunakan format Markdown untuk formatting teks
                     </p>
                 </div>
-                
+
                 <div class="flex items-center gap-3">
                     <label class="flex items-center gap-2 cursor-pointer">
-                        <input 
-                            type="checkbox" 
-                            id="wn-published" 
+                        <input
+                            type="checkbox"
+                            id="wn-published"
                             checked
                             class="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500"
                         />
-                        <span class="text-sm font-bold text-slate-700">Publish Immediately</span>
+                        <span class="text-sm font-bold text-slate-700" data-i18n="superadmin.publish_immediately_label">Publish Immediately</span>
                     </label>
                 </div>
-                
+
                 <div class="flex gap-3 pt-2">
-                    <button 
-                        onclick="savePost()" 
+                    <button
+                        onclick="savePost()"
                         id="save-btn"
                         class="flex-1 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-all active:scale-95"
+                        data-i18n="superadmin.save_post_button"
                     >
                         💾 Simpan Post
                     </button>
                     <button
                         onclick="clearForm()"
                         class="px-6 py-3 bg-slate-100 dark:bg-gray-700 text-slate-700 dark:text-gray-300 rounded-xl font-bold hover:bg-slate-200 dark:hover:bg-gray-600 transition-all active:scale-95"
+                        data-i18n="superadmin.clear_button"
                     >
                         🗑️ Clear
                     </button>
@@ -75,30 +78,30 @@ Contoh:
 
         <!-- Posts List -->
         <div class="sa-card p-5">
-            <h3 class="text-sm font-black text-slate-900 dark:text-gray-100 mb-4">Riwayat Posts</h3>
+            <h3 class="text-sm font-black text-slate-900 dark:text-gray-100 mb-4" data-i18n="superadmin.posts_history_heading">Riwayat Posts</h3>
             <div id="posts-list" class="space-y-2">
                 <div class="text-center py-8 text-slate-400 dark:text-gray-500">
                     <svg class="w-8 h-8 mx-auto mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/>
                     </svg>
-                    <p class="text-sm">Memuat posts...</p>
+                    <p class="text-sm" data-i18n="superadmin.loading_posts">Memuat posts...</p>
                 </div>
             </div>
         </div>
     </div>
-    
+
     <!-- Preview Section -->
     <div class="lg:sticky lg:top-6 lg:self-start">
         <div class="sa-card p-5">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-sm font-black text-slate-900 dark:text-gray-100">Preview</h3>
-                <span class="text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest">Live</span>
+                <h3 class="text-sm font-black text-slate-900 dark:text-gray-100" data-i18n="superadmin.preview_heading">Preview</h3>
+                <span class="text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest" data-i18n="superadmin.live_chip">Live</span>
             </div>
-            <div 
-                id="wn-preview" 
+            <div
+                id="wn-preview"
                 class="prose prose-slate max-w-none prose-headings:font-black prose-headings:text-slate-900 prose-p:text-slate-700 prose-a:text-indigo-600 prose-strong:font-bold"
             >
-                <p class="text-slate-400 dark:text-gray-500 text-sm italic">Preview akan muncul di sini...</p>
+                <p class="text-slate-400 dark:text-gray-500 text-sm italic" data-i18n="superadmin.preview_placeholder_text">Preview akan muncul di sini...</p>
             </div>
         </div>
     </div>
@@ -109,7 +112,7 @@ Contoh:
 <div id="edit-modal" class="hidden fixed inset-0 bg-black/50 dark:bg-black/80 z-50 flex items-center justify-center p-4">
     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div class="p-6 border-b border-slate-100 dark:border-gray-700 flex items-center justify-between sticky top-0 bg-white dark:bg-gray-800">
-            <h3 class="text-lg font-black text-slate-900 dark:text-gray-100">Edit What's New</h3>
+            <h3 class="text-lg font-black text-slate-900 dark:text-gray-100" data-i18n="superadmin.edit_whats_new_title">Edit What's New</h3>
             <button onclick="closeEditModal()" class="p-2 hover:bg-slate-100 dark:hover:bg-gray-700 rounded-xl transition-colors">
                 <svg class="w-5 h-5 text-slate-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -119,21 +122,21 @@ Contoh:
         <div class="p-6 space-y-4">
             <input type="hidden" id="edit-post-id" />
             <div>
-                <label class="block text-xs font-bold text-slate-500 dark:text-gray-400 mb-2">Judul *</label>
+                <label class="block text-xs font-bold text-slate-500 dark:text-gray-400 mb-2" data-i18n="superadmin.title_required_label">Judul *</label>
                 <input type="text" id="edit-title" class="w-full px-4 py-3 bg-slate-50 dark:bg-gray-700 border-2 border-slate-200 dark:border-gray-600 rounded-xl focus:border-indigo-500 outline-none font-semibold text-slate-700 dark:text-gray-300" />
             </div>
             <div>
-                <label class="block text-xs font-bold text-slate-500 dark:text-gray-400 mb-2">Konten (Markdown) *</label>
+                <label class="block text-xs font-bold text-slate-500 dark:text-gray-400 mb-2" data-i18n="superadmin.content_markdown_label">Konten (Markdown) *</label>
                 <textarea id="edit-content" rows="10" class="w-full px-4 py-3 bg-slate-50 dark:bg-gray-700 border-2 border-slate-200 dark:border-gray-600 rounded-xl focus:border-indigo-500 outline-none font-mono text-sm text-slate-700 dark:text-gray-300 resize-none"></textarea>
             </div>
             <label class="flex items-center gap-2 cursor-pointer">
                 <input type="checkbox" id="edit-published" class="w-4 h-4 text-indigo-600 rounded" />
-                <span class="text-sm font-bold text-slate-700 dark:text-gray-300">Published</span>
+                <span class="text-sm font-bold text-slate-700 dark:text-gray-300" data-i18n="superadmin.published_label">Published</span>
             </label>
         </div>
         <div class="p-6 border-t border-slate-100 dark:border-gray-700 flex gap-3 sticky bottom-0 bg-white dark:bg-gray-800">
-            <button onclick="updatePost()" class="flex-1 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-all">Update</button>
-            <button onclick="closeEditModal()" class="px-6 py-3 bg-slate-100 dark:bg-gray-700 text-slate-700 dark:text-gray-300 rounded-xl font-bold hover:bg-slate-200 dark:hover:bg-gray-600 transition-all">Cancel</button>
+            <button onclick="updatePost()" class="flex-1 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-all" data-i18n="superadmin.update_button">Update</button>
+            <button onclick="closeEditModal()" class="px-6 py-3 bg-slate-100 dark:bg-gray-700 text-slate-700 dark:text-gray-300 rounded-xl font-bold hover:bg-slate-200 dark:hover:bg-gray-600 transition-all" data-i18n="superadmin.cancel_button">Cancel</button>
         </div>
     </div>
 </div>
@@ -151,7 +154,8 @@ let editingPostId = null;
 // Live preview
 document.getElementById('wn-content').addEventListener('input', function() {
     const content = this.value;
-    document.getElementById('wn-preview').innerHTML = content ? marked.parse(content) : '<p class="text-slate-400 dark:text-gray-500 text-sm italic">Preview akan muncul di sini...</p>';
+    const previewPlaceholder = window.LanguageManager ? window.LanguageManager.t('superadmin.preview_placeholder_text', 'Preview akan muncul di sini...') : 'Preview akan muncul di sini...';
+    document.getElementById('wn-preview').innerHTML = content ? marked.parse(content) : `<p class="text-slate-400 dark:text-gray-500 text-sm italic">${previewPlaceholder}</p>`;
 });
 
 // Load posts
@@ -162,16 +166,22 @@ async function loadPosts() {
         
         const container = document.getElementById('posts-list');
         if (!data.posts || data.posts.length === 0) {
+            const noPostsText = window.LanguageManager ? window.LanguageManager.t('superadmin.no_posts_yet', 'Belum ada posts') : 'Belum ada posts';
             container.innerHTML = `
                 <div class="text-center py-8 text-slate-400 dark:text-gray-500">
                     <svg class="w-8 h-8 mx-auto mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
                     </svg>
-                    <p class="text-sm">Belum ada posts</p>
+                    <p class="text-sm">${noPostsText}</p>
                 </div>
             `;
             return;
         }
+
+        const publishedLabel = window.LanguageManager ? window.LanguageManager.t('superadmin.published_label', 'Published') : 'Published';
+        const draftLabel = window.LanguageManager ? window.LanguageManager.t('superadmin.draft_badge', 'Draft') : 'Draft';
+        const byLabel = window.LanguageManager ? window.LanguageManager.t('superadmin.by_prefix', 'by') : 'by';
+        const unknownLabel = window.LanguageManager ? window.LanguageManager.t('superadmin.unknown_label', 'Unknown') : 'Unknown';
 
         container.innerHTML = data.posts.map(post => `
             <div class="p-4 bg-slate-50 dark:bg-gray-700 rounded-xl border border-slate-100 dark:border-gray-600 hover:border-indigo-200 dark:hover:border-indigo-800 transition-all group">
@@ -180,10 +190,10 @@ async function loadPosts() {
                         <div class="flex items-center gap-2 mb-1">
                             <span class="text-sm font-black text-slate-900 dark:text-gray-100 truncate">${escapeHtml(post.title)}</span>
                             ${post.is_published ?
-                                '<span class="sa-badge bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400">Published</span>' :
-                                '<span class="sa-badge bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400">Draft</span>'}
+                                `<span class="sa-badge bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400">${publishedLabel}</span>` :
+                                `<span class="sa-badge bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400">${draftLabel}</span>`}
                         </div>
-                        <p class="text-xs text-slate-500 dark:text-gray-400">by ${post.author?.name || 'Unknown'} • ${formatDate(post.created_at)}</p>
+                        <p class="text-xs text-slate-500 dark:text-gray-400">${byLabel} ${post.author?.name || unknownLabel} • ${formatDate(post.created_at)}</p>
                     </div>
                     <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button onclick="openEditModal(${post.id})" class="p-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors" title="Edit">
@@ -198,29 +208,31 @@ async function loadPosts() {
         `).join('');
     } catch (err) {
         console.error('Error loading posts:', err);
-        document.getElementById('posts-list').innerHTML = '<p class="text-red-500 text-sm text-center">Gagal memuat posts</p>';
+        const failedLoadText = window.LanguageManager ? window.LanguageManager.t('superadmin.failed_load_posts', 'Gagal memuat posts') : 'Gagal memuat posts';
+        document.getElementById('posts-list').innerHTML = `<p class="text-red-500 text-sm text-center">${failedLoadText}</p>`;
     }
 }
 
 // Save post
 async function savePost() {
+    const t = (k, f) => window.LanguageManager ? window.LanguageManager.t(k, f) : f;
     const title = document.getElementById('wn-title').value.trim();
     const content = document.getElementById('wn-content').value.trim();
     const isPublished = document.getElementById('wn-published').checked;
-    
+
     if (!title) {
-        Swal.fire({ icon: 'error', title: 'Error', text: 'Judul tidak boleh kosong', confirmButtonColor: '#4f46e5' });
+        Swal.fire({ icon: 'error', title: t('superadmin.error_title', 'Error'), text: t('superadmin.title_required_error', 'Judul tidak boleh kosong'), confirmButtonColor: '#4f46e5' });
         return;
     }
     if (!content) {
-        Swal.fire({ icon: 'error', title: 'Error', text: 'Konten tidak boleh kosong', confirmButtonColor: '#4f46e5' });
+        Swal.fire({ icon: 'error', title: t('superadmin.error_title', 'Error'), text: t('superadmin.content_required_error', 'Konten tidak boleh kosong'), confirmButtonColor: '#4f46e5' });
         return;
     }
-    
+
     const btn = document.getElementById('save-btn');
     btn.disabled = true;
-    btn.innerHTML = '⏳ Menyimpan...';
-    
+    btn.innerHTML = t('superadmin.saving_label', '⏳ Menyimpan...');
+
     try {
         const res = await fetch('/superadmin/api/whats-new', {
             method: 'POST',
@@ -228,19 +240,19 @@ async function savePost() {
             body: JSON.stringify({ title, content, is_published: isPublished })
         });
         const data = await res.json();
-        
+
         if (data.success) {
-            Swal.fire({ icon: 'success', title: 'Berhasil!', text: data.message, confirmButtonColor: '#4f46e5' });
+            Swal.fire({ icon: 'success', title: t('superadmin.success_exclaim_title', 'Berhasil!'), text: data.message, confirmButtonColor: '#4f46e5' });
             clearForm();
             loadPosts();
         } else {
-            Swal.fire({ icon: 'error', title: 'Gagal', text: data.message, confirmButtonColor: '#ef4444' });
+            Swal.fire({ icon: 'error', title: t('superadmin.failed_title', 'Gagal'), text: data.message, confirmButtonColor: '#ef4444' });
         }
     } catch (err) {
-        Swal.fire({ icon: 'error', title: 'Error', text: 'Gagal menyimpan post', confirmButtonColor: '#ef4444' });
+        Swal.fire({ icon: 'error', title: t('superadmin.error_title', 'Error'), text: t('superadmin.failed_save_post', 'Gagal menyimpan post'), confirmButtonColor: '#ef4444' });
     } finally {
         btn.disabled = false;
-        btn.innerHTML = '💾 Simpan Post';
+        btn.innerHTML = t('superadmin.save_post_button', '💾 Simpan Post');
     }
 }
 
@@ -249,7 +261,8 @@ function clearForm() {
     document.getElementById('wn-title').value = '';
     document.getElementById('wn-content').value = '';
     document.getElementById('wn-published').checked = true;
-    document.getElementById('wn-preview').innerHTML = '<p class="text-slate-400 dark:text-gray-500 text-sm italic">Preview akan muncul di sini...</p>';
+    const previewPlaceholder = window.LanguageManager ? window.LanguageManager.t('superadmin.preview_placeholder_text', 'Preview akan muncul di sini...') : 'Preview akan muncul di sini...';
+    document.getElementById('wn-preview').innerHTML = `<p class="text-slate-400 dark:text-gray-500 text-sm italic">${previewPlaceholder}</p>`;
 }
 
 // Open edit modal
@@ -268,7 +281,8 @@ async function openEditModal(postId) {
             document.getElementById('edit-modal').classList.remove('hidden');
         }
     } catch (err) {
-        Swal.fire({ icon: 'error', title: 'Error', text: 'Gagal memuat data post', confirmButtonColor: '#ef4444' });
+        const t = (k, f) => window.LanguageManager ? window.LanguageManager.t(k, f) : f;
+        Swal.fire({ icon: 'error', title: t('superadmin.error_title', 'Error'), text: t('superadmin.failed_load_post_data', 'Gagal memuat data post'), confirmButtonColor: '#ef4444' });
     }
 }
 
@@ -280,15 +294,16 @@ function closeEditModal() {
 
 // Update post
 async function updatePost() {
+    const t = (k, f) => window.LanguageManager ? window.LanguageManager.t(k, f) : f;
     const title = document.getElementById('edit-title').value.trim();
     const content = document.getElementById('edit-content').value.trim();
     const isPublished = document.getElementById('edit-published').checked;
-    
+
     if (!title || !content) {
-        Swal.fire({ icon: 'error', title: 'Error', text: 'Judul dan konten tidak boleh kosong', confirmButtonColor: '#4f46e5' });
+        Swal.fire({ icon: 'error', title: t('superadmin.error_title', 'Error'), text: t('superadmin.title_content_required_error', 'Judul dan konten tidak boleh kosong'), confirmButtonColor: '#4f46e5' });
         return;
     }
-    
+
     try {
         const res = await fetch(`/superadmin/api/whats-new/${editingPostId}`, {
             method: 'PUT',
@@ -296,45 +311,46 @@ async function updatePost() {
             body: JSON.stringify({ title, content, is_published: isPublished })
         });
         const data = await res.json();
-        
+
         if (data.success) {
-            Swal.fire({ icon: 'success', title: 'Berhasil!', text: data.message, confirmButtonColor: '#4f46e5' });
+            Swal.fire({ icon: 'success', title: t('superadmin.success_exclaim_title', 'Berhasil!'), text: data.message, confirmButtonColor: '#4f46e5' });
             closeEditModal();
             loadPosts();
         } else {
-            Swal.fire({ icon: 'error', title: 'Gagal', text: data.message, confirmButtonColor: '#ef4444' });
+            Swal.fire({ icon: 'error', title: t('superadmin.failed_title', 'Gagal'), text: data.message, confirmButtonColor: '#ef4444' });
         }
     } catch (err) {
-        Swal.fire({ icon: 'error', title: 'Error', text: 'Gagal update post', confirmButtonColor: '#ef4444' });
+        Swal.fire({ icon: 'error', title: t('superadmin.error_title', 'Error'), text: t('superadmin.failed_update_post', 'Gagal update post'), confirmButtonColor: '#ef4444' });
     }
 }
 
 // Delete post
 async function deletePost(postId) {
+    const t = (k, f) => window.LanguageManager ? window.LanguageManager.t(k, f) : f;
     const result = await Swal.fire({
-        title: 'Hapus Post?',
-        text: 'Post yang dihapus tidak bisa dikembalikan.',
+        title: t('superadmin.delete_post_title', 'Hapus Post?'),
+        text: t('superadmin.delete_post_warning', 'Post yang dihapus tidak bisa dikembalikan.'),
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: 'Ya, Hapus',
-        cancelButtonText: 'Batal',
+        confirmButtonText: t('superadmin.yes_delete_button', 'Ya, Hapus'),
+        cancelButtonText: t('common.cancel', 'Batal'),
         confirmButtonColor: '#ef4444',
         reverseButtons: true,
     });
-    
+
     if (result.isConfirmed) {
         try {
             const res = await fetch(`/superadmin/api/whats-new/${postId}`, { method: 'DELETE' });
             const data = await res.json();
-            
+
             if (data.success) {
-                Swal.fire({ icon: 'success', title: 'Terhapus!', text: data.message, confirmButtonColor: '#4f46e5' });
+                Swal.fire({ icon: 'success', title: t('superadmin.deleted_title', 'Terhapus!'), text: data.message, confirmButtonColor: '#4f46e5' });
                 loadPosts();
             } else {
-                Swal.fire({ icon: 'error', title: 'Gagal', text: data.message, confirmButtonColor: '#ef4444' });
+                Swal.fire({ icon: 'error', title: t('superadmin.failed_title', 'Gagal'), text: data.message, confirmButtonColor: '#ef4444' });
             }
         } catch (err) {
-            Swal.fire({ icon: 'error', title: 'Error', text: 'Gagal menghapus post', confirmButtonColor: '#ef4444' });
+            Swal.fire({ icon: 'error', title: t('superadmin.error_title', 'Error'), text: t('superadmin.failed_delete_post', 'Gagal menghapus post'), confirmButtonColor: '#ef4444' });
         }
     }
 }
