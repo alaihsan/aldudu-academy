@@ -45,7 +45,10 @@
         "help": "Bantuan",
         "report_issue": "Laporkan Masalah",
         "tickets": "Tiket",
-        "issues": "Masalah"
+        "issues": "Masalah",
+        "my_grades": "Nilai Saya",
+        "classroom": "Ruang Kelas",
+        "classroom_short": "Kelas"
     },
     "course": {
         "class_code": "Kode Kelas",
@@ -156,5 +159,20 @@
         "minutes_ago": "{0} menit yang lalu",
         "hours_ago": "{0} jam yang lalu",
         "days_ago": "{0} hari yang lalu"
+    },
+    "filter": {
+        "all_items": "Semua Item",
+        "assignments": "Tugas",
+        "quizzes": "Kuis",
+        "due_soon": "Tenggat Waktu: Terdekat",
+        "due_latest": "Tenggat Waktu: Terjauh",
+        "recently_added": "Ditambahkan: Terbaru"
+    },
+    "classroom": {
+        "title": "Ruang Kelas",
+        "subtitle": "Lihat semua tugas dan kuis yang belum diselesaikan dari semua kelas Anda.",
+        "loading": "Memuat…",
+        "empty_title": "Tidak ada item",
+        "empty_subtitle": "Semua tugas Anda sudah selesai! Bagus sekali."
     }
 }

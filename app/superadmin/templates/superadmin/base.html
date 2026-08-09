@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="{{ initial_lang }}" dir="{{ initial_dir }}">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -157,6 +157,9 @@
     </main>
 </div>
 
+<script src="{{ url_for('static', filename='js/core/dom-utils.js') }}?v={{ asset_hash('js/core/dom-utils.js') }}"></script>
+<script>window.INITIAL_LANG = {{ initial_lang | tojson }};</script>
+<script src="{{ url_for('static', filename='js/core/language.js') }}?v={{ asset_hash('js/core/language.js') }}"></script>
 <script src="{{ url_for('static', filename='js/core/theme-manager.js') }}?v={{ asset_hash('js/core/theme-manager.js') }}"></script>
 {% if current_user and current_user.email %}
 <script>

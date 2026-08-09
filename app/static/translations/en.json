@@ -45,7 +45,10 @@
         "help": "Help",
         "report_issue": "Report Issue",
         "tickets": "Tickets",
-        "issues": "Issues"
+        "issues": "Issues",
+        "my_grades": "My Grades",
+        "classroom": "Classroom",
+        "classroom_short": "Class"
     },
     "course": {
         "class_code": "Class Code",
@@ -156,5 +159,20 @@
         "minutes_ago": "{0} minutes ago",
         "hours_ago": "{0} hours ago",
         "days_ago": "{0} days ago"
+    },
+    "filter": {
+        "all_items": "All Items",
+        "assignments": "Assignments",
+        "quizzes": "Quizzes",
+        "due_soon": "Due Date: Soonest",
+        "due_latest": "Due Date: Latest",
+        "recently_added": "Recently Added"
+    },
+    "classroom": {
+        "title": "Classroom",
+        "subtitle": "See all unfinished assignments and quizzes from every one of your courses.",
+        "loading": "Loading…",
+        "empty_title": "No items",
+        "empty_subtitle": "All your work is done! Great job."
     }
 }

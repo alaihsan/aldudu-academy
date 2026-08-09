@@ -1,297 +1,74 @@
-// Language translations for Aldudu Academy
-const translations = {
-    id: {
-        meta: { language: "Indonesian", code: "id", flag: "🇮🇩" },
-        common: {
-            home: "Beranda",
-            dashboard: "Dasbor",
-            courses: "Kelas",
-            quizzes: "Kuis",
-            assignments: "Tugas",
-            grades: "Nilai",
-            discussions: "Diskusi",
-            settings: "Pengaturan",
-            profile: "Profil",
-            logout: "Keluar",
-            login: "Masuk",
-            register: "Daftar",
-            save: "Simpan",
-            cancel: "Batal",
-            delete: "Hapus",
-            edit: "Edit",
-            add: "Tambah",
-            back: "Kembali",
-            next: "Lanjut",
-            submit: "Kirim",
-            loading: "Memuat...",
-            search: "Cari",
-            filter: "Filter",
-            close: "Tutup",
-            yes: "Ya",
-            no: "Tidak",
-            ok: "Oke",
-            language: "Bahasa"
-        },
-        nav: {
-            my_courses: "Kelas Saya",
-            teaching: "Mengajar",
-            gradebook: "Buku Nilai",
-            students: "Murid",
-            teachers: "Guru",
-            admin_panel: "Panel Admin",
-            reports: "Laporan",
-            help: "Bantuan",
-            report_issue: "Laporkan Masalah",
-            tickets: "Tiket",
-            issues: "Masalah"
-        }
-    },
-    'en-US': {
-        meta: { language: "English (US)", code: "en-US", flag: "🇺🇸" },
-        common: {
-            home: "Home",
-            dashboard: "Dashboard",
-            courses: "Courses",
-            quizzes: "Quizzes",
-            assignments: "Assignments",
-            grades: "Grades",
-            discussions: "Discussions",
-            settings: "Settings",
-            profile: "Profile",
-            logout: "Sign Out",
-            login: "Log In",
-            register: "Sign Up",
-            save: "Save",
-            cancel: "Cancel",
-            delete: "Delete",
-            edit: "Edit",
-            add: "Add",
-            back: "Back",
-            next: "Next",
-            submit: "Submit",
-            loading: "Loading...",
-            search: "Search",
-            filter: "Filter",
-            close: "Close",
-            yes: "Yes",
-            no: "No",
-            ok: "OK",
-            language: "Language"
-        },
-        nav: {
-            my_courses: "My Courses",
-            teaching: "Teaching",
-            gradebook: "Gradebook",
-            students: "Students",
-            teachers: "Teachers",
-            admin_panel: "Admin Panel",
-            reports: "Reports",
-            help: "Help",
-            report_issue: "Report Issue",
-            tickets: "Tickets",
-            issues: "Issues"
-        }
-    },
-    'jv-MA': {
-        meta: { language: "Jawa (Malang)", code: "jv-MA", flag: "🇮🇩" },
-        common: {
-            home: "Omah",
-            dashboard: "Papan Kontrol",
-            courses: "Kelas",
-            quizzes: "Kuis",
-            assignments: "Tugas",
-            grades: "Nilai",
-            discussions: "Diskusi",
-            settings: "Setelan",
-            profile: "Profil",
-            logout: "Metu",
-            login: "Mlebu",
-            register: "Daftar",
-            save: "Simpen",
-            cancel: "Batal",
-            delete: "Busak",
-            edit: "Edit",
-            add: "Tambah",
-            back: "Mbalik",
-            next: "Terus",
-            submit: "Kirim",
-            loading: "Ngemu...",
-            search: "Goleki",
-            filter: "Saring",
-            close: "Tutup",
-            yes: "Iyo",
-            no: "Gak",
-            ok: "Oke",
-            language: "Basa"
-        }
-    },
-    su: {
-        meta: { language: "Sundanese", code: "su", flag: "🇮🇩" },
-        common: {
-            home: "Imah",
-            dashboard: "Papan Kontrol",
-            courses: "Kelas",
-            quizzes: "Kuis",
-            assignments: "Tugas",
-            grades: "Nilai",
-            discussions: "Diskusi",
-            settings: "Setelan",
-            profile: "Profil",
-            logout: "Kaluar",
-            login: "Asup",
-            register: "Daptar",
-            save: "Simpen",
-            cancel: "Batal",
-            delete: "Hapus",
-            edit: "Edit",
-            add: "Tambah",
-            back: "Balik",
-            next: "Tuluy",
-            submit: "Kirim",
-            loading: "Ngamuatan...",
-            search: "Cari",
-            filter: "Saring",
-            close: "Tutup",
-            yes: "Enya",
-            no: "Henteu",
-            ok: "Oke",
-            language: "Basa"
-        }
-    }
-};
+// Language Manager for Aldudu Academy
+//
+// Translations live in app/static/translations/<code>.json (one file per
+// language, 7 languages, all sharing the same key set) — this file only
+// knows how to fetch/cache them and apply data-i18n bindings. Adding a
+// language or a key means editing the JSON files, not this script.
+const SUPPORTED_LANGUAGES = [
+    { code: 'id', name: 'Indonesia', flag: '🇮🇩' },
+    { code: 'en', name: 'English', flag: '🇺🇸' },
+    { code: 'jv', name: 'Basa Jawa', flag: '🇮🇩' },
+    { code: 'su', name: 'Basa Sunda', flag: '🇮🇩' },
+    { code: 'ban', name: 'Basa Bali', flag: '🇮🇩' },
+    { code: 'min', name: 'Baso Minang', flag: '🇮🇩' },
+    { code: 'ar', name: 'العربية', flag: '🇸🇦' },
+];
+const RTL_LANGUAGES = ['ar'];
+const SUPPORTED_LANGUAGE_CODES = SUPPORTED_LANGUAGES.map(l => l.code);
 
-// Current language
-let currentLang = 'id';
+const _translationsCache = {};
+
+// window.INITIAL_LANG is set inline by base.html (server-rendered, from
+// current_user.preferred_language) before this script loads, so the very
+// first paint already matches the user's saved preference instead of
+// always starting from Indonesian and flashing once JS catches up.
+let currentLang = (window.INITIAL_LANG && SUPPORTED_LANGUAGE_CODES.includes(window.INITIAL_LANG))
+    ? window.INITIAL_LANG
+    : 'id';
+
+async function loadTranslations(langCode) {
+    if (_translationsCache[langCode]) {
+        return _translationsCache[langCode];
+    }
+    try {
+        const response = await fetch(`/static/translations/${langCode}.json`);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        _translationsCache[langCode] = data;
+        return data;
+    } catch (error) {
+        console.error(`Failed to load translations for "${langCode}":`, error);
+        return {};
+    }
+}
 
 // Get translation by key path (e.g., 'common.home', 'quiz.start_quiz')
 function t(key, defaultValue = null) {
+    const dict = _translationsCache[currentLang] || {};
     const keys = key.split('.');
-    let value = translations[currentLang];
-    
+    let value = dict;
+
     for (const k of keys) {
         if (value && typeof value === 'object' && k in value) {
             value = value[k];
         } else {
-            value = defaultValue || key;
-            break;
+            return defaultValue !== null ? defaultValue : key;
         }
     }
-    
-    return value;
+
+    return typeof value === 'string' ? value : (defaultValue !== null ? defaultValue : key);
 }
 
-// Set language and update UI
-async function setLanguage(langCode) {
-    const supportedLanguages = ['id', 'en-US', 'jv-MA', 'su'];
-    if (!supportedLanguages.includes(langCode)) {
-        console.error('Unsupported language:', langCode);
-        return false;
-    }
-
-    try {
-        const response = await fetch('/api/set-language', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ language: langCode })
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-            currentLang = langCode;
-            localStorage.setItem('preferred_language', langCode);
-
-            // Update RTL and Font
-            const meta = translations[langCode]?.meta;
-            if (meta?.rtl) {
-                document.documentElement.setAttribute('dir', 'rtl');
-            } else {
-                document.documentElement.setAttribute('dir', 'ltr');
-            }
-
-            if (meta?.font) {
-                document.body.style.fontFamily = meta.font;
-            } else {
-                document.body.style.fontFamily = '';
-            }
-
-            document.documentElement.setAttribute('lang', langCode);
-
-            // Update all elements with data-i18n attribute
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                const translated = t(key);
-
-                if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-                    if (el.getAttribute('placeholder')) {
-                        el.placeholder = translated;
-                    } else {
-                        el.value = translated;
-                    }
-                } else {
-                    el.textContent = translated;
-                }
-            });
-
-            // Update all elements with data-i18n-placeholder attribute
-            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-                const key = el.getAttribute('data-i18n-placeholder');
-                el.placeholder = t(key);
-            });
-
-            // Dispatch event for other components to listen
-            window.dispatchEvent(new CustomEvent('languageChanged', {
-                detail: { language: langCode, translations: translations[langCode] }
-            }));
-
-            // Refresh sidebar and settings language selector
-            initLanguageSelector();
-            if (typeof renderSettingsLanguage === 'function') {
-                renderSettingsLanguage();
-            }
-
-            return true;
-        } else {
-            console.error('Failed to set language:', data.message);
-            return false;
-        }
-    } catch (error) {
-        console.error('Error setting language:', error);
-        return false;
-    }
-}
-
-// Initialize language on page load
-function initLanguage() {
-    // Try to get from localStorage first
-    const savedLang = localStorage.getItem('preferred_language');
-    if (savedLang && translations[savedLang]) {
-        currentLang = savedLang;
-    }
-    
-    // Apply RTL and Font
-    const meta = translations[currentLang]?.meta;
-    if (meta?.rtl) {
-        document.documentElement.setAttribute('dir', 'rtl');
-    } else {
-        document.documentElement.setAttribute('dir', 'ltr');
-    }
-    
-    if (meta?.font) {
-        document.body.style.fontFamily = meta.font;
-    }
-    
+function applyTranslations() {
     document.documentElement.setAttribute('lang', currentLang);
-    
-    // Initial translation
+    document.documentElement.setAttribute('dir', RTL_LANGUAGES.includes(currentLang) ? 'rtl' : 'ltr');
+
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
         const translated = t(key);
-        
+
         if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-            if (el.getAttribute('placeholder')) {
+            if (el.hasAttribute('placeholder')) {
                 el.placeholder = translated;
             } else {
                 el.value = translated;
@@ -300,14 +77,81 @@ function initLanguage() {
             el.textContent = translated;
         }
     });
-    
-    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-        const key = el.getAttribute('data-i18n-placeholder');
-        el.placeholder = t(key);
-    });
 
-    // Initialize the selector if container exists
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        el.placeholder = t(el.getAttribute('data-i18n-placeholder'));
+    });
+}
+
+// Set language, persist it, and update UI
+async function setLanguage(langCode) {
+    if (!SUPPORTED_LANGUAGE_CODES.includes(langCode)) {
+        console.error('Unsupported language:', langCode);
+        return false;
+    }
+
+    await loadTranslations(langCode);
+
+    try {
+        const response = await fetch('/api/set-language', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ language: langCode })
+        });
+        const data = await response.json();
+
+        if (!data.success) {
+            console.error('Failed to set language:', data.message);
+            return false;
+        }
+    } catch (error) {
+        console.error('Error setting language:', error);
+        return false;
+    }
+
+    currentLang = langCode;
+    localStorage.setItem('preferred_language', langCode);
+    applyTranslations();
+
+    window.dispatchEvent(new CustomEvent('languageChanged', {
+        detail: { language: langCode, translations: _translationsCache[langCode] }
+    }));
+
+    // Refresh sidebar and settings language selector
     initLanguageSelector();
+    if (typeof renderSettingsLanguage === 'function') {
+        renderSettingsLanguage();
+    }
+    if (window.LanguageManager) {
+        window.LanguageManager.currentLang = currentLang;
+    }
+
+    return true;
+}
+
+// Initialize language on page load
+async function initLanguage() {
+    // localStorage (an explicit in-browser choice) wins over the
+    // server-rendered INITIAL_LANG, but only if it's still a valid code.
+    const savedLang = localStorage.getItem('preferred_language');
+    if (savedLang && SUPPORTED_LANGUAGE_CODES.includes(savedLang)) {
+        currentLang = savedLang;
+    }
+
+    await loadTranslations(currentLang);
+    applyTranslations();
+    initLanguageSelector();
+
+    if (window.LanguageManager) {
+        window.LanguageManager.currentLang = currentLang;
+    }
+
+    // Fires even on plain init (not just user-driven changes) so listeners
+    // set up by a page's own script (e.g. settings.js's language dropdown)
+    // that run before this async fetch resolves still end up in sync.
+    window.dispatchEvent(new CustomEvent('languageChanged', {
+        detail: { language: currentLang, translations: _translationsCache[currentLang] }
+    }));
 }
 
 // Track portal menu element and click-outside handler for cleanup
@@ -319,14 +163,7 @@ function initLanguageSelector() {
     const container = document.getElementById('language-selector-container');
     if (!container) return;
 
-    const languages = [
-        { code: 'id', name: 'Indonesia', flag: '🇮🇩' },
-        { code: 'en-US', name: 'English (US)', flag: '🇺🇸' },
-        { code: 'jv-MA', name: 'Jawa (Malang)', flag: '🇮🇩' },
-        { code: 'su', name: 'Sunda', flag: '🇮🇩' }
-    ];
-
-    const current = languages.find(l => l.code === currentLang) || languages[0];
+    const current = SUPPORTED_LANGUAGES.find(l => l.code === currentLang) || SUPPORTED_LANGUAGES[0];
 
     // ── 1. Render toggle button inside sidebar container ──
     container.innerHTML = `
@@ -351,7 +188,7 @@ function initLanguageSelector() {
     _langPortalMenu.innerHTML = `
         <div class="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden py-2" style="min-width:200px;">
             <div class="max-h-64 overflow-y-auto">
-                ${languages.map(lang => `
+                ${SUPPORTED_LANGUAGES.map(lang => `
                     <button data-lang-code="${lang.code}"
                             class="w-full px-4 py-3 text-left hover:bg-blue-50 flex items-center space-x-3 transition-colors ${currentLang === lang.code ? 'bg-blue-50 text-blue-600' : 'text-gray-600'}">
                         <span class="text-xl">${lang.flag}</span>
@@ -391,7 +228,6 @@ function initLanguageSelector() {
             } else {
                 // Calculate position from toggle button
                 const rect = toggle.getBoundingClientRect();
-                const menuHeight = 300;
                 const spaceBelow = window.innerHeight - rect.bottom - 12;
                 const spaceAbove = rect.top - 12;
 
@@ -433,7 +269,7 @@ function initLanguageSelector() {
 // Export for use in other modules
 window.setLanguage = setLanguage;
 window.LanguageManager = {
-    translations,
+    SUPPORTED_LANGUAGES,
     currentLang,
     t,
     setLanguage,

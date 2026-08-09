@@ -45,7 +45,10 @@
         "help": "Pitulung",
         "report_issue": "Lapor Masalah",
         "tickets": "Tiket",
-        "issues": "Masalah"
+        "issues": "Masalah",
+        "my_grades": "Nilaiku",
+        "classroom": "Ruang Kelas",
+        "classroom_short": "Kelas"
     },
     "course": {
         "class_code": "Kode Kelas",
@@ -156,5 +159,20 @@
         "minutes_ago": "{0} menit kepungkur",
         "hours_ago": "{0} jam kepungkur",
         "days_ago": "{0} dina kepungkur"
+    },
+    "filter": {
+        "all_items": "Kabeh Item",
+        "assignments": "Tugas",
+        "quizzes": "Kuis",
+        "due_soon": "Tenggat: Paling Cedhak",
+        "due_latest": "Tenggat: Paling Adoh",
+        "recently_added": "Ditambahke: Paling Anyar"
+    },
+    "classroom": {
+        "title": "Ruang Kelas",
+        "subtitle": "Deleng kabeh tugas lan kuis sing durung rampung saka kabeh kelasmu.",
+        "loading": "Ngemot…",
+        "empty_title": "Ora ana item",
+        "empty_subtitle": "Tugasmu wis kabeh rampung! Apik banget."
     }
 }

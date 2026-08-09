@@ -52,8 +52,8 @@ def set_language():
     lang_code = data.get('language', 'id')
 
     # Validasi kode bahasa yang didukung
-    supported_languages = ['id', 'en', 'en-US', 'en-GB', 'ar', 'jv', 'jv-YO', 'jv-MA', 'su', 'min', 'ban']
-    if lang_code not in supported_languages:
+    from app.core.i18n import SUPPORTED_LANGUAGES
+    if lang_code not in SUPPORTED_LANGUAGES:
         return jsonify({'success': False, 'message': 'Bahasa tidak didukung'}), 400
 
     current_user.preferred_language = lang_code

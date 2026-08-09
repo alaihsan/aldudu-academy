@@ -45,7 +45,10 @@
         "help": "Bantuan",
         "report_issue": "Lapor Masalah",
         "tickets": "Tiket",
-        "issues": "Masalah"
+        "issues": "Masalah",
+        "my_grades": "Nilai Abdi",
+        "classroom": "Ruang Kelas",
+        "classroom_short": "Kelas"
     },
     "course": {
         "class_code": "Kode Kelas",
@@ -156,5 +159,20 @@
         "minutes_ago": "{0} menit ka tukang",
         "hours_ago": "{0} jam ka tukang",
         "days_ago": "{0} poé ka tukang"
+    },
+    "filter": {
+        "all_items": "Sadaya Item",
+        "assignments": "Tugas",
+        "quizzes": "Kuis",
+        "due_soon": "Tenggat: Panghandapna",
+        "due_latest": "Tenggat: Panghandapna",
+        "recently_added": "Ditambihan: Panganyarna"
+    },
+    "classroom": {
+        "title": "Ruang Kelas",
+        "subtitle": "Tingali sadaya tugas jeung kuis anu tacan réngsé ti sadaya kelas anjeun.",
+        "loading": "Ngamuatan…",
+        "empty_title": "Teu aya item",
+        "empty_subtitle": "Sadaya tugas anjeun parantos réngsé! Mantap."
     }
 }

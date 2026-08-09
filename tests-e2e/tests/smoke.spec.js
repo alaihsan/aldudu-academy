@@ -160,4 +160,38 @@ test.describe('JS modularization smoke suite', () => {
 
     expect(errors, `console/script errors on Ruang Kelas:\n${errors.join('\n')}`).toEqual([]);
   });
+
+  test('7. switching language from Settings updates <html lang> and translated text', async ({ page }) => {
+    const errors = trackConsoleErrors(page);
+    await login(page, TEACHER);
+
+    await clickLocator(page.locator('a[href*="/settings"]').first());
+    await page.waitForURL(/\/settings/, { timeout: 10_000 });
+
+    await expect(page.locator('html')).toHaveAttribute('lang', 'id');
+
+    await page.locator('#settings-language-dropdown').selectOption('en');
+    await expect(page.locator('html')).toHaveAttribute('lang', 'en', { timeout: 10_000 });
+    await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
+
+    // Switching to Arabic flips the document direction (RTL), the key
+    // regression this infra guards against (a deep link that never
+    // reflects the user's saved language before JS runs).
+    await page.locator('#settings-language-dropdown').selectOption('ar');
+    await expect(page.locator('html')).toHaveAttribute('lang', 'ar', { timeout: 10_000 });
+    await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
+
+    // Reload: the server should now render <html lang="ar" dir="rtl"> from
+    // the start (SSR via preferred_language), not just via client JS.
+    await page.reload();
+    await expect(page.locator('html')).toHaveAttribute('lang', 'ar');
+    await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
+
+    // Reset back to Indonesian so later tests in this run aren't affected
+    // (they share the same seeded teacher account / persisted preference).
+    await page.locator('#settings-language-dropdown').selectOption('id');
+    await expect(page.locator('html')).toHaveAttribute('lang', 'id', { timeout: 10_000 });
+
+    expect(errors, `console/script errors switching language:\n${errors.join('\n')}`).toEqual([]);
+  });
 });

@@ -45,7 +45,10 @@
         "help": "Bantuan",
         "report_issue": "Lapor Masalah",
         "tickets": "Tiket",
-        "issues": "Masalah"
+        "issues": "Masalah",
+        "my_grades": "Nilaiku",
+        "classroom": "Ruang Kelas",
+        "classroom_short": "Kelas"
     },
     "course": {
         "class_code": "Kode Kelas",
@@ -156,5 +159,20 @@
         "minutes_ago": "{0} menit nan lalu",
         "hours_ago": "{0} jam nan lalu",
         "days_ago": "{0} hari nan lalu"
+    },
+    "filter": {
+        "all_items": "Sadonyo Item",
+        "assignments": "Tugas",
+        "quizzes": "Kuis",
+        "due_soon": "Tenggat: Paliang Dakek",
+        "due_latest": "Tenggat: Paliang Jauah",
+        "recently_added": "Ditambah: Paliang Baru"
+    },
+    "classroom": {
+        "title": "Ruang Kelas",
+        "subtitle": "Caliak sadonyo tugas jo kuis nan alun salasai dari sadonyo kelas Angku.",
+        "loading": "Manunggu…",
+        "empty_title": "Indak ado item",
+        "empty_subtitle": "Sadonyo tugas Angku lah salasai! Rancak bana."
     }
 }

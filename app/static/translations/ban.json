@@ -45,7 +45,10 @@
         "help": "Pitulung",
         "report_issue": "Lapor Masalah",
         "tickets": "Tiket",
-        "issues": "Masalah"
+        "issues": "Masalah",
+        "my_grades": "Nilaiku",
+        "classroom": "Ruang Kelas",
+        "classroom_short": "Kelas"
     },
     "course": {
         "class_code": "Kode Kelas",
@@ -156,5 +159,20 @@
         "minutes_ago": "{0} menit sané riin",
         "hours_ago": "{0} jam sané riin",
         "days_ago": "{0} rahina sané riin"
+    },
+    "filter": {
+        "all_items": "Makasami Item",
+        "assignments": "Tugas",
+        "quizzes": "Kuis",
+        "due_soon": "Tenggat: Paling Nampek",
+        "due_latest": "Tenggat: Paling Joh",
+        "recently_added": "Kaimbuhang: Paling Anyar"
+    },
+    "classroom": {
+        "title": "Ruang Kelas",
+        "subtitle": "Cingak makasami tugas lan kuis sane durung kapuputang uling makasami kelas ragane.",
+        "loading": "Ngamuat…",
+        "empty_title": "Nenten wenten item",
+        "empty_subtitle": "Makasami tugas ragane sampun puput! Becik pisan."
     }
 }

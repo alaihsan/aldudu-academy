@@ -207,6 +207,16 @@ def create_app(test_config: Optional[Dict] = None) -> Flask:
     app.add_template_filter(matching_answer_lines, 'matching_answer_lines')
 
     @app.context_processor
+    def inject_i18n():
+        """SSR initial language: <html lang/dir> and window.INITIAL_LANG
+        are set from this before language.js loads, so a deep link already
+        renders in the user's saved language instead of flashing Indonesian
+        first (see app/core/i18n.py resolve_lang())."""
+        from app.core.i18n import resolve_lang, RTL_LANGUAGES
+        lang = resolve_lang()
+        return {'initial_lang': lang, 'initial_dir': 'rtl' if lang in RTL_LANGUAGES else 'ltr'}
+
+    @app.context_processor
     def inject_spa_layout():
         """Pilih layout: fragment (hanya konten) saat request htmx-boost,
         atau base.html penuh saat full load. Dipakai halaman yang sudah
