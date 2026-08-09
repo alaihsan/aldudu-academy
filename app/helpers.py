@@ -262,12 +262,14 @@ def validate_password(password: str):
     - At least 1 number
     - At least 1 symbol
     """
+    from app.core.i18n import t
+
     if not password or len(password) < 6:
-        return False, 'Password minimal 6 karakter'
+        return False, t('messages.password_min_length')
     if not re.search(r'[A-Z]', password):
-        return False, 'Password harus mengandung minimal 1 huruf kapital'
+        return False, t('messages.password_uppercase_required')
     if not re.search(r'\d', password):
-        return False, 'Password harus mengandung minimal 1 angka'
+        return False, t('messages.password_number_required')
     if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
-        return False, 'Password harus mengandung minimal 1 simbol (!@#$%^&*(),.?":{}|<>)'
+        return False, t('messages.password_symbol_required')
     return True, None

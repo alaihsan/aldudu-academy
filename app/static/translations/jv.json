@@ -581,7 +581,33 @@
         "verify_success_subtitle": "Akunmu wis aktif lan siap dienggo. Monggo login kanggo miwiti ngatur sekolahmu.",
         "login_now_button": "Login Saiki",
         "verify_failed_title": "Verifikasi Gagal",
-        "register_again_button": "Daftar Maneh"
+        "register_again_button": "Daftar Maneh",
+        "messages": {
+            "slug_taken": "Slug wis dipigunakake sekolah liya",
+            "admin_email_taken": "Email admin wis kedaftar",
+            "invalid_slug": "Slug mung oleh huruf cilik, angka, lan strip (minimal 4 karakter)",
+            "school_not_found_or_inactive": "Sekolah ora ditemokake utawa durung aktif",
+            "invalid_or_expired_token": "Token ora valid utawa wis kadaluwarsa",
+            "email_verified_success": "Email sukses diverifikasi! Akun sampeyan wis aktif.",
+            "password_reset_success": "Password sukses direset",
+            "invalid_credentials_format": "Email/NIS utawa password ora valid",
+            "email_or_nis_not_found": "Email/NIS ora kedaftar",
+            "wrong_password": "Password salah",
+            "account_deactivated_contact_admin": "Akun sampeyan wis dipateni. Hubungi admin.",
+            "email_not_verified": "Email durung diverifikasi. Priksa inbox sampeyan.",
+            "account_not_linked_to_school": "Akun ora nyambung menyang sekolah apa wae",
+            "school_inactive_or_suspended": "Sekolah sampeyan durung aktif utawa wis disuspend",
+            "all_fields_required": "Kabeh field wajib diisi",
+            "invalid_email_format": "Format email ora valid",
+            "registration_success": "Registrasi sukses. Priksa email kanggo verifikasi.",
+            "invalid_role": "Role kudu murid utawa guru",
+            "email_already_registered": "Email wis kedaftar",
+            "name_min_length": "Jeneng minimal 2 karakter",
+            "name_max_length": "Jeneng maksimal 100 karakter",
+            "profile_updated": "Profil sukses dianyari",
+            "wrong_old_password": "Password lawas salah",
+            "password_changed": "Password sukses diowahi"
+        }
     },
     "messages": {
         "success_saved": "Berhasil disimpen!",
@@ -597,7 +623,11 @@
         "no_permission": "Sampeyan ora duwe idin",
         "course_not_found": "Mata pelajaran ora ditemokake",
         "course_id_required": "ID mata pelajaran wajib diisi",
-        "invalid_data_format": "Format data ora valid"
+        "invalid_data_format": "Format data ora valid",
+        "password_min_length": "Password minimal 6 karakter",
+        "password_uppercase_required": "Password kudu ngemot minimal 1 huruf gedhe",
+        "password_number_required": "Password kudu ngemot minimal 1 angka",
+        "password_symbol_required": "Password kudu ngemot minimal 1 simbol (!@#$%^&*(),.?\":{}|<>)"
     },
     "user": {
         "name": "Jeneng",

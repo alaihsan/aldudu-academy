@@ -581,7 +581,33 @@
         "verify_success_subtitle": "Akun Angku lah aktif jo siap dipakai. Silahkan login untuak mulai ngola sikola Angku.",
         "login_now_button": "Login Kini",
         "verify_failed_title": "Verifikasi Gagal",
-        "register_again_button": "Daftar Baliak"
+        "register_again_button": "Daftar Baliak",
+        "messages": {
+            "slug_taken": "Slug lah dipakai dek sikola lain",
+            "admin_email_taken": "Email admin lah tadaftar",
+            "invalid_slug": "Slug hanyo buliah huruf ketek, angko, jo garih (minimal 4 karakter)",
+            "school_not_found_or_inactive": "Sikola indak ditamukan atau alun aktif",
+            "invalid_or_expired_token": "Token indak valid atau lah kadaluwarsa",
+            "email_verified_success": "Email barasil diverifikasi! Akun sanak lah aktif.",
+            "password_reset_success": "Kato sandi barasil dipabaru",
+            "invalid_credentials_format": "Email/NIS atau kato sandi indak valid",
+            "email_or_nis_not_found": "Email/NIS indak tadaftar",
+            "wrong_password": "Kato sandi salah",
+            "account_deactivated_contact_admin": "Akun sanak lah dinonaktifkan. Hubungi admin.",
+            "email_not_verified": "Email alun diverifikasi. Caliak inbox sanak.",
+            "account_not_linked_to_school": "Akun indak tahubuang ka sikola a pun",
+            "school_inactive_or_suspended": "Sikola sanak alun aktif atau lah disuspend",
+            "all_fields_required": "Kasadonyo field musti diisi",
+            "invalid_email_format": "Format email indak valid",
+            "registration_success": "Registrasi barasil. Caliak email untuak verifikasi.",
+            "invalid_role": "Peran musti murik atau guru",
+            "email_already_registered": "Email lah tadaftar",
+            "name_min_length": "Namo minimal 2 karakter",
+            "name_max_length": "Namo maksimal 100 karakter",
+            "profile_updated": "Profil barasil dipabaru",
+            "wrong_old_password": "Kato sandi lamo salah",
+            "password_changed": "Kato sandi barasil diubah"
+        }
     },
     "messages": {
         "success_saved": "Barasia disimpan!",
@@ -597,7 +623,11 @@
         "no_permission": "Angku indak mampunyoi izin",
         "course_not_found": "Mato pelajaran indak ditamukan",
         "course_id_required": "ID mato pelajaran wajib diisi",
-        "invalid_data_format": "Format data indak valid"
+        "invalid_data_format": "Format data indak valid",
+        "password_min_length": "Kato sandi minimal 6 karakter",
+        "password_uppercase_required": "Kato sandi musti manganduang minimal 1 huruf gadang",
+        "password_number_required": "Kato sandi musti manganduang minimal 1 angko",
+        "password_symbol_required": "Kato sandi musti manganduang minimal 1 simbol (!@#$%^&*(),.?\":{}|<>)"
     },
     "user": {
         "name": "Namo",

@@ -581,7 +581,33 @@
         "verify_success_subtitle": "Akun anjeun parantos aktif sareng siap dianggo. Mangga login pikeun mimiti ngokolakeun sakola anjeun.",
         "login_now_button": "Login Ayeuna",
         "verify_failed_title": "Verifikasi Gagal",
-        "register_again_button": "Daptar Deui"
+        "register_again_button": "Daptar Deui",
+        "messages": {
+            "slug_taken": "Slug parantos dianggo ku sakola lian",
+            "admin_email_taken": "Email admin parantos kadaptar",
+            "invalid_slug": "Slug ngan tiasa hurup leutik, angka, sareng garis (minimal 4 karakter)",
+            "school_not_found_or_inactive": "Sakola teu kapendak atanapi tacan aktip",
+            "invalid_or_expired_token": "Token teu valid atanapi parantos kadaluwarsa",
+            "email_verified_success": "Email suksés diverifikasi! Akun anjeun ayeuna aktip.",
+            "password_reset_success": "Kecap sandi suksés direset",
+            "invalid_credentials_format": "Email/NIS atanapi kecap sandi teu valid",
+            "email_or_nis_not_found": "Email/NIS teu kadaptar",
+            "wrong_password": "Kecap sandi salah",
+            "account_deactivated_contact_admin": "Akun anjeun parantos dipareuman. Hubungi admin.",
+            "email_not_verified": "Email teu acan diverifikasi. Parios inbox anjeun.",
+            "account_not_linked_to_school": "Akun teu nyambung ka sakola naon waé",
+            "school_inactive_or_suspended": "Sakola anjeun tacan aktip atanapi parantos disuspend",
+            "all_fields_required": "Sadaya widang wajib dieusian",
+            "invalid_email_format": "Format email teu valid",
+            "registration_success": "Registrasi suksés. Parios email pikeun verifikasi.",
+            "invalid_role": "Peran kedah murid atanapi guru",
+            "email_already_registered": "Email parantos kadaptar",
+            "name_min_length": "Nami minimal 2 karakter",
+            "name_max_length": "Nami maksimal 100 karakter",
+            "profile_updated": "Profil suksés dianyarkeun",
+            "wrong_old_password": "Kecap sandi lami salah",
+            "password_changed": "Kecap sandi suksés dirobih"
+        }
     },
     "messages": {
         "success_saved": "Berhasil disimpen!",
@@ -597,7 +623,11 @@
         "no_permission": "Anjeun teu gaduh idin",
         "course_not_found": "Mata pelajaran teu kapendak",
         "course_id_required": "ID mata pelajaran wajib dieusi",
-        "invalid_data_format": "Format data teu valid"
+        "invalid_data_format": "Format data teu valid",
+        "password_min_length": "Kecap sandi minimal 6 karakter",
+        "password_uppercase_required": "Kecap sandi kudu ngandung minimal 1 hurup gedé",
+        "password_number_required": "Kecap sandi kudu ngandung minimal 1 angka",
+        "password_symbol_required": "Kecap sandi kudu ngandung minimal 1 simbol (!@#$%^&*(),.?\":{}|<>)"
     },
     "user": {
         "name": "Ngaran",

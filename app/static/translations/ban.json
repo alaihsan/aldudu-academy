@@ -581,7 +581,33 @@
         "verify_success_subtitle": "Akun ragane sampun aktif tur sedia anggen. Ngiring login antuk ngawitin ngatur sekolah ragane.",
         "login_now_button": "Login Mangkin",
         "verify_failed_title": "Verifikasi Gagal",
-        "register_again_button": "Daftar Malih"
+        "register_again_button": "Daftar Malih",
+        "messages": {
+            "slug_taken": "Slug sampun kaanggen antuk sekolah tiosan",
+            "admin_email_taken": "Email admin sampun kadaptar",
+            "invalid_slug": "Slug wantah dados huruf alit, angka, lan garis (minimal 4 aksara)",
+            "school_not_found_or_inactive": "Sekolah nenten kapanggih utawi durung aktif",
+            "invalid_or_expired_token": "Token nenten becik utawi sampun kadaluwarsa",
+            "email_verified_success": "Email prasida kaverifikasi! Akun ragane sampun aktif.",
+            "password_reset_success": "Sandi prasida kaanyarang",
+            "invalid_credentials_format": "Email/NIS utawi sandi nenten becik",
+            "email_or_nis_not_found": "Email/NIS nenten kadaptar",
+            "wrong_password": "Sandi iwang",
+            "account_deactivated_contact_admin": "Akun ragane sampun kamatiang. Uratiang admin.",
+            "email_not_verified": "Email durung kaverifikasi. Uratiang inbox ragane.",
+            "account_not_linked_to_school": "Akun nenten nyambung ring sekolah punapa je",
+            "school_inactive_or_suspended": "Sekolah ragane durung aktif utawi sampun kasuspen",
+            "all_fields_required": "Sami widang patut kaisi",
+            "invalid_email_format": "Format email nenten becik",
+            "registration_success": "Registrasi prasida. Uratiang email antuk verifikasi.",
+            "invalid_role": "Peran patut sisia utawi guru",
+            "email_already_registered": "Email sampun kadaptar",
+            "name_min_length": "Wasta minimal 2 aksara",
+            "name_max_length": "Wasta maksimal 100 aksara",
+            "profile_updated": "Profil prasida kaanyarang",
+            "wrong_old_password": "Sandi lawas iwang",
+            "password_changed": "Sandi prasida kaubah"
+        }
     },
     "messages": {
         "success_saved": "Berhasil kasimpen!",
@@ -597,7 +623,11 @@
         "no_permission": "Ragane nenten madue ijin",
         "course_not_found": "Mata pelajaran nenten kapanggih",
         "course_id_required": "ID mata pelajaran mustine kaisi",
-        "invalid_data_format": "Format data nenten becik"
+        "invalid_data_format": "Format data nenten becik",
+        "password_min_length": "Sandi minimal 6 aksara",
+        "password_uppercase_required": "Sandi patut ngranjing minimal 1 huruf ageng",
+        "password_number_required": "Sandi patut ngranjing minimal 1 angka",
+        "password_symbol_required": "Sandi patut ngranjing minimal 1 simbol (!@#$%^&*(),.?\":{}|<>)"
     },
     "user": {
         "name": "Aran",

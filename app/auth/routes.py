@@ -8,6 +8,7 @@ from app.auth.services import (
     register_school, verify_email_token,
     request_password_reset, reset_password, register_user,
 )
+from app.core.i18n import t
 
 auth_bp = Blueprint('auth', __name__, template_folder='templates')
 
@@ -79,7 +80,7 @@ def api_login():
     password = data.get('password')
 
     if not identifier or not password:
-        return jsonify({'success': False, 'message': 'Email/NIS atau password tidak valid'}), 400
+        return jsonify({'success': False, 'message': t('auth.messages.invalid_credentials_format')}), 400
 
     # Siswa login pakai NIS, lainnya pakai email
     if is_valid_email(identifier):
@@ -88,21 +89,21 @@ def api_login():
         user = User.query.filter_by(nis=identifier).first()
 
     if not user:
-        return jsonify({'success': False, 'message': 'Email/NIS tidak terdaftar', 'field': 'email'}), 401
+        return jsonify({'success': False, 'message': t('auth.messages.email_or_nis_not_found'), 'field': 'email'}), 401
     if not user.check_password(password):
-        return jsonify({'success': False, 'message': 'Password salah', 'field': 'password'}), 401
+        return jsonify({'success': False, 'message': t('auth.messages.wrong_password'), 'field': 'password'}), 401
 
     if not user.is_active:
-        return jsonify({'success': False, 'message': 'Akun Anda telah dinonaktifkan. Hubungi admin.'}), 403
+        return jsonify({'success': False, 'message': t('auth.messages.account_deactivated_contact_admin')}), 403
 
     if not user.email_verified and user.role != UserRole.SUPER_ADMIN:
-        return jsonify({'success': False, 'message': 'Email belum diverifikasi. Cek inbox Anda.'}), 403
+        return jsonify({'success': False, 'message': t('auth.messages.email_not_verified')}), 403
 
     if user.role != UserRole.SUPER_ADMIN:
         if not user.school:
-            return jsonify({'success': False, 'message': 'Akun tidak terhubung ke sekolah manapun'}), 403
+            return jsonify({'success': False, 'message': t('auth.messages.account_not_linked_to_school')}), 403
         if user.school.status != SchoolStatus.ACTIVE:
-            return jsonify({'success': False, 'message': 'Sekolah Anda belum aktif atau telah disuspend'}), 403
+            return jsonify({'success': False, 'message': t('auth.messages.school_inactive_or_suspended')}), 403
 
     login_user(user)
     log_activity(user.id, "Login")
@@ -149,10 +150,10 @@ def api_register():
     password = data.get('password', '')
 
     if not all([school_name, slug, school_email, admin_name, admin_email, password]):
-        return jsonify({'success': False, 'message': 'Semua field wajib diisi'}), 400
+        return jsonify({'success': False, 'message': t('auth.messages.all_fields_required')}), 400
 
     if not is_valid_email(school_email) or not is_valid_email(admin_email):
-        return jsonify({'success': False, 'message': 'Format email tidak valid'}), 400
+        return jsonify({'success': False, 'message': t('auth.messages.invalid_email_format')}), 400
 
     is_valid, error_msg = validate_password(password)
     if not is_valid:
@@ -170,7 +171,7 @@ def api_register():
     if error:
         return jsonify({'success': False, 'message': error}), 400
 
-    return jsonify({'success': True, 'message': 'Registrasi berhasil. Cek email untuk verifikasi.'}), 201
+    return jsonify({'success': True, 'message': t('auth.messages.registration_success')}), 201
 
 
 @auth_bp.route('/api/forgot-password', methods=['POST'])
@@ -227,15 +228,15 @@ def api_register_user():
 
     # Validate required fields
     if not all([name, email, password, role, school_id]):
-        return jsonify({'success': False, 'message': 'Semua field wajib diisi'}), 400
+        return jsonify({'success': False, 'message': t('auth.messages.all_fields_required')}), 400
 
     # Validate role
     if role not in ['murid', 'guru']:
-        return jsonify({'success': False, 'message': 'Role harus murid atau guru'}), 400
+        return jsonify({'success': False, 'message': t('auth.messages.invalid_role')}), 400
 
     # Validate email format
     if not is_valid_email(email):
-        return jsonify({'success': False, 'message': 'Format email tidak valid'}), 400
+        return jsonify({'success': False, 'message': t('auth.messages.invalid_email_format')}), 400
 
     # Validate password strength
     is_valid, error_msg = validate_password(password)
@@ -244,12 +245,12 @@ def api_register_user():
 
     # Check if email already exists
     if User.query.filter_by(email=email).first():
-        return jsonify({'success': False, 'message': 'Email sudah terdaftar'}), 400
+        return jsonify({'success': False, 'message': t('auth.messages.email_already_registered')}), 400
 
     # Check if school exists and is active
     school = School.query.filter_by(id=school_id, status=SchoolStatus.ACTIVE).first()
     if not school:
-        return jsonify({'success': False, 'message': 'Sekolah tidak ditemukan atau belum aktif'}), 404
+        return jsonify({'success': False, 'message': t('auth.messages.school_not_found_or_inactive')}), 404
 
     # Register user
     user, error = register_user(
@@ -263,7 +264,7 @@ def api_register_user():
     if error:
         return jsonify({'success': False, 'message': error}), 400
 
-    return jsonify({'success': True, 'message': 'Registrasi berhasil. Cek email untuk verifikasi.'}), 201
+    return jsonify({'success': True, 'message': t('auth.messages.registration_success')}), 201
 
 
 @auth_bp.route('/api/profile', methods=['PUT'])
@@ -272,12 +273,12 @@ def api_update_profile():
     data = request.get_json() or {}
     name = data.get('name', '').strip()
     if not name or len(name) < 2:
-        return jsonify({'success': False, 'message': 'Nama minimal 2 karakter'}), 400
+        return jsonify({'success': False, 'message': t('auth.messages.name_min_length')}), 400
     if len(name) > 100:
-        return jsonify({'success': False, 'message': 'Nama maksimal 100 karakter'}), 400
+        return jsonify({'success': False, 'message': t('auth.messages.name_max_length')}), 400
     current_user.name = name
     db.session.commit()
-    return jsonify({'success': True, 'message': 'Profil berhasil diperbarui'})
+    return jsonify({'success': True, 'message': t('auth.messages.profile_updated')})
 
 
 @auth_bp.route('/api/change-password', methods=['PUT'])
@@ -288,9 +289,9 @@ def api_change_password():
     new_password = data.get('new_password', '')
 
     if not old_password or not new_password:
-        return jsonify({'success': False, 'message': 'Semua field wajib diisi'}), 400
+        return jsonify({'success': False, 'message': t('auth.messages.all_fields_required')}), 400
     if not current_user.check_password(old_password):
-        return jsonify({'success': False, 'message': 'Password lama salah'}), 401
+        return jsonify({'success': False, 'message': t('auth.messages.wrong_old_password')}), 401
     
     is_valid, error_msg = validate_password(new_password)
     if not is_valid:
@@ -299,7 +300,7 @@ def api_change_password():
     current_user.set_password(new_password)
     db.session.commit()
     log_activity(current_user.id, "Ganti password")
-    return jsonify({'success': True, 'message': 'Password berhasil diubah'})
+    return jsonify({'success': True, 'message': t('auth.messages.password_changed')})
 
 
 @auth_bp.route('/api/activity-logs', methods=['GET'])

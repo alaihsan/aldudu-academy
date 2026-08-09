@@ -582,7 +582,33 @@
         "verify_success_subtitle": "حسابك أصبح نشطًا وجاهزًا للاستخدام. يرجى تسجيل الدخول لبدء إدارة مدرستك.",
         "login_now_button": "سجّل الدخول الآن",
         "verify_failed_title": "فشل التحقق",
-        "register_again_button": "التسجيل مجددًا"
+        "register_again_button": "التسجيل مجددًا",
+        "messages": {
+            "slug_taken": "الرابط المختصر مستخدم بالفعل من قبل مدرسة أخرى",
+            "admin_email_taken": "البريد الإلكتروني للمشرف مسجل بالفعل",
+            "invalid_slug": "يجب أن يحتوي الرابط المختصر على أحرف صغيرة وأرقام وشرطات فقط (4 أحرف على الأقل)",
+            "school_not_found_or_inactive": "المدرسة غير موجودة أو غير نشطة بعد",
+            "invalid_or_expired_token": "الرمز غير صالح أو منتهي الصلاحية",
+            "email_verified_success": "تم التحقق من البريد الإلكتروني بنجاح! حسابك نشط الآن.",
+            "password_reset_success": "تمت إعادة تعيين كلمة المرور بنجاح",
+            "invalid_credentials_format": "البريد الإلكتروني/رقم الطالب أو كلمة المرور غير صالحة",
+            "email_or_nis_not_found": "البريد الإلكتروني/رقم الطالب غير مسجل",
+            "wrong_password": "كلمة مرور خاطئة",
+            "account_deactivated_contact_admin": "تم تعطيل حسابك. تواصل مع المشرف.",
+            "email_not_verified": "لم يتم التحقق من البريد الإلكتروني بعد. تحقق من بريدك الوارد.",
+            "account_not_linked_to_school": "الحساب غير مرتبط بأي مدرسة",
+            "school_inactive_or_suspended": "مدرستك غير نشطة بعد أو تم إيقافها",
+            "all_fields_required": "جميع الحقول مطلوبة",
+            "invalid_email_format": "تنسيق بريد إلكتروني غير صالح",
+            "registration_success": "تم التسجيل بنجاح. تحقق من بريدك الإلكتروني للتحقق.",
+            "invalid_role": "يجب أن يكون الدور طالب أو معلم",
+            "email_already_registered": "البريد الإلكتروني مسجل بالفعل",
+            "name_min_length": "يجب أن يتكون الاسم من حرفين على الأقل",
+            "name_max_length": "يجب ألا يتجاوز الاسم 100 حرف",
+            "profile_updated": "تم تحديث الملف الشخصي بنجاح",
+            "wrong_old_password": "كلمة المرور القديمة خاطئة",
+            "password_changed": "تم تغيير كلمة المرور بنجاح"
+        }
     },
     "messages": {
         "success_saved": "تم الحفظ بنجاح!",
@@ -598,7 +624,11 @@
         "no_permission": "ليس لديك إذن",
         "course_not_found": "المادة الدراسية غير موجودة",
         "course_id_required": "معرف المادة الدراسية مطلوب",
-        "invalid_data_format": "تنسيق بيانات غير صالح"
+        "invalid_data_format": "تنسيق بيانات غير صالح",
+        "password_min_length": "يجب أن تتكون كلمة المرور من 6 أحرف على الأقل",
+        "password_uppercase_required": "يجب أن تحتوي كلمة المرور على حرف كبير واحد على الأقل",
+        "password_number_required": "يجب أن تحتوي كلمة المرور على رقم واحد على الأقل",
+        "password_symbol_required": "يجب أن تحتوي كلمة المرور على رمز واحد على الأقل (!@#$%^&*(),.?\":{}|<>)"
     },
     "user": {
         "name": "الاسم",

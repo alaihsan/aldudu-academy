@@ -581,7 +581,33 @@
         "verify_success_subtitle": "Akun Anda sudah aktif dan siap digunakan. Silakan login untuk mulai mengelola sekolah Anda.",
         "login_now_button": "Login Sekarang",
         "verify_failed_title": "Verifikasi Gagal",
-        "register_again_button": "Daftar Ulang"
+        "register_again_button": "Daftar Ulang",
+        "messages": {
+            "slug_taken": "Slug sudah digunakan oleh sekolah lain",
+            "admin_email_taken": "Email admin sudah terdaftar",
+            "invalid_slug": "Slug hanya boleh huruf kecil, angka, dan strip (min 4 karakter)",
+            "school_not_found_or_inactive": "Sekolah tidak ditemukan atau belum aktif",
+            "invalid_or_expired_token": "Token tidak valid atau sudah kadaluarsa",
+            "email_verified_success": "Email berhasil diverifikasi! Akun Anda sudah aktif.",
+            "password_reset_success": "Password berhasil direset",
+            "invalid_credentials_format": "Email/NIS atau password tidak valid",
+            "email_or_nis_not_found": "Email/NIS tidak terdaftar",
+            "wrong_password": "Password salah",
+            "account_deactivated_contact_admin": "Akun Anda telah dinonaktifkan. Hubungi admin.",
+            "email_not_verified": "Email belum diverifikasi. Cek inbox Anda.",
+            "account_not_linked_to_school": "Akun tidak terhubung ke sekolah manapun",
+            "school_inactive_or_suspended": "Sekolah Anda belum aktif atau telah disuspend",
+            "all_fields_required": "Semua field wajib diisi",
+            "invalid_email_format": "Format email tidak valid",
+            "registration_success": "Registrasi berhasil. Cek email untuk verifikasi.",
+            "invalid_role": "Role harus murid atau guru",
+            "email_already_registered": "Email sudah terdaftar",
+            "name_min_length": "Nama minimal 2 karakter",
+            "name_max_length": "Nama maksimal 100 karakter",
+            "profile_updated": "Profil berhasil diperbarui",
+            "wrong_old_password": "Password lama salah",
+            "password_changed": "Password berhasil diubah"
+        }
     },
     "messages": {
         "success_saved": "Berhasil disimpan!",
@@ -597,7 +623,11 @@
         "no_permission": "Anda tidak memiliki izin",
         "course_not_found": "Mata pelajaran tidak ditemukan",
         "course_id_required": "ID mata pelajaran wajib diisi",
-        "invalid_data_format": "Format data tidak valid"
+        "invalid_data_format": "Format data tidak valid",
+        "password_min_length": "Password minimal 6 karakter",
+        "password_uppercase_required": "Password harus mengandung minimal 1 huruf kapital",
+        "password_number_required": "Password harus mengandung minimal 1 angka",
+        "password_symbol_required": "Password harus mengandung minimal 1 simbol (!@#$%^&*(),.?\":{}|<>)"
     },
     "user": {
         "name": "Nama",

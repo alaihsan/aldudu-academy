@@ -581,7 +581,33 @@
         "verify_success_subtitle": "Your account is now active and ready to use. Please log in to start managing your school.",
         "login_now_button": "Log In Now",
         "verify_failed_title": "Verification Failed",
-        "register_again_button": "Register Again"
+        "register_again_button": "Register Again",
+        "messages": {
+            "slug_taken": "Slug is already used by another school",
+            "admin_email_taken": "Admin email is already registered",
+            "invalid_slug": "Slug may only contain lowercase letters, numbers, and dashes (min 4 characters)",
+            "school_not_found_or_inactive": "School not found or not yet active",
+            "invalid_or_expired_token": "Invalid or expired token",
+            "email_verified_success": "Email verified successfully! Your account is now active.",
+            "password_reset_success": "Password reset successfully",
+            "invalid_credentials_format": "Invalid email/NIS or password",
+            "email_or_nis_not_found": "Email/NIS not registered",
+            "wrong_password": "Wrong password",
+            "account_deactivated_contact_admin": "Your account has been deactivated. Contact admin.",
+            "email_not_verified": "Email not verified yet. Check your inbox.",
+            "account_not_linked_to_school": "Account is not linked to any school",
+            "school_inactive_or_suspended": "Your school is not yet active or has been suspended",
+            "all_fields_required": "All fields are required",
+            "invalid_email_format": "Invalid email format",
+            "registration_success": "Registration successful. Check your email for verification.",
+            "invalid_role": "Role must be student or teacher",
+            "email_already_registered": "Email is already registered",
+            "name_min_length": "Name must be at least 2 characters",
+            "name_max_length": "Name must be at most 100 characters",
+            "profile_updated": "Profile updated successfully",
+            "wrong_old_password": "Wrong old password",
+            "password_changed": "Password changed successfully"
+        }
     },
     "messages": {
         "success_saved": "Successfully saved!",
@@ -597,7 +623,11 @@
         "no_permission": "You do not have permission",
         "course_not_found": "Course not found",
         "course_id_required": "Course ID is required",
-        "invalid_data_format": "Invalid data format"
+        "invalid_data_format": "Invalid data format",
+        "password_min_length": "Password must be at least 6 characters",
+        "password_uppercase_required": "Password must contain at least 1 uppercase letter",
+        "password_number_required": "Password must contain at least 1 number",
+        "password_symbol_required": "Password must contain at least 1 symbol (!@#$%^&*(),.?\":{}|<>)"
     },
     "user": {
         "name": "Name",

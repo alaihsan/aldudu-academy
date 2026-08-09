@@ -7,6 +7,7 @@ from app.models import (
 from app.services.email_service import (
     send_verification_email, send_password_reset_email,
 )
+from app.core.i18n import t
 
 
 def is_valid_slug(slug):
@@ -15,13 +16,13 @@ def is_valid_slug(slug):
 
 def register_school(name, slug, email, admin_name, admin_email, admin_password):
     if School.query.filter_by(slug=slug).first():
-        return None, 'Slug sudah digunakan oleh sekolah lain'
+        return None, t('auth.messages.slug_taken')
 
     if User.query.filter_by(email=admin_email).first():
-        return None, 'Email admin sudah terdaftar'
+        return None, t('auth.messages.admin_email_taken')
 
     if not is_valid_slug(slug):
-        return None, 'Slug hanya boleh huruf kecil, angka, dan strip (min 4 karakter)'
+        return None, t('auth.messages.invalid_slug')
 
     # Create school
     school = School(
@@ -63,7 +64,7 @@ def register_user(name, email, password, role, school_id):
     # Check if school exists and is active
     school = School.query.filter_by(id=school_id, status=SchoolStatus.ACTIVE).first()
     if not school:
-        return None, 'Sekolah tidak ditemukan atau belum aktif'
+        return None, t('auth.messages.school_not_found_or_inactive')
 
     # Create user
     user_role = UserRole.MURID if role == 'murid' else UserRole.GURU
@@ -93,7 +94,7 @@ def register_user(name, email, password, role, school_id):
 def verify_email_token(token_str):
     token = EmailVerificationToken.query.filter_by(token=token_str).first()
     if not token or not token.is_valid:
-        return False, 'Token tidak valid atau sudah kadaluarsa'
+        return False, t('auth.messages.invalid_or_expired_token')
 
     from app.helpers import get_jakarta_now
     token.used_at = get_jakarta_now().replace(tzinfo=None)
@@ -109,7 +110,7 @@ def verify_email_token(token_str):
             school.status = SchoolStatus.ACTIVE
 
     db.session.commit()
-    return True, 'Email berhasil diverifikasi! Akun Anda sudah aktif.'
+    return True, t('auth.messages.email_verified_success')
 
 
 def request_password_reset(email):
@@ -129,10 +130,10 @@ def request_password_reset(email):
 def reset_password(token_str, new_password):
     token = PasswordResetToken.query.filter_by(token=token_str).first()
     if not token or not token.is_valid:
-        return False, 'Token tidak valid atau sudah kadaluarsa'
+        return False, t('auth.messages.invalid_or_expired_token')
 
     if len(new_password) < 6:
-        return False, 'Password minimal 6 karakter'
+        return False, t('messages.password_min_length')
 
     from app.helpers import get_jakarta_now
     token.used_at = get_jakarta_now().replace(tzinfo=None)
@@ -142,4 +143,4 @@ def reset_password(token_str, new_password):
         user.set_password(new_password)
 
     db.session.commit()
-    return True, 'Password berhasil direset'
+    return True, t('auth.messages.password_reset_success')
