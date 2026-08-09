@@ -27,6 +27,7 @@ def register_blueprints(app):
     from app.health.routes import health_bp
     from app.metrics.routes import metrics_bp
     from app.content.routes import content_bp, content_files_bp
+    from app.classroom.routes import classroom_bp, classroom_pages_bp
 
     blueprints = [
         main_bp,
@@ -52,6 +53,8 @@ def register_blueprints(app):
         metrics_bp,
         content_bp,
         content_files_bp,
+        classroom_bp,
+        classroom_pages_bp,
     ]
     for bp in blueprints:
         app.register_blueprint(bp)

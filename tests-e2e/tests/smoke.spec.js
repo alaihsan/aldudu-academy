@@ -141,4 +141,23 @@ test.describe('JS modularization smoke suite', () => {
 
     expect(errors, `console/script errors during HTMX nav:\n${errors.join('\n')}`).toEqual([]);
   });
+
+  test('6. Ruang Kelas (classroom) shows the seeded quiz and filter/sort do not error', async ({ page }) => {
+    const errors = trackConsoleErrors(page);
+    await login(page, STUDENT);
+
+    await clickLocator(page.locator('a[href*="/ruang-kelas"]').first());
+    await page.waitForURL(/\/ruang-kelas/, { timeout: 10_000 });
+
+    await expect(page.locator('#classroom-items')).not.toBeEmpty({ timeout: 10_000 });
+    await expect(page.locator('#classroom-items')).toContainText('E2E Quiz');
+
+    await page.locator('#classroom-filter').selectOption('quizzes');
+    await expect(page.locator('#classroom-items')).toContainText('E2E Quiz');
+
+    await page.locator('#classroom-sort').selectOption('recent');
+    await expect(page.locator('#classroom-items')).toContainText('E2E Quiz');
+
+    expect(errors, `console/script errors on Ruang Kelas:\n${errors.join('\n')}`).toEqual([]);
+  });
 });
