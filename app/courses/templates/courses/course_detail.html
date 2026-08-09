@@ -39,7 +39,7 @@
                     <!-- Dropdown Menu -->
                     <div id="class-switcher-menu" class="hidden absolute top-full left-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-700 py-2 z-50 animate-slide-up overflow-hidden">
                         <div class="px-4 py-2 border-b border-gray-100 dark:border-gray-700">
-                            <p class="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">Pilih Kelas</p>
+                            <p class="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest" data-i18n="home.select_class_modal_title">Pilih Kelas</p>
                         </div>
                         <div id="class-switcher-list" class="max-h-96 overflow-y-auto">
                             <!-- Will be populated by JS -->
@@ -58,7 +58,7 @@
                     <svg class="w-4 h-4 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                     </svg>
-                    <span class="group-hover:text-primary-700 dark:group-hover:text-primary-400 transition-colors">EDIT KELAS</span>
+                    <span class="group-hover:text-primary-700 dark:group-hover:text-primary-400 transition-colors" data-i18n="course.edit_class_button">EDIT KELAS</span>
                 </button>
                 {% endif %}
                 <a href="{{ url_for('issues_pages.issues_page') }}" class="p-2 text-primary-600 hover:bg-primary-50 rounded-lg transition-colors" title="Manajemen Masalah">
@@ -67,7 +67,7 @@
                     </svg>
                 </a>
                 <div class="px-4 py-1.5 bg-gray-100 rounded-full text-[10px] font-black uppercase tracking-widest text-gray-500">
-                    Kode: {{ course.class_code }}
+                    <span data-i18n="course.code_prefix">Kode:</span> {{ course.class_code }}
                 </div>
             </div>
         </header>
@@ -88,7 +88,7 @@
                     </div>
                     
                     <div class="relative z-10 text-white">
-                        <span class="inline-block px-4 py-1.5 bg-white/20 backdrop-blur-md rounded-xl text-[11px] font-black uppercase tracking-[0.2em] mb-4">Mata Pelajaran</span>
+                        <span class="inline-block px-4 py-1.5 bg-white/20 backdrop-blur-md rounded-xl text-[11px] font-black uppercase tracking-[0.2em] mb-4" data-i18n="course.subject_badge">Mata Pelajaran</span>
                         <h1 class="text-4xl sm:text-5xl font-black mb-4 drop-shadow-md leading-tight tracking-tight">{{ course.name }}</h1>
                         <div class="flex items-center gap-6">
                             <div class="flex items-center gap-2 bg-black/10 px-4 py-2 rounded-xl border border-white/20">
@@ -98,13 +98,13 @@
                             {% if course.students | length > 0 %}
                             <div class="flex items-center gap-2 bg-black/10 px-4 py-2 rounded-xl border border-white/20">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-                                <span class="font-black text-sm">{{ course.students | length }} Peserta</span>
+                                <span class="font-black text-sm">{{ course.students | length }} <span data-i18n="course.participants_suffix">Peserta</span></span>
                             </div>
                             {% endif %}
                             {% if is_teacher %}
                             <button onclick="openStudentRoster()" class="flex items-center gap-2 bg-white/20 hover:bg-white/30 px-4 py-2 rounded-xl border border-white/20 transition-colors active:scale-95">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-                                <span class="font-black text-sm">Daftar Siswa</span>
+                                <span class="font-black text-sm" data-i18n="course.student_list_button">Daftar Siswa</span>
                             </button>
                             {% endif %}
                         </div>
@@ -121,14 +121,14 @@
                     <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-200 dark:border-gray-800 p-8">
                         <div class="flex items-center justify-between mb-8">
                             <div>
-                                <h2 class="text-2xl font-black text-gray-900 dark:text-gray-100">📚 Catatan KBM</h2>
-                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Timeline kegiatan belajar mengajar</p>
+                                <h2 class="text-2xl font-black text-gray-900 dark:text-gray-100" data-i18n="kbm.section_title">📚 Catatan KBM</h2>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1" data-i18n="kbm.section_subtitle">Timeline kegiatan belajar mengajar</p>
                             </div>
                             <button onclick="toggleKbmForm()" class="px-6 py-3 bg-theme text-white rounded-2xl font-bold text-sm flex items-center space-x-2 hover:opacity-90 transition-all shadow-theme-lg">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
                                 </svg>
-                                <span>Tambah Catatan</span>
+                                <span data-i18n="kbm.add_note_button">Tambah Catatan</span>
                             </button>
                         </div>
 
@@ -136,44 +136,44 @@
                         <div id="kbm-add-form" class="hidden bg-gray-50 dark:bg-gray-950 rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-700 p-6 mb-8">
                             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                                 <div>
-                                    <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Tanggal *</label>
+                                    <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1" data-i18n="kbm.date_label">Tanggal *</label>
                                     <input type="date" id="kbm-date" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Waktu Mulai</label>
+                                    <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1" data-i18n="kbm.start_time_label">Waktu Mulai</label>
                                     <input type="time" id="kbm-start-time" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Waktu Selesai</label>
+                                    <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1" data-i18n="kbm.end_time_label">Waktu Selesai</label>
                                     <input type="time" id="kbm-end-time" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Kegiatan</label>
+                                    <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1" data-i18n="kbm.activity_label">Kegiatan</label>
                                     <select id="kbm-type" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100">
-                                        <option value="teori">📖 Teori</option>
-                                        <option value="praktikum">🧪 Praktikum</option>
-                                        <option value="ujian">📝 Ujian</option>
-                                        <option value="tugas">📋 Tugas</option>
-                                        <option value="review">🔁 Review</option>
-                                        <option value="lainnya">📌 Lainnya</option>
+                                        <option value="teori" data-i18n="kbm.type_theory">📖 Teori</option>
+                                        <option value="praktikum" data-i18n="kbm.type_practicum">🧪 Praktikum</option>
+                                        <option value="ujian" data-i18n="kbm.type_exam">📝 Ujian</option>
+                                        <option value="tugas" data-i18n="kbm.type_assignment">📋 Tugas</option>
+                                        <option value="review" data-i18n="kbm.type_review">🔁 Review</option>
+                                        <option value="lainnya" data-i18n="kbm.type_other">📌 Lainnya</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="mb-4">
-                                <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Materi/Topik *</label>
-                                <input type="text" id="kbm-topic" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100" placeholder="Contoh: Stoikiometri - Konsep Mol">
+                                <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1" data-i18n="kbm.topic_label">Materi/Topik *</label>
+                                <input type="text" id="kbm-topic" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100" placeholder="Contoh: Stoikiometri - Konsep Mol" data-i18n-placeholder="kbm.topic_placeholder">
                             </div>
                             <div class="mb-4">
-                                <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Detail KBM</label>
-                                <textarea id="kbm-description" rows="2" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100" placeholder="Jelaskan kegiatan yang dilakukan..."></textarea>
+                                <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1" data-i18n="kbm.detail_label">Detail KBM</label>
+                                <textarea id="kbm-description" rows="2" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100" placeholder="Jelaskan kegiatan yang dilakukan..." data-i18n-placeholder="kbm.detail_placeholder"></textarea>
                             </div>
                             <div class="mb-4">
-                                <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Catatan Tambahan</label>
-                                <textarea id="kbm-notes" rows="2" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100" placeholder="Refleksi, kendala, dll (opsional)"></textarea>
+                                <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1" data-i18n="kbm.additional_notes_label">Catatan Tambahan</label>
+                                <textarea id="kbm-notes" rows="2" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100" placeholder="Refleksi, kendala, dll (opsional)" data-i18n-placeholder="kbm.additional_notes_placeholder"></textarea>
                             </div>
                             <div class="flex justify-end space-x-3">
-                                <button type="button" onclick="toggleKbmForm()" class="px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all font-semibold">Batal</button>
-                                <button type="button" onclick="saveKbmNote()" class="px-4 py-2 bg-theme text-white rounded-lg hover:opacity-90 transition-all font-semibold">Simpan</button>
+                                <button type="button" onclick="toggleKbmForm()" class="px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all font-semibold" data-i18n="common.cancel">Batal</button>
+                                <button type="button" onclick="saveKbmNote()" class="px-4 py-2 bg-theme text-white rounded-lg hover:opacity-90 transition-all font-semibold" data-i18n="common.save">Simpan</button>
                             </div>
                         </div>
 
@@ -200,33 +200,33 @@
     <div class="card-duo w-full max-w-lg overflow-hidden animate-slide-up p-0 border-none shadow-2xl">
         <form id="create-assignment-form">
             <div class="bg-[#58cc02] px-8 py-8 text-white">
-                <h3 class="text-2xl font-black">Buat Tugas Baru</h3>
-                <p class="text-white/80 text-sm font-bold mt-1">Berikan tugas dan penilaian untuk murid.</p>
+                <h3 class="text-2xl font-black" data-i18n="course.create_assignment_title">Buat Tugas Baru</h3>
+                <p class="text-white/80 text-sm font-bold mt-1" data-i18n="course.create_assignment_subtitle">Berikan tugas dan penilaian untuk murid.</p>
             </div>
             <div class="p-8 space-y-6">
                 <div>
-                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2">Judul Tugas</label>
+                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2" data-i18n="course.assignment_title_label">Judul Tugas</label>
                     <input type="text" id="assignment-title-input" name="title" class="w-full px-6 py-4 bg-[#f7f7f7] border-2 border-[#e5e5e5] rounded-2xl focus:border-[#58cc02] outline-none font-black text-[#4b4b4b]" required>
                 </div>
                 <div>
-                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2">Instruksi (Opsional)</label>
+                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2" data-i18n="course.instructions_optional_label">Instruksi (Opsional)</label>
                     <textarea id="assignment-description-input" name="description" rows="3" class="w-full px-6 py-4 bg-[#f7f7f7] border-2 border-[#e5e5e5] rounded-2xl focus:border-[#58cc02] outline-none font-bold text-[#4b4b4b]"></textarea>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2">Tenggat Waktu</label>
+                        <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2" data-i18n="course.due_date_label">Tenggat Waktu</label>
                         <input type="datetime-local" id="assignment-due-date-input" name="due_date" class="w-full px-4 py-4 bg-[#f7f7f7] border-2 border-[#e5e5e5] rounded-2xl focus:border-[#58cc02] outline-none font-black text-sm text-[#4b4b4b]">
                     </div>
                     <div>
-                        <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2">Nilai Maksimal</label>
+                        <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2" data-i18n="course.max_score_label">Nilai Maksimal</label>
                         <input type="number" id="assignment-max-score-input" name="max_score" value="100" class="w-full px-6 py-4 bg-[#f7f7f7] border-2 border-[#e5e5e5] rounded-2xl focus:border-[#58cc02] outline-none font-black text-sm text-[#4b4b4b]" required>
                     </div>
                 </div>
                 <div id="assignment-modal-error" class="hidden p-4 bg-red-50 text-[#ff4b4b] rounded-2xl text-xs font-black text-center"></div>
             </div>
             <div class="px-8 pb-8 flex flex-col gap-3">
-                <button type="submit" class="btn-duo btn-duo-primary h-14 text-sm">SIMPAN TUGAS</button>
-                <button type="button" class="assignment-cancel-btn btn-duo btn-duo-ghost h-14 text-sm">BATAL</button>
+                <button type="submit" class="btn-duo btn-duo-primary h-14 text-sm" data-i18n="course.save_assignment_button">SIMPAN TUGAS</button>
+                <button type="button" class="assignment-cancel-btn btn-duo btn-duo-ghost h-14 text-sm" data-i18n="course.delete_modal_cancel">BATAL</button>
             </div>
         </form>
     </div>
@@ -237,24 +237,24 @@
     <div class="card-duo w-full max-w-lg overflow-hidden animate-slide-up p-0 border-none shadow-2xl">
         <form id="create-file-form">
             <div class="bg-[#1cb0f6] px-8 py-8 text-white">
-                <h3 class="text-2xl font-black">Unggah Materi</h3>
-                <p class="text-white/80 text-sm font-bold mt-1">Bagikan dokumen atau modul pembelajaran.</p>
+                <h3 class="text-2xl font-black" data-i18n="course.upload_material_title">Unggah Materi</h3>
+                <p class="text-white/80 text-sm font-bold mt-1" data-i18n="course.upload_material_subtitle">Bagikan dokumen atau modul pembelajaran.</p>
             </div>
             <div class="p-8 space-y-6">
                 <div>
-                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2">Nama Berkas</label>
+                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2" data-i18n="course.file_name_label">Nama Berkas</label>
                     <input type="text" id="file-name-input" class="w-full px-6 py-4 bg-[#f7f7f7] border-2 border-[#e5e5e5] rounded-2xl focus:border-[#1cb0f6] outline-none font-black text-[#4b4b4b]" required>
                 </div>
                 <div>
-                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2">Pilih File</label>
+                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2" data-i18n="course.choose_file_label">Pilih File</label>
                     <input type="file" id="file-upload-input" class="w-full px-6 py-4 bg-[#f7f7f7] border-2 border-[#e5e5e5] rounded-2xl focus:border-[#1cb0f6] outline-none font-bold text-[#4b4b4b]" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.png,.jpg,.jpeg,.gif,.webp,.txt,.rtf,.zip,.rar,.7z">
-                    <p class="text-[10px] text-[#afafaf] font-bold mt-2 uppercase tracking-wider">Maksimal 16 MB</p>
+                    <p class="text-[10px] text-[#afafaf] font-bold mt-2 uppercase tracking-wider" data-i18n="course.max_file_size_note">Maksimal 16 MB</p>
                 </div>
                 <div id="file-modal-error" class="hidden p-4 bg-red-50 text-[#ff4b4b] rounded-2xl text-xs font-black text-center"></div>
             </div>
             <div class="px-8 pb-8 flex flex-col gap-3">
-                <button type="submit" class="btn-duo btn-duo-blue h-14 text-sm">SIMPAN BERKAS</button>
-                <button type="button" class="file-cancel-btn btn-duo btn-duo-ghost h-14 text-sm">BATAL</button>
+                <button type="submit" class="btn-duo btn-duo-blue h-14 text-sm" data-i18n="course.save_file_button">SIMPAN BERKAS</button>
+                <button type="button" class="file-cancel-btn btn-duo btn-duo-ghost h-14 text-sm" data-i18n="course.delete_modal_cancel">BATAL</button>
             </div>
         </form>
     </div>
@@ -264,27 +264,27 @@
     <div class="card-duo w-full max-w-lg overflow-hidden animate-slide-up p-0 border-none shadow-2xl">
         <form id="create-link-form">
             <div class="bg-[#ce82ff] px-8 py-8 text-white">
-                <h3 class="text-2xl font-black">Sematkan Link</h3>
-                <p class="text-white/80 text-sm font-bold mt-1">Bagikan referensi website atau video eksternal.</p>
+                <h3 class="text-2xl font-black" data-i18n="course.embed_link_title">Sematkan Link</h3>
+                <p class="text-white/80 text-sm font-bold mt-1" data-i18n="course.embed_link_subtitle">Bagikan referensi website atau video eksternal.</p>
             </div>
             <div class="p-8 space-y-6">
                 <div>
-                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2">Judul Link</label>
+                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2" data-i18n="course.link_title_label">Judul Link</label>
                     <input type="text" id="link-name-input" class="w-full px-6 py-4 bg-[#f7f7f7] border-2 border-[#e5e5e5] rounded-2xl focus:border-[#ce82ff] outline-none font-black text-[#4b4b4b]" required>
                 </div>
                 <div>
-                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2">URL (http/https)</label>
+                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2" data-i18n="course.link_url_label">URL (http/https)</label>
                     <input type="text" id="link-url-input" class="w-full px-6 py-4 bg-[#f7f7f7] border-2 border-[#e5e5e5] rounded-2xl focus:border-[#ce82ff] outline-none font-black text-[#4b4b4b]" required>
                 </div>
                 <div>
-                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2">Deskripsi <span class="text-[#afafaf] normal-case">(opsional)</span></label>
-                    <textarea id="link-desc-input" rows="3" class="w-full px-6 py-4 bg-[#f7f7f7] border-2 border-[#e5e5e5] rounded-2xl focus:border-[#ce82ff] outline-none font-bold text-[#4b4b4b]" placeholder="Keterangan singkat tentang link ini..."></textarea>
+                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2"><span data-i18n="course.description">Deskripsi</span> <span class="text-[#afafaf] normal-case" data-i18n="common.optional">(opsional)</span></label>
+                    <textarea id="link-desc-input" rows="3" class="w-full px-6 py-4 bg-[#f7f7f7] border-2 border-[#e5e5e5] rounded-2xl focus:border-[#ce82ff] outline-none font-bold text-[#4b4b4b]" placeholder="Keterangan singkat tentang link ini..." data-i18n-placeholder="course.link_desc_placeholder"></textarea>
                 </div>
                 <div id="link-modal-error" class="hidden p-4 bg-red-50 text-[#ff4b4b] rounded-2xl text-xs font-black text-center"></div>
             </div>
             <div class="px-8 pb-8 flex flex-col gap-3">
-                <button type="submit" class="btn-duo btn-duo-purple h-14 text-sm">SIMPAN LINK</button>
-                <button type="button" class="link-cancel-btn btn-duo btn-duo-ghost h-14 text-sm">BATAL</button>
+                <button type="submit" class="btn-duo btn-duo-purple h-14 text-sm" data-i18n="course.save_link_button">SIMPAN LINK</button>
+                <button type="button" class="link-cancel-btn btn-duo btn-duo-ghost h-14 text-sm" data-i18n="course.delete_modal_cancel">BATAL</button>
             </div>
         </form>
     </div>
@@ -295,23 +295,23 @@
     <div class="card-duo w-full max-w-lg overflow-hidden animate-slide-up p-0 border-none shadow-2xl">
         <form id="create-discussion-form">
             <div class="bg-[#ff9600] px-8 py-8 text-white">
-                <h3 class="text-2xl font-black">Mulai Diskusi Baru</h3>
-                <p class="text-white/80 text-sm font-bold mt-1">Bangun interaksi positif di kelas Anda.</p>
+                <h3 class="text-2xl font-black" data-i18n="course.new_discussion_title">Mulai Diskusi Baru</h3>
+                <p class="text-white/80 text-sm font-bold mt-1" data-i18n="course.new_discussion_subtitle">Bangun interaksi positif di kelas Anda.</p>
             </div>
             <div class="p-8 space-y-6">
                 <div>
-                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2">Judul Topik</label>
+                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2" data-i18n="course.topic_title_label">Judul Topik</label>
                     <input type="text" id="discussion-title-input" class="w-full px-6 py-4 bg-[#f7f7f7] border-2 border-[#e5e5e5] rounded-2xl focus:border-[#ff9600] outline-none font-black text-[#4b4b4b]" required>
                 </div>
                 <div>
-                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2">Isi Pertanyaan</label>
+                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2" data-i18n="course.question_content_label">Isi Pertanyaan</label>
                     <textarea id="discussion-content-input" class="w-full px-6 py-4 bg-[#f7f7f7] border-2 border-[#e5e5e5] rounded-2xl focus:border-[#ff9600] outline-none font-bold text-[#4b4b4b]" rows="4" required></textarea>
                 </div>
                 <div id="discussion-modal-error" class="hidden p-4 bg-red-50 text-[#ff4b4b] rounded-2xl text-xs font-black text-center"></div>
             </div>
             <div class="px-8 pb-8 flex flex-col gap-3">
-                <button type="submit" class="btn-duo btn-duo-yellow h-14 text-sm text-white">MULAI FORUM</button>
-                <button type="button" class="discussion-cancel-btn btn-duo btn-duo-ghost h-14 text-sm">BATAL</button>
+                <button type="submit" class="btn-duo btn-duo-yellow h-14 text-sm text-white" data-i18n="course.start_forum_button">MULAI FORUM</button>
+                <button type="button" class="discussion-cancel-btn btn-duo btn-duo-ghost h-14 text-sm" data-i18n="course.delete_modal_cancel">BATAL</button>
             </div>
         </form>
     </div>
@@ -322,45 +322,45 @@
     <div class="card-duo w-full max-w-lg overflow-hidden animate-slide-up p-0 border-none shadow-2xl">
         <form id="kbm-edit-form">
             <div class="bg-[#1cb0f6] px-8 py-8 text-white">
-                <h3 class="text-2xl font-black">Edit Catatan KBM</h3>
-                <p class="text-white/80 text-sm font-bold mt-1">Update informasi kegiatan</p>
+                <h3 class="text-2xl font-black" data-i18n="kbm.edit_note_title">Edit Catatan KBM</h3>
+                <p class="text-white/80 text-sm font-bold mt-1" data-i18n="kbm.edit_note_subtitle">Update informasi kegiatan</p>
             </div>
             <input type="hidden" id="kbm-edit-id">
             <div class="p-8 space-y-4">
                 <div>
-                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2">Tanggal *</label>
+                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2" data-i18n="kbm.date_label">Tanggal *</label>
                     <input type="date" id="kbm-edit-date" class="w-full px-6 py-4 bg-[#f7f7f7] border-2 border-[#e5e5e5] rounded-2xl focus:border-[#1cb0f6] outline-none font-black text-[#4b4b4b]" required>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2">Waktu Mulai</label>
+                        <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2" data-i18n="kbm.start_time_label">Waktu Mulai</label>
                         <input type="time" id="kbm-edit-start-time" class="w-full px-6 py-4 bg-[#f7f7f7] border-2 border-[#e5e5e5] rounded-2xl focus:border-[#1cb0f6] outline-none font-black text-[#4b4b4b]">
                     </div>
                     <div>
-                        <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2">Waktu Selesai</label>
+                        <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2" data-i18n="kbm.end_time_label">Waktu Selesai</label>
                         <input type="time" id="kbm-edit-end-time" class="w-full px-6 py-4 bg-[#f7f7f7] border-2 border-[#e5e5e5] rounded-2xl focus:border-[#1cb0f6] outline-none font-black text-[#4b4b4b]">
                     </div>
                 </div>
                 <div>
-                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2">Kegiatan</label>
+                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2" data-i18n="kbm.activity_label">Kegiatan</label>
                     <select id="kbm-edit-type" class="w-full px-6 py-4 bg-[#f7f7f7] border-2 border-[#e5e5e5] rounded-2xl focus:border-[#1cb0f6] outline-none font-black text-[#4b4b4b]">
-                        <option value="teori">📖 Teori</option>
-                        <option value="praktikum">🧪 Praktikum</option>
-                        <option value="ujian">📝 Ujian</option>
-                        <option value="tugas">📋 Tugas</option>
-                        <option value="review">🔁 Review</option>
-                        <option value="lainnya">📌 Lainnya</option>
+                        <option value="teori" data-i18n="kbm.type_theory">📖 Teori</option>
+                        <option value="praktikum" data-i18n="kbm.type_practicum">🧪 Praktikum</option>
+                        <option value="ujian" data-i18n="kbm.type_exam">📝 Ujian</option>
+                        <option value="tugas" data-i18n="kbm.type_assignment">📋 Tugas</option>
+                        <option value="review" data-i18n="kbm.type_review">🔁 Review</option>
+                        <option value="lainnya" data-i18n="kbm.type_other">📌 Lainnya</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2">Materi/Topik *</label>
+                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2" data-i18n="kbm.topic_label">Materi/Topik *</label>
                     <input type="text" id="kbm-edit-topic" class="w-full px-6 py-4 bg-[#f7f7f7] border-2 border-[#e5e5e5] rounded-2xl focus:border-[#1cb0f6] outline-none font-black text-[#4b4b4b]" required>
                 </div>
                 <div id="kbm-edit-error" class="hidden p-4 bg-red-50 text-[#ff4b4b] rounded-2xl text-xs font-black text-center"></div>
             </div>
             <div class="px-8 pb-8 flex flex-col gap-3">
-                <button type="button" onclick="updateKbmNote()" class="btn-duo btn-duo-blue h-14 text-sm">UPDATE</button>
-                <button type="button" onclick="closeKbmEditModal()" class="btn-duo btn-duo-ghost h-14 text-sm">BATAL</button>
+                <button type="button" onclick="updateKbmNote()" class="btn-duo btn-duo-blue h-14 text-sm" data-i18n="kbm.update_button">UPDATE</button>
+                <button type="button" onclick="closeKbmEditModal()" class="btn-duo btn-duo-ghost h-14 text-sm" data-i18n="course.delete_modal_cancel">BATAL</button>
             </div>
         </form>
     </div>
@@ -414,22 +414,24 @@ async function loadClassSwitcherList() {
     const listContainer = document.getElementById('class-switcher-list');
     if (!listContainer) return;
 
+    const t = window.LanguageManager ? window.LanguageManager.t : (key, fallback) => fallback;
+
     listContainer.innerHTML = `
         <div class="px-6 py-4 text-center text-xs text-gray-500">
-            <span class="inline-block animate-spin mr-2">⏳</span> Memuat kelas...
+            <span class="inline-block animate-spin mr-2">⏳</span> ${t('course.loading_classes', 'Memuat kelas...')}
         </div>
     `;
 
     try {
         const res = await fetch('/api/courses');
-        if (!res.ok) throw new Error('Gagal mengambil data kelas');
+        if (!res.ok) throw new Error(t('course.fetch_classes_failed', 'Gagal mengambil data kelas'));
         const data = await res.json();
-        
+
         if (data.success && Array.isArray(data.courses)) {
             if (data.courses.length === 0) {
                 listContainer.innerHTML = `
                     <div class="px-6 py-4 text-center text-xs text-gray-400">
-                        Tidak ada kelas lain.
+                        ${t('course.no_other_classes_short', 'Tidak ada kelas lain.')}
                     </div>
                 `;
                 return;
@@ -467,13 +469,13 @@ async function loadClassSwitcherList() {
             
             classSwitcherLoaded = true;
         } else {
-            throw new Error(data.message || 'Gagal memuat daftar kelas');
+            throw new Error(data.message || t('course.load_classes_failed', 'Gagal memuat daftar kelas'));
         }
     } catch (err) {
         console.error(err);
         listContainer.innerHTML = `
             <div class="px-6 py-4 text-center text-xs text-red-500 font-bold">
-                ⚠️ ${err.message || 'Gagal memuat kelas'}
+                ⚠️ ${err.message || t('course.load_classes_failed_short', 'Gagal memuat kelas')}
             </div>
         `;
     }
@@ -503,8 +505,8 @@ window.addEventListener('click', function(e) {
                         </svg>
                     </div>
                     <div>
-                        <h3 class="text-xl font-black">Edit Kelas</h3>
-                        <p class="text-white/80 text-sm font-bold mt-0.5">Ubah nama &amp; warna kelas</p>
+                        <h3 class="text-xl font-black" data-i18n="home.edit_class_title">Edit Kelas</h3>
+                        <p class="text-white/80 text-sm font-bold mt-0.5" data-i18n="course.edit_class_subtitle">Ubah nama &amp; warna kelas</p>
                     </div>
                 </div>
                 <button onclick="closeColorPicker()" class="text-white/80 hover:text-white transition-colors">
@@ -516,13 +518,13 @@ window.addEventListener('click', function(e) {
         </div>
         <div class="p-8 space-y-6">
             <div>
-                <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-widest mb-2">Nama Kelas</label>
+                <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-widest mb-2" data-i18n="course.course_name">Nama Kelas</label>
                 <input id="edit-class-name" type="text" maxlength="150"
-                    class="w-full px-5 py-4 bg-[#f7f7f7] dark:bg-gray-800 border-2 border-[#e5e5e5] dark:border-gray-700 rounded-2xl font-black text-[#4b4b4b] dark:text-white outline-none focus:border-[#1cb0f6]" placeholder="Nama kelas">
+                    class="w-full px-5 py-4 bg-[#f7f7f7] dark:bg-gray-800 border-2 border-[#e5e5e5] dark:border-gray-700 rounded-2xl font-black text-[#4b4b4b] dark:text-white outline-none focus:border-[#1cb0f6]" placeholder="Nama kelas" data-i18n-placeholder="course.class_name_placeholder_short">
             </div>
 
             <div>
-                <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-widest mb-3">Warna Kelas</label>
+                <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-widest mb-3" data-i18n="course.class_color_label">Warna Kelas</label>
                 <div class="grid grid-cols-5 gap-3">
                     <button type="button" data-color="#ff4b4b" onclick="selectColor('#ff4b4b')" class="color-swatch w-14 h-14 rounded-2xl shadow-[0_4px_0_#d33131] transition-all" style="background-color:#ff4b4b" title="Merah"></button>
                     <button type="button" data-color="#1cb0f6" onclick="selectColor('#1cb0f6')" class="color-swatch w-14 h-14 rounded-2xl shadow-[0_4px_0_#1899d6] transition-all" style="background-color:#1cb0f6" title="Biru"></button>
@@ -535,8 +537,8 @@ window.addEventListener('click', function(e) {
             <div id="edit-class-error" class="hidden p-3 bg-red-50 text-[#ff4b4b] rounded-xl text-xs font-black text-center"></div>
 
             <div class="flex gap-3 pt-1">
-                <button type="button" onclick="closeColorPicker()" class="btn-duo btn-duo-ghost flex-1 h-14 text-sm">BATAL</button>
-                <button type="button" onclick="saveClassEdit()" class="btn-duo btn-duo-green flex-[2] h-14 text-sm">SIMPAN</button>
+                <button type="button" onclick="closeColorPicker()" class="btn-duo btn-duo-ghost flex-1 h-14 text-sm" data-i18n="course.delete_modal_cancel">BATAL</button>
+                <button type="button" onclick="saveClassEdit()" class="btn-duo btn-duo-green flex-[2] h-14 text-sm" data-i18n="course.save_button_caps">SIMPAN</button>
             </div>
         </div>
     </div>
@@ -547,8 +549,8 @@ window.addEventListener('click', function(e) {
     <div class="card-duo w-full max-w-2xl overflow-hidden animate-slide-up p-0 border-none shadow-2xl">
         <div class="bg-[#1cb0f6] px-8 py-6 text-white flex items-center justify-between">
             <div>
-                <h3 class="text-xl font-black">Daftar Siswa</h3>
-                <p id="roster-count" class="text-white/80 text-sm font-bold mt-0.5">Memuat…</p>
+                <h3 class="text-xl font-black" data-i18n="course.student_list_button">Daftar Siswa</h3>
+                <p id="roster-count" class="text-white/80 text-sm font-bold mt-0.5" data-i18n="classroom.loading">Memuat…</p>
             </div>
             <button onclick="closeStudentRoster()" class="text-white/80 hover:text-white transition-colors">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -558,10 +560,10 @@ window.addEventListener('click', function(e) {
             <table class="w-full text-sm">
                 <thead>
                     <tr class="text-left text-[#afafaf] border-b-2 border-slate-100 dark:border-gray-800">
-                        <th class="py-3 pr-4 text-[11px] font-black uppercase tracking-widest">No</th>
+                        <th class="py-3 pr-4 text-[11px] font-black uppercase tracking-widest" data-i18n="course.number_column">No</th>
                         <th class="py-3 pr-4 text-[11px] font-black uppercase tracking-widest">NIS</th>
-                        <th class="py-3 pr-4 text-[11px] font-black uppercase tracking-widest">Nama</th>
-                        <th class="py-3 text-[11px] font-black uppercase tracking-widest">L/P</th>
+                        <th class="py-3 pr-4 text-[11px] font-black uppercase tracking-widest" data-i18n="user.name">Nama</th>
+                        <th class="py-3 text-[11px] font-black uppercase tracking-widest" data-i18n="course.gender_column">L/P</th>
                     </tr>
                 </thead>
                 <tbody id="roster-body" class="divide-y divide-slate-50 dark:divide-gray-800 text-[#4b4b4b] dark:text-gray-200"></tbody>
@@ -580,7 +582,7 @@ window.addEventListener('click', function(e) {
         <div class="flex items-center gap-2 shrink-0">
             <a id="pdf-viewer-download" href="#" download class="flex items-center gap-2 px-4 py-2 rounded-lg text-[#e9edef] hover:bg-white/10 transition-colors text-sm font-bold" title="Unduh">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                <span class="hidden sm:inline">Unduh</span>
+                <span class="hidden sm:inline" data-i18n="course.download_button">Unduh</span>
             </a>
             <button onclick="closePdfViewer()" class="flex items-center justify-center w-10 h-10 rounded-lg text-[#e9edef] hover:bg-white/10 transition-colors" title="Tutup">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
