@@ -285,5 +285,36 @@
         "edit_class_title": "Edit Class",
         "edit_class_subtitle": "Adjust your class's details again.",
         "background_color_label": "Background Color"
+    },
+    "history": {
+        "title": "Access History",
+        "subtitle": "Log of your account activity",
+        "subtitle_teacher_suffix": "and students in your classes",
+        "activity_log_heading": "Activity Log",
+        "load_more": "Load More",
+        "time_column": "Time",
+        "user_column": "User",
+        "role_column": "Role",
+        "action_column": "Action",
+        "loading": "Loading data..."
+    },
+    "sponsor": {
+        "header_title": "Sponsor & Donate",
+        "hero_title": "Support Aldudu Academy",
+        "hero_subtitle": "Your donation helps us keep improving the education platform for everyone.",
+        "choose_amount_heading": "Choose Donation Amount",
+        "choose_amount_subtitle": "Every contribution matters for the platform's development",
+        "custom_amount_label": "Or enter a different amount",
+        "custom_amount_placeholder": "Any amount",
+        "selected_amount_label": "Your donation amount:",
+        "donate_button": "Donate Now",
+        "payment_security_note": "Payments are securely processed via Stripe",
+        "why_donate_heading": "Why Donate?",
+        "feature_dev_title": "Feature Development",
+        "feature_dev_desc": "Funds development of new learning features.",
+        "server_infra_title": "Server Infrastructure",
+        "server_infra_desc": "Keeps servers fast and stable for all users.",
+        "free_education_title": "Free Education",
+        "free_education_desc": "Helps keep the platform free for schools."
     }
 }

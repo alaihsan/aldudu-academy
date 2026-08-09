@@ -285,5 +285,36 @@
         "edit_class_title": "Edit Kelas",
         "edit_class_subtitle": "Sasuaian baliak detail kelas Angku.",
         "background_color_label": "Warna Latar"
+    },
+    "history": {
+        "title": "Riwayat Akses",
+        "subtitle": "Log kagiatan akun Angku",
+        "subtitle_teacher_suffix": "jo murid di kelas Angku",
+        "activity_log_heading": "Log Kagiatan",
+        "load_more": "Muek Lebih Banyak",
+        "time_column": "Wakatu",
+        "user_column": "User",
+        "role_column": "Peran",
+        "action_column": "Aksi",
+        "loading": "Manunggu data..."
+    },
+    "sponsor": {
+        "header_title": "Sponsor & Donasi",
+        "hero_title": "Dukuang Aldudu Academy",
+        "hero_subtitle": "Donasi Angku mambantu kami taruih mangambangan platform pandidikan nan labiah rancak untuak sadonyo.",
+        "choose_amount_heading": "Piliah Jumlah Donasi",
+        "choose_amount_subtitle": "Satiok kontribusi bararati bana untuak pangambangan platform",
+        "custom_amount_label": "Atau masuakan jumlah lain",
+        "custom_amount_placeholder": "Jumlah bebas",
+        "selected_amount_label": "Jumlah donasi Angku:",
+        "donate_button": "Donasi Kini",
+        "payment_security_note": "Pambayaran aman diproses malalui Stripe",
+        "why_donate_heading": "Baa Musti Donasi?",
+        "feature_dev_title": "Pangambangan Fitur",
+        "feature_dev_desc": "Mambiayoi pangambangan fitur baru untuak baraja.",
+        "server_infra_title": "Infrastruktur Server",
+        "server_infra_desc": "Manjago server tatap capek jo stabil untuak sadonyo pangguna.",
+        "free_education_title": "Pandidikan Gratis",
+        "free_education_desc": "Mambantu platform tatap gratis untuak sikola-sikola."
     }
 }

@@ -286,5 +286,36 @@
         "edit_class_title": "تعديل الفصل",
         "edit_class_subtitle": "أعد ضبط تفاصيل فصلك.",
         "background_color_label": "لون الخلفية"
+    },
+    "history": {
+        "title": "سجل الوصول",
+        "subtitle": "سجل نشاط حسابك",
+        "subtitle_teacher_suffix": "والطلاب في فصولك",
+        "activity_log_heading": "سجل النشاط",
+        "load_more": "تحميل المزيد",
+        "time_column": "الوقت",
+        "user_column": "المستخدم",
+        "role_column": "الدور",
+        "action_column": "الإجراء",
+        "loading": "جارٍ تحميل البيانات..."
+    },
+    "sponsor": {
+        "header_title": "الرعاية والتبرع",
+        "hero_title": "ادعم Aldudu Academy",
+        "hero_subtitle": "تبرعك يساعدنا على الاستمرار في تطوير منصة تعليمية أفضل للجميع.",
+        "choose_amount_heading": "اختر مبلغ التبرع",
+        "choose_amount_subtitle": "كل مساهمة مهمة لتطوير المنصة",
+        "custom_amount_label": "أو أدخل مبلغًا آخر",
+        "custom_amount_placeholder": "أي مبلغ",
+        "selected_amount_label": "مبلغ تبرعك:",
+        "donate_button": "تبرع الآن",
+        "payment_security_note": "تتم معالجة المدفوعات بأمان عبر Stripe",
+        "why_donate_heading": "لماذا التبرع؟",
+        "feature_dev_title": "تطوير الميزات",
+        "feature_dev_desc": "يمول تطوير ميزات تعليمية جديدة.",
+        "server_infra_title": "البنية التحتية للخوادم",
+        "server_infra_desc": "يحافظ على سرعة واستقرار الخوادم لجميع المستخدمين.",
+        "free_education_title": "تعليم مجاني",
+        "free_education_desc": "يساعد في إبقاء المنصة مجانية للمدارس."
     }
 }

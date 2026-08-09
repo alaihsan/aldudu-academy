@@ -285,5 +285,36 @@
         "edit_class_title": "Édit Kelas",
         "edit_class_subtitle": "Luyukeun deui detil kelas anjeun.",
         "background_color_label": "Warna Latar"
+    },
+    "history": {
+        "title": "Riwayat Aksés",
+        "subtitle": "Log kagiatan akun anjeun",
+        "subtitle_teacher_suffix": "sareng murid di kelas anjeun",
+        "activity_log_heading": "Log Kagiatan",
+        "load_more": "Muat Langkung Seueur",
+        "time_column": "Waktos",
+        "user_column": "User",
+        "role_column": "Peran",
+        "action_column": "Aksi",
+        "loading": "Ngamuatan data..."
+    },
+    "sponsor": {
+        "header_title": "Sponsor & Donasi",
+        "hero_title": "Dukung Aldudu Academy",
+        "hero_subtitle": "Donasi anjeun ngabantosan kami neraskeun ngembangkeun platform atikan anu langkung sae pikeun sadayana.",
+        "choose_amount_heading": "Pilih Jumlah Donasi",
+        "choose_amount_subtitle": "Saban kontribusi hartos pisan pikeun ngembangkeun platform",
+        "custom_amount_label": "Atanapi lebetkeun jumlah sanés",
+        "custom_amount_placeholder": "Jumlah bébas",
+        "selected_amount_label": "Jumlah donasi anjeun:",
+        "donate_button": "Donasi Ayeuna",
+        "payment_security_note": "Pambayaran aman diproses ngalangkungan Stripe",
+        "why_donate_heading": "Naha Kedah Donasi?",
+        "feature_dev_title": "Pangwangunan Fitur",
+        "feature_dev_desc": "Ngabiayaan pangwangunan fitur énggal pikeun diajar.",
+        "server_infra_title": "Infrastruktur Server",
+        "server_infra_desc": "Ngajaga server tetep gancang sareng stabil pikeun sadaya pangguna.",
+        "free_education_title": "Atikan Gratis",
+        "free_education_desc": "Ngabantosan platform tetep gratis pikeun sakola-sakola."
     }
 }

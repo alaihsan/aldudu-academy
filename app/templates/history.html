@@ -14,7 +14,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
                 </a>
-                <h2 class="text-lg font-bold text-gray-900 truncate">Riwayat Akses</h2>
+                <h2 class="text-lg font-bold text-gray-900 truncate" data-i18n="history.title">Riwayat Akses</h2>
             </div>
         </header>
 
@@ -24,8 +24,8 @@
                 <!-- Hero -->
                 <div class="bg-primary-600 rounded-[2.5rem] p-10 text-white relative overflow-hidden shadow-2xl shadow-primary-100">
                     <div class="relative z-10">
-                        <h1 class="text-3xl font-black mb-3">Riwayat Akses</h1>
-                        <p class="text-primary-100 opacity-90 max-w-xl">Log aktivitas akun Anda{% if is_teacher %} dan murid di kelas Anda{% endif %}.</p>
+                        <h1 class="text-3xl font-black mb-3" data-i18n="history.title">Riwayat Akses</h1>
+                        <p class="text-primary-100 opacity-90 max-w-xl"><span data-i18n="history.subtitle">Log aktivitas akun Anda</span>{% if is_teacher %} <span data-i18n="history.subtitle_teacher_suffix">dan murid di kelas Anda</span>{% endif %}.</p>
                     </div>
                     <div class="absolute right-0 bottom-0 opacity-10 pointer-events-none transform translate-y-1/4 translate-x-1/4">
                         <svg class="w-64 h-64" fill="currentColor" viewBox="0 0 24 24">
@@ -37,9 +37,9 @@
                 <!-- Activity Log Table -->
                 <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
                     <div class="px-8 py-6 border-b border-gray-100 flex items-center justify-between">
-                        <h3 class="text-lg font-black text-gray-900">Log Aktivitas</h3>
+                        <h3 class="text-lg font-black text-gray-900" data-i18n="history.activity_log_heading">Log Aktivitas</h3>
                         <div class="flex items-center space-x-3">
-                            <button id="load-more-btn" class="px-5 py-2 bg-gray-100 text-gray-600 rounded-xl font-bold text-sm hover:bg-gray-200 transition-all hidden">
+                            <button id="load-more-btn" class="px-5 py-2 bg-gray-100 text-gray-600 rounded-xl font-bold text-sm hover:bg-gray-200 transition-all hidden" data-i18n="history.load_more">
                                 Muat Lebih Banyak
                             </button>
                         </div>
@@ -48,14 +48,14 @@
                         <table class="w-full">
                             <thead>
                                 <tr class="bg-gray-50 text-left">
-                                    <th class="px-8 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Waktu</th>
-                                    <th class="px-8 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">User</th>
-                                    <th class="px-8 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Role</th>
-                                    <th class="px-8 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Aksi</th>
+                                    <th class="px-8 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest" data-i18n="history.time_column">Waktu</th>
+                                    <th class="px-8 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest" data-i18n="history.user_column">User</th>
+                                    <th class="px-8 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest" data-i18n="history.role_column">Role</th>
+                                    <th class="px-8 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest" data-i18n="history.action_column">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="activity-log-body">
-                                <tr><td colspan="4" class="px-8 py-12 text-center text-gray-400 font-medium">Memuat data...</td></tr>
+                                <tr><td colspan="4" class="px-8 py-12 text-center text-gray-400 font-medium" data-i18n="history.loading">Memuat data...</td></tr>
                             </tbody>
                         </table>
                     </div>
