@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, jsonify
 from flask_login import login_required, current_user
 from app.whats_new.models import WhatsNew
 from app.core.extensions import db
+from app.core.i18n import t
 
 whats_new_view_bp = Blueprint('whats_new_view', __name__, template_folder='templates')
 
@@ -33,7 +34,7 @@ def api_get_whats_new_post(post_id):
     """Get single What's New post (hanya yang published)."""
     post = WhatsNew.query.filter_by(id=post_id, is_published=True).first()
     if not post:
-        return jsonify({'success': False, 'message': 'Post tidak ditemukan'}), 404
+        return jsonify({'success': False, 'message': t('superadmin.messages.post_not_found')}), 404
 
     return jsonify({
         'success': True,
