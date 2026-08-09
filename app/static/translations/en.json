@@ -1267,5 +1267,11 @@
             "source_class_not_found": "Source class not found",
             "import_server_error": "A server error occurred while importing"
         }
+    },
+    "pages": {
+        "messages": {
+            "language_not_supported": "Language not supported",
+            "language_changed": "Language changed successfully"
+        }
     }
 }

@@ -1267,5 +1267,11 @@
             "source_class_not_found": "Kelas asa indak ditamukan",
             "import_server_error": "Taradi kasalahan server wakatu maimpor"
         }
+    },
+    "pages": {
+        "messages": {
+            "language_not_supported": "Bahaso indak didukuang",
+            "language_changed": "Bahaso barasil diubah"
+        }
     }
 }

@@ -1267,5 +1267,11 @@
             "source_class_not_found": "Kelas asal teu kapendak",
             "import_server_error": "Aya kasalahan server nalika ngimpor"
         }
+    },
+    "pages": {
+        "messages": {
+            "language_not_supported": "Basa teu didukung",
+            "language_changed": "Basa suksés dirobih"
+        }
     }
 }

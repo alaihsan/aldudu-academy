@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, request, jsonif
 from flask_login import login_required, current_user
 from app.core.extensions import db
 from app.models import UserRole
+from app.core.i18n import t
 
 main_bp = Blueprint('main', __name__)
 
@@ -54,14 +55,14 @@ def set_language():
     # Validasi kode bahasa yang didukung
     from app.core.i18n import SUPPORTED_LANGUAGES
     if lang_code not in SUPPORTED_LANGUAGES:
-        return jsonify({'success': False, 'message': 'Bahasa tidak didukung'}), 400
+        return jsonify({'success': False, 'message': t('pages.messages.language_not_supported')}), 400
 
     current_user.preferred_language = lang_code
     db.session.commit()
 
     return jsonify({
         'success': True,
-        'message': 'Bahasa berhasil diubah',
+        'message': t('pages.messages.language_changed'),
         'language': lang_code
     })
 
@@ -70,5 +71,5 @@ def set_language():
 def forbidden(error):
     return {
         'success': False,
-        'message': str(error.description) or 'Anda tidak memiliki izin',
+        'message': str(error.description) or t('messages.no_permission'),
     }, 403

@@ -1267,5 +1267,11 @@
             "source_class_not_found": "Kelas asal tidak ditemukan",
             "import_server_error": "Terjadi kesalahan server saat mengimpor"
         }
+    },
+    "pages": {
+        "messages": {
+            "language_not_supported": "Bahasa tidak didukung",
+            "language_changed": "Bahasa berhasil diubah"
+        }
     }
 }

@@ -1267,5 +1267,11 @@
             "source_class_not_found": "Kelas asal ora ditemokake",
             "import_server_error": "Ana kesalahan server nalika ngimpor"
         }
+    },
+    "pages": {
+        "messages": {
+            "language_not_supported": "Basa ora didhukung",
+            "language_changed": "Basa sukses diowahi"
+        }
     }
 }

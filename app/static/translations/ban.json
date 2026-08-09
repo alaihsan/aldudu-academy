@@ -1267,5 +1267,11 @@
             "source_class_not_found": "Kelas asal nenten kapanggih",
             "import_server_error": "Wenten kesalahan server rikala ngimpor"
         }
+    },
+    "pages": {
+        "messages": {
+            "language_not_supported": "Basa nenten kadukung",
+            "language_changed": "Basa prasida kaubah"
+        }
     }
 }

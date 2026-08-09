@@ -1268,5 +1268,11 @@
             "source_class_not_found": "الفصل المصدر غير موجود",
             "import_server_error": "حدث خطأ في الخادم أثناء الاستيراد"
         }
+    },
+    "pages": {
+        "messages": {
+            "language_not_supported": "اللغة غير مدعومة",
+            "language_changed": "تم تغيير اللغة بنجاح"
+        }
     }
 }
