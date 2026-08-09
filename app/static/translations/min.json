@@ -874,7 +874,14 @@
         "oke_button": "OKE",
         "connection_error": "Kasalahan koneksi",
         "delete_permanent_confirm_title": "Hapuih permanen?",
-        "delete_permanent_warning_suffix": "ka dihapuih permanen jo INDAK BISA dipulangkan."
+        "delete_permanent_warning_suffix": "ka dihapuih permanen jo INDAK BISA dipulangkan.",
+        "messages": {
+            "only_course_owner_can_open": "Hanyo guru nan punyo kelas nan bisa mambukak Ruang TPS.",
+            "invalid_type": "Tipe indak valid",
+            "item_not_found": "{0} indak ditamukan",
+            "item_restored": "{0} barasil dipulangkan",
+            "item_permanently_deleted": "{0} dihapuih permanen"
+        }
     },
     "settings": {
         "profile_subtitle": "Informasi akun Angku",

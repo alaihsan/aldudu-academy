@@ -874,7 +874,14 @@
         "oke_button": "OKÉ",
         "connection_error": "Kasalahan sambungan",
         "delete_permanent_confirm_title": "Pupus permanén?",
-        "delete_permanent_warning_suffix": "bakal dipupus permanén sareng TEU TIASA dipulangkeun."
+        "delete_permanent_warning_suffix": "bakal dipupus permanén sareng TEU TIASA dipulangkeun.",
+        "messages": {
+            "only_course_owner_can_open": "Ngan guru pamilik kelas anu tiasa muka Ruang TPS.",
+            "invalid_type": "Tipe teu valid",
+            "item_not_found": "{0} teu kapendak",
+            "item_restored": "{0} suksés dipulangkeun",
+            "item_permanently_deleted": "{0} dipupus permanén"
+        }
     },
     "settings": {
         "profile_subtitle": "Inpormasi akun anjeun",

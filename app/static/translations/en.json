@@ -874,7 +874,14 @@
         "oke_button": "OK",
         "connection_error": "Connection error",
         "delete_permanent_confirm_title": "Delete permanently?",
-        "delete_permanent_warning_suffix": "will be permanently deleted and CANNOT be restored."
+        "delete_permanent_warning_suffix": "will be permanently deleted and CANNOT be restored.",
+        "messages": {
+            "only_course_owner_can_open": "Only the class's teaching teacher can open the Trash.",
+            "invalid_type": "Invalid type",
+            "item_not_found": "{0} not found",
+            "item_restored": "{0} restored successfully",
+            "item_permanently_deleted": "{0} permanently deleted"
+        }
     },
     "settings": {
         "profile_subtitle": "Your account information",

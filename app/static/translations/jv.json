@@ -874,7 +874,14 @@
         "oke_button": "OKE",
         "connection_error": "Kesalahan koneksi",
         "delete_permanent_confirm_title": "Busak permanen?",
-        "delete_permanent_warning_suffix": "bakal dibusak permanen lan ORA BISA dibalekake."
+        "delete_permanent_warning_suffix": "bakal dibusak permanen lan ORA BISA dibalekake.",
+        "messages": {
+            "only_course_owner_can_open": "Mung guru pemilik kelas sing bisa mbukak Ruang TPS.",
+            "invalid_type": "Tipe ora valid",
+            "item_not_found": "{0} ora ditemokake",
+            "item_restored": "{0} sukses dibalekake",
+            "item_permanently_deleted": "{0} dibusak permanen"
+        }
     },
     "settings": {
         "profile_subtitle": "Informasi akunmu",

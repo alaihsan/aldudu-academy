@@ -875,7 +875,14 @@
         "oke_button": "موافق",
         "connection_error": "خطأ في الاتصال",
         "delete_permanent_confirm_title": "حذف نهائي؟",
-        "delete_permanent_warning_suffix": "سيتم حذفه نهائياً ولا يمكن استعادته."
+        "delete_permanent_warning_suffix": "سيتم حذفه نهائياً ولا يمكن استعادته.",
+        "messages": {
+            "only_course_owner_can_open": "فقط المعلم المسؤول عن الفصل يمكنه فتح المهملات.",
+            "invalid_type": "نوع غير صالح",
+            "item_not_found": "{0} غير موجود",
+            "item_restored": "تمت استعادة {0} بنجاح",
+            "item_permanently_deleted": "تم حذف {0} نهائياً"
+        }
     },
     "settings": {
         "profile_subtitle": "معلومات حسابك",

@@ -874,7 +874,14 @@
         "oke_button": "OKE",
         "connection_error": "Kesalahan koneksi",
         "delete_permanent_confirm_title": "Hapus permanen?",
-        "delete_permanent_warning_suffix": "ini akan dihapus permanen dan TIDAK BISA dikembalikan."
+        "delete_permanent_warning_suffix": "ini akan dihapus permanen dan TIDAK BISA dikembalikan.",
+        "messages": {
+            "only_course_owner_can_open": "Hanya guru pemilik kelas yang dapat membuka Ruang TPS.",
+            "invalid_type": "Tipe tidak valid",
+            "item_not_found": "{0} tidak ditemukan",
+            "item_restored": "{0} berhasil dikembalikan",
+            "item_permanently_deleted": "{0} dihapus permanen"
+        }
     },
     "settings": {
         "profile_subtitle": "Informasi akun Anda",

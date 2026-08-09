@@ -874,7 +874,14 @@
         "oke_button": "OKE",
         "connection_error": "Kesalahan sambungan",
         "delete_permanent_confirm_title": "Sapuh permanen?",
-        "delete_permanent_warning_suffix": "pacang kasapuh permanen tur NENTEN PRASIDA kawaliang."
+        "delete_permanent_warning_suffix": "pacang kasapuh permanen tur NENTEN PRASIDA kawaliang.",
+        "messages": {
+            "only_course_owner_can_open": "Wantah guru sane madue kelas sane prasida ngampakang Ruang TPS.",
+            "invalid_type": "Tipe nenten becik",
+            "item_not_found": "{0} nenten kapanggih",
+            "item_restored": "{0} prasida kawaliang",
+            "item_permanently_deleted": "{0} kaapus permanen"
+        }
     },
     "settings": {
         "profile_subtitle": "Informasi akun ragane",
