@@ -6,18 +6,18 @@
     <div class="max-w-4xl mx-auto">
         <div class="flex items-center justify-between mb-6">
             <div>
-                <h2 class="text-2xl font-black text-gray-900 dark:text-gray-100">Support Tickets</h2>
-                <p class="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-widest font-bold mt-1">Butuh bantuan? Buat ticket</p>
+                <h2 class="text-2xl font-black text-gray-900 dark:text-gray-100" data-i18n="tickets.heading">Support Tickets</h2>
+                <p class="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-widest font-bold mt-1" data-i18n="tickets.need_help_hint">Butuh bantuan? Buat ticket</p>
             </div>
-            <button onclick="showCreateModal()" class="px-5 py-2.5 bg-indigo-600 text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-indigo-700 transition-all active:scale-95">
+            <button onclick="showCreateModal()" class="px-5 py-2.5 bg-indigo-600 text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-indigo-700 transition-all active:scale-95" data-i18n="tickets.create_ticket_button">
                 + Buat Ticket
             </button>
         </div>
 
         <!-- Filter -->
         <div class="flex space-x-2 mb-6">
-            <button onclick="loadTickets('active')" class="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest bg-indigo-600 text-white" id="tab-active">Aktif</button>
-            <button onclick="loadTickets('resolved')" class="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400" id="tab-resolved">Selesai</button>
+            <button onclick="loadTickets('active')" class="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest bg-indigo-600 text-white" id="tab-active" data-i18n="tickets.tab_active">Aktif</button>
+            <button onclick="loadTickets('resolved')" class="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400" id="tab-resolved" data-i18n="tickets.tab_resolved">Selesai</button>
         </div>
 
         <div id="tickets-list" class="space-y-3"></div>
@@ -27,38 +27,38 @@
 <!-- Create Ticket Modal -->
 <div id="create-modal" class="hidden fixed inset-0 bg-black/50 dark:bg-black/80 z-50 flex items-center justify-center p-4">
     <div class="bg-white dark:bg-gray-800 rounded-3xl p-8 w-full max-w-lg animate-slide-up">
-        <h3 class="text-lg font-black text-gray-900 dark:text-gray-100 mb-4">Buat Ticket Baru</h3>
+        <h3 class="text-lg font-black text-gray-900 dark:text-gray-100 mb-4" data-i18n="tickets.create_ticket_modal_title">Buat Ticket Baru</h3>
         <form id="create-form" class="space-y-4">
             <div>
-                <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1.5">Judul</label>
-                <input type="text" id="ticket-title" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-700 rounded-xl focus:border-indigo-500 outline-none text-sm text-gray-900 dark:text-gray-100 font-bold" required placeholder="Masalah singkat">
+                <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1.5" data-i18n="tickets.title_label">Judul</label>
+                <input type="text" id="ticket-title" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-700 rounded-xl focus:border-indigo-500 outline-none text-sm text-gray-900 dark:text-gray-100 font-bold" required data-i18n-placeholder="tickets.title_placeholder" placeholder="Masalah singkat">
             </div>
             <div>
-                <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1.5">Kategori</label>
+                <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1.5" data-i18n="tickets.category_label">Kategori</label>
                 <select id="ticket-category" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-700 rounded-xl outline-none text-sm text-gray-900 dark:text-gray-100 font-bold">
-                    <option value="general">Umum</option>
-                    <option value="technical">Teknis</option>
-                    <option value="account">Akun</option>
-                    <option value="course">Kelas</option>
-                    <option value="quiz">Ujian</option>
+                    <option value="general" data-i18n="tickets.category_general">Umum</option>
+                    <option value="technical" data-i18n="tickets.category_technical">Teknis</option>
+                    <option value="account" data-i18n="tickets.category_account">Akun</option>
+                    <option value="course" data-i18n="tickets.category_course">Kelas</option>
+                    <option value="quiz" data-i18n="tickets.category_quiz">Ujian</option>
                 </select>
             </div>
             <div>
-                <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1.5">Prioritas</label>
+                <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1.5" data-i18n="tickets.priority_label">Prioritas</label>
                 <select id="ticket-priority" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-700 rounded-xl outline-none text-sm text-gray-900 dark:text-gray-100 font-bold">
-                    <option value="low">Rendah</option>
-                    <option value="medium" selected>Sedang</option>
-                    <option value="high">Tinggi</option>
-                    <option value="urgent">Mendesak</option>
+                    <option value="low" data-i18n="tickets.priority_low">Rendah</option>
+                    <option value="medium" selected data-i18n="tickets.priority_medium">Sedang</option>
+                    <option value="high" data-i18n="tickets.priority_high">Tinggi</option>
+                    <option value="urgent" data-i18n="tickets.priority_urgent">Mendesak</option>
                 </select>
             </div>
             <div>
-                <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1.5">Deskripsi</label>
-                <textarea id="ticket-desc" rows="4" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-700 rounded-xl focus:border-indigo-500 outline-none text-sm text-gray-900 dark:text-gray-100 font-bold" required placeholder="Jelaskan masalah Anda..."></textarea>
+                <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1.5" data-i18n="tickets.description_label">Deskripsi</label>
+                <textarea id="ticket-desc" rows="4" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-700 rounded-xl focus:border-indigo-500 outline-none text-sm text-gray-900 dark:text-gray-100 font-bold" required data-i18n-placeholder="tickets.description_placeholder" placeholder="Jelaskan masalah Anda..."></textarea>
             </div>
             <div class="flex space-x-3">
-                <button type="button" onclick="hideCreateModal()" class="flex-1 py-3 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-gray-200 dark:hover:bg-gray-600">Batal</button>
-                <button type="submit" class="flex-1 py-3 bg-indigo-600 text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-indigo-700">Kirim</button>
+                <button type="button" onclick="hideCreateModal()" class="flex-1 py-3 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-gray-200 dark:hover:bg-gray-600" data-i18n="common.cancel">Batal</button>
+                <button type="submit" class="flex-1 py-3 bg-indigo-600 text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-indigo-700" data-i18n="common.submit">Kirim</button>
             </div>
         </form>
     </div>

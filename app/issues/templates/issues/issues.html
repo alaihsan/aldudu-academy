@@ -13,7 +13,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
                 </a>
-                <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100 truncate">Manajemen Masalah</h2>
+                <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100 truncate" data-i18n="issues.management_heading">Manajemen Masalah</h2>
             </div>
         </header>
 
@@ -24,8 +24,8 @@
                 <!-- Hero Section -->
                 <div class="bg-[#ff4b4b] rounded-[2rem] p-10 text-white relative overflow-hidden border-2 border-[#d33131] shadow-[0_4px_0_#d33131]">
                     <div class="relative z-10">
-                        <h1 class="text-3xl font-black mb-3">Pusat Bantuan &amp; Laporan</h1>
-                        <p class="text-white/80 font-bold max-w-xl">Laporkan kendala teknis atau berikan saran untuk pengembangan Aldudu Academy yang lebih baik.</p>
+                        <h1 class="text-3xl font-black mb-3" data-i18n="issues.help_center_heading">Pusat Bantuan &amp; Laporan</h1>
+                        <p class="text-white/80 font-bold max-w-xl" data-i18n="issues.help_center_hint">Laporkan kendala teknis atau berikan saran untuk pengembangan Aldudu Academy yang lebih baik.</p>
                     </div>
                     <!-- Decor -->
                     <div class="absolute right-0 bottom-0 opacity-10 pointer-events-none transform translate-y-1/4 translate-x-1/4">
@@ -38,15 +38,15 @@
                 <!-- Stats & Actions -->
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div class="flex space-x-1 bg-white dark:bg-gray-800 p-1.5 rounded-2xl border-2 border-[#e5e5e5] dark:border-gray-700 self-start {% if current_user.role.value == 'murid' %}hidden{% endif %}">
-                        <button data-filter="all" class="issue-filter-btn active px-6 py-2.5 bg-[#1cb0f6] text-white rounded-xl font-black text-sm transition-all">Semua</button>
-                        <button data-filter="active" class="issue-filter-btn px-6 py-2.5 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl font-black text-sm transition-all">Aktif</button>
-                        <button data-filter="resolved" class="issue-filter-btn px-6 py-2.5 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl font-black text-sm transition-all">Selesai</button>
+                        <button data-filter="all" class="issue-filter-btn active px-6 py-2.5 bg-[#1cb0f6] text-white rounded-xl font-black text-sm transition-all" data-i18n="issues.filter_all">Semua</button>
+                        <button data-filter="active" class="issue-filter-btn px-6 py-2.5 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl font-black text-sm transition-all" data-i18n="issues.filter_active">Aktif</button>
+                        <button data-filter="resolved" class="issue-filter-btn px-6 py-2.5 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl font-black text-sm transition-all" data-i18n="issues.filter_resolved">Selesai</button>
                     </div>
                     {% if current_user.role.value == 'murid' %}
                     <div class="bg-[#e0f2fe] dark:bg-gray-800 px-6 py-3 rounded-2xl border-2 border-[#bae6fd] dark:border-gray-700">
                         <p class="text-[#0369a1] dark:text-[#1cb0f6] font-bold text-sm flex items-center">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                            Menampilkan laporan yang Anda buat
+                            <span data-i18n="issues.showing_own_reports_hint">Menampilkan laporan yang Anda buat</span>
                         </p>
                     </div>
                     {% endif %}
@@ -55,7 +55,7 @@
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"/>
                         </svg>
-                        <span>BUAT LAPORAN BARU</span>
+                        <span data-i18n="issues.create_report_button">BUAT LAPORAN BARU</span>
                     </button>
                 </div>
 
@@ -78,34 +78,34 @@
     <div class="bg-white dark:bg-gray-900 rounded-[2rem] border-2 border-[#e5e5e5] dark:border-gray-700 shadow-2xl w-full max-w-lg overflow-hidden animate-slide-up">
         <form id="create-issue-form">
             <div class="bg-[#1cb0f6] px-8 py-8 text-white">
-                <h3 class="text-2xl font-black">Laporan Masalah Baru</h3>
-                <p class="text-white/80 text-sm font-bold mt-1">Detailkan kendala yang Anda alami.</p>
+                <h3 class="text-2xl font-black" data-i18n="issues.new_report_modal_title">Laporan Masalah Baru</h3>
+                <p class="text-white/80 text-sm font-bold mt-1" data-i18n="issues.detail_hint">Detailkan kendala yang Anda alami.</p>
             </div>
             <div class="p-8 space-y-6">
                 <div>
-                    <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Judul Laporan</label>
-                    <input type="text" id="issue-title" class="w-full px-6 py-4 bg-gray-50 dark:bg-gray-700 border-2 border-gray-100 dark:border-gray-600 rounded-2xl focus:border-[#1cb0f6] outline-none font-bold transition-all text-gray-900 dark:text-gray-100" required placeholder="Contoh: Gagal mengunggah file PDF">
+                    <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2" data-i18n="issues.report_title_label">Judul Laporan</label>
+                    <input type="text" id="issue-title" class="w-full px-6 py-4 bg-gray-50 dark:bg-gray-700 border-2 border-gray-100 dark:border-gray-600 rounded-2xl focus:border-[#1cb0f6] outline-none font-bold transition-all text-gray-900 dark:text-gray-100" required data-i18n-placeholder="issues.report_title_placeholder" placeholder="Contoh: Gagal mengunggah file PDF">
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Prioritas</label>
+                        <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2" data-i18n="issues.priority_label">Prioritas</label>
                         <select id="issue-priority" class="w-full px-6 py-4 bg-gray-50 dark:bg-gray-700 border-2 border-gray-100 dark:border-gray-600 rounded-2xl focus:border-[#1cb0f6] outline-none font-bold bg-white dark:bg-gray-700 transition-all text-gray-900 dark:text-gray-100">
-                            <option value="LOW">Rendah (Low)</option>
-                            <option value="MEDIUM" selected>Sedang (Medium)</option>
-                            <option value="HIGH">Tinggi (High)</option>
-                            <option value="URGENT">Mendesak (Urgent)</option>
+                            <option value="LOW" data-i18n="issues.priority_low">Rendah (Low)</option>
+                            <option value="MEDIUM" selected data-i18n="issues.priority_medium">Sedang (Medium)</option>
+                            <option value="HIGH" data-i18n="issues.priority_high">Tinggi (High)</option>
+                            <option value="URGENT" data-i18n="issues.priority_urgent">Mendesak (Urgent)</option>
                         </select>
                     </div>
                 </div>
                 <div>
-                    <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Deskripsi Masalah</label>
-                    <textarea id="issue-description" class="w-full px-6 py-4 bg-gray-50 dark:bg-gray-700 border-2 border-gray-100 dark:border-gray-600 rounded-2xl focus:border-[#1cb0f6] outline-none font-bold transition-all text-gray-900 dark:text-gray-100" rows="4" required placeholder="Jelaskan langkah-langkah kejadiannya..."></textarea>
+                    <label class="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2" data-i18n="issues.problem_description_label">Deskripsi Masalah</label>
+                    <textarea id="issue-description" class="w-full px-6 py-4 bg-gray-50 dark:bg-gray-700 border-2 border-gray-100 dark:border-gray-600 rounded-2xl focus:border-[#1cb0f6] outline-none font-bold transition-all text-gray-900 dark:text-gray-100" rows="4" required data-i18n-placeholder="issues.steps_placeholder" placeholder="Jelaskan langkah-langkah kejadiannya..."></textarea>
                 </div>
                 <div id="issue-modal-error" class="hidden p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl text-xs font-bold text-center"></div>
             </div>
             <div class="px-8 pb-8 flex gap-3">
-                <button type="button" id="close-issue-modal" class="btn-duo btn-duo-ghost flex-1 h-14 text-sm">BATAL</button>
-                <button type="submit" class="btn-duo btn-duo-blue flex-[2] h-14 text-sm">KIRIM LAPORAN</button>
+                <button type="button" id="close-issue-modal" class="btn-duo btn-duo-ghost flex-1 h-14 text-sm" data-i18n="common.cancel">BATAL</button>
+                <button type="submit" class="btn-duo btn-duo-blue flex-[2] h-14 text-sm" data-i18n="issues.submit_label">KIRIM LAPORAN</button>
             </div>
         </form>
     </div>
