@@ -21,13 +21,13 @@
                 <div class="flex items-center space-x-2">
                     <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100">{{ course.name }}</h2>
                     <span class="text-gray-300 dark:text-gray-600">/</span>
-                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Nilai Saya</p>
+                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400" data-i18n="nav.my_grades">Nilai Saya</p>
                 </div>
             </div>
 
             <div class="flex items-center space-x-4">
                 <select onchange="window.location.href='/gradebook/course/' + this.value + '/my-grades'" class="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 text-xs font-bold rounded-xl focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 outline-none">
-                    <option disabled>Pindah Mata Pelajaran</option>
+                    <option disabled data-i18n="gradebook.switch_subject_option">Pindah Mata Pelajaran</option>
                     {% for c in current_user.courses_enrolled %}
                         <option value="{{ c.id }}" {% if c.id == course.id %}selected{% endif %}>{{ c.name }}</option>
                     {% endfor %}
@@ -44,7 +44,7 @@
                 <!-- Hero Section: Nilai Akhir + Predikat -->
                 <div class="bg-white dark:bg-gray-800 rounded-[3rem] p-10 border border-gray-100 dark:border-gray-700 shadow-premium flex flex-col md:flex-row items-center justify-between gap-10">
                     <div class="space-y-4 text-center md:text-left">
-                        <span class="inline-block px-4 py-1.5 bg-theme-light text-theme rounded-full text-[10px] font-black uppercase tracking-widest">Detail Capaian</span>
+                        <span class="inline-block px-4 py-1.5 bg-theme-light text-theme rounded-full text-[10px] font-black uppercase tracking-widest" data-i18n="gradebook.achievement_detail_badge">Detail Capaian</span>
                         <h1 class="text-4xl font-black text-gray-900 dark:text-gray-100 leading-tight">{{ course.name }}</h1>
                         <div class="flex items-center justify-center md:justify-start space-x-4 text-gray-500 dark:text-gray-400">
                             <div class="flex items-center space-x-2">
@@ -58,13 +58,13 @@
 
                     <div class="flex items-center space-x-10">
                         <div class="text-center">
-                            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Nilai Akhir</p>
+                            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2" data-i18n="gradebook.final_grade_label">Nilai Akhir</p>
                             <div id="final-grade-circle" class="w-28 h-28 rounded-full border-8 border-theme-light flex items-center justify-center bg-white shadow-xl animate-grade-pop">
                                 <span id="final-grade" class="text-3xl font-black text-theme">-</span>
                             </div>
                         </div>
                         <div class="text-center">
-                            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Predikat</p>
+                            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2" data-i18n="gradebook.predicate_label">Predikat</p>
                             <div id="predicate-box" class="w-28 h-28 rounded-3xl bg-theme text-white flex flex-col items-center justify-center shadow-lg shadow-theme/30 animate-grade-pop">
                                 <span id="grade-predicate" class="text-4xl font-black">-</span>
                                 <span id="grade-category" class="text-[10px] font-bold uppercase mt-1">...</span>
@@ -89,7 +89,7 @@
                     <div class="lg:col-span-1 space-y-8">
                         <div class="bg-white dark:bg-gray-800 rounded-[2.5rem] border border-gray-100 dark:border-gray-700 shadow-premium p-8">
                             <h3 class="text-lg font-black text-gray-900 dark:text-gray-100 mb-6">
-                                <span class="mr-2">&#127919;</span> Capaian Materi
+                                <span class="mr-2">&#127919;</span> <span data-i18n="gradebook.material_achievement_heading">Capaian Materi</span>
                             </h3>
                             <div id="cp-breakdown" class="space-y-4">
                                 <!-- Populated by JS -->
@@ -99,19 +99,19 @@
                         <!-- Stats Card -->
                         <div class="bg-white dark:bg-gray-800 rounded-[2.5rem] border border-gray-100 dark:border-gray-700 shadow-premium p-8">
                             <h3 class="text-lg font-black text-gray-900 dark:text-gray-100 mb-6">
-                                <span class="mr-2">&#128202;</span> Statistik
+                                <span class="mr-2">&#128202;</span> <span data-i18n="gradebook.statistics_heading">Statistik</span>
                             </h3>
                             <div class="space-y-4">
                                 <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-xl">
-                                    <span class="text-sm font-bold text-gray-600 dark:text-gray-400">Total Tugas/Kuis</span>
+                                    <span class="text-sm font-bold text-gray-600 dark:text-gray-400" data-i18n="gradebook.total_assignments_quizzes_label">Total Tugas/Kuis</span>
                                     <span id="stat-total" class="text-sm font-black text-gray-900 dark:text-gray-100">0</span>
                                 </div>
                                 <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-xl">
-                                    <span class="text-sm font-bold text-gray-600 dark:text-gray-400">Sudah Dinilai</span>
+                                    <span class="text-sm font-bold text-gray-600 dark:text-gray-400" data-i18n="gradebook.graded_label">Sudah Dinilai</span>
                                     <span id="stat-graded" class="text-sm font-black text-emerald-600 dark:text-emerald-400">0</span>
                                 </div>
                                 <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-xl">
-                                    <span class="text-sm font-bold text-gray-600 dark:text-gray-400">Belum Dinilai</span>
+                                    <span class="text-sm font-bold text-gray-600 dark:text-gray-400" data-i18n="gradebook.ungraded_label">Belum Dinilai</span>
                                     <span id="stat-ungraded" class="text-sm font-black text-amber-600 dark:text-amber-400">0</span>
                                 </div>
                             </div>
@@ -123,19 +123,19 @@
                         <div class="bg-white dark:bg-gray-800 rounded-[2.5rem] border border-gray-100 dark:border-gray-700 shadow-premium overflow-hidden">
                             <div class="p-8 border-b border-gray-50 dark:border-gray-700 flex items-center justify-between">
                                 <h3 class="text-lg font-black text-gray-900 dark:text-gray-100">
-                                    <span class="mr-2">&#128221;</span> Daftar Nilai Tugas & Kuis
+                                    <span class="mr-2">&#128221;</span> <span data-i18n="gradebook.grades_list_heading">Daftar Nilai Tugas & Kuis</span>
                                 </h3>
                             </div>
                             <div class="overflow-x-auto">
                                 <table class="w-full">
                                     <thead>
                                         <tr class="bg-gray-50 dark:bg-gray-800/50">
-                                            <th class="px-8 py-4 text-left text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">No</th>
-                                            <th class="px-8 py-4 text-left text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">Nama Tugas/Kuis</th>
-                                            <th class="px-8 py-4 text-center text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">Nilai</th>
+                                            <th class="px-8 py-4 text-left text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest" data-i18n="gradebook.table_no_header">No</th>
+                                            <th class="px-8 py-4 text-left text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest" data-i18n="gradebook.item_name_header">Nama Tugas/Kuis</th>
+                                            <th class="px-8 py-4 text-center text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest" data-i18n="gradebook.grade">Nilai</th>
                                             <th class="px-8 py-4 text-center text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">%</th>
-                                            <th class="px-8 py-4 text-center text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">Predikat</th>
-                                            <th class="px-8 py-4 text-left text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">Feedback Guru</th>
+                                            <th class="px-8 py-4 text-center text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest" data-i18n="gradebook.predicate_label">Predikat</th>
+                                            <th class="px-8 py-4 text-left text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest" data-i18n="gradebook.teacher_feedback_header">Feedback Guru</th>
                                         </tr>
                                     </thead>
                                     <tbody id="grades-body" class="divide-y divide-gray-50 dark:divide-gray-700">
@@ -143,7 +143,7 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div id="no-grades-msg" class="hidden py-20 text-center text-gray-400 dark:text-gray-500 font-bold">
+                            <div id="no-grades-msg" class="hidden py-20 text-center text-gray-400 dark:text-gray-500 font-bold" data-i18n="gradebook.no_grades_available">
                                 Belum ada data nilai yang tersedia.
                             </div>
                         </div>
@@ -163,17 +163,17 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function getPredicate(grade) {
-    if (grade >= 90) return { letter: 'A', label: 'Sangat Baik' };
-    if (grade >= 80) return { letter: 'B', label: 'Baik' };
-    if (grade >= 70) return { letter: 'C', label: 'Cukup' };
-    return { letter: 'D', label: 'Kurang' };
+    if (grade >= 90) return { letter: 'A', label: window.LanguageManager ? window.LanguageManager.t('gradebook.predicate_very_good', 'Sangat Baik') : 'Sangat Baik' };
+    if (grade >= 80) return { letter: 'B', label: window.LanguageManager ? window.LanguageManager.t('gradebook.predicate_good', 'Baik') : 'Baik' };
+    if (grade >= 70) return { letter: 'C', label: window.LanguageManager ? window.LanguageManager.t('gradebook.predicate_fair', 'Cukup') : 'Cukup' };
+    return { letter: 'D', label: window.LanguageManager ? window.LanguageManager.t('gradebook.predicate_poor', 'Kurang') : 'Kurang' };
 }
 
 function getMasteryStatus(grade) {
-    if (grade >= 90) return 'Kamu mampu menguasai materi ini';
-    if (grade >= 80) return 'Kamu cukup mampu menguasai materi ini';
-    if (grade >= 70) return 'Kamu cukup untuk menguasai materi ini';
-    return 'Kamu belum menguasai materi ini';
+    if (grade >= 90) return window.LanguageManager ? window.LanguageManager.t('gradebook.mastery_excellent', 'Kamu mampu menguasai materi ini') : 'Kamu mampu menguasai materi ini';
+    if (grade >= 80) return window.LanguageManager ? window.LanguageManager.t('gradebook.mastery_good', 'Kamu cukup mampu menguasai materi ini') : 'Kamu cukup mampu menguasai materi ini';
+    if (grade >= 70) return window.LanguageManager ? window.LanguageManager.t('gradebook.mastery_fair', 'Kamu cukup untuk menguasai materi ini') : 'Kamu cukup untuk menguasai materi ini';
+    return window.LanguageManager ? window.LanguageManager.t('gradebook.mastery_poor', 'Kamu belum menguasai materi ini') : 'Kamu belum menguasai materi ini';
 }
 
 function getMasteryColor(grade) {
@@ -236,7 +236,9 @@ async function loadMyGrades() {
                 masteryBanner.classList.remove('hidden');
                 document.getElementById('mastery-icon').className = `w-12 h-12 rounded-2xl flex items-center justify-center text-white flex-shrink-0 ${colors.bg}`;
                 document.getElementById('mastery-text').textContent = summary.mastery_status || getMasteryStatus(finalGrade);
-                document.getElementById('mastery-detail').textContent = `Nilai akhir: ${finalGrade.toFixed(1)} | Predikat: ${predicate.letter} (${predicate.label})`;
+                const finalGradeDetailLabel = window.LanguageManager ? window.LanguageManager.t('gradebook.final_grade_detail_label', 'Nilai akhir:') : 'Nilai akhir:';
+                const predicateDetailLabel = window.LanguageManager ? window.LanguageManager.t('gradebook.predicate_detail_label', 'Predikat:') : 'Predikat:';
+                document.getElementById('mastery-detail').textContent = `${finalGradeDetailLabel} ${finalGrade.toFixed(1)} | ${predicateDetailLabel} ${predicate.letter} (${predicate.label})`;
             }
 
             // ── Stats ─────────────────────────────────────────────
@@ -271,7 +273,7 @@ async function loadMyGrades() {
                         <td class="px-8 py-6 text-center">
                             ${hasScore
                                 ? `<span class="text-sm font-black text-gray-900 dark:text-gray-100">${item.score.toFixed(1)}</span><span class="text-xs text-gray-400 dark:text-gray-500">/${item.max_score}</span>`
-                                : '<span class="text-sm text-gray-300 dark:text-gray-600 italic">Belum</span>'
+                                : `<span class="text-sm text-gray-300 dark:text-gray-600 italic">${window.LanguageManager ? window.LanguageManager.t('gradebook.not_graded_yet', 'Belum') : 'Belum'}</span>`
                             }
                         </td>
                         <td class="px-8 py-6 text-center">
@@ -284,7 +286,7 @@ async function loadMyGrades() {
                             ${hasScore ? getPredicateBadge(percentage) : '<span class="text-gray-300 dark:text-gray-600">-</span>'}
                         </td>
                         <td class="px-8 py-6">
-                            <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">${item.feedback || '<span class="text-gray-300 dark:text-gray-600 italic">Tidak ada feedback</span>'}</p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">${item.feedback || `<span class="text-gray-300 dark:text-gray-600 italic">${window.LanguageManager ? window.LanguageManager.t('gradebook.no_feedback', 'Tidak ada feedback') : 'Tidak ada feedback'}</span>`}</p>
                         </td>
                     `;
                     gradesBody.appendChild(tr);
@@ -320,8 +322,8 @@ async function loadMyGrades() {
                             <div class="flex items-center gap-2 mb-1">
                                 <p class="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">${cp.code}</p>
                                 ${needsRemedial
-                                    ? '<span class="px-2 py-0.5 bg-rose-500 dark:bg-rose-600 text-white text-[9px] font-bold rounded-full">Perlu Remedial</span>'
-                                    : '<span class="px-2 py-0.5 bg-emerald-500 dark:bg-emerald-600 text-white text-[9px] font-bold rounded-full">Tuntas</span>'
+                                    ? `<span class="px-2 py-0.5 bg-rose-500 dark:bg-rose-600 text-white text-[9px] font-bold rounded-full">${window.LanguageManager ? window.LanguageManager.t('gradebook.needs_remedial_badge', 'Perlu Remedial') : 'Perlu Remedial'}</span>`
+                                    : `<span class="px-2 py-0.5 bg-emerald-500 dark:bg-emerald-600 text-white text-[9px] font-bold rounded-full">${window.LanguageManager ? window.LanguageManager.t('gradebook.completed_badge', 'Tuntas') : 'Tuntas'}</span>`
                                 }
                             </div>
                             <p class="text-xs text-gray-700 dark:text-gray-300 font-bold leading-relaxed line-clamp-2 mt-0.5">${cp.description}</p>
@@ -338,7 +340,8 @@ async function loadMyGrades() {
                     cpContainer.appendChild(div);
                 });
             } else {
-                cpContainer.innerHTML = '<div class="text-center py-6 text-gray-400 dark:text-gray-500 text-sm italic">Belum ada target pembelajaran yang ditetapkan oleh guru</div>';
+                const noObjectivesText = window.LanguageManager ? window.LanguageManager.t('gradebook.no_learning_objectives', 'Belum ada target pembelajaran yang ditetapkan oleh guru') : 'Belum ada target pembelajaran yang ditetapkan oleh guru';
+                cpContainer.innerHTML = `<div class="text-center py-6 text-gray-400 dark:text-gray-500 text-sm italic">${noObjectivesText}</div>`;
             }
         }
     } catch (err) {

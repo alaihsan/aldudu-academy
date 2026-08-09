@@ -20,7 +20,7 @@
                 </a>
                 <div>
                     <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100">{{ course.name }}</h2>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">Setup Kurikulum</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400" data-i18n="gradebook.curriculum_setup_label">Setup Kurikulum</p>
                 </div>
             </div>
         </header>
@@ -29,16 +29,16 @@
             <div class="max-w-5xl mx-auto space-y-6">
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                     <div class="mb-6">
-                        <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">📌 Setup Kurikulum</h1>
-                        <p class="text-gray-500 dark:text-gray-400 mt-1">Kelola Capaian Pembelajaran (CP), Tujuan Pembelajaran (TP), dan Kategori Penilaian</p>
+                        <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100" data-i18n="gradebook.curriculum_setup_title">📌 Setup Kurikulum</h1>
+                        <p class="text-gray-500 dark:text-gray-400 mt-1" data-i18n="gradebook.curriculum_setup_hint">Kelola Capaian Pembelajaran (CP), Tujuan Pembelajaran (TP), dan Kategori Penilaian</p>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- CP Section -->
                         <div class="space-y-4">
                             <div class="flex items-center justify-between">
-                                <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100">Capaian Pembelajaran (CP)</h2>
-                                <button onclick="openAddCPModal()" class="px-4 py-2 bg-theme text-white rounded-lg text-sm font-semibold hover:opacity-90 transition-all">+ Tambah CP</button>
+                                <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100" data-i18n="gradebook.cp_heading">Capaian Pembelajaran (CP)</h2>
+                                <button onclick="openAddCPModal()" class="px-4 py-2 bg-theme text-white rounded-lg text-sm font-semibold hover:opacity-90 transition-all" data-i18n="gradebook.add_cp_button">+ Tambah CP</button>
                             </div>
                             <div id="cp-list" class="space-y-3">
                                 <!-- Populated by JS -->
@@ -48,8 +48,8 @@
                         <!-- Categories Section -->
                         <div class="space-y-4">
                             <div class="flex items-center justify-between">
-                                <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100">📊 Kategori Penilaian</h2>
-                                <button onclick="openAddCategoryModal()" class="px-4 py-2 bg-theme text-white rounded-lg text-sm font-semibold hover:opacity-90 transition-all">+ Tambah</button>
+                                <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100" data-i18n="gradebook.category_heading">📊 Kategori Penilaian</h2>
+                                <button onclick="openAddCategoryModal()" class="px-4 py-2 bg-theme text-white rounded-lg text-sm font-semibold hover:opacity-90 transition-all" data-i18n="gradebook.add_button">+ Tambah</button>
                             </div>
                             <div id="category-list" class="space-y-3">
                                 <!-- Populated by JS -->
@@ -66,22 +66,22 @@
 <div id="add-cp-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 z-50 flex items-center justify-center p-4">
     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg animate-slide-up">
         <div class="modal-header-theme px-6 py-4">
-            <h3 class="text-xl font-bold text-white">Tambah Capaian Pembelajaran</h3>
+            <h3 class="text-xl font-bold text-white" data-i18n="gradebook.add_cp_modal_title">Tambah Capaian Pembelajaran</h3>
         </div>
         <div class="p-6 space-y-4">
             <input type="hidden" id="cp-course-id" value="{{ course.id }}">
             <div>
-                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Kode CP</label>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2" data-i18n="gradebook.cp_code_label">Kode CP</label>
                 <input type="text" id="cp-code" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none" placeholder="CP-1">
             </div>
             <div>
-                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Deskripsi</label>
-                <textarea id="cp-description" rows="3" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none" placeholder="Deskripsi capaian pembelajaran..."></textarea>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2" data-i18n="gradebook.description_label">Deskripsi</label>
+                <textarea id="cp-description" rows="3" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none" data-i18n-placeholder="gradebook.cp_description_placeholder" placeholder="Deskripsi capaian pembelajaran..."></textarea>
             </div>
         </div>
         <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 flex justify-end space-x-3 rounded-b-2xl">
-            <button onclick="closeAddCPModal()" class="px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all font-semibold">Batal</button>
-            <button onclick="saveCP()" class="px-4 py-2 bg-theme text-white rounded-lg hover:opacity-90 transition-all font-semibold">Simpan</button>
+            <button onclick="closeAddCPModal()" class="px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all font-semibold" data-i18n="common.cancel">Batal</button>
+            <button onclick="saveCP()" class="px-4 py-2 bg-theme text-white rounded-lg hover:opacity-90 transition-all font-semibold" data-i18n="common.save">Simpan</button>
         </div>
     </div>
 </div>
@@ -90,22 +90,22 @@
 <div id="add-tp-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 z-50 flex items-center justify-center p-4">
     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg animate-slide-up">
         <div class="modal-header-theme px-6 py-4">
-            <h3 class="text-xl font-bold text-white">Tambah Tujuan Pembelajaran</h3>
+            <h3 class="text-xl font-bold text-white" data-i18n="gradebook.add_tp_modal_title">Tambah Tujuan Pembelajaran</h3>
         </div>
         <div class="p-6 space-y-4">
             <input type="hidden" id="tp-cp-id">
             <div>
-                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Kode TP</label>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2" data-i18n="gradebook.tp_code_label">Kode TP</label>
                 <input type="text" id="tp-code" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none" placeholder="TP-1.1">
             </div>
             <div>
-                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Deskripsi</label>
-                <textarea id="tp-description" rows="3" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none" placeholder="Deskripsi tujuan pembelajaran..."></textarea>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2" data-i18n="gradebook.description_label">Deskripsi</label>
+                <textarea id="tp-description" rows="3" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none" data-i18n-placeholder="gradebook.tp_description_placeholder" placeholder="Deskripsi tujuan pembelajaran..."></textarea>
             </div>
         </div>
         <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 flex justify-end space-x-3 rounded-b-2xl">
-            <button onclick="closeAddTPModal()" class="px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all font-semibold">Batal</button>
-            <button onclick="saveTP()" class="px-4 py-2 bg-theme text-white rounded-lg hover:opacity-90 transition-all font-semibold">Simpan</button>
+            <button onclick="closeAddTPModal()" class="px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all font-semibold" data-i18n="common.cancel">Batal</button>
+            <button onclick="saveTP()" class="px-4 py-2 bg-theme text-white rounded-lg hover:opacity-90 transition-all font-semibold" data-i18n="common.save">Simpan</button>
         </div>
     </div>
 </div>
@@ -114,31 +114,31 @@
 <div id="add-category-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 z-50 flex items-center justify-center p-4">
     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg animate-slide-up">
         <div class="modal-header-theme px-6 py-4">
-            <h3 class="text-xl font-bold text-white">Tambah Kategori Penilaian</h3>
+            <h3 class="text-xl font-bold text-white" data-i18n="gradebook.add_category_modal_title">Tambah Kategori Penilaian</h3>
         </div>
         <div class="p-6 space-y-4">
             <input type="hidden" id="cat-course-id" value="{{ course.id }}">
             <div>
-                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Nama Kategori</label>
-                <input type="text" id="cat-name" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none" placeholder="Contoh: Penilaian Harian">
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2" data-i18n="gradebook.category_name_label">Nama Kategori</label>
+                <input type="text" id="cat-name" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none" data-i18n-placeholder="gradebook.category_name_placeholder" placeholder="Contoh: Penilaian Harian">
             </div>
             <div>
-                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Tipe</label>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2" data-i18n="gradebook.type_label">Tipe</label>
                 <select id="cat-type" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none">
-                    <option value="formatif">Formatif</option>
-                    <option value="sumatif">Sumatif</option>
-                    <option value="sikap">Sikap</option>
-                    <option value="portfolio">Portfolio</option>
+                    <option value="formatif" data-i18n="gradebook.category_type_formatif">Formatif</option>
+                    <option value="sumatif" data-i18n="gradebook.category_type_sumatif">Sumatif</option>
+                    <option value="sikap" data-i18n="gradebook.category_type_sikap">Sikap</option>
+                    <option value="portfolio" data-i18n="gradebook.category_type_portfolio">Portfolio</option>
                 </select>
             </div>
             <div>
-                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Bobot (%)</label>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2" data-i18n="gradebook.weight_label">Bobot (%)</label>
                 <input type="number" id="cat-weight" value="0" step="0.1" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus-theme focus:border-theme outline-none">
             </div>
         </div>
         <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 flex justify-end space-x-3 rounded-b-2xl">
-            <button onclick="closeAddCategoryModal()" class="px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all font-semibold">Batal</button>
-            <button onclick="saveCategory()" class="px-4 py-2 bg-theme text-white rounded-lg hover:opacity-90 transition-all font-semibold">Simpan</button>
+            <button onclick="closeAddCategoryModal()" class="px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all font-semibold" data-i18n="common.cancel">Batal</button>
+            <button onclick="saveCategory()" class="px-4 py-2 bg-theme text-white rounded-lg hover:opacity-90 transition-all font-semibold" data-i18n="common.save">Simpan</button>
         </div>
     </div>
 </div>
@@ -174,14 +174,15 @@ async function loadCPs() {
                         </div>
                         <div class="flex space-x-2">
                             <button onclick="openAddTPModal(${cp.id})" class="px-3 py-1.5 text-xs bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/50 font-semibold">+ TP</button>
-                            <button onclick="deleteCP(${cp.id})" class="px-3 py-1.5 text-xs bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50 font-semibold">Hapus</button>
+                            <button onclick="deleteCP(${cp.id})" class="px-3 py-1.5 text-xs bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50 font-semibold">${window.LanguageManager ? window.LanguageManager.t('common.delete', 'Hapus') : 'Hapus'}</button>
                         </div>
                     </div>
                 `;
                 container.appendChild(div);
             });
         } else {
-            container.innerHTML = '<div class="text-center py-8 text-gray-400 dark:text-gray-500">Belum ada CP. Klik "Tambah CP" untuk membuat.</div>';
+            const noCpText = window.LanguageManager ? window.LanguageManager.t('gradebook.no_cp_yet', 'Belum ada CP. Klik "Tambah CP" untuk membuat.') : 'Belum ada CP. Klik "Tambah CP" untuk membuat.';
+            container.innerHTML = `<div class="text-center py-8 text-gray-400 dark:text-gray-500">${noCpText}</div>`;
         }
     } catch (err) {
         console.error('Failed to load CPs:', err);
@@ -206,16 +207,17 @@ async function loadCategories() {
                             <h4 class="font-bold text-gray-900 dark:text-gray-100">${cat.name}</h4>
                             <div class="flex items-center space-x-2 mt-2">
                                 <span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded text-xs font-bold uppercase">${cat.category_type}</span>
-                                <span class="text-xs text-gray-500 dark:text-gray-400">Bobot: ${cat.weight}%</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400">${window.LanguageManager ? window.LanguageManager.t('gradebook.weight_prefix', 'Bobot:') : 'Bobot:'} ${cat.weight}%</span>
                             </div>
                         </div>
-                        <button onclick="deleteCategory(${cat.id})" class="px-3 py-1.5 text-xs bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50 font-semibold">Hapus</button>
+                        <button onclick="deleteCategory(${cat.id})" class="px-3 py-1.5 text-xs bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50 font-semibold">${window.LanguageManager ? window.LanguageManager.t('common.delete', 'Hapus') : 'Hapus'}</button>
                     </div>
                 `;
                 container.appendChild(div);
             });
         } else {
-            container.innerHTML = '<div class="text-center py-8 text-gray-400 dark:text-gray-500">Belum ada kategori. Klik "Tambah" untuk membuat.</div>';
+            const noCategoryText = window.LanguageManager ? window.LanguageManager.t('gradebook.no_category_yet', 'Belum ada kategori. Klik "Tambah" untuk membuat.') : 'Belum ada kategori. Klik "Tambah" untuk membuat.';
+            container.innerHTML = `<div class="text-center py-8 text-gray-400 dark:text-gray-500">${noCategoryText}</div>`;
         }
     } catch (err) {
         console.error('Failed to load categories:', err);
@@ -249,20 +251,20 @@ async function saveCP() {
             closeAddCPModal();
             loadCPs();
         } else {
-            alert('Gagal: ' + result.message);
+            alert((window.LanguageManager ? window.LanguageManager.t('gradebook.failed_prefix', 'Gagal:') : 'Gagal:') + ' ' + result.message);
         }
     } catch (err) {
-        alert('Gagal menyimpan CP');
+        alert(window.LanguageManager ? window.LanguageManager.t('gradebook.failed_save_cp', 'Gagal menyimpan CP') : 'Gagal menyimpan CP');
     }
 }
 
 async function deleteCP(cpId) {
-    if (!confirm('Hapus CP ini beserta semua TP-nya?')) return;
+    if (!confirm(window.LanguageManager ? window.LanguageManager.t('gradebook.confirm_delete_cp', 'Hapus CP ini beserta semua TP-nya?') : 'Hapus CP ini beserta semua TP-nya?')) return;
     try {
         await fetch(`/gradebook/api/learning-objectives/${cpId}`, { method: 'DELETE' });
         loadCPs();
     } catch (err) {
-        alert('Gagal menghapus CP');
+        alert(window.LanguageManager ? window.LanguageManager.t('gradebook.failed_delete_cp', 'Gagal menghapus CP') : 'Gagal menghapus CP');
     }
 }
 
@@ -295,10 +297,10 @@ async function saveTP() {
             closeAddTPModal();
             loadCPs();
         } else {
-            alert('Gagal: ' + result.message);
+            alert((window.LanguageManager ? window.LanguageManager.t('gradebook.failed_prefix', 'Gagal:') : 'Gagal:') + ' ' + result.message);
         }
     } catch (err) {
-        alert('Gagal menyimpan TP');
+        alert(window.LanguageManager ? window.LanguageManager.t('gradebook.failed_save_tp', 'Gagal menyimpan TP') : 'Gagal menyimpan TP');
     }
 }
 
@@ -329,20 +331,20 @@ async function saveCategory() {
             closeAddCategoryModal();
             loadCategories();
         } else {
-            alert('Gagal: ' + result.message);
+            alert((window.LanguageManager ? window.LanguageManager.t('gradebook.failed_prefix', 'Gagal:') : 'Gagal:') + ' ' + result.message);
         }
     } catch (err) {
-        alert('Gagal menyimpan kategori');
+        alert(window.LanguageManager ? window.LanguageManager.t('gradebook.failed_save_category', 'Gagal menyimpan kategori') : 'Gagal menyimpan kategori');
     }
 }
 
 async function deleteCategory(catId) {
-    if (!confirm('Hapus kategori ini? Item penilaian dalam kategori ini juga akan terhapus.')) return;
+    if (!confirm(window.LanguageManager ? window.LanguageManager.t('gradebook.confirm_delete_category', 'Hapus kategori ini? Item penilaian dalam kategori ini juga akan terhapus.') : 'Hapus kategori ini? Item penilaian dalam kategori ini juga akan terhapus.')) return;
     try {
         await fetch(`/gradebook/api/categories/${catId}`, { method: 'DELETE' });
         loadCategories();
     } catch (err) {
-        alert('Gagal menghapus kategori');
+        alert(window.LanguageManager ? window.LanguageManager.t('gradebook.failed_delete_category', 'Gagal menghapus kategori') : 'Gagal menghapus kategori');
     }
 }
 

@@ -9,7 +9,7 @@
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
         <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 h-16 flex items-center justify-between px-8 sticky top-0 z-30">
             <div class="flex items-center space-x-4">
-                <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100 truncate">Rekap Nilai Saya</h2>
+                <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100 truncate" data-i18n="gradebook.my_grades_recap_heading">Rekap Nilai Saya</h2>
             </div>
         </header>
 
@@ -19,9 +19,9 @@
                 <div class="bg-primary-600 rounded-[2.5rem] p-10 text-white relative overflow-hidden shadow-2xl shadow-primary-100">
                     <div class="absolute -right-20 -bottom-20 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
                     <div class="relative z-10">
-                        <span class="inline-block px-4 py-1.5 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-4">Laporan Nilai</span>
-                        <h1 class="text-4xl font-black mb-2">Halo, {{ current_user.name }}!</h1>
-                        <p class="text-primary-100 font-medium">Pilih mata pelajaran untuk melihat rincian nilai tugas, kuis, dan ujian Anda.</p>
+                        <span class="inline-block px-4 py-1.5 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-4" data-i18n="gradebook.report_badge">Laporan Nilai</span>
+                        <h1 class="text-4xl font-black mb-2"><span data-i18n="gradebook.hello_prefix">Halo,</span> {{ current_user.name }}!</h1>
+                        <p class="text-primary-100 font-medium" data-i18n="gradebook.select_subject_hint">Pilih mata pelajaran untuk melihat rincian nilai tugas, kuis, dan ujian Anda.</p>
                     </div>
                 </div>
 
@@ -49,7 +49,7 @@
                                 </div>
                                 
                                 <div class="mt-auto flex items-center justify-between">
-                                    <span class="text-xs font-black text-primary-600 uppercase tracking-widest">Lihat Detail</span>
+                                    <span class="text-xs font-black text-primary-600 uppercase tracking-widest" data-i18n="gradebook.view_detail_link">Lihat Detail</span>
                                     <div class="w-8 h-8 rounded-full bg-primary-50 text-primary-600 flex items-center justify-center group-hover:bg-primary-600 group-hover:text-white transition-all">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"/></svg>
                                     </div>
@@ -62,8 +62,8 @@
                             <div class="w-24 h-24 bg-gray-50 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
                                 <svg class="w-12 h-12 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
                             </div>
-                            <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">Belum ada kelas</h3>
-                            <p class="text-gray-500 dark:text-gray-400">Anda belum terdaftar di kelas manapun.</p>
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2" data-i18n="gradebook.no_classes_heading">Belum ada kelas</h3>
+                            <p class="text-gray-500 dark:text-gray-400" data-i18n="gradebook.not_enrolled_hint">Anda belum terdaftar di kelas manapun.</p>
                         </div>
                     {% endif %}
                 </div>
