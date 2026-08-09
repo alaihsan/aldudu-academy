@@ -813,7 +813,26 @@
         "reset_password_modal_title": "Reset Sandi",
         "new_password_label": "Sandi Anyar",
         "min_chars_placeholder": "Minimal 6 aksara",
-        "save_password_button": "Simpen Sandi"
+        "save_password_button": "Simpen Sandi",
+        "messages": {
+            "account_not_linked_to_school": "Akun admin nenten nyambung ring sekolah",
+            "data_required": "Data nenten dados kosong",
+            "invalid_role": "Peran nenten becik",
+            "no_valid_data_found": "Nenten wenten data becik sane kapanggih",
+            "failed_save_to_db": "Nenten prasida nyimpen ring database: {0}",
+            "no_permission_short": "Nenten madue lisensi",
+            "cannot_deactivate_self": "Ragane nenten prasida matiang akun pedidi",
+            "only_teacher_student_renameable": "Wantah guru lan sisia sane prasida kaubah wastanyane",
+            "class_name_min_length": "Wasta kelas minimal 2 aksara",
+            "class_already_exists": "Kelas \"{0}\" sampun wenten",
+            "failed_create_class": "Nenten prasida ngaryanin kelas: {0}",
+            "student_data_required": "Data sisia nenten dados kosong",
+            "invalid_target_class": "Kelas sasaran nenten becik",
+            "no_valid_student_data": "Nenten wenten data becik. Pilih kelas sasaran utawi ranjingang kolom Kelas. Format: NIS, Wasta Jangkep, Jenis Kelamin, Kelas",
+            "failed_save": "Nenten prasida nyimpen: {0}",
+            "invalid_student": "Sisia nenten becik",
+            "failed_transfer_student": "Nenten prasida mutasi: {0}"
+        }
     },
     "trash": {
         "title": "Genah Sampah",

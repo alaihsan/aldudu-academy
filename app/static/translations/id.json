@@ -813,7 +813,26 @@
         "reset_password_modal_title": "Reset Password",
         "new_password_label": "Password Baru",
         "min_chars_placeholder": "Minimal 6 karakter",
-        "save_password_button": "Simpan Password"
+        "save_password_button": "Simpan Password",
+        "messages": {
+            "account_not_linked_to_school": "Akun admin tidak terhubung ke sekolah",
+            "data_required": "Data tidak boleh kosong",
+            "invalid_role": "Role tidak valid",
+            "no_valid_data_found": "Tidak ada data valid yang ditemukan",
+            "failed_save_to_db": "Gagal menyimpan ke database: {0}",
+            "no_permission_short": "Tidak memiliki izin",
+            "cannot_deactivate_self": "Anda tidak dapat menonaktifkan akun sendiri",
+            "only_teacher_student_renameable": "Hanya guru dan murid yang bisa direname",
+            "class_name_min_length": "Nama kelas minimal 2 karakter",
+            "class_already_exists": "Kelas \"{0}\" sudah ada",
+            "failed_create_class": "Gagal membuat kelas: {0}",
+            "student_data_required": "Data siswa tidak boleh kosong",
+            "invalid_target_class": "Kelas tujuan tidak valid",
+            "no_valid_student_data": "Tidak ada data valid. Pilih kelas tujuan atau sertakan kolom Kelas. Format: NIS, Nama Lengkap, Jenis Kelamin, Kelas",
+            "failed_save": "Gagal menyimpan: {0}",
+            "invalid_student": "Siswa tidak valid",
+            "failed_transfer_student": "Gagal mutasi: {0}"
+        }
     },
     "trash": {
         "title": "Ruang TPS",

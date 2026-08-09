@@ -5,6 +5,7 @@ from flask_login import login_required, current_user
 from app.models import db, User, UserRole, ActivityLog, Course, AcademicYear, QuizSubmission, Quiz, School
 from app.helpers import log_activity, sanitize_text, is_valid_email, generate_random_password, validate_password, generate_class_code
 from sqlalchemy import func
+from app.core.i18n import t
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +22,7 @@ def admin_required():
         abort(403)
     # Only regular admin must have a school_id; superadmin can access all
     if current_user.role == UserRole.ADMIN and not current_user.school_id:
-        abort(403, description='Akun admin tidak terhubung ke sekolah')
+        abort(403, description=t('admin.messages.account_not_linked_to_school'))
 
 @admin_bp.route('/dashboard')
 def dashboard():
@@ -99,12 +100,12 @@ def bulk_import_users():
     role_str = data.get('role', 'murid').lower()
     
     if not raw_text:
-        return jsonify({'success': False, 'message': 'Data tidak boleh kosong'}), 400
+        return jsonify({'success': False, 'message': t('admin.messages.data_required')}), 400
         
     try:
         role = UserRole(role_str)
     except ValueError:
-        return jsonify({'success': False, 'message': 'Role tidak valid'}), 400
+        return jsonify({'success': False, 'message': t('admin.messages.invalid_role')}), 400
 
     lines = raw_text.strip().split('\n')
     
@@ -134,7 +135,7 @@ def bulk_import_users():
             emails_to_check.add(email)
 
     if not parsed_entries:
-        return jsonify({'success': False, 'message': 'Tidak ada data valid yang ditemukan'}), 400
+        return jsonify({'success': False, 'message': t('admin.messages.no_valid_data_found')}), 400
 
     try:
         # Optimization: Fetch all existing users in this list at once
@@ -166,16 +167,16 @@ def bulk_import_users():
     except Exception as e:
         db.session.rollback()
         logger.error(f"IMPORT ERROR: {str(e)}", exc_info=True)
-        return jsonify({'success': False, 'message': f'Gagal menyimpan ke database: {str(e)}'}), 500
+        return jsonify({'success': False, 'message': t('admin.messages.failed_save_to_db', str(e))}), 500
 
 @admin_bp.route('/api/users/<int:user_id>/reset-password', methods=['POST'])
 def reset_password(user_id):
     user = db.session.get(User, user_id)
     if not user:
-        return jsonify({'success': False, 'message': 'User tidak ditemukan'}), 404
+        return jsonify({'success': False, 'message': t('superadmin.messages.user_not_found')}), 404
 
     if user.school_id != current_user.school_id:
-        return jsonify({'success': False, 'message': 'Tidak memiliki izin'}), 403
+        return jsonify({'success': False, 'message': t('admin.messages.no_permission_short')}), 403
 
     data = request.get_json() or {}
     new_password = data.get('password', '').strip()
@@ -188,19 +189,19 @@ def reset_password(user_id):
     db.session.commit()
     
     log_activity(current_user.id, f"Reset password user: {user.email}", target_id=user.id)
-    return jsonify({'success': True, 'message': 'Password berhasil diubah'})
+    return jsonify({'success': True, 'message': t('auth.messages.password_changed')})
 
 @admin_bp.route('/api/users/<int:user_id>/toggle-status', methods=['POST'])
 def toggle_user_status(user_id):
     user = db.session.get(User, user_id)
     if not user:
-        return jsonify({'success': False, 'message': 'User tidak ditemukan'}), 404
+        return jsonify({'success': False, 'message': t('superadmin.messages.user_not_found')}), 404
 
     if user.school_id != current_user.school_id:
-        return jsonify({'success': False, 'message': 'Tidak memiliki izin'}), 403
+        return jsonify({'success': False, 'message': t('admin.messages.no_permission_short')}), 403
 
     if user.id == current_user.id:
-        return jsonify({'success': False, 'message': 'Anda tidak dapat menonaktifkan akun sendiri'}), 400
+        return jsonify({'success': False, 'message': t('admin.messages.cannot_deactivate_self')}), 400
         
     user.is_active = not user.is_active
     db.session.commit()
@@ -214,18 +215,18 @@ def toggle_user_status(user_id):
 def rename_user(user_id):
     user = db.session.get(User, user_id)
     if not user:
-        return jsonify({'success': False, 'message': 'User tidak ditemukan'}), 404
+        return jsonify({'success': False, 'message': t('superadmin.messages.user_not_found')}), 404
 
     if user.school_id != current_user.school_id:
-        return jsonify({'success': False, 'message': 'Tidak memiliki izin'}), 403
+        return jsonify({'success': False, 'message': t('admin.messages.no_permission_short')}), 403
 
     if user.role not in (UserRole.GURU, UserRole.MURID):
-        return jsonify({'success': False, 'message': 'Hanya guru dan murid yang bisa direname'}), 403
+        return jsonify({'success': False, 'message': t('admin.messages.only_teacher_student_renameable')}), 403
 
     data = request.get_json() or {}
     new_name = sanitize_text(data.get('name', '').strip(), 100)
     if len(new_name) < 2:
-        return jsonify({'success': False, 'message': 'Nama minimal 2 karakter'}), 400
+        return jsonify({'success': False, 'message': t('auth.messages.name_min_length')}), 400
 
     old_name = user.name
     user.name = new_name
@@ -324,13 +325,13 @@ def create_class():
     data = request.get_json() or {}
     name = sanitize_text((data.get('name') or '').strip(), 150)
     if len(name) < 2:
-        return jsonify({'success': False, 'message': 'Nama kelas minimal 2 karakter'}), 400
+        return jsonify({'success': False, 'message': t('admin.messages.class_name_min_length')}), 400
 
     try:
         year = _active_academic_year(current_user.school_id)
         course, created = _get_or_create_class(name, current_user.school_id, current_user.id, year)
         if not created:
-            return jsonify({'success': False, 'message': f'Kelas "{name}" sudah ada'}), 409
+            return jsonify({'success': False, 'message': t('admin.messages.class_already_exists', name)}), 409
         db.session.commit()
         log_activity(current_user.id, f"Membuat kelas: {course.name}",
                      target_type="Course", target_id=course.id)
@@ -340,7 +341,7 @@ def create_class():
     except Exception as e:
         db.session.rollback()
         logger.error(f"CREATE CLASS ERROR: {e}", exc_info=True)
-        return jsonify({'success': False, 'message': f'Gagal membuat kelas: {e}'}), 500
+        return jsonify({'success': False, 'message': t('admin.messages.failed_create_class', e)}), 500
 
 
 @admin_bp.route('/api/students/bulk-import', methods=['POST'])
@@ -354,12 +355,12 @@ def bulk_import_students():
     target_course_id = data.get('course_id')  # kelas tujuan default (opsional)
 
     if not raw_text or not raw_text.strip():
-        return jsonify({'success': False, 'message': 'Data siswa tidak boleh kosong'}), 400
+        return jsonify({'success': False, 'message': t('admin.messages.student_data_required')}), 400
 
     # Kelas tujuan default dari dropdown (bila dipilih)
     target_course = db.session.get(Course, target_course_id) if target_course_id else None
     if target_course and target_course.academic_year.school_id != current_user.school_id:
-        return jsonify({'success': False, 'message': 'Kelas tujuan tidak valid'}), 400
+        return jsonify({'success': False, 'message': t('admin.messages.invalid_target_class')}), 400
 
     # Parse semua baris (lewati baris header bila ada)
     parsed = []
@@ -385,7 +386,7 @@ def bulk_import_students():
 
     if not parsed:
         return jsonify({'success': False,
-                        'message': 'Tidak ada data valid. Pilih kelas tujuan atau sertakan kolom Kelas. Format: NIS, Nama Lengkap, Jenis Kelamin, Kelas'}), 400
+                        'message': t('admin.messages.no_valid_student_data')}), 400
 
     try:
         school = db.session.get(School, current_user.school_id)
@@ -461,7 +462,7 @@ def bulk_import_students():
     except Exception as e:
         db.session.rollback()
         logger.error(f"IMPORT SISWA ERROR: {e}", exc_info=True)
-        return jsonify({'success': False, 'message': f'Gagal menyimpan: {e}'}), 500
+        return jsonify({'success': False, 'message': t('admin.messages.failed_save', e)}), 500
 
 
 # ─── Manajemen Kelas ─────────────────────────────────────────────────────────
@@ -500,7 +501,7 @@ def rename_class(course_id):
     data = request.get_json() or {}
     new_name = sanitize_text((data.get('name') or '').strip(), 150)
     if len(new_name) < 2:
-        return jsonify({'success': False, 'message': 'Nama kelas minimal 2 karakter'}), 400
+        return jsonify({'success': False, 'message': t('admin.messages.class_name_min_length')}), 400
 
     # Cegah duplikat nama dalam sekolah
     dup = (Course.query.join(AcademicYear)
@@ -508,7 +509,7 @@ def rename_class(course_id):
                    func.lower(Course.name) == new_name.lower(),
                    Course.id != course.id).first())
     if dup:
-        return jsonify({'success': False, 'message': f'Kelas "{new_name}" sudah ada'}), 409
+        return jsonify({'success': False, 'message': t('admin.messages.class_already_exists', new_name)}), 409
 
     old = course.name
     course.name = new_name
@@ -523,7 +524,7 @@ def transfer_student(student_id):
     """Mutasi siswa: pindah dari satu kelas ke kelas lain (dalam sekolah)."""
     student = db.session.get(User, student_id)
     if not student or student.school_id != current_user.school_id or student.role != UserRole.MURID:
-        return jsonify({'success': False, 'message': 'Siswa tidak valid'}), 400
+        return jsonify({'success': False, 'message': t('admin.messages.invalid_student')}), 400
 
     data = request.get_json() or {}
     from_course = db.session.get(Course, data.get('from_course_id')) if data.get('from_course_id') else None
@@ -546,4 +547,4 @@ def transfer_student(student_id):
     except Exception as e:
         db.session.rollback()
         logger.error(f"TRANSFER STUDENT ERROR: {e}", exc_info=True)
-        return jsonify({'success': False, 'message': f'Gagal mutasi: {e}'}), 500
+        return jsonify({'success': False, 'message': t('admin.messages.failed_transfer_student', e)}), 500

@@ -813,7 +813,26 @@
         "reset_password_modal_title": "Reset Password",
         "new_password_label": "Sandhi Anyar",
         "min_chars_placeholder": "Paling sethithik 6 karakter",
-        "save_password_button": "Simpen Sandhi"
+        "save_password_button": "Simpen Sandhi",
+        "messages": {
+            "account_not_linked_to_school": "Akun admin ora nyambung menyang sekolah",
+            "data_required": "Data ora oleh kosong",
+            "invalid_role": "Role ora valid",
+            "no_valid_data_found": "Ora ana data valid sing ditemokake",
+            "failed_save_to_db": "Gagal nyimpen menyang database: {0}",
+            "no_permission_short": "Ora duwe izin",
+            "cannot_deactivate_self": "Sampeyan ora bisa mateni akun dhewe",
+            "only_teacher_student_renameable": "Mung guru lan murid sing bisa dijenengi maneh",
+            "class_name_min_length": "Jeneng kelas minimal 2 karakter",
+            "class_already_exists": "Kelas \"{0}\" wis ana",
+            "failed_create_class": "Gagal gawe kelas: {0}",
+            "student_data_required": "Data murid ora oleh kosong",
+            "invalid_target_class": "Kelas tujuan ora valid",
+            "no_valid_student_data": "Ora ana data valid. Pilih kelas tujuan utawa sertakke kolom Kelas. Format: NIS, Jeneng Lengkap, Jinis Kelamin, Kelas",
+            "failed_save": "Gagal nyimpen: {0}",
+            "invalid_student": "Murid ora valid",
+            "failed_transfer_student": "Gagal mutasi: {0}"
+        }
     },
     "trash": {
         "title": "Panggonan Sampah",

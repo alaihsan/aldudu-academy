@@ -813,7 +813,26 @@
         "reset_password_modal_title": "Reset Password",
         "new_password_label": "New Password",
         "min_chars_placeholder": "Minimum 6 characters",
-        "save_password_button": "Save Password"
+        "save_password_button": "Save Password",
+        "messages": {
+            "account_not_linked_to_school": "Admin account is not linked to a school",
+            "data_required": "Data cannot be empty",
+            "invalid_role": "Invalid role",
+            "no_valid_data_found": "No valid data found",
+            "failed_save_to_db": "Failed to save to database: {0}",
+            "no_permission_short": "No permission",
+            "cannot_deactivate_self": "You cannot deactivate your own account",
+            "only_teacher_student_renameable": "Only teachers and students can be renamed",
+            "class_name_min_length": "Class name must be at least 2 characters",
+            "class_already_exists": "Class \"{0}\" already exists",
+            "failed_create_class": "Failed to create class: {0}",
+            "student_data_required": "Student data cannot be empty",
+            "invalid_target_class": "Invalid target class",
+            "no_valid_student_data": "No valid data. Select a target class or include the Class column. Format: NIS, Full Name, Gender, Class",
+            "failed_save": "Failed to save: {0}",
+            "invalid_student": "Invalid student",
+            "failed_transfer_student": "Failed to transfer: {0}"
+        }
     },
     "trash": {
         "title": "Trash",

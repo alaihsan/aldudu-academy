@@ -813,7 +813,26 @@
         "reset_password_modal_title": "Reset Kato Sandi",
         "new_password_label": "Kato Sandi Baru",
         "min_chars_placeholder": "Minimal 6 karakter",
-        "save_password_button": "Simpan Kato Sandi"
+        "save_password_button": "Simpan Kato Sandi",
+        "messages": {
+            "account_not_linked_to_school": "Akun admin indak tahubuang ka sikola",
+            "data_required": "Data indak buliah kosong",
+            "invalid_role": "Peran indak valid",
+            "no_valid_data_found": "Indak ado data valid nan ditamukan",
+            "failed_save_to_db": "Gagal manyimpan ka database: {0}",
+            "no_permission_short": "Indak punyo izin",
+            "cannot_deactivate_self": "Sanak indak bisa manonaktifkan akun surang",
+            "only_teacher_student_renameable": "Hanyo guru jo murik nan bisa diganti namo",
+            "class_name_min_length": "Namo kelas minimal 2 karakter",
+            "class_already_exists": "Kelas \"{0}\" lah ado",
+            "failed_create_class": "Gagal mambuek kelas: {0}",
+            "student_data_required": "Data murik indak buliah kosong",
+            "invalid_target_class": "Kelas tujuan indak valid",
+            "no_valid_student_data": "Indak ado data valid. Piliah kelas tujuan atau sarik-an kolom Kelas. Format: NIS, Namo Lengkap, Jenis Kelamin, Kelas",
+            "failed_save": "Gagal manyimpan: {0}",
+            "invalid_student": "Murik indak valid",
+            "failed_transfer_student": "Gagal mutasi: {0}"
+        }
     },
     "trash": {
         "title": "Tampek Sarok",

@@ -814,7 +814,26 @@
         "reset_password_modal_title": "إعادة تعيين كلمة المرور",
         "new_password_label": "كلمة المرور الجديدة",
         "min_chars_placeholder": "6 أحرف على الأقل",
-        "save_password_button": "حفظ كلمة المرور"
+        "save_password_button": "حفظ كلمة المرور",
+        "messages": {
+            "account_not_linked_to_school": "حساب المشرف غير مرتبط بمدرسة",
+            "data_required": "البيانات لا يمكن أن تكون فارغة",
+            "invalid_role": "دور غير صالح",
+            "no_valid_data_found": "لم يتم العثور على بيانات صالحة",
+            "failed_save_to_db": "فشل الحفظ في قاعدة البيانات: {0}",
+            "no_permission_short": "لا يوجد إذن",
+            "cannot_deactivate_self": "لا يمكنك تعطيل حسابك الخاص",
+            "only_teacher_student_renameable": "فقط المعلمون والطلاب يمكن إعادة تسميتهم",
+            "class_name_min_length": "يجب أن يتكون اسم الفصل من حرفين على الأقل",
+            "class_already_exists": "الفصل \"{0}\" موجود بالفعل",
+            "failed_create_class": "فشل إنشاء الفصل: {0}",
+            "student_data_required": "بيانات الطالب لا يمكن أن تكون فارغة",
+            "invalid_target_class": "الفصل المستهدف غير صالح",
+            "no_valid_student_data": "لا توجد بيانات صالحة. اختر فصلاً مستهدفاً أو أدرج عمود الفصل. التنسيق: رقم الطالب، الاسم الكامل، الجنس، الفصل",
+            "failed_save": "فشل الحفظ: {0}",
+            "invalid_student": "طالب غير صالح",
+            "failed_transfer_student": "فشل النقل: {0}"
+        }
     },
     "trash": {
         "title": "سلة المهملات",

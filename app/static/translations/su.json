@@ -813,7 +813,26 @@
         "reset_password_modal_title": "Reset Kecap Sandi",
         "new_password_label": "Kecap Sandi Anyar",
         "min_chars_placeholder": "Minimal 6 karakter",
-        "save_password_button": "Simpen Kecap Sandi"
+        "save_password_button": "Simpen Kecap Sandi",
+        "messages": {
+            "account_not_linked_to_school": "Akun admin teu nyambung ka sakola",
+            "data_required": "Data teu tiasa kosong",
+            "invalid_role": "Peran teu valid",
+            "no_valid_data_found": "Teu aya data valid anu kapendak",
+            "failed_save_to_db": "Gagal nyimpen ka database: {0}",
+            "no_permission_short": "Teu gaduh idin",
+            "cannot_deactivate_self": "Anjeun teu tiasa mareuman akun sorangan",
+            "only_teacher_student_renameable": "Ngan guru sareng murid anu tiasa diganti nami",
+            "class_name_min_length": "Nami kelas minimal 2 karakter",
+            "class_already_exists": "Kelas \"{0}\" parantos aya",
+            "failed_create_class": "Gagal ngadamel kelas: {0}",
+            "student_data_required": "Data murid teu tiasa kosong",
+            "invalid_target_class": "Kelas tujuan teu valid",
+            "no_valid_student_data": "Teu aya data valid. Pilih kelas tujuan atanapi sertakeun kolom Kelas. Format: NIS, Nami Lengkap, Jinis Kelamin, Kelas",
+            "failed_save": "Gagal nyimpen: {0}",
+            "invalid_student": "Murid teu valid",
+            "failed_transfer_student": "Gagal mutasi: {0}"
+        }
     },
     "trash": {
         "title": "Tempat Runtah",
