@@ -17,6 +17,7 @@ from app.gradebook.services import (
     bulk_save_grades
 )
 from app.helpers import log_activity, get_jakarta_now
+from app.core.i18n import t
 
 
 def invalidate_grade_cache(student_id: int, course_id: int):
@@ -66,7 +67,7 @@ def course_gradebook(course_id):
     
     # Check permission - only teacher can access
     if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
-        abort(403, description='Anda tidak memiliki izin untuk mengakses gradebook kelas ini')
+        abort(403, description=t('gradebook.messages.no_permission_gradebook'))
     
     return render_template('gradebook/teacher_gradebook.html', course=course)
 
@@ -78,7 +79,7 @@ def course_setup(course_id):
     course = Course.query.get_or_404(course_id)
     
     if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
-        abort(403, description='Anda tidak memiliki izin untuk mengakses setup gradebook kelas ini')
+        abort(403, description=t('gradebook.messages.no_permission_gradebook_setup'))
     
     return render_template('gradebook/course_setup.html', course=course)
 
@@ -105,7 +106,7 @@ def my_grades(course_id):
     is_teacher = course.teacher_id == current_user.id
     
     if not is_student and not is_teacher and current_user.role != UserRole.SUPER_ADMIN:
-        abort(403, description='Anda tidak memiliki izin untuk mengakses nilai kelas ini')
+        abort(403, description=t('gradebook.messages.no_permission_view_grades'))
     
     # Template loads grades via JS API call to get_student_grades_summary()
     # which uses the unified calculate_final_grade() function
@@ -120,14 +121,14 @@ def api_get_categories():
     """Get all categories for a course"""
     course_id = request.args.get('course_id', type=int)
     if not course_id:
-        return jsonify({'success': False, 'message': 'course_id required'}), 400
+        return jsonify({'success': False, 'message': t('messages.course_id_required')}), 400
     
     course = Course.query.get(course_id)
     if not course:
-        return jsonify({'success': False, 'message': 'Course not found'}), 404
+        return jsonify({'success': False, 'message': t('messages.course_not_found')}), 404
     
     if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
     
     categories = GradeCategory.query.filter_by(course_id=course_id).all()
     return jsonify({
@@ -144,14 +145,14 @@ def api_create_category():
     course_id = data.get('course_id')
     
     if not course_id:
-        return jsonify({'success': False, 'message': 'course_id required'}), 400
+        return jsonify({'success': False, 'message': t('messages.course_id_required')}), 400
     
     course = Course.query.get(course_id)
     if not course:
-        return jsonify({'success': False, 'message': 'Course not found'}), 404
+        return jsonify({'success': False, 'message': t('messages.course_not_found')}), 404
     
     if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
     
     name = data.get('name', '').strip()
     category_type = data.get('category_type', 'formatif')
@@ -159,12 +160,12 @@ def api_create_category():
     description = data.get('description', '')
     
     if not name:
-        return jsonify({'success': False, 'message': 'Nama kategori wajib diisi'}), 400
+        return jsonify({'success': False, 'message': t('gradebook.messages.category_name_required')}), 400
     
     try:
         cat_type = GradeCategoryType(category_type)
     except ValueError:
-        return jsonify({'success': False, 'message': 'Tipe kategori tidak valid'}), 400
+        return jsonify({'success': False, 'message': t('gradebook.messages.invalid_category_type')}), 400
     
     category = GradeCategory(
         name=name,
@@ -189,7 +190,7 @@ def api_update_category(category_id):
     course = Course.query.get(category.course_id)
     
     if not course or (course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN):
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
     
     data = request.get_json() or {}
     
@@ -199,7 +200,7 @@ def api_update_category(category_id):
         try:
             category.category_type = GradeCategoryType(data['category_type'])
         except ValueError:
-            return jsonify({'success': False, 'message': 'Tipe kategori tidak valid'}), 400
+            return jsonify({'success': False, 'message': t('gradebook.messages.invalid_category_type')}), 400
     if 'weight' in data:
         category.weight = float(data['weight'])
     if 'description' in data:
@@ -218,7 +219,7 @@ def api_delete_category(category_id):
     course = Course.query.get(category.course_id)
     
     if not course or (course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN):
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
     
     db.session.delete(category)
     db.session.commit()
@@ -234,14 +235,14 @@ def api_get_learning_objectives():
     """Get all CP for a course"""
     course_id = request.args.get('course_id', type=int)
     if not course_id:
-        return jsonify({'success': False, 'message': 'course_id required'}), 400
+        return jsonify({'success': False, 'message': t('messages.course_id_required')}), 400
     
     course = Course.query.get(course_id)
     if not course:
-        return jsonify({'success': False, 'message': 'Course not found'}), 404
+        return jsonify({'success': False, 'message': t('messages.course_not_found')}), 404
     
     if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
     
     cps = LearningObjective.query.filter_by(course_id=course_id).order_by(LearningObjective.order).all()
     result = []
@@ -261,26 +262,26 @@ def api_create_learning_objective():
     course_id = data.get('course_id')
     
     if not course_id:
-        return jsonify({'success': False, 'message': 'course_id required'}), 400
+        return jsonify({'success': False, 'message': t('messages.course_id_required')}), 400
     
     course = Course.query.get(course_id)
     if not course:
-        return jsonify({'success': False, 'message': 'Course not found'}), 404
+        return jsonify({'success': False, 'message': t('messages.course_not_found')}), 404
     
     if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
     
     code = data.get('code', '').strip()
     description = data.get('description', '').strip()
     order = data.get('order', 0)
     
     if not code or not description:
-        return jsonify({'success': False, 'message': 'Kode dan deskripsi wajib diisi'}), 400
+        return jsonify({'success': False, 'message': t('gradebook.messages.code_description_required')}), 400
     
     # Check for duplicate code
     existing = LearningObjective.query.filter_by(code=code, course_id=course_id).first()
     if existing:
-        return jsonify({'success': False, 'message': 'Kode CP sudah digunakan'}), 400
+        return jsonify({'success': False, 'message': t('gradebook.messages.cp_code_taken')}), 400
     
     cp = LearningObjective(
         code=code,
@@ -302,7 +303,7 @@ def api_update_learning_objective(cp_id):
     course = Course.query.get(cp.course_id)
     
     if not course or (course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN):
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
     
     data = request.get_json() or {}
     
@@ -310,7 +311,7 @@ def api_update_learning_objective(cp_id):
         # Check for duplicate
         existing = LearningObjective.query.filter_by(code=data['code'], course_id=cp.course_id).first()
         if existing and existing.id != cp.id:
-            return jsonify({'success': False, 'message': 'Kode CP sudah digunakan'}), 400
+            return jsonify({'success': False, 'message': t('gradebook.messages.cp_code_taken')}), 400
         cp.code = data['code'].strip()
     if 'description' in data:
         cp.description = data['description'].strip()
@@ -330,7 +331,7 @@ def api_delete_learning_objective(cp_id):
     course = Course.query.get(cp.course_id)
     
     if not course or (course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN):
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
     
     db.session.delete(cp)
     db.session.commit()
@@ -348,25 +349,25 @@ def api_create_learning_goal():
     learning_objective_id = data.get('learning_objective_id')
     
     if not learning_objective_id:
-        return jsonify({'success': False, 'message': 'learning_objective_id required'}), 400
+        return jsonify({'success': False, 'message': t('gradebook.messages.learning_objective_id_required')}), 400
     
     cp = LearningObjective.query.get_or_404(learning_objective_id)
     course = Course.query.get(cp.course_id)
     
     if not course or (course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN):
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
     
     code = data.get('code', '').strip()
     description = data.get('description', '').strip()
     order = data.get('order', 0)
     
     if not code or not description:
-        return jsonify({'success': False, 'message': 'Kode dan deskripsi wajib diisi'}), 400
+        return jsonify({'success': False, 'message': t('gradebook.messages.code_description_required')}), 400
     
     # Check for duplicate
     existing = LearningGoal.query.filter_by(code=code, learning_objective_id=learning_objective_id).first()
     if existing:
-        return jsonify({'success': False, 'message': 'Kode TP sudah digunakan'}), 400
+        return jsonify({'success': False, 'message': t('gradebook.messages.tp_code_taken')}), 400
     
     tp = LearningGoal(
         code=code,
@@ -389,14 +390,14 @@ def api_update_learning_goal(goal_id):
     course = Course.query.get(cp.course_id)
     
     if not course or (course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN):
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
     
     data = request.get_json() or {}
     
     if 'code' in data:
         existing = LearningGoal.query.filter_by(code=data['code'], learning_objective_id=tp.learning_objective_id).first()
         if existing and existing.id != tp.id:
-            return jsonify({'success': False, 'message': 'Kode TP sudah digunakan'}), 400
+            return jsonify({'success': False, 'message': t('gradebook.messages.tp_code_taken')}), 400
         tp.code = data['code'].strip()
     if 'description' in data:
         tp.description = data['description'].strip()
@@ -417,7 +418,7 @@ def api_delete_learning_goal(goal_id):
     course = Course.query.get(cp.course_id)
     
     if not course or (course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN):
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
     
     db.session.delete(tp)
     db.session.commit()
@@ -434,14 +435,14 @@ def api_get_grade_items():
     course_id = request.args.get('course_id', type=int)
     category_id = request.args.get('category_id', type=int)
     if not course_id:
-        return jsonify({'success': False, 'message': 'course_id required'}), 400
+        return jsonify({'success': False, 'message': t('messages.course_id_required')}), 400
     
     course = Course.query.get(course_id)
     if not course:
-        return jsonify({'success': False, 'message': 'Course not found'}), 404
+        return jsonify({'success': False, 'message': t('messages.course_not_found')}), 404
     
     if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
     
     query = GradeItem.query.filter_by(course_id=course_id)
     if category_id:
@@ -469,7 +470,7 @@ def api_get_grade_item(item_id):
     course = Course.query.get(item.course_id)
 
     if not course or (course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN):
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
 
     item_data = item.to_dict()
     item_data['is_assignment'] = item.assignment_id is not None
@@ -486,14 +487,14 @@ def api_create_grade_item():
     course_id = data.get('course_id')
     
     if not course_id:
-        return jsonify({'success': False, 'message': 'course_id required'}), 400
+        return jsonify({'success': False, 'message': t('messages.course_id_required')}), 400
     
     course = Course.query.get(course_id)
     if not course:
-        return jsonify({'success': False, 'message': 'Course not found'}), 404
+        return jsonify({'success': False, 'message': t('messages.course_not_found')}), 404
     
     if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
     
     name = data.get('name', '').strip()
     category_id = data.get('category_id')
@@ -503,12 +504,12 @@ def api_create_grade_item():
     due_date = data.get('due_date')
     
     if not name:
-        return jsonify({'success': False, 'message': 'Nama kolom wajib diisi'}), 400
+        return jsonify({'success': False, 'message': t('gradebook.messages.column_name_required')}), 400
 
     if category_id:
         category = GradeCategory.query.get(category_id)
         if not category or category.course_id != course_id:
-            return jsonify({'success': False, 'message': 'Kategori tidak valid'}), 400
+            return jsonify({'success': False, 'message': t('gradebook.messages.invalid_category')}), 400
     else:
         category = get_or_create_grade_category(
             course_id,
@@ -546,7 +547,7 @@ def api_update_grade_item(item_id):
     course = Course.query.get(item.course_id)
     
     if not course or (course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN):
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
     
     data = request.get_json() or {}
     
@@ -583,7 +584,7 @@ def api_delete_grade_item(item_id):
     course = Course.query.get(item.course_id)
     
     if not course or (course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN):
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
     
     db.session.delete(item)
     db.session.commit()
@@ -599,7 +600,7 @@ def api_get_grade_entries():
     """Get grade entries for a grade item"""
     grade_item_id = request.args.get('grade_item_id', type=int)
     if not grade_item_id:
-        return jsonify({'success': False, 'message': 'grade_item_id required'}), 400
+        return jsonify({'success': False, 'message': t('gradebook.messages.grade_item_id_required')}), 400
     
     item = GradeItem.query.get_or_404(grade_item_id)
     course = Course.query.get(item.course_id)
@@ -609,7 +610,7 @@ def api_get_grade_entries():
     is_student = current_user.id in [s.id for s in course.students]
     
     if not is_teacher and not is_student and current_user.role != UserRole.SUPER_ADMIN:
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
     
     if is_student:
         # Student can only see their own grades
@@ -635,7 +636,7 @@ def api_bulk_save_entries():
     entries_data = data.get('entries', [])
 
     if not entries_data:
-        return jsonify({'success': False, 'message': 'No entries provided'}), 400
+        return jsonify({'success': False, 'message': t('gradebook.messages.no_entries_provided')}), 400
 
     # Validate permission for first entry
     if entries_data:
@@ -643,7 +644,7 @@ def api_bulk_save_entries():
         if first_item:
             course = Course.query.get(first_item.course_id)
             if not course or (course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN):
-                return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+                return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
 
     saved_count = bulk_save_grades(entries_data, current_user.id)
 
@@ -665,7 +666,7 @@ def api_update_grade_entry(entry_id):
     course = Course.query.get(item.course_id)
 
     if not course or (course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN):
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
 
     data = request.get_json() or {}
 
@@ -695,7 +696,7 @@ def api_get_course_stats(course_id):
     course = Course.query.get_or_404(course_id)
     
     if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
     
     stats = calculate_course_statistics(course_id)
     return jsonify({'success': True, 'stats': stats})
@@ -712,7 +713,7 @@ def api_get_student_grades(student_id, course_id):
     is_teacher = course.teacher_id == current_user.id
     
     if not is_self and not is_teacher and current_user.role != UserRole.SUPER_ADMIN:
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
     
     summary = get_student_grades_summary(student_id, course_id)
     return jsonify({'success': True, 'summary': summary})
@@ -727,7 +728,7 @@ def api_sync_course_quizzes(course_id):
     course = Course.query.get_or_404(course_id)
 
     if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
 
     category = get_or_create_grade_category(course_id, 'Quiz', GradeCategoryType.FORMATIF, 0.0)
     quizzes = Quiz.query.filter_by(course_id=course_id).all()
@@ -799,14 +800,14 @@ def api_import_quiz(quiz_id):
     course = Course.query.get(quiz.course_id)
     
     if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
     
     data = request.get_json() or {}
     category_id = data.get('category_id')
     learning_goal_id = data.get('learning_goal_id')
     
     if not category_id:
-        return jsonify({'success': False, 'message': 'category_id required'}), 400
+        return jsonify({'success': False, 'message': t('gradebook.messages.category_id_required')}), 400
     
     item, error = import_quiz_to_gradebook(quiz_id, category_id, learning_goal_id)
     
@@ -824,7 +825,7 @@ def api_sync_quiz_grades(quiz_id):
     course = Course.query.get(quiz.course_id)
     
     if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
     
     updated_count = sync_quiz_grades(quiz_id)
     
@@ -837,14 +838,14 @@ def api_get_available_quizzes():
     """Get quizzes that haven't been imported to gradebook"""
     course_id = request.args.get('course_id', type=int)
     if not course_id:
-        return jsonify({'success': False, 'message': 'course_id required'}), 400
+        return jsonify({'success': False, 'message': t('messages.course_id_required')}), 400
     
     course = Course.query.get(course_id)
     if not course:
-        return jsonify({'success': False, 'message': 'Course not found'}), 404
+        return jsonify({'success': False, 'message': t('messages.course_not_found')}), 404
     
     if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
     
     # Get imported quiz IDs
     imported_quiz_ids = db.session.query(GradeItem.quiz_id).filter(
@@ -877,7 +878,7 @@ def api_get_quizzes_with_analysis(course_id):
     course = Course.query.get_or_404(course_id)
     
     if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
     
     # Get all quizzes with at least 1 submission
     quizzes = Quiz.query.filter(
@@ -917,7 +918,7 @@ def api_get_ctt_analysis(quiz_id):
     course = Course.query.get(quiz.course_id)
     
     if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
     
     # Get all questions in the quiz
     questions = Question.query.filter_by(quiz_id=quiz_id).all()
@@ -1155,7 +1156,7 @@ def api_get_assignment_submissions(assignment_id):
     course = Course.query.get(assignment.course_id)
     
     if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
     
     # Get all submissions
     submissions = AssignmentSubmission.query.filter_by(
@@ -1202,7 +1203,7 @@ def api_wizard_setup(course_id):
     course = Course.query.get_or_404(course_id)
     
     if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
     
     data = request.get_json() or {}
     step = data.get('step', 1)
@@ -1244,7 +1245,7 @@ def api_wizard_setup(course_id):
         return jsonify({
             'success': True,
             'step': 1,
-            'message': 'Kategori berhasil dibuat',
+            'message': t('gradebook.messages.category_created'),
             'categories': created_categories
         })
     
@@ -1278,7 +1279,7 @@ def api_wizard_setup(course_id):
         return jsonify({
             'success': True,
             'step': 2,
-            'message': 'Capaian Pembelajaran berhasil dibuat',
+            'message': t('gradebook.messages.learning_objective_created'),
             'learning_objectives': created_cps
         })
     
@@ -1290,14 +1291,14 @@ def api_wizard_setup(course_id):
         return jsonify({
             'success': True,
             'step': 3,
-            'message': 'Setup semester selesai',
+            'message': t('gradebook.messages.semester_setup_complete'),
             'summary': {
                 'categories_count': categories_count,
                 'learning_objectives_count': cp_count
             }
         })
     
-    return jsonify({'success': False, 'message': 'Invalid step'}), 400
+    return jsonify({'success': False, 'message': t('gradebook.messages.invalid_step')}), 400
 
 
 @gradebook_bp.route('/api/course/<int:course_id>/wizard-status', methods=['GET'])
@@ -1307,7 +1308,7 @@ def api_wizard_status(course_id):
     course = Course.query.get_or_404(course_id)
     
     if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
     
     categories_count = GradeCategory.query.filter_by(course_id=course_id).count()
     cp_count = LearningObjective.query.filter_by(course_id=course_id).count()

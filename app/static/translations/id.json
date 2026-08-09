@@ -452,7 +452,27 @@
         "input_grade_title": "Input Nilai",
         "grade_comment_per_student_hint": "Nilai dan komentar per siswa.",
         "comment_header": "Komentar",
-        "fill_max_score_button": "Isi Nilai Maksimal"
+        "fill_max_score_button": "Isi Nilai Maksimal",
+        "messages": {
+            "no_permission_gradebook": "Anda tidak memiliki izin untuk mengakses gradebook kelas ini",
+            "no_permission_gradebook_setup": "Anda tidak memiliki izin untuk mengakses setup gradebook kelas ini",
+            "no_permission_view_grades": "Anda tidak memiliki izin untuk mengakses nilai kelas ini",
+            "category_name_required": "Nama kategori wajib diisi",
+            "invalid_category_type": "Tipe kategori tidak valid",
+            "code_description_required": "Kode dan deskripsi wajib diisi",
+            "cp_code_taken": "Kode CP sudah digunakan",
+            "learning_objective_id_required": "ID capaian pembelajaran wajib diisi",
+            "tp_code_taken": "Kode TP sudah digunakan",
+            "column_name_required": "Nama kolom wajib diisi",
+            "invalid_category": "Kategori tidak valid",
+            "grade_item_id_required": "ID item nilai wajib diisi",
+            "no_entries_provided": "Tidak ada entri yang diberikan",
+            "category_id_required": "ID kategori wajib diisi",
+            "category_created": "Kategori berhasil dibuat",
+            "learning_objective_created": "Capaian Pembelajaran berhasil dibuat",
+            "semester_setup_complete": "Setup semester selesai",
+            "invalid_step": "Langkah tidak valid"
+        }
     },
     "discussion": {
         "new_topic": "Topik Baru",
@@ -550,7 +570,9 @@
         "not_found": "Tidak ditemukan",
         "unauthorized": "Unauthorized",
         "server_error": "Terjadi kesalahan server",
-        "no_permission": "Anda tidak memiliki izin"
+        "no_permission": "Anda tidak memiliki izin",
+        "course_not_found": "Mata pelajaran tidak ditemukan",
+        "course_id_required": "ID mata pelajaran wajib diisi"
     },
     "user": {
         "name": "Nama",

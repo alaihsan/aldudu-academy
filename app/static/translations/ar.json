@@ -453,7 +453,27 @@
         "input_grade_title": "إدخال الدرجات",
         "grade_comment_per_student_hint": "الدرجة والتعليق لكل طالب.",
         "comment_header": "تعليق",
-        "fill_max_score_button": "تعبئة الدرجة القصوى"
+        "fill_max_score_button": "تعبئة الدرجة القصوى",
+        "messages": {
+            "no_permission_gradebook": "ليس لديك إذن للوصول إلى دفتر درجات هذا الفصل",
+            "no_permission_gradebook_setup": "ليس لديك إذن للوصول إلى إعداد دفتر درجات هذا الفصل",
+            "no_permission_view_grades": "ليس لديك إذن لعرض درجات هذا الفصل",
+            "category_name_required": "اسم الفئة مطلوب",
+            "invalid_category_type": "نوع فئة غير صالح",
+            "code_description_required": "الرمز والوصف مطلوبان",
+            "cp_code_taken": "رمز CP مستخدم بالفعل",
+            "learning_objective_id_required": "معرف مخرج التعلم مطلوب",
+            "tp_code_taken": "رمز TP مستخدم بالفعل",
+            "column_name_required": "اسم العمود مطلوب",
+            "invalid_category": "فئة غير صالحة",
+            "grade_item_id_required": "معرف عنصر الدرجة مطلوب",
+            "no_entries_provided": "لم يتم تقديم أي إدخالات",
+            "category_id_required": "معرف الفئة مطلوب",
+            "category_created": "تم إنشاء الفئة بنجاح",
+            "learning_objective_created": "تم إنشاء مخرج التعلم بنجاح",
+            "semester_setup_complete": "اكتمل إعداد الفصل الدراسي",
+            "invalid_step": "خطوة غير صالحة"
+        }
     },
     "discussion": {
         "new_topic": "موضوع جديد",
@@ -551,7 +571,9 @@
         "not_found": "غير موجود",
         "unauthorized": "غير مصرح",
         "server_error": "حدث خطأ في الخادم",
-        "no_permission": "ليس لديك إذن"
+        "no_permission": "ليس لديك إذن",
+        "course_not_found": "المادة الدراسية غير موجودة",
+        "course_id_required": "معرف المادة الدراسية مطلوب"
     },
     "user": {
         "name": "الاسم",

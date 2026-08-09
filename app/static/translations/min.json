@@ -452,7 +452,27 @@
         "input_grade_title": "Isian Nilai",
         "grade_comment_per_student_hint": "Nilai jo komentar per murik.",
         "comment_header": "Komentar",
-        "fill_max_score_button": "Isi Nilai Maksimal"
+        "fill_max_score_button": "Isi Nilai Maksimal",
+        "messages": {
+            "no_permission_gradebook": "Angku indak mampunyoi izin untuak maakses gradebook kelas ko",
+            "no_permission_gradebook_setup": "Angku indak mampunyoi izin untuak maakses setelan gradebook kelas ko",
+            "no_permission_view_grades": "Angku indak mampunyoi izin untuak maliek nilai kelas ko",
+            "category_name_required": "Namo kategori wajib diisi",
+            "invalid_category_type": "Jinis kategori indak valid",
+            "code_description_required": "Kode jo katarangan wajib diisi",
+            "cp_code_taken": "Kode CP lah dipakai",
+            "learning_objective_id_required": "ID pancapaian pambalajaran wajib diisi",
+            "tp_code_taken": "Kode TP lah dipakai",
+            "column_name_required": "Namo kolom wajib diisi",
+            "invalid_category": "Kategori indak valid",
+            "grade_item_id_required": "ID item nilai wajib diisi",
+            "no_entries_provided": "Indak ado entri nan dibarikan",
+            "category_id_required": "ID kategori wajib diisi",
+            "category_created": "Kategori barasil dibuek",
+            "learning_objective_created": "Pancapaian Pambalajaran barasil dibuek",
+            "semester_setup_complete": "Setelan semester salasai",
+            "invalid_step": "Langkah indak valid"
+        }
     },
     "discussion": {
         "new_topic": "Topik Baru",
@@ -550,7 +570,9 @@
         "not_found": "Indak kutamuan",
         "unauthorized": "Indak Dapek Izin",
         "server_error": "Taradi kasalahan server",
-        "no_permission": "Angku indak mampunyoi izin"
+        "no_permission": "Angku indak mampunyoi izin",
+        "course_not_found": "Mato pelajaran indak ditamukan",
+        "course_id_required": "ID mato pelajaran wajib diisi"
     },
     "user": {
         "name": "Namo",

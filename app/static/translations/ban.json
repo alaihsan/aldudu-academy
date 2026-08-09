@@ -452,7 +452,27 @@
         "input_grade_title": "Ngranjingang Nilai",
         "grade_comment_per_student_hint": "Nilai miwah komentar per sisia.",
         "comment_header": "Komentar",
-        "fill_max_score_button": "Isinin Nilai Maksimal"
+        "fill_max_score_button": "Isinin Nilai Maksimal",
+        "messages": {
+            "no_permission_gradebook": "Ragane nenten madue ijin anggen ngakses gradebook kelas puniki",
+            "no_permission_gradebook_setup": "Ragane nenten madue ijin anggen ngakses setelan gradebook kelas puniki",
+            "no_permission_view_grades": "Ragane nenten madue ijin anggen ngeningin nilai kelas puniki",
+            "category_name_required": "Wasta kategori mustine kaisi",
+            "invalid_category_type": "Jenis kategori nenten becik",
+            "code_description_required": "Kode miwah katerangan mustine kaisi",
+            "cp_code_taken": "Kode CP sampun kaanggen",
+            "learning_objective_id_required": "ID kaicapan malajah mustine kaisi",
+            "tp_code_taken": "Kode TP sampun kaanggen",
+            "column_name_required": "Wasta kolom mustine kaisi",
+            "invalid_category": "Kategori nenten becik",
+            "grade_item_id_required": "ID item nilai mustine kaisi",
+            "no_entries_provided": "Nenten wenten entri sane kaicen",
+            "category_id_required": "ID kategori mustine kaisi",
+            "category_created": "Kategori prasida kakaryanin",
+            "learning_objective_created": "Kaicapan Malajah prasida kakaryanin",
+            "semester_setup_complete": "Setelan semester puput",
+            "invalid_step": "Langkah nenten becik"
+        }
     },
     "discussion": {
         "new_topic": "Topik Anyar",
@@ -550,7 +570,9 @@
         "not_found": "Nenten kapanggih",
         "unauthorized": "Nenten Kalugra",
         "server_error": "Wenten kesalahan server",
-        "no_permission": "Ragane nenten madue ijin"
+        "no_permission": "Ragane nenten madue ijin",
+        "course_not_found": "Mata pelajaran nenten kapanggih",
+        "course_id_required": "ID mata pelajaran mustine kaisi"
     },
     "user": {
         "name": "Aran",

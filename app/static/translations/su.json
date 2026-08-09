@@ -452,7 +452,27 @@
         "input_grade_title": "Lebetkeun Nilai",
         "grade_comment_per_student_hint": "Nilai sareng koméntar per siswa.",
         "comment_header": "Koméntar",
-        "fill_max_score_button": "Eusian Nilai Maksimal"
+        "fill_max_score_button": "Eusian Nilai Maksimal",
+        "messages": {
+            "no_permission_gradebook": "Anjeun teu gaduh idin pikeun ngakses gradebook kelas ieu",
+            "no_permission_gradebook_setup": "Anjeun teu gaduh idin pikeun ngakses setelan gradebook kelas ieu",
+            "no_permission_view_grades": "Anjeun teu gaduh idin pikeun ningali nilai kelas ieu",
+            "category_name_required": "Nami kategori wajib dieusi",
+            "invalid_category_type": "Jinis kategori teu valid",
+            "code_description_required": "Kode sareng katerangan wajib dieusi",
+            "cp_code_taken": "Kode CP parantos dianggo",
+            "learning_objective_id_required": "ID kahontalan diajar wajib dieusi",
+            "tp_code_taken": "Kode TP parantos dianggo",
+            "column_name_required": "Nami kolom wajib dieusi",
+            "invalid_category": "Kategori teu valid",
+            "grade_item_id_required": "ID item nilai wajib dieusi",
+            "no_entries_provided": "Teu aya éntri anu dipasihkeun",
+            "category_id_required": "ID kategori wajib dieusi",
+            "category_created": "Kategori suksés diadamel",
+            "learning_objective_created": "Kahontalan Diajar suksés diadamel",
+            "semester_setup_complete": "Setelan semester réngsé",
+            "invalid_step": "Léngkah teu valid"
+        }
     },
     "discussion": {
         "new_topic": "Topik Anyar",
@@ -550,7 +570,9 @@
         "not_found": "Teu kapanggih",
         "unauthorized": "Teu Diidinan",
         "server_error": "Aya kasalahan server",
-        "no_permission": "Anjeun teu gaduh idin"
+        "no_permission": "Anjeun teu gaduh idin",
+        "course_not_found": "Mata pelajaran teu kapendak",
+        "course_id_required": "ID mata pelajaran wajib dieusi"
     },
     "user": {
         "name": "Ngaran",

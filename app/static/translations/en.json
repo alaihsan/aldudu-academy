@@ -452,7 +452,27 @@
         "input_grade_title": "Enter Grades",
         "grade_comment_per_student_hint": "Grade and comment per student.",
         "comment_header": "Comment",
-        "fill_max_score_button": "Fill Maximum Score"
+        "fill_max_score_button": "Fill Maximum Score",
+        "messages": {
+            "no_permission_gradebook": "You do not have permission to access this class's gradebook",
+            "no_permission_gradebook_setup": "You do not have permission to access this class's gradebook setup",
+            "no_permission_view_grades": "You do not have permission to view this class's grades",
+            "category_name_required": "Category name is required",
+            "invalid_category_type": "Invalid category type",
+            "code_description_required": "Code and description are required",
+            "cp_code_taken": "CP code is already in use",
+            "learning_objective_id_required": "Learning objective ID is required",
+            "tp_code_taken": "TP code is already in use",
+            "column_name_required": "Column name is required",
+            "invalid_category": "Invalid category",
+            "grade_item_id_required": "Grade item ID is required",
+            "no_entries_provided": "No entries provided",
+            "category_id_required": "Category ID is required",
+            "category_created": "Category created successfully",
+            "learning_objective_created": "Learning outcome created successfully",
+            "semester_setup_complete": "Semester setup complete",
+            "invalid_step": "Invalid step"
+        }
     },
     "discussion": {
         "new_topic": "New Topic",
@@ -550,7 +570,9 @@
         "not_found": "Not found",
         "unauthorized": "Unauthorized",
         "server_error": "A server error occurred",
-        "no_permission": "You do not have permission"
+        "no_permission": "You do not have permission",
+        "course_not_found": "Course not found",
+        "course_id_required": "Course ID is required"
     },
     "user": {
         "name": "Name",
