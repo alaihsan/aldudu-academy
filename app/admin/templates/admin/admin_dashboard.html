@@ -8,10 +8,10 @@
         <!-- Top Header -->
         <header class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 h-16 flex items-center justify-between px-8 sticky top-0 z-30">
             <div class="flex items-center space-x-4">
-                <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100 truncate">Superadmin Dashboard</h2>
+                <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100 truncate" data-i18n="admin.superadmin_dashboard_heading">Superadmin Dashboard</h2>
             </div>
             <div class="flex items-center space-x-4">
-                <span class="px-4 py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-xl text-xs font-black uppercase tracking-widest border border-indigo-100 dark:border-indigo-800">
+                <span class="px-4 py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-xl text-xs font-black uppercase tracking-widest border border-indigo-100 dark:border-indigo-800" data-i18n="admin.system_admin_badge">
                     System Admin
                 </span>
             </div>
@@ -28,7 +28,7 @@
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                         </div>
                         <p class="text-3xl font-black text-gray-900 dark:text-gray-100">{{ stats.total_guru }}</p>
-                        <p class="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-1">Total Guru</p>
+                        <p class="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-1" data-i18n="admin.total_teachers_label">Total Guru</p>
                     </div>
 
                     <div class="bg-white dark:bg-gray-800 p-8 rounded-[2rem] border border-gray-100 dark:border-gray-700 shadow-premium flex flex-col items-center text-center">
@@ -36,7 +36,7 @@
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                         </div>
                         <p class="text-3xl font-black text-gray-900 dark:text-gray-100">{{ stats.total_murid }}</p>
-                        <p class="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-1">Total Murid</p>
+                        <p class="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-1" data-i18n="admin.total_students_label">Total Murid</p>
                     </div>
 
                     <div class="bg-white dark:bg-gray-800 p-8 rounded-[2rem] border border-gray-100 dark:border-gray-700 shadow-premium flex flex-col items-center text-center">
@@ -44,7 +44,7 @@
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13"/></svg>
                         </div>
                         <p class="text-3xl font-black text-gray-900 dark:text-gray-100">{{ stats.total_courses }}</p>
-                        <p class="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-1">Total Kelas</p>
+                        <p class="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-1" data-i18n="admin.total_classes_label">Total Kelas</p>
                     </div>
 
                     <div class="bg-white dark:bg-gray-800 p-8 rounded-[2rem] border border-gray-100 dark:border-gray-700 shadow-premium flex flex-col items-center text-center">
@@ -52,7 +52,7 @@
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         </div>
                         <p class="text-3xl font-black text-gray-900 dark:text-gray-100">{{ stats.total_submissions }}</p>
-                        <p class="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-1">Kuis Dikerjakan</p>
+                        <p class="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-1" data-i18n="admin.quizzes_completed_label">Kuis Dikerjakan</p>
                     </div>
                 </div>
 
@@ -61,16 +61,16 @@
                     <!-- Activity Log -->
                     <div class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-[2.5rem] border border-gray-100 dark:border-gray-700 shadow-premium overflow-hidden">
                         <div class="px-8 py-6 border-b border-gray-50 dark:border-gray-700 flex items-center justify-between">
-                            <h3 class="text-lg font-black text-gray-900 dark:text-gray-100">Log Aktivitas Terbaru</h3>
+                            <h3 class="text-lg font-black text-gray-900 dark:text-gray-100" data-i18n="admin.recent_activity_log_heading">Log Aktivitas Terbaru</h3>
                             <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                         </div>
                         <div class="overflow-x-auto">
                             <table class="w-full">
                                 <thead class="bg-gray-50 dark:bg-gray-800">
                                     <tr>
-                                        <th class="px-8 py-4 text-left text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">User</th>
-                                        <th class="px-8 py-4 text-left text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">Aktivitas</th>
-                                        <th class="px-8 py-4 text-left text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">Waktu</th>
+                                        <th class="px-8 py-4 text-left text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest" data-i18n="admin.user_header">User</th>
+                                        <th class="px-8 py-4 text-left text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest" data-i18n="admin.activity_header">Aktivitas</th>
+                                        <th class="px-8 py-4 text-left text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest" data-i18n="admin.time_header">Waktu</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-50 dark:divide-gray-700">
@@ -106,25 +106,25 @@
                     <!-- Sidebar Content -->
                     <div class="space-y-6">
                         <div class="bg-[#1cb0f6] rounded-[2rem] p-8 text-white">
-                            <h3 class="text-xl font-black mb-4">Manajemen Akun</h3>
-                            <p class="text-white/80 text-sm mb-6 leading-relaxed font-bold">Kelola guru dan murid, aktifkan atau nonaktifkan akun dalam satu panel.</p>
-                            <a href="{{ url_for('admin.user_management') }}" class="btn-duo btn-duo-ghost w-full h-14 text-sm">
+                            <h3 class="text-xl font-black mb-4" data-i18n="admin.account_management_heading">Manajemen Akun</h3>
+                            <p class="text-white/80 text-sm mb-6 leading-relaxed font-bold" data-i18n="admin.account_management_hint">Kelola guru dan murid, aktifkan atau nonaktifkan akun dalam satu panel.</p>
+                            <a href="{{ url_for('admin.user_management') }}" class="btn-duo btn-duo-ghost w-full h-14 text-sm" data-i18n="admin.manage_all_users_button">
                                 Kelola Semua User
                             </a>
                         </div>
 
                         <div class="bg-white dark:bg-gray-800 rounded-[2.5rem] p-8 border border-gray-100 dark:border-gray-700 shadow-premium">
-                            <h3 class="text-lg font-black text-gray-900 dark:text-gray-100 mb-4">Sistem</h3>
+                            <h3 class="text-lg font-black text-gray-900 dark:text-gray-100 mb-4" data-i18n="admin.system_heading">Sistem</h3>
                             <div class="space-y-4">
                                 <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-2xl">
-                                    <span class="text-xs font-bold text-gray-500 dark:text-gray-400">Versi App</span>
+                                    <span class="text-xs font-bold text-gray-500 dark:text-gray-400" data-i18n="admin.app_version_label">Versi App</span>
                                     <span class="text-xs font-black text-gray-900 dark:text-gray-100">v2.4.0-premium</span>
                                 </div>
                                 <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-2xl">
-                                    <span class="text-xs font-bold text-gray-500 dark:text-gray-400">Status DB</span>
+                                    <span class="text-xs font-bold text-gray-500 dark:text-gray-400" data-i18n="admin.db_status_label">Status DB</span>
                                     <span class="flex items-center text-xs font-black text-green-600 dark:text-green-400">
                                         <span class="w-1.5 h-1.5 bg-green-500 rounded-full mr-2"></span>
-                                        Connected
+                                        <span data-i18n="admin.connected_label">Connected</span>
                                     </span>
                                 </div>
                             </div>

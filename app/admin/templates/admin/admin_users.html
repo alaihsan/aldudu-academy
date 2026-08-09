@@ -7,16 +7,16 @@
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden sidebar-transition">
         <header class="bg-white dark:bg-gray-900 border-b-2 border-slate-100 dark:border-gray-800 h-20 flex items-center justify-between px-8 sticky top-0 z-30">
             <div class="flex items-center space-x-4">
-                <h2 class="text-2xl font-black text-[#4b4b4b] dark:text-white tracking-tight">Manajemen Pengguna</h2>
+                <h2 class="text-2xl font-black text-[#4b4b4b] dark:text-white tracking-tight" data-i18n="admin.user_management_heading">Manajemen Pengguna</h2>
             </div>
             <div class="flex space-x-3">
                 <button onclick="toggleModal('create-class-modal', true)" class="btn-duo btn-duo-green h-12 text-xs">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-                    <span>BUAT KELAS</span>
+                    <span data-i18n="admin.create_class_button">BUAT KELAS</span>
                 </button>
                 <button onclick="toggleModal('import-modal', true)" class="btn-duo btn-duo-blue h-12 text-xs">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"/></svg>
-                    <span>IMPOR EXCEL</span>
+                    <span data-i18n="admin.import_excel_button">IMPOR EXCEL</span>
                 </button>
             </div>
         </header>
@@ -29,9 +29,9 @@
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-3">
                             <div class="w-2 h-8 bg-[#58cc02] rounded-full"></div>
-                            <h3 class="text-2xl font-black text-[#4b4b4b] dark:text-white tracking-tight">Daftar Kelas</h3>
+                            <h3 class="text-2xl font-black text-[#4b4b4b] dark:text-white tracking-tight" data-i18n="admin.class_list_heading">Daftar Kelas</h3>
                         </div>
-                        <span class="px-5 py-2 bg-[#dcfce7] text-[#58cc02] rounded-2xl text-[11px] font-black uppercase tracking-widest">{{ courses|length }} KELAS</span>
+                        <span class="px-5 py-2 bg-[#dcfce7] text-[#58cc02] rounded-2xl text-[11px] font-black uppercase tracking-widest">{{ courses|length }} <span data-i18n="admin.classes_label">Kelas</span></span>
                     </div>
                     {% if courses %}
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -39,18 +39,18 @@
                         <div class="card-duo p-6 flex items-center justify-between gap-4">
                             <div class="min-w-0">
                                 <p class="text-lg font-black text-[#4b4b4b] dark:text-white truncate">{{ course.name }}</p>
-                                <p class="text-xs font-bold text-[#afafaf] mt-1">Kode: <span class="font-mono">{{ course.class_code }}</span></p>
+                                <p class="text-xs font-bold text-[#afafaf] mt-1"><span data-i18n="admin.code_prefix">Kode:</span> <span class="font-mono">{{ course.class_code }}</span></p>
                             </div>
                             <span class="shrink-0 inline-flex flex-col items-center px-4 py-2 bg-[#ddf4ff] text-[#1cb0f6] rounded-2xl">
                                 <span class="text-lg font-black leading-none">{{ course.students|length }}</span>
-                                <span class="text-[9px] font-black uppercase tracking-widest mt-0.5">Siswa</span>
+                                <span class="text-[9px] font-black uppercase tracking-widest mt-0.5" data-i18n="admin.students_label">Siswa</span>
                             </span>
                         </div>
                         {% endfor %}
                     </div>
                     {% else %}
                     <div class="card-duo p-10 text-center">
-                        <p class="text-sm font-bold text-[#afafaf]">Belum ada kelas. Klik <span class="text-[#58cc02] font-black">BUAT KELAS</span> untuk menambahkan.</p>
+                        <p class="text-sm font-bold text-[#afafaf]"><span data-i18n="admin.no_classes_prefix">Belum ada kelas. Klik</span> <span class="text-[#58cc02] font-black" data-i18n="admin.create_class_button">BUAT KELAS</span> <span data-i18n="admin.no_classes_suffix">untuk menambahkan.</span></p>
                     </div>
                     {% endif %}
                 </section>
@@ -60,18 +60,18 @@
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-3">
                             <div class="w-2 h-8 bg-[#1cb0f6] rounded-full"></div>
-                            <h3 class="text-2xl font-black text-[#4b4b4b] dark:text-white tracking-tight">Daftar Guru</h3>
+                            <h3 class="text-2xl font-black text-[#4b4b4b] dark:text-white tracking-tight" data-i18n="admin.teacher_list_heading">Daftar Guru</h3>
                         </div>
-                        <span class="px-5 py-2 bg-[#ddf4ff] text-[#1cb0f6] rounded-2xl text-[11px] font-black uppercase tracking-widest">{{ gurus|length }} GURU</span>
+                        <span class="px-5 py-2 bg-[#ddf4ff] text-[#1cb0f6] rounded-2xl text-[11px] font-black uppercase tracking-widest">{{ gurus|length }} <span data-i18n="admin.teachers_label">Guru</span></span>
                     </div>
                     <div class="card-duo p-0 overflow-hidden">
                         <div class="overflow-x-auto">
                             <table class="w-full">
                                 <thead class="bg-[#f7f7f7] dark:bg-gray-900 border-b-2 border-slate-100 dark:border-gray-800">
                                     <tr>
-                                        <th class="px-8 py-5 text-left text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em]">Nama & Email</th>
-                                        <th class="px-8 py-5 text-left text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em]">Status</th>
-                                        <th class="px-8 py-5 text-right text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em]">Aksi</th>
+                                        <th class="px-8 py-5 text-left text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em]" data-i18n="admin.name_email_header">Nama & Email</th>
+                                        <th class="px-8 py-5 text-left text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em]" data-i18n="admin.status_header">Status</th>
+                                        <th class="px-8 py-5 text-right text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em]" data-i18n="admin.action_header">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y-2 divide-slate-50 dark:divide-gray-800">
@@ -83,9 +83,9 @@
                                         </td>
                                         <td class="px-8 py-6">
                                             {% if user.is_active %}
-                                            <span class="inline-flex items-center px-4 py-1.5 bg-[#dcfce7] text-[#58cc02] rounded-xl text-[10px] font-black uppercase tracking-widest">AKTIF</span>
+                                            <span class="inline-flex items-center px-4 py-1.5 bg-[#dcfce7] text-[#58cc02] rounded-xl text-[10px] font-black uppercase tracking-widest" data-i18n="admin.active_badge">AKTIF</span>
                                             {% else %}
-                                            <span class="inline-flex items-center px-4 py-1.5 bg-red-50 text-[#ff4b4b] rounded-xl text-[10px] font-black uppercase tracking-widest">NONAKTIF</span>
+                                            <span class="inline-flex items-center px-4 py-1.5 bg-red-50 text-[#ff4b4b] rounded-xl text-[10px] font-black uppercase tracking-widest" data-i18n="admin.inactive_badge">NONAKTIF</span>
                                             {% endif %}
                                         </td>
                                         <td class="px-8 py-6 text-right space-x-1">
@@ -112,18 +112,18 @@
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-3">
                             <div class="w-2 h-8 bg-[#58cc02] rounded-full"></div>
-                            <h3 class="text-2xl font-black text-[#4b4b4b] dark:text-white tracking-tight">Daftar Murid</h3>
+                            <h3 class="text-2xl font-black text-[#4b4b4b] dark:text-white tracking-tight" data-i18n="admin.murid_list_heading">Daftar Murid</h3>
                         </div>
-                        <span class="px-5 py-2 bg-[#dcfce7] text-[#58cc02] rounded-2xl text-[11px] font-black uppercase tracking-widest">{{ murids|length }} MURID</span>
+                        <span class="px-5 py-2 bg-[#dcfce7] text-[#58cc02] rounded-2xl text-[11px] font-black uppercase tracking-widest">{{ murids|length }} <span data-i18n="admin.murid_label">Murid</span></span>
                     </div>
                     <div class="card-duo p-0 overflow-hidden">
                         <div class="overflow-x-auto">
                             <table class="w-full">
                                 <thead class="bg-[#f7f7f7] dark:bg-gray-900 border-b-2 border-slate-100 dark:border-gray-800">
                                     <tr>
-                                        <th class="px-8 py-5 text-left text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em]">Nama & Email</th>
-                                        <th class="px-8 py-5 text-left text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em]">Status</th>
-                                        <th class="px-8 py-5 text-right text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em]">Aksi</th>
+                                        <th class="px-8 py-5 text-left text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em]" data-i18n="admin.name_email_header">Nama & Email</th>
+                                        <th class="px-8 py-5 text-left text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em]" data-i18n="admin.status_header">Status</th>
+                                        <th class="px-8 py-5 text-right text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em]" data-i18n="admin.action_header">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y-2 divide-slate-50 dark:divide-gray-800">
@@ -135,9 +135,9 @@
                                         </td>
                                         <td class="px-8 py-6">
                                             {% if user.is_active %}
-                                            <span class="inline-flex items-center px-4 py-1.5 bg-[#dcfce7] text-[#58cc02] rounded-xl text-[10px] font-black uppercase tracking-widest">AKTIF</span>
+                                            <span class="inline-flex items-center px-4 py-1.5 bg-[#dcfce7] text-[#58cc02] rounded-xl text-[10px] font-black uppercase tracking-widest" data-i18n="admin.active_badge">AKTIF</span>
                                             {% else %}
-                                            <span class="inline-flex items-center px-4 py-1.5 bg-red-50 text-[#ff4b4b] rounded-xl text-[10px] font-black uppercase tracking-widest">NONAKTIF</span>
+                                            <span class="inline-flex items-center px-4 py-1.5 bg-red-50 text-[#ff4b4b] rounded-xl text-[10px] font-black uppercase tracking-widest" data-i18n="admin.inactive_badge">NONAKTIF</span>
                                             {% endif %}
                                         </td>
                                         <td class="px-8 py-6 text-right space-x-1">
@@ -167,8 +167,8 @@
     <div class="card-duo w-full max-w-2xl overflow-hidden animate-slide-up p-0 border-none shadow-2xl">
         <form id="bulk-import-form">
             <div class="bg-[#1cb0f6] px-8 py-8 text-white">
-                <h3 class="text-2xl font-black">Impor Siswa dari Excel</h3>
-                <p class="text-white/80 text-sm font-bold mt-1">Blok &amp; salin 4 kolom dari Excel, lalu tempel di bawah.</p>
+                <h3 class="text-2xl font-black" data-i18n="admin.import_students_from_excel_title">Impor Siswa dari Excel</h3>
+                <p class="text-white/80 text-sm font-bold mt-1" data-i18n="admin.copy_paste_excel_hint">Blok &amp; salin 4 kolom dari Excel, lalu tempel di bawah.</p>
             </div>
             <div class="p-8 space-y-6">
                 <div id="import-controls" class="space-y-5">
@@ -177,16 +177,16 @@
                         Bila kolom <b>Kelas</b> dikosongkan, siswa masuk ke <b>Kelas Tujuan</b> di bawah. Login siswa memakai <b>NIS</b>, password default <b>passwd</b>.
                     </div>
                     <div>
-                        <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2">Kelas Tujuan (untuk baris tanpa kolom Kelas)</label>
+                        <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2" data-i18n="admin.target_class_label">Kelas Tujuan (untuk baris tanpa kolom Kelas)</label>
                         <select id="import-target-class" class="w-full px-5 py-4 bg-[#f7f7f7] border-2 border-[#e5e5e5] rounded-2xl font-black text-[#4b4b4b] outline-none focus:border-[#1cb0f6]">
-                            <option value="">— Pakai kolom Kelas di tiap baris —</option>
+                            <option value="" data-i18n="admin.use_row_class_column_option">— Pakai kolom Kelas di tiap baris —</option>
                             {% for c in courses %}
                             <option value="{{ c.id }}">{{ c.name }}</option>
                             {% endfor %}
                         </select>
                     </div>
                     <div>
-                        <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2">Tempel Data Siswa</label>
+                        <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2" data-i18n="admin.paste_student_data_label">Tempel Data Siswa</label>
                         <textarea id="raw-data" rows="10"
                             placeholder="12345&#9;Budi Santoso&#9;L&#9;7A&#10;12346&#9;Siti Aminah&#9;P&#9;7A&#10;12347&#9;Andi Wijaya&#9;L&#9;7B"
                             class="w-full px-5 py-4 bg-[#f7f7f7] border-2 border-[#e5e5e5] rounded-2xl font-mono text-sm text-[#4b4b4b] outline-none focus:border-[#1cb0f6] transition-all"></textarea>
@@ -202,14 +202,14 @@
                             <tbody id="results-body"></tbody>
                         </table>
                     </div>
-                    <button type="button" onclick="window.location.reload()" class="btn-duo btn-duo-primary w-full h-14 text-sm">SELESAI &amp; REFRESH</button>
+                    <button type="button" onclick="window.location.reload()" class="btn-duo btn-duo-primary w-full h-14 text-sm" data-i18n="admin.done_refresh_button">SELESAI &amp; REFRESH</button>
                 </div>
 
                 <div id="import-error" class="hidden p-4 bg-red-50 text-[#ff4b4b] rounded-2xl text-xs font-black text-center"></div>
             </div>
             <div id="import-footer" class="px-8 pb-8 flex flex-col gap-3">
-                <button type="submit" class="btn-duo btn-duo-blue h-14 text-sm">PROSES IMPOR</button>
-                <button type="button" onclick="toggleModal('import-modal', false)" class="btn-duo btn-duo-ghost h-14 text-sm">BATAL</button>
+                <button type="submit" class="btn-duo btn-duo-blue h-14 text-sm" data-i18n="admin.process_import_button">PROSES IMPOR</button>
+                <button type="button" onclick="toggleModal('import-modal', false)" class="btn-duo btn-duo-ghost h-14 text-sm" data-i18n="common.cancel">BATAL</button>
             </div>
         </form>
     </div>
@@ -220,20 +220,20 @@
     <div class="card-duo w-full max-w-md overflow-hidden animate-slide-up p-0 border-none shadow-2xl">
         <form id="create-class-form">
             <div class="bg-[#58cc02] px-8 py-8 text-white">
-                <h3 class="text-2xl font-black">Buat Kelas</h3>
-                <p class="text-white/80 text-sm font-bold mt-1">Tambah kelas baru untuk sekolah Anda.</p>
+                <h3 class="text-2xl font-black" data-i18n="admin.create_class_button">Buat Kelas</h3>
+                <p class="text-white/80 text-sm font-bold mt-1" data-i18n="admin.add_new_class_hint">Tambah kelas baru untuk sekolah Anda.</p>
             </div>
             <div class="p-8 space-y-6">
                 <div>
-                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2">Nama Kelas</label>
-                    <input type="text" id="class-name-input" name="name" placeholder="Contoh: 7A, VIII-B, IX IPA 1"
+                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2" data-i18n="admin.class_name_label">Nama Kelas</label>
+                    <input type="text" id="class-name-input" name="name" data-i18n-placeholder="admin.class_name_placeholder" placeholder="Contoh: 7A, VIII-B, IX IPA 1"
                         class="w-full px-6 py-4 bg-[#f7f7f7] border-2 border-[#e5e5e5] rounded-2xl focus:border-[#58cc02] outline-none font-black text-[#4b4b4b]" required>
                 </div>
                 <div id="create-class-error" class="hidden p-4 bg-red-50 text-[#ff4b4b] rounded-2xl text-xs font-black text-center"></div>
             </div>
             <div class="px-8 pb-8 flex flex-col gap-3">
-                <button type="submit" class="btn-duo btn-duo-green h-14 text-sm">SIMPAN KELAS</button>
-                <button type="button" onclick="toggleModal('create-class-modal', false)" class="btn-duo btn-duo-ghost h-14 text-sm">BATAL</button>
+                <button type="submit" class="btn-duo btn-duo-green h-14 text-sm" data-i18n="admin.save_class_button">SIMPAN KELAS</button>
+                <button type="button" onclick="toggleModal('create-class-modal', false)" class="btn-duo btn-duo-ghost h-14 text-sm" data-i18n="common.cancel">BATAL</button>
             </div>
         </form>
     </div>
@@ -245,19 +245,19 @@
         <form id="reset-password-form">
             <input type="hidden" id="reset-user-id">
             <div class="bg-[#ce82ff] px-8 py-8 text-white">
-                <h3 class="text-2xl font-black">Reset Password</h3>
+                <h3 class="text-2xl font-black" data-i18n="admin.reset_password_modal_title">Reset Password</h3>
                 <p id="reset-user-name" class="text-white/80 text-sm font-bold mt-1">Mengubah password untuk pengguna.</p>
             </div>
             <div class="p-8 space-y-6">
                 <div>
-                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2">Password Baru</label>
-                    <input type="password" id="new-password-input" name="new_password" class="w-full px-6 py-4 bg-[#f7f7f7] border-2 border-[#e5e5e5] rounded-2xl focus:border-[#ce82ff] outline-none font-black text-[#4b4b4b]" placeholder="Minimal 6 karakter" required>
+                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-2" data-i18n="admin.new_password_label">Password Baru</label>
+                    <input type="password" id="new-password-input" name="new_password" class="w-full px-6 py-4 bg-[#f7f7f7] border-2 border-[#e5e5e5] rounded-2xl focus:border-[#ce82ff] outline-none font-black text-[#4b4b4b]" data-i18n-placeholder="admin.min_chars_placeholder" placeholder="Minimal 6 karakter" required>
                 </div>
                 <div id="reset-error" class="hidden p-4 bg-red-50 text-[#ff4b4b] rounded-2xl text-xs font-black text-center"></div>
             </div>
             <div class="px-8 pb-8 flex flex-col gap-3">
-                <button type="submit" class="btn-duo btn-duo-purple h-14 text-sm">SIMPAN PASSWORD</button>
-                <button type="button" onclick="toggleModal('reset-modal', false)" class="btn-duo btn-duo-ghost h-14 text-sm">BATAL</button>
+                <button type="submit" class="btn-duo btn-duo-purple h-14 text-sm" data-i18n="admin.save_password_button">SIMPAN PASSWORD</button>
+                <button type="button" onclick="toggleModal('reset-modal', false)" class="btn-duo btn-duo-ghost h-14 text-sm" data-i18n="common.cancel">BATAL</button>
             </div>
         </form>
     </div>
