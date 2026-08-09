@@ -13,12 +13,12 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                         </svg>
-                        <span class="font-medium">Kembali ke {{ course.name }}</span>
+                        <span class="font-medium"><span data-i18n="discussion.back_to_course_prefix">Kembali ke</span> {{ course.name }}</span>
                     </a>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{{ url_for('main.dashboard') }}" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
-                        â† Kembali ke Dasbor
+                    <a href="{{ url_for('main.dashboard') }}" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors" data-i18n="discussion.back_to_dashboard">
+                        ← Kembali ke Dasbor
                     </a>
                 </div>
             </div>
@@ -49,14 +49,14 @@
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                     </svg>
-                    <span class="font-medium">Diskusi Ditutup</span>
+                    <span class="font-medium" data-i18n="discussion.closed_badge">Diskusi Ditutup</span>
                 </div>
                 {% else %}
                 <div class="flex items-center space-x-1 text-green-600">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
-                    <span class="font-medium">Aktif</span>
+                    <span class="font-medium" data-i18n="discussion.active_badge">Aktif</span>
                 </div>
                 {% endif %}
             </div>
@@ -77,18 +77,18 @@
             <svg class="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
             </svg>
-            <p class="text-gray-600">Diskusi ini telah ditutup. Anda masih dapat melihat semua balasan yang ada.</p>
+            <p class="text-gray-600" data-i18n="discussion.closed_hint">Diskusi ini telah ditutup. Anda masih dapat melihat semua balasan yang ada.</p>
         </div>
         {% else %}
         <div class="mt-6 bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Balas Diskusi</h3>
+            <h3 class="text-lg font-semibold text-gray-900 mb-4" data-i18n="discussion.reply_heading">Balas Diskusi</h3>
             <form id="reply-form" class="space-y-4">
                 <div>
-                    <textarea id="reply-content" rows="4" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none resize-none" placeholder="Tulis balasan Anda di sini..."></textarea>
+                    <textarea id="reply-content" rows="4" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none resize-none" data-i18n-placeholder="discussion.reply_placeholder" placeholder="Tulis balasan Anda di sini..."></textarea>
                 </div>
                 <div class="flex justify-end">
                     <button type="submit" class="px-6 py-2 bg-primary-500 text-white rounded-lg font-medium shadow hover:shadow-md transform hover:-translate-y-0.5 transition-all">
-                        Kirim Balasan
+                        <span data-i18n="discussion.send_reply_button">Kirim Balasan</span>
                     </button>
                 </div>
             </form>
@@ -102,7 +102,7 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                 </svg>
-                <span>Tutup Diskusi</span>
+                <span data-i18n="discussion.close_discussion_button">Tutup Diskusi</span>
             </button>
         </div>
         {% endif %}
