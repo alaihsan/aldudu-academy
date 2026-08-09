@@ -750,7 +750,12 @@
         "priority_high": "Tegeh (High)",
         "priority_urgent": "Mendesak (Urgent)",
         "problem_description_label": "Katerangan Pikobet",
-        "steps_placeholder": "Jelasang lengkah-lengkah kadadosnyane..."
+        "steps_placeholder": "Jelasang lengkah-lengkah kadadosnyane...",
+        "messages": {
+            "report_submitted": "Laporan masalah prasida kakirim",
+            "only_teacher_admin_can_process": "Wantah Guru/Admin sane prasida ngolah laporan",
+            "report_deleted": "Laporan masalah prasida kaapus"
+        }
     },
     "admin": {
         "section_heading": "Panel Kontrol",

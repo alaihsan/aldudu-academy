@@ -750,7 +750,12 @@
         "priority_high": "Tinggi (High)",
         "priority_urgent": "Mendesak (Urgent)",
         "problem_description_label": "Deskripsi Masalah",
-        "steps_placeholder": "Jelaskan langkah-langkah kejadiannya..."
+        "steps_placeholder": "Jelaskan langkah-langkah kejadiannya...",
+        "messages": {
+            "report_submitted": "Laporan masalah berhasil dikirim",
+            "only_teacher_admin_can_process": "Hanya Guru/Admin yang dapat memproses laporan",
+            "report_deleted": "Laporan masalah berhasil dihapus"
+        }
     },
     "admin": {
         "section_heading": "Panel Kontrol",

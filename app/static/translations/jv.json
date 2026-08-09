@@ -750,7 +750,12 @@
         "priority_high": "Dhuwur (High)",
         "priority_urgent": "Kudu Enggal (Urgent)",
         "problem_description_label": "Katrangan Masalah",
-        "steps_placeholder": "Terangna langkah-langkah kedadeane..."
+        "steps_placeholder": "Terangna langkah-langkah kedadeane...",
+        "messages": {
+            "report_submitted": "Laporan masalah sukses dikirim",
+            "only_teacher_admin_can_process": "Mung Guru/Admin sing bisa memproses laporan",
+            "report_deleted": "Laporan masalah sukses dibusak"
+        }
     },
     "admin": {
         "section_heading": "Panel Kontrol",

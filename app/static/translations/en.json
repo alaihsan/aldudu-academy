@@ -750,7 +750,12 @@
         "priority_high": "High",
         "priority_urgent": "Urgent",
         "problem_description_label": "Problem Description",
-        "steps_placeholder": "Describe the steps that happened..."
+        "steps_placeholder": "Describe the steps that happened...",
+        "messages": {
+            "report_submitted": "Issue report submitted successfully",
+            "only_teacher_admin_can_process": "Only Teachers/Admins can process reports",
+            "report_deleted": "Issue report deleted successfully"
+        }
     },
     "admin": {
         "section_heading": "Control Panel",

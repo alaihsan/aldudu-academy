@@ -750,7 +750,12 @@
         "priority_high": "Tinggi (High)",
         "priority_urgent": "Mandesak (Urgent)",
         "problem_description_label": "Katarangan Masalah",
-        "steps_placeholder": "Jalehkan lengkah-lengkah kajadiannyo..."
+        "steps_placeholder": "Jalehkan lengkah-lengkah kajadiannyo...",
+        "messages": {
+            "report_submitted": "Laporan masalah barasil dikirim",
+            "only_teacher_admin_can_process": "Hanyo Guru/Admin nan bisa mamproses laporan",
+            "report_deleted": "Laporan masalah barasil dihapuih"
+        }
     },
     "admin": {
         "section_heading": "Panel Kontrol",

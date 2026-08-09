@@ -3,6 +3,7 @@ from flask_login import login_required, current_user
 from app.models import db, Issue, IssueStatus, IssuePriority, UserRole
 from app.helpers import sanitize_text
 from app.core.authorization import get_school_id_or_abort
+from app.core.i18n import t
 
 issues_bp = Blueprint('issues', __name__, url_prefix='/api')
 
@@ -50,7 +51,7 @@ def create_issue():
     priority_str = data.get('priority', 'Medium').upper()
     
     if not title or not description:
-        return jsonify({'success': False, 'message': 'Judul dan deskripsi wajib diisi'}), 400
+        return jsonify({'success': False, 'message': t('tickets.messages.title_and_description_required')}), 400
 
     try:
         priority = IssuePriority[priority_str]
@@ -73,7 +74,7 @@ def create_issue():
     return jsonify({
         'success': True,
         'issue': new_issue.to_dict(),
-        'message': 'Laporan masalah berhasil dikirim'
+        'message': t('issues.messages.report_submitted')
     }), 201
 
 @issues_bp.route('/issues/<int:issue_id>', methods=['PUT'])
@@ -91,7 +92,7 @@ def update_issue(issue_id):
     is_privileged = current_user.role in [UserRole.GURU, UserRole.ADMIN]
     
     if not is_owner and not is_privileged:
-        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
+        return jsonify({'success': False, 'message': t('messages.no_permission')}), 403
         
     data = request.get_json() or {}
     
@@ -112,7 +113,7 @@ def update_issue(issue_id):
             except KeyError:
                 current_app.logger.warning(f"Invalid status value: {data.get('status')}")
         else:
-            return jsonify({'success': False, 'message': 'Hanya Guru/Admin yang dapat memproses laporan'}), 403
+            return jsonify({'success': False, 'message': t('issues.messages.only_teacher_admin_can_process')}), 403
             
     db.session.commit()
     return jsonify({'success': True, 'issue': issue.to_dict()})
@@ -130,8 +131,8 @@ def delete_issue(issue_id):
 
     # Only owner or Admin can delete
     if issue.user_id != current_user.id and current_user.role != UserRole.ADMIN:
-        return jsonify({'success': False, 'message': 'Anda tidak memiliki izin'}), 403
+        return jsonify({'success': False, 'message': t('messages.no_permission')}), 403
         
     db.session.delete(issue)
     db.session.commit()
-    return jsonify({'success': True, 'message': 'Laporan masalah berhasil dihapus'})
+    return jsonify({'success': True, 'message': t('issues.messages.report_deleted')})

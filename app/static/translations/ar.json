@@ -751,7 +751,12 @@
         "priority_high": "عالية (High)",
         "priority_urgent": "عاجلة (Urgent)",
         "problem_description_label": "وصف المشكلة",
-        "steps_placeholder": "صف الخطوات التي حدثت..."
+        "steps_placeholder": "صف الخطوات التي حدثت...",
+        "messages": {
+            "report_submitted": "تم إرسال تقرير المشكلة بنجاح",
+            "only_teacher_admin_can_process": "فقط المعلمون/المشرفون يمكنهم معالجة التقارير",
+            "report_deleted": "تم حذف تقرير المشكلة بنجاح"
+        }
     },
     "admin": {
         "section_heading": "لوحة التحكم",
