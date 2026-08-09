@@ -1025,7 +1025,14 @@
         "description_label": "Deskripsi",
         "description_placeholder": "Jelaskan masalah Anda...",
         "support_role_label": "Support",
-        "reply_placeholder": "Tulis balasan..."
+        "reply_placeholder": "Tulis balasan...",
+        "messages": {
+            "title_and_description_required": "Judul dan deskripsi wajib diisi",
+            "ticket_created": "Ticket {0} berhasil dibuat",
+            "ticket_already_closed": "Ticket sudah ditutup/diselesaikan",
+            "invalid_status_transition": "Tidak bisa mengubah status dari {0} ke {1}",
+            "status_updated": "Status berhasil diperbarui"
+        }
     },
     "superadmin": {
         "tagline": "Super Admin",

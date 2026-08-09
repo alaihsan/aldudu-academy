@@ -1025,7 +1025,14 @@
         "description_label": "Description",
         "description_placeholder": "Describe your issue...",
         "support_role_label": "Support",
-        "reply_placeholder": "Write a reply..."
+        "reply_placeholder": "Write a reply...",
+        "messages": {
+            "title_and_description_required": "Title and description are required",
+            "ticket_created": "Ticket {0} created successfully",
+            "ticket_already_closed": "Ticket is already closed/resolved",
+            "invalid_status_transition": "Cannot change status from {0} to {1}",
+            "status_updated": "Status updated successfully"
+        }
     },
     "superadmin": {
         "tagline": "Super Admin",

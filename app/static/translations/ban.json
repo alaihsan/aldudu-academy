@@ -1025,7 +1025,14 @@
         "description_label": "Katerangan",
         "description_placeholder": "Jelasang pikobet ragane...",
         "support_role_label": "Support",
-        "reply_placeholder": "Surat waleran..."
+        "reply_placeholder": "Surat waleran...",
+        "messages": {
+            "title_and_description_required": "Judul lan deskripsi patut kaisi",
+            "ticket_created": "Tiket {0} prasida kakaryanin",
+            "ticket_already_closed": "Tiket sampun katutup/kapuputang",
+            "invalid_status_transition": "Nenten prasida ngubah status saking {0} ka {1}",
+            "status_updated": "Status prasida kaanyarang"
+        }
     },
     "superadmin": {
         "tagline": "Super Admin",

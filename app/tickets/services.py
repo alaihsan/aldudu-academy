@@ -2,6 +2,7 @@ from datetime import datetime
 from app.core.extensions import db
 from app.models import Ticket, TicketStatus, TicketMessage, UserRole
 from app.helpers import get_jakarta_now
+from app.core.i18n import t
 
 
 def generate_ticket_number(school_id=None):
@@ -50,7 +51,7 @@ def can_transition(ticket, new_status, user):
 
 def transition_status(ticket, new_status, changed_by):
     if not can_transition(ticket, new_status, changed_by):
-        return False, f'Tidak bisa mengubah status dari {ticket.status.value} ke {new_status.value}'
+        return False, t('tickets.messages.invalid_status_transition', ticket.status.value, new_status.value)
 
     ticket.status = new_status
 
@@ -61,7 +62,7 @@ def transition_status(ticket, new_status, changed_by):
         ticket.closed_at = now
 
     db.session.commit()
-    return True, 'Status berhasil diperbarui'
+    return True, t('tickets.messages.status_updated')
 
 
 def get_queue_position(ticket):

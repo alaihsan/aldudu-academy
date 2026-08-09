@@ -5,6 +5,7 @@ from app.models import Ticket, TicketMessage, TicketStatus, TicketPriority, Tick
 from app.helpers import sanitize_text
 from app.tickets.services import generate_ticket_number, transition_status
 from app.services.email_service import send_ticket_update_email
+from app.core.i18n import t
 
 tickets_bp = Blueprint('tickets', __name__, template_folder='templates')
 
@@ -69,7 +70,7 @@ def api_create_ticket(slug):
     priority_str = data.get('priority', 'medium').lower()
 
     if not title or not description:
-        return jsonify({'success': False, 'message': 'Judul dan deskripsi wajib diisi'}), 400
+        return jsonify({'success': False, 'message': t('tickets.messages.title_and_description_required')}), 400
 
     try:
         category = TicketCategory(category_str)
@@ -97,7 +98,7 @@ def api_create_ticket(slug):
     return jsonify({
         'success': True,
         'ticket': ticket.to_dict(),
-        'message': f'Ticket {ticket.ticket_number} berhasil dibuat'
+        'message': t('tickets.messages.ticket_created', ticket.ticket_number)
     }), 201
 
 
@@ -106,13 +107,13 @@ def api_create_ticket(slug):
 def api_get_ticket(slug, ticket_id):
     ticket = db.session.get(Ticket, ticket_id)
     if not ticket:
-        return jsonify({'success': False, 'message': 'Ticket tidak ditemukan'}), 404
+        return jsonify({'success': False, 'message': t('superadmin.messages.ticket_not_found')}), 404
 
     if ticket.school_id != current_user.school_id:
-        return jsonify({'success': False, 'message': 'Tidak memiliki izin'}), 403
+        return jsonify({'success': False, 'message': t('admin.messages.no_permission_short')}), 403
 
     if current_user.role == UserRole.MURID and ticket.user_id != current_user.id:
-        return jsonify({'success': False, 'message': 'Tidak memiliki izin'}), 403
+        return jsonify({'success': False, 'message': t('admin.messages.no_permission_short')}), 403
 
     # Filter internal messages for non-superadmin
     ticket_data = ticket.to_dict(include_messages=True)
@@ -127,19 +128,19 @@ def api_get_ticket(slug, ticket_id):
 def api_add_ticket_message(slug, ticket_id):
     ticket = db.session.get(Ticket, ticket_id)
     if not ticket:
-        return jsonify({'success': False, 'message': 'Ticket tidak ditemukan'}), 404
+        return jsonify({'success': False, 'message': t('superadmin.messages.ticket_not_found')}), 404
 
     if ticket.school_id != current_user.school_id:
-        return jsonify({'success': False, 'message': 'Tidak memiliki izin'}), 403
+        return jsonify({'success': False, 'message': t('admin.messages.no_permission_short')}), 403
 
     if ticket.status in (TicketStatus.CLOSED, TicketStatus.RESOLVED):
-        return jsonify({'success': False, 'message': 'Ticket sudah ditutup/diselesaikan'}), 400
+        return jsonify({'success': False, 'message': t('tickets.messages.ticket_already_closed')}), 400
 
     data = request.get_json() or {}
     content = sanitize_text(data.get('content', ''), max_len=2000)
 
     if not content:
-        return jsonify({'success': False, 'message': 'Pesan tidak boleh kosong'}), 400
+        return jsonify({'success': False, 'message': t('superadmin.messages.message_required')}), 400
 
     message = TicketMessage(
         ticket_id=ticket.id,
@@ -163,13 +164,13 @@ def api_add_ticket_message(slug, ticket_id):
 def api_close_ticket(slug, ticket_id):
     ticket = db.session.get(Ticket, ticket_id)
     if not ticket:
-        return jsonify({'success': False, 'message': 'Ticket tidak ditemukan'}), 404
+        return jsonify({'success': False, 'message': t('superadmin.messages.ticket_not_found')}), 404
 
     if ticket.school_id != current_user.school_id:
-        return jsonify({'success': False, 'message': 'Tidak memiliki izin'}), 403
+        return jsonify({'success': False, 'message': t('admin.messages.no_permission_short')}), 403
 
     if ticket.user_id != current_user.id and current_user.role not in (UserRole.ADMIN, UserRole.SUPER_ADMIN):
-        return jsonify({'success': False, 'message': 'Tidak memiliki izin'}), 403
+        return jsonify({'success': False, 'message': t('admin.messages.no_permission_short')}), 403
 
     success, msg = transition_status(ticket, TicketStatus.CLOSED, current_user)
     if not success:

@@ -1025,7 +1025,14 @@
         "description_label": "Katerangan",
         "description_placeholder": "Jéntrékeun masalah anjeun...",
         "support_role_label": "Support",
-        "reply_placeholder": "Tulis waleran..."
+        "reply_placeholder": "Tulis waleran...",
+        "messages": {
+            "title_and_description_required": "Judul sareng déskripsi wajib dieusian",
+            "ticket_created": "Tikét {0} suksés diadamel",
+            "ticket_already_closed": "Tikét parantos ditutup/direngsekeun",
+            "invalid_status_transition": "Teu tiasa ngarobih status ti {0} ka {1}",
+            "status_updated": "Status suksés dianyarkeun"
+        }
     },
     "superadmin": {
         "tagline": "Super Admin",
