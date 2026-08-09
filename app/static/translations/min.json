@@ -396,7 +396,23 @@
         "grade_score_label_prefix": "Nilai (Maks",
         "feedback_optional_label": "Umpan Baliak (Opsional)",
         "feedback_placeholder": "Bagikan komentar untuak murik...",
-        "save_grade_button": "Simpan Nilai"
+        "save_grade_button": "Simpan Nilai",
+        "messages": {
+            "assignment_updated": "Tugas dipabaru",
+            "assignment_archived": "Tugas barasil diarsipkan",
+            "assignment_restored": "Tugas barasil dipulangkan",
+            "assignment_moved_to_trash": "Tugas dipindahkan ka Ruang TPS",
+            "assignment_not_found": "Tugas indak ditamukan.",
+            "no_access_as_teacher": "Sanak indak punyo akses sabagai guru ka tugas ko.",
+            "no_access_to_assignment": "Sanak indak punyo akses ka tugas ko.",
+            "teacher_cannot_submit": "Guru indak bisa mangumpuakan tugas.",
+            "submission_not_found": "Submission indak ditamukan.",
+            "physical_file_not_found": "File fisik indak ditamukan.",
+            "score_required": "Nilai musti diisi.",
+            "invalid_score_format": "Format nilai indak valid.",
+            "score_cannot_be_negative": "Nilai indak buliah negatif.",
+            "score_exceeds_max": "Nilai indak buliah malabiahi nilai maksimal ({0})."
+        }
     },
     "gradebook": {
         "student_name": "Namo Murid",

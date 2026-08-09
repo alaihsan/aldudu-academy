@@ -396,7 +396,23 @@
         "grade_score_label_prefix": "Score (Max",
         "feedback_optional_label": "Feedback (Optional)",
         "feedback_placeholder": "Give feedback for the student...",
-        "save_grade_button": "Save Grade"
+        "save_grade_button": "Save Grade",
+        "messages": {
+            "assignment_updated": "Assignment updated",
+            "assignment_archived": "Assignment archived successfully",
+            "assignment_restored": "Assignment restored successfully",
+            "assignment_moved_to_trash": "Assignment moved to Trash",
+            "assignment_not_found": "Assignment not found.",
+            "no_access_as_teacher": "You don't have teacher access to this assignment.",
+            "no_access_to_assignment": "You don't have access to this assignment.",
+            "teacher_cannot_submit": "Teachers cannot submit assignments.",
+            "submission_not_found": "Submission not found.",
+            "physical_file_not_found": "Physical file not found.",
+            "score_required": "Score is required.",
+            "invalid_score_format": "Invalid score format.",
+            "score_cannot_be_negative": "Score cannot be negative.",
+            "score_exceeds_max": "Score cannot exceed the maximum score ({0})."
+        }
     },
     "gradebook": {
         "student_name": "Student Name",

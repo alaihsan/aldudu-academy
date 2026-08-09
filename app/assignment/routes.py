@@ -8,6 +8,7 @@ from app.models import Course, GradeItem, GradeEntry, ActivityLog, UserRole
 from app.assignment.models import Assignment, AssignmentSubmission, AssignmentStatus, AssignmentSubmissionStatus
 from app.core.authorization import get_school_id_or_abort, verify_course_in_school
 from app.helpers import get_jakarta_now, sanitize_text, sanitize_rich_text
+from app.core.i18n import t
 
 assignment_bp = Blueprint('assignment', __name__, url_prefix='/assignment', template_folder='templates')
 
@@ -32,17 +33,17 @@ def api_update_assignment(assignment_id):
     a = Assignment.query.get_or_404(assignment_id)
     course = Course.query.get(a.course_id)
     if not _verify_material_owner(course):
-        return jsonify({'success': False, 'message': 'Tidak memiliki izin'}), 403
+        return jsonify({'success': False, 'message': t('admin.messages.no_permission_short')}), 403
     data = request.get_json() or {}
     if 'title' in data:
         title = sanitize_text(data.get('title'), max_len=200)
         if not title:
-            return jsonify({'success': False, 'message': 'Judul tidak boleh kosong'}), 400
+            return jsonify({'success': False, 'message': t('superadmin.title_required_error')}), 400
         a.title = title
     if 'description' in data:
         a.description = sanitize_rich_text(data.get('description') or '', max_len=5000) or None
     db.session.commit()
-    return jsonify({'success': True, 'message': 'Tugas diperbarui'})
+    return jsonify({'success': True, 'message': t('assignment.messages.assignment_updated')})
 
 
 def _trash_now():
@@ -59,7 +60,7 @@ def api_archive_assignment(assignment_id):
     assignment.status = AssignmentStatus.ARCHIVED
     db.session.commit()
 
-    return jsonify({'success': True, 'message': 'Tugas berhasil diarsipkan'})
+    return jsonify({'success': True, 'message': t('assignment.messages.assignment_archived')})
 
 
 @assignment_api_bp.route('/assignment/<int:assignment_id>/restore', methods=['POST'])
@@ -71,7 +72,7 @@ def api_restore_assignment(assignment_id):
     assignment.status = AssignmentStatus.PUBLISHED
     db.session.commit()
 
-    return jsonify({'success': True, 'message': 'Tugas berhasil dipulihkan'})
+    return jsonify({'success': True, 'message': t('assignment.messages.assignment_restored')})
 
 
 @assignment_api_bp.route('/assignment/<int:assignment_id>', methods=['DELETE'])
@@ -83,22 +84,22 @@ def api_delete_assignment(assignment_id):
     assignment.is_trashed = True
     assignment.trashed_at = _trash_now()
     db.session.commit()
-    return jsonify({'success': True, 'message': 'Tugas dipindahkan ke Ruang TPS'})
+    return jsonify({'success': True, 'message': t('assignment.messages.assignment_moved_to_trash')})
 
 
 def get_assignment_or_abort(assignment_id, check_teacher=False):
     assignment = db.session.get(Assignment, assignment_id)
     if not assignment:
-        abort(404, description="Tugas tidak ditemukan.")
+        abort(404, description=t('assignment.messages.assignment_not_found'))
     school_id = get_school_id_or_abort()
     verify_course_in_school(assignment.course, school_id)
     
     if check_teacher and assignment.course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
-        abort(403, description="Anda tidak memiliki akses sebagai guru ke tugas ini.")
+        abort(403, description=t('assignment.messages.no_access_as_teacher'))
     elif not check_teacher:
         # Check if user is enrolled or is teacher
         if current_user.id != assignment.course.teacher_id and current_user.role != UserRole.SUPER_ADMIN and current_user not in assignment.course.students:
-            abort(403, description="Anda tidak memiliki akses ke tugas ini.")
+            abort(403, description=t('assignment.messages.no_access_to_assignment'))
             
     return assignment
 
@@ -179,7 +180,7 @@ def detail(assignment_id):
 def submit(assignment_id):
     assignment = get_assignment_or_abort(assignment_id)
     if current_user.id == assignment.course.teacher_id:
-        abort(403, description="Guru tidak dapat mengumpulkan tugas.")
+        abort(403, description=t('assignment.messages.teacher_cannot_submit'))
         
     content = request.form.get('content', '')
     file = request.files.get('file')
@@ -224,20 +225,20 @@ def download_submission(assignment_id, submission_id):
     submission = db.session.get(AssignmentSubmission, submission_id)
     
     if not submission or submission.assignment_id != assignment.id:
-        abort(404, description="Submission tidak ditemukan.")
+        abort(404, description=t('assignment.messages.submission_not_found'))
         
     if current_user.id != assignment.course.teacher_id and current_user.id != submission.student_id and current_user.role != UserRole.SUPER_ADMIN:
         abort(403)
         
     if not submission.file_path:
-        abort(404, description="File tidak ditemukan.")
+        abort(404, description=t('content.messages.file_not_found'))
         
     upload_folder = os.path.join(current_app.instance_path, 'uploads', str(assignment.course.id), 'assignments', str(assignment.id))
     file_path = os.path.join(upload_folder, submission.file_path)
     
     if os.path.exists(file_path):
         return send_file(file_path, as_attachment=True)
-    abort(404, description="File fisik tidak ditemukan.")
+    abort(404, description=t('assignment.messages.physical_file_not_found'))
 
 @assignment_bp.route('/<int:assignment_id>/grade/<int:submission_id>', methods=['POST'])
 @login_required
@@ -253,18 +254,18 @@ def grade(assignment_id, submission_id):
     feedback = data.get('feedback', '')
     
     if not score_str:
-        return jsonify({'success': False, 'message': 'Nilai wajib diisi.'}), 400
+        return jsonify({'success': False, 'message': t('assignment.messages.score_required')}), 400
         
     try:
         score = float(score_str)
     except ValueError:
-        return jsonify({'success': False, 'message': 'Format nilai tidak valid.'}), 400
+        return jsonify({'success': False, 'message': t('assignment.messages.invalid_score_format')}), 400
         
     if score < 0:
-        return jsonify({'success': False, 'message': 'Nilai tidak boleh negatif.'}), 400
+        return jsonify({'success': False, 'message': t('assignment.messages.score_cannot_be_negative')}), 400
         
     if score > assignment.max_score:
-        return jsonify({'success': False, 'message': f'Nilai tidak boleh melebihi nilai maksimal ({assignment.max_score}).'}), 400
+        return jsonify({'success': False, 'message': t('assignment.messages.score_exceeds_max', assignment.max_score)}), 400
         
     submission.status = AssignmentSubmissionStatus.GRADED
     

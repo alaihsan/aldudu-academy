@@ -396,7 +396,23 @@
         "grade_score_label_prefix": "Nilai (Maks",
         "feedback_optional_label": "Masukan (Opsional)",
         "feedback_placeholder": "Icenin komentar antuk sisia...",
-        "save_grade_button": "Simpen Nilai"
+        "save_grade_button": "Simpen Nilai",
+        "messages": {
+            "assignment_updated": "Tugas kaanyarang",
+            "assignment_archived": "Tugas prasida kaarsipang",
+            "assignment_restored": "Tugas prasida kawaliang",
+            "assignment_moved_to_trash": "Tugas kapindahang ka Ruang TPS",
+            "assignment_not_found": "Tugas nenten kapanggih.",
+            "no_access_as_teacher": "Ragane nenten madue akses dados guru ring tugas puniki.",
+            "no_access_to_assignment": "Ragane nenten madue akses ring tugas puniki.",
+            "teacher_cannot_submit": "Guru nenten prasida ngumpulang tugas.",
+            "submission_not_found": "Submission nenten kapanggih.",
+            "physical_file_not_found": "File fisik nenten kapanggih.",
+            "score_required": "Nilai patut kaisi.",
+            "invalid_score_format": "Format nilai nenten becik.",
+            "score_cannot_be_negative": "Nilai nenten dados negatif.",
+            "score_exceeds_max": "Nilai nenten dados langkung ring nilai maksimal ({0})."
+        }
     },
     "gradebook": {
         "student_name": "Aran Murid",

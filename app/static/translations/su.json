@@ -396,7 +396,23 @@
         "grade_score_label_prefix": "Nilai (Maks",
         "feedback_optional_label": "Feedback (Opsional)",
         "feedback_placeholder": "Bikeun koméntar kanggo siswa...",
-        "save_grade_button": "Simpen Nilai"
+        "save_grade_button": "Simpen Nilai",
+        "messages": {
+            "assignment_updated": "Tugas dianyarkeun",
+            "assignment_archived": "Tugas suksés diarsipkeun",
+            "assignment_restored": "Tugas suksés dipulangkeun",
+            "assignment_moved_to_trash": "Tugas dipindahkeun ka Ruang TPS",
+            "assignment_not_found": "Tugas teu kapendak.",
+            "no_access_as_teacher": "Anjeun teu gaduh akses salaku guru ka tugas ieu.",
+            "no_access_to_assignment": "Anjeun teu gaduh akses ka tugas ieu.",
+            "teacher_cannot_submit": "Guru teu tiasa ngumpulkeun tugas.",
+            "submission_not_found": "Submission teu kapendak.",
+            "physical_file_not_found": "File fisik teu kapendak.",
+            "score_required": "Nilai wajib dieusian.",
+            "invalid_score_format": "Format nilai teu valid.",
+            "score_cannot_be_negative": "Nilai teu tiasa négatip.",
+            "score_exceeds_max": "Nilai teu tiasa ngaleuwihan nilai maksimal ({0})."
+        }
     },
     "gradebook": {
         "student_name": "Ngaran Murid",

@@ -396,7 +396,23 @@
         "grade_score_label_prefix": "Biji (Maks",
         "feedback_optional_label": "Feedback (Opsional)",
         "feedback_placeholder": "Wenehana komentar kanggo siswa...",
-        "save_grade_button": "Simpen Biji"
+        "save_grade_button": "Simpen Biji",
+        "messages": {
+            "assignment_updated": "Tugas dianyari",
+            "assignment_archived": "Tugas sukses diarsipake",
+            "assignment_restored": "Tugas sukses dibalekake",
+            "assignment_moved_to_trash": "Tugas dipindhah menyang Ruang TPS",
+            "assignment_not_found": "Tugas ora ditemokake.",
+            "no_access_as_teacher": "Sampeyan ora duwe akses minangka guru menyang tugas iki.",
+            "no_access_to_assignment": "Sampeyan ora duwe akses menyang tugas iki.",
+            "teacher_cannot_submit": "Guru ora bisa ngumpulake tugas.",
+            "submission_not_found": "Submission ora ditemokake.",
+            "physical_file_not_found": "File fisik ora ditemokake.",
+            "score_required": "Biji wajib diisi.",
+            "invalid_score_format": "Format biji ora valid.",
+            "score_cannot_be_negative": "Biji ora oleh negatif.",
+            "score_exceeds_max": "Biji ora oleh ngluwihi biji maksimal ({0})."
+        }
     },
     "gradebook": {
         "student_name": "Jeneng Murid",

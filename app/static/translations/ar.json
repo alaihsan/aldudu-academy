@@ -397,7 +397,23 @@
         "grade_score_label_prefix": "الدرجة (الحد الأقصى",
         "feedback_optional_label": "ملاحظات (اختياري)",
         "feedback_placeholder": "اكتب تعليقًا للطالب...",
-        "save_grade_button": "حفظ الدرجة"
+        "save_grade_button": "حفظ الدرجة",
+        "messages": {
+            "assignment_updated": "تم تحديث الواجب",
+            "assignment_archived": "تمت أرشفة الواجب بنجاح",
+            "assignment_restored": "تمت استعادة الواجب بنجاح",
+            "assignment_moved_to_trash": "تم نقل الواجب إلى المهملات",
+            "assignment_not_found": "الواجب غير موجود.",
+            "no_access_as_teacher": "ليس لديك صلاحية وصول كمعلم إلى هذا الواجب.",
+            "no_access_to_assignment": "ليس لديك صلاحية الوصول إلى هذا الواجب.",
+            "teacher_cannot_submit": "لا يمكن للمعلمين تسليم الواجبات.",
+            "submission_not_found": "التسليم غير موجود.",
+            "physical_file_not_found": "الملف الفعلي غير موجود.",
+            "score_required": "الدرجة مطلوبة.",
+            "invalid_score_format": "تنسيق الدرجة غير صالح.",
+            "score_cannot_be_negative": "لا يمكن أن تكون الدرجة سالبة.",
+            "score_exceeds_max": "لا يمكن أن تتجاوز الدرجة الحد الأقصى ({0})."
+        }
     },
     "gradebook": {
         "student_name": "اسم الطالب",
