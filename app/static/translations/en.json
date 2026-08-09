@@ -693,7 +693,25 @@
         "save_password_button": "Save Password"
     },
     "trash": {
-        "title": "Trash"
+        "title": "Trash",
+        "room_title_prefix": "TPS Room —",
+        "item_count_suffix": "items",
+        "title_heading": "Temporary Trash Room",
+        "purged_now_suffix": "expired items were automatically deleted when this page was opened.",
+        "trashed_at_prefix": "Trashed:",
+        "remaining_prefix": "Remaining",
+        "days_suffix": "days",
+        "origin_prefix": "Origin:",
+        "restore_button": "Restore",
+        "delete_permanently_button": "Delete Permanently",
+        "room_empty_heading": "TPS Room is empty",
+        "no_trashed_items_hint": "No trashed material in this class.",
+        "restore_confirm_text_suffix": "will be restored to its original location:",
+        "restore_success_title": "Successfully restored",
+        "oke_button": "OK",
+        "connection_error": "Connection error",
+        "delete_permanent_confirm_title": "Delete permanently?",
+        "delete_permanent_warning_suffix": "will be permanently deleted and CANNOT be restored."
     },
     "settings": {
         "profile_subtitle": "Your account information",
@@ -975,5 +993,20 @@
         "yes_delete_button": "Yes, Delete",
         "deleted_title": "Deleted!",
         "failed_delete_post": "Failed to delete post"
+    },
+    "whats_new": {
+        "heading": "What's New",
+        "platform_announcement_badge": "Platform Announcement",
+        "hero_title": "📢 What's New",
+        "hero_subtitle": "Latest announcements from the Aldudu Academy team",
+        "loading_text": "Loading announcements...",
+        "announcement_label": "Announcement",
+        "no_announcements_heading": "No Announcements Yet",
+        "no_announcements_hint": "No announcements from the administrator yet.",
+        "admin_fallback": "Admin",
+        "failed_load_heading": "Failed to Load Announcements",
+        "failed_load_hint": "Please refresh the page or try again later.",
+        "updated_at_prefix": "Updated:",
+        "failed_load_announcement": "Failed to load announcement"
     }
 }

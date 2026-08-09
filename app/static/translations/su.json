@@ -693,7 +693,25 @@
         "save_password_button": "Simpen Kecap Sandi"
     },
     "trash": {
-        "title": "Tempat Runtah"
+        "title": "Tempat Runtah",
+        "room_title_prefix": "Rohang TPS —",
+        "item_count_suffix": "item",
+        "title_heading": "Rohang Pembuangan Samentawis",
+        "purged_now_suffix": "item kadaluwarsa parantos dipupus otomatis nalika kaca ieu dibuka.",
+        "trashed_at_prefix": "Dipiceun:",
+        "remaining_prefix": "Kantun",
+        "days_suffix": "dinten",
+        "origin_prefix": "Asal:",
+        "restore_button": "Pulihkeun",
+        "delete_permanently_button": "Pupus Permanén",
+        "room_empty_heading": "Rohang TPS kosong",
+        "no_trashed_items_hint": "Teu aya matéri anu dipiceun samentawis di kelas ieu.",
+        "restore_confirm_text_suffix": "bakal dipulangkeun ka lokasi asalna:",
+        "restore_success_title": "Suksés dipulihkeun",
+        "oke_button": "OKÉ",
+        "connection_error": "Kasalahan sambungan",
+        "delete_permanent_confirm_title": "Pupus permanén?",
+        "delete_permanent_warning_suffix": "bakal dipupus permanén sareng TEU TIASA dipulangkeun."
     },
     "settings": {
         "profile_subtitle": "Inpormasi akun anjeun",
@@ -975,5 +993,20 @@
         "yes_delete_button": "Muhun, Pupus",
         "deleted_title": "Dipupus!",
         "failed_delete_post": "Gagal mupus post"
+    },
+    "whats_new": {
+        "heading": "What's New",
+        "platform_announcement_badge": "Pengumuman Platform",
+        "hero_title": "📢 What's New",
+        "hero_subtitle": "Pengumuman panganyarna ti tim Aldudu Academy",
+        "loading_text": "Ngamuat pengumuman...",
+        "announcement_label": "Pengumuman",
+        "no_announcements_heading": "Acan Aya Pengumuman",
+        "no_announcements_hint": "Acan aya pengumuman ti administrator.",
+        "admin_fallback": "Admin",
+        "failed_load_heading": "Gagal Ngamuat Pengumuman",
+        "failed_load_hint": "Mangga refresh kaca atanapi cobian deui engké.",
+        "updated_at_prefix": "Dianyarkeun:",
+        "failed_load_announcement": "Gagal ngamuat pengumuman"
     }
 }

@@ -694,7 +694,25 @@
         "save_password_button": "حفظ كلمة المرور"
     },
     "trash": {
-        "title": "سلة المهملات"
+        "title": "سلة المهملات",
+        "room_title_prefix": "غرفة المهملات المؤقتة —",
+        "item_count_suffix": "عنصر",
+        "title_heading": "غرفة الحذف المؤقت",
+        "purged_now_suffix": "تم حذف العناصر منتهية الصلاحية تلقائياً عند فتح هذه الصفحة.",
+        "trashed_at_prefix": "تم النقل للمهملات:",
+        "remaining_prefix": "متبقٍ",
+        "days_suffix": "أيام",
+        "origin_prefix": "الأصل:",
+        "restore_button": "استعادة",
+        "delete_permanently_button": "حذف نهائي",
+        "room_empty_heading": "غرفة المهملات فارغة",
+        "no_trashed_items_hint": "لا توجد مواد محذوفة مؤقتاً في هذا الفصل.",
+        "restore_confirm_text_suffix": "سيتم إعادته إلى موقعه الأصلي:",
+        "restore_success_title": "تمت الاستعادة بنجاح",
+        "oke_button": "موافق",
+        "connection_error": "خطأ في الاتصال",
+        "delete_permanent_confirm_title": "حذف نهائي؟",
+        "delete_permanent_warning_suffix": "سيتم حذفه نهائياً ولا يمكن استعادته."
     },
     "settings": {
         "profile_subtitle": "معلومات حسابك",
@@ -976,5 +994,20 @@
         "yes_delete_button": "نعم، احذف",
         "deleted_title": "تم الحذف!",
         "failed_delete_post": "فشل حذف المنشور"
+    },
+    "whats_new": {
+        "heading": "الجديد",
+        "platform_announcement_badge": "إعلان المنصة",
+        "hero_title": "📢 الجديد",
+        "hero_subtitle": "أحدث الإعلانات من فريق أكاديمية الدودو",
+        "loading_text": "جارٍ تحميل الإعلانات...",
+        "announcement_label": "إعلان",
+        "no_announcements_heading": "لا توجد إعلانات بعد",
+        "no_announcements_hint": "لا توجد إعلانات من الإدارة بعد.",
+        "admin_fallback": "المشرف",
+        "failed_load_heading": "فشل تحميل الإعلانات",
+        "failed_load_hint": "يرجى تحديث الصفحة أو المحاولة لاحقاً.",
+        "updated_at_prefix": "تم التحديث:",
+        "failed_load_announcement": "فشل تحميل الإعلان"
     }
 }

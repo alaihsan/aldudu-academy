@@ -693,7 +693,25 @@
         "save_password_button": "Simpan Password"
     },
     "trash": {
-        "title": "Ruang TPS"
+        "title": "Ruang TPS",
+        "room_title_prefix": "Ruang TPS —",
+        "item_count_suffix": "item",
+        "title_heading": "Tempat Pembuangan Sementara",
+        "purged_now_suffix": "item kedaluwarsa telah dihapus otomatis saat halaman ini dibuka.",
+        "trashed_at_prefix": "Dibuang:",
+        "remaining_prefix": "Tersisa",
+        "days_suffix": "hari",
+        "origin_prefix": "Asal:",
+        "restore_button": "Pulihkan",
+        "delete_permanently_button": "Hapus Permanen",
+        "room_empty_heading": "Ruang TPS kosong",
+        "no_trashed_items_hint": "Tidak ada materi yang dihapus sementara di kelas ini.",
+        "restore_confirm_text_suffix": "ini akan dikembalikan ke lokasi semula:",
+        "restore_success_title": "Berhasil dipulihkan",
+        "oke_button": "OKE",
+        "connection_error": "Kesalahan koneksi",
+        "delete_permanent_confirm_title": "Hapus permanen?",
+        "delete_permanent_warning_suffix": "ini akan dihapus permanen dan TIDAK BISA dikembalikan."
     },
     "settings": {
         "profile_subtitle": "Informasi akun Anda",
@@ -975,5 +993,20 @@
         "yes_delete_button": "Ya, Hapus",
         "deleted_title": "Terhapus!",
         "failed_delete_post": "Gagal menghapus post"
+    },
+    "whats_new": {
+        "heading": "What's New",
+        "platform_announcement_badge": "Pengumuman Platform",
+        "hero_title": "📢 What's New",
+        "hero_subtitle": "Pengumuman terbaru dari tim Aldudu Academy",
+        "loading_text": "Memuat pengumuman...",
+        "announcement_label": "Pengumuman",
+        "no_announcements_heading": "Belum Ada Pengumuman",
+        "no_announcements_hint": "Belum ada pengumuman dari administrator.",
+        "admin_fallback": "Admin",
+        "failed_load_heading": "Gagal Memuat Pengumuman",
+        "failed_load_hint": "Silakan refresh halaman atau coba lagi nanti.",
+        "updated_at_prefix": "Diperbarui:",
+        "failed_load_announcement": "Gagal memuat pengumuman"
     }
 }

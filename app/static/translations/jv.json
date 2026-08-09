@@ -693,7 +693,25 @@
         "save_password_button": "Simpen Sandhi"
     },
     "trash": {
-        "title": "Panggonan Sampah"
+        "title": "Panggonan Sampah",
+        "room_title_prefix": "Ruang TPS —",
+        "item_count_suffix": "item",
+        "title_heading": "Papan Buangan Sauntara",
+        "purged_now_suffix": "item wis kadaluwarsa wis dibusak otomatis nalika kaca iki dibukak.",
+        "trashed_at_prefix": "Dibuang:",
+        "remaining_prefix": "Kari",
+        "days_suffix": "dina",
+        "origin_prefix": "Asal:",
+        "restore_button": "Pulihake",
+        "delete_permanently_button": "Busak Permanen",
+        "room_empty_heading": "Ruang TPS kosong",
+        "no_trashed_items_hint": "Ora ana materi sing dibusak sauntara ing kelas iki.",
+        "restore_confirm_text_suffix": "bakal dibalekake menyang lokasi asale:",
+        "restore_success_title": "Sukses dipulihake",
+        "oke_button": "OKE",
+        "connection_error": "Kesalahan koneksi",
+        "delete_permanent_confirm_title": "Busak permanen?",
+        "delete_permanent_warning_suffix": "bakal dibusak permanen lan ORA BISA dibalekake."
     },
     "settings": {
         "profile_subtitle": "Informasi akunmu",
@@ -975,5 +993,20 @@
         "yes_delete_button": "Ya, Busak",
         "deleted_title": "Dibusak!",
         "failed_delete_post": "Gagal mbusak post"
+    },
+    "whats_new": {
+        "heading": "What's New",
+        "platform_announcement_badge": "Pengumuman Platform",
+        "hero_title": "📢 What's New",
+        "hero_subtitle": "Pengumuman paling anyar saka tim Aldudu Academy",
+        "loading_text": "Ngemot pengumuman...",
+        "announcement_label": "Pengumuman",
+        "no_announcements_heading": "Durung Ana Pengumuman",
+        "no_announcements_hint": "Durung ana pengumuman saka administrator.",
+        "admin_fallback": "Admin",
+        "failed_load_heading": "Gagal Ngemot Pengumuman",
+        "failed_load_hint": "Monggo refresh kaca utawa coba maneh mengko.",
+        "updated_at_prefix": "Dianyari:",
+        "failed_load_announcement": "Gagal ngemot pengumuman"
     }
 }

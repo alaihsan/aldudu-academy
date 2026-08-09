@@ -693,7 +693,25 @@
         "save_password_button": "Simpan Kato Sandi"
     },
     "trash": {
-        "title": "Tampek Sarok"
+        "title": "Tampek Sarok",
+        "room_title_prefix": "Ruang TPS —",
+        "item_count_suffix": "item",
+        "title_heading": "Tampek Mambuang Samantaro",
+        "purged_now_suffix": "item kadaluarsa lah dihapuih otomatis wakatu laman ko dibukak.",
+        "trashed_at_prefix": "Dibuang:",
+        "remaining_prefix": "Tasiso",
+        "days_suffix": "hari",
+        "origin_prefix": "Asa:",
+        "restore_button": "Pulihkan",
+        "delete_permanently_button": "Hapuih Permanen",
+        "room_empty_heading": "Ruang TPS kosong",
+        "no_trashed_items_hint": "Indak ado materi nan dihapuih samantaro di kelas ko.",
+        "restore_confirm_text_suffix": "ka dipulangkan ka lokasi asanyo:",
+        "restore_success_title": "Barasil dipulihkan",
+        "oke_button": "OKE",
+        "connection_error": "Kasalahan koneksi",
+        "delete_permanent_confirm_title": "Hapuih permanen?",
+        "delete_permanent_warning_suffix": "ka dihapuih permanen jo INDAK BISA dipulangkan."
     },
     "settings": {
         "profile_subtitle": "Informasi akun Angku",
@@ -975,5 +993,20 @@
         "yes_delete_button": "Iyo, Hapuih",
         "deleted_title": "Tahapuih!",
         "failed_delete_post": "Indak bisa mahapuih post"
+    },
+    "whats_new": {
+        "heading": "What's New",
+        "platform_announcement_badge": "Pengumuman Platform",
+        "hero_title": "📢 What's New",
+        "hero_subtitle": "Pangumuman tabaru dari tim Aldudu Academy",
+        "loading_text": "Mamuek pangumuman...",
+        "announcement_label": "Pangumuman",
+        "no_announcements_heading": "Alun Ado Pangumuman",
+        "no_announcements_hint": "Alun ado pangumuman dari administrator.",
+        "admin_fallback": "Admin",
+        "failed_load_heading": "Indak Bisa Mamuek Pangumuman",
+        "failed_load_hint": "Silakan refresh laman atau cubo lai isuak.",
+        "updated_at_prefix": "Dipabaru:",
+        "failed_load_announcement": "Indak bisa mamuek pangumuman"
     }
 }

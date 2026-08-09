@@ -693,7 +693,25 @@
         "save_password_button": "Simpen Sandi"
     },
     "trash": {
-        "title": "Genah Sampah"
+        "title": "Genah Sampah",
+        "room_title_prefix": "Ruang TPS —",
+        "item_count_suffix": "item",
+        "title_heading": "Genah Ngutang Samentawis",
+        "purged_now_suffix": "item kadaluwarsa sampun kasapuh otomatis rikala kaca puniki kabuka.",
+        "trashed_at_prefix": "Kaicalang:",
+        "remaining_prefix": "Kantun",
+        "days_suffix": "rahina",
+        "origin_prefix": "Asal:",
+        "restore_button": "Ngwaliang",
+        "delete_permanently_button": "Sapuh Permanen",
+        "room_empty_heading": "Ruang TPS puyung",
+        "no_trashed_items_hint": "Nenten wenten materi sane kaicalang samentawis ring kelas puniki.",
+        "restore_confirm_text_suffix": "pacang kawaliang ka genah asalnyane:",
+        "restore_success_title": "Prasida kawaliang",
+        "oke_button": "OKE",
+        "connection_error": "Kesalahan sambungan",
+        "delete_permanent_confirm_title": "Sapuh permanen?",
+        "delete_permanent_warning_suffix": "pacang kasapuh permanen tur NENTEN PRASIDA kawaliang."
     },
     "settings": {
         "profile_subtitle": "Informasi akun ragane",
@@ -975,5 +993,20 @@
         "yes_delete_button": "Inggih, Sapuh",
         "deleted_title": "Kasapuh!",
         "failed_delete_post": "Nenten prasida nyapuh post"
+    },
+    "whats_new": {
+        "heading": "What's New",
+        "platform_announcement_badge": "Pengumuman Platform",
+        "hero_title": "📢 What's New",
+        "hero_subtitle": "Pengumuman pinih anyar saking tim Aldudu Academy",
+        "loading_text": "Ngamuatang pengumuman...",
+        "announcement_label": "Pengumuman",
+        "no_announcements_heading": "Durung Wenten Pengumuman",
+        "no_announcements_hint": "Durung wenten pengumuman saking administrator.",
+        "admin_fallback": "Admin",
+        "failed_load_heading": "Nenten Prasida Ngamuatang Pengumuman",
+        "failed_load_hint": "Mangda refresh kaca wiadin nyoba malih benjang.",
+        "updated_at_prefix": "Kaanyarang:",
+        "failed_load_announcement": "Nenten prasida ngamuatang pengumuman"
     }
 }
