@@ -167,7 +167,31 @@
         "no_other_classes_short": "Teu aya kelas sanés.",
         "fetch_classes_failed": "Gagal nyandak data kelas",
         "load_classes_failed": "Gagal ngamuat daptar kelas",
-        "load_classes_failed_short": "Gagal ngamuat kelas"
+        "load_classes_failed_short": "Gagal ngamuat kelas",
+        "messages": {
+            "no_access_to_class": "Anjeun teu gaduh akses ka kelas ieu",
+            "class_not_found": "Kelas teu kapendak",
+            "no_access_to_archive": "Anjeun teu gaduh akses ka arsip kelas ieu",
+            "teacher_only_menu": "Ngan guru pangajar anu tiasa ngaksés menu ieu",
+            "invalid_color": "Warna teu valid",
+            "invalid_color_format": "Format warna teu valid",
+            "theme_color_updated": "Warna téma suksés dirobih",
+            "teacher_only_create_class": "Ngan guru anu tiasa ngadamel kelas",
+            "class_name_required": "Nami kelas wajib dieusian",
+            "invalid_academic_year": "Taun ajaran teu valid",
+            "no_permission_edit_class": "Anjeun teu gaduh idin pikeun ngédit kelas ieu",
+            "invalid_class_name": "Nami kelas teu valid",
+            "no_permission_delete_class": "Anjeun teu gaduh idin pikeun mupus kelas ieu",
+            "class_deleted": "Kelas suksés dipupus",
+            "failed_delete_class": "Gagal mupus kelas",
+            "student_only_join_class": "Ngan murid anu tiasa gabung ka kelas",
+            "invalid_class_code": "Kode kelas teu valid",
+            "class_code_not_found": "Kelas nganggo kode \"{0}\" teu kapendak",
+            "already_enrolled": "Anjeun parantos kadaptar dina kelas ieu",
+            "joined_class": "Anjeun suksés gabung sareng kelas {0}",
+            "class_order_updated": "Urutan kelas suksés dianyarkeun",
+            "failed_update_order": "Gagal ngaanyarkeun urutan"
+        }
     },
     "quiz": {
         "start_quiz": "Mimitian Kuis",
@@ -572,7 +596,8 @@
         "server_error": "Aya kasalahan server",
         "no_permission": "Anjeun teu gaduh idin",
         "course_not_found": "Mata pelajaran teu kapendak",
-        "course_id_required": "ID mata pelajaran wajib dieusi"
+        "course_id_required": "ID mata pelajaran wajib dieusi",
+        "invalid_data_format": "Format data teu valid"
     },
     "user": {
         "name": "Ngaran",

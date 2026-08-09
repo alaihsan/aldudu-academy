@@ -167,7 +167,31 @@
         "no_other_classes_short": "Tidak ada kelas lain.",
         "fetch_classes_failed": "Gagal mengambil data kelas",
         "load_classes_failed": "Gagal memuat daftar kelas",
-        "load_classes_failed_short": "Gagal memuat kelas"
+        "load_classes_failed_short": "Gagal memuat kelas",
+        "messages": {
+            "no_access_to_class": "Anda tidak memiliki akses ke kelas ini",
+            "class_not_found": "Kelas tidak ditemukan",
+            "no_access_to_archive": "Anda tidak memiliki akses ke arsip kelas ini",
+            "teacher_only_menu": "Hanya guru pengajar yang dapat mengakses menu ini",
+            "invalid_color": "Warna tidak valid",
+            "invalid_color_format": "Format warna tidak valid",
+            "theme_color_updated": "Warna tema berhasil diubah",
+            "teacher_only_create_class": "Hanya guru yang dapat membuat kelas",
+            "class_name_required": "Nama kelas wajib diisi",
+            "invalid_academic_year": "Tahun ajaran tidak valid",
+            "no_permission_edit_class": "Anda tidak memiliki izin untuk mengedit kelas ini",
+            "invalid_class_name": "Nama kelas tidak valid",
+            "no_permission_delete_class": "Anda tidak memiliki izin untuk menghapus kelas ini",
+            "class_deleted": "Kelas berhasil dihapus",
+            "failed_delete_class": "Gagal menghapus kelas",
+            "student_only_join_class": "Hanya murid yang bisa bergabung ke kelas",
+            "invalid_class_code": "Kode kelas tidak valid",
+            "class_code_not_found": "Kelas dengan kode \"{0}\" tidak ditemukan",
+            "already_enrolled": "Anda sudah terdaftar di kelas ini",
+            "joined_class": "Anda berhasil bergabung dengan kelas {0}",
+            "class_order_updated": "Urutan kelas berhasil diperbarui",
+            "failed_update_order": "Gagal memperbarui urutan"
+        }
     },
     "quiz": {
         "start_quiz": "Mulai Kuis",
@@ -572,7 +596,8 @@
         "server_error": "Terjadi kesalahan server",
         "no_permission": "Anda tidak memiliki izin",
         "course_not_found": "Mata pelajaran tidak ditemukan",
-        "course_id_required": "ID mata pelajaran wajib diisi"
+        "course_id_required": "ID mata pelajaran wajib diisi",
+        "invalid_data_format": "Format data tidak valid"
     },
     "user": {
         "name": "Nama",

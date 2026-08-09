@@ -167,7 +167,31 @@
         "no_other_classes_short": "Nenten wenten kelas tiosan.",
         "fetch_classes_failed": "Gagal ngambil data kelas",
         "load_classes_failed": "Gagal ngamuat daftar kelas",
-        "load_classes_failed_short": "Gagal ngamuat kelas"
+        "load_classes_failed_short": "Gagal ngamuat kelas",
+        "messages": {
+            "no_access_to_class": "Ragane nenten madue akses ring kelas puniki",
+            "class_not_found": "Kelas nenten kapanggih",
+            "no_access_to_archive": "Ragane nenten madue akses ring arsip kelas puniki",
+            "teacher_only_menu": "Wantah guru pangajah sane prasida ngakses menu puniki",
+            "invalid_color": "Warna nenten becik",
+            "invalid_color_format": "Format warna nenten becik",
+            "theme_color_updated": "Warna tema prasida kaubah",
+            "teacher_only_create_class": "Wantah guru sane prasida ngaryanin kelas",
+            "class_name_required": "Wasta kelas patut kaisi",
+            "invalid_academic_year": "Warsa ajaran nenten becik",
+            "no_permission_edit_class": "Ragane nenten madue lisensi ngubah kelas puniki",
+            "invalid_class_name": "Wasta kelas nenten becik",
+            "no_permission_delete_class": "Ragane nenten madue lisensi ngapus kelas puniki",
+            "class_deleted": "Kelas prasida kaapus",
+            "failed_delete_class": "Nenten prasida ngapus kelas",
+            "student_only_join_class": "Wantah sisia sane prasida ngranjing kelas",
+            "invalid_class_code": "Kode kelas nenten becik",
+            "class_code_not_found": "Kelas antuk kode \"{0}\" nenten kapanggih",
+            "already_enrolled": "Ragane sampun kadaptar ring kelas puniki",
+            "joined_class": "Ragane prasida ngranjing kelas {0}",
+            "class_order_updated": "Urutan kelas prasida kaanyarang",
+            "failed_update_order": "Nenten prasida ngamutakhirin urutan"
+        }
     },
     "quiz": {
         "start_quiz": "Miwiti Kuis",
@@ -572,7 +596,8 @@
         "server_error": "Wenten kesalahan server",
         "no_permission": "Ragane nenten madue ijin",
         "course_not_found": "Mata pelajaran nenten kapanggih",
-        "course_id_required": "ID mata pelajaran mustine kaisi"
+        "course_id_required": "ID mata pelajaran mustine kaisi",
+        "invalid_data_format": "Format data nenten becik"
     },
     "user": {
         "name": "Aran",

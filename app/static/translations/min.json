@@ -167,7 +167,31 @@
         "no_other_classes_short": "Indak ado kelas lain.",
         "fetch_classes_failed": "Gagal maambiak data kelas",
         "load_classes_failed": "Gagal manunggu daftar kelas",
-        "load_classes_failed_short": "Gagal manunggu kelas"
+        "load_classes_failed_short": "Gagal manunggu kelas",
+        "messages": {
+            "no_access_to_class": "Sanak indak punyo akses ka kelas ko",
+            "class_not_found": "Kelas indak ditamukan",
+            "no_access_to_archive": "Sanak indak punyo akses ka arsip kelas ko",
+            "teacher_only_menu": "Hanyo guru pangaja nan bisa mangakses menu ko",
+            "invalid_color": "Warna indak valid",
+            "invalid_color_format": "Format warna indak valid",
+            "theme_color_updated": "Warna tema barasil diubah",
+            "teacher_only_create_class": "Hanyo guru nan bisa mambuek kelas",
+            "class_name_required": "Namo kelas musti diisi",
+            "invalid_academic_year": "Tahun ajaran indak valid",
+            "no_permission_edit_class": "Sanak indak punyo izin mangubah kelas ko",
+            "invalid_class_name": "Namo kelas indak valid",
+            "no_permission_delete_class": "Sanak indak punyo izin mahapuih kelas ko",
+            "class_deleted": "Kelas barasil dihapuih",
+            "failed_delete_class": "Gagal mahapuih kelas",
+            "student_only_join_class": "Hanyo murik nan bisa bagabuang ka kelas",
+            "invalid_class_code": "Kode kelas indak valid",
+            "class_code_not_found": "Kelas jo kode \"{0}\" indak ditamukan",
+            "already_enrolled": "Sanak lah tadaftar di kelas ko",
+            "joined_class": "Sanak barasil bagabuang jo kelas {0}",
+            "class_order_updated": "Urutan kelas barasil dipabaru",
+            "failed_update_order": "Gagal mamparbaharui urutan"
+        }
     },
     "quiz": {
         "start_quiz": "Muloi Kuis",
@@ -572,7 +596,8 @@
         "server_error": "Taradi kasalahan server",
         "no_permission": "Angku indak mampunyoi izin",
         "course_not_found": "Mato pelajaran indak ditamukan",
-        "course_id_required": "ID mato pelajaran wajib diisi"
+        "course_id_required": "ID mato pelajaran wajib diisi",
+        "invalid_data_format": "Format data indak valid"
     },
     "user": {
         "name": "Namo",

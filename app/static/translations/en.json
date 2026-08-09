@@ -167,7 +167,31 @@
         "no_other_classes_short": "No other classes.",
         "fetch_classes_failed": "Failed to fetch class data",
         "load_classes_failed": "Failed to load class list",
-        "load_classes_failed_short": "Failed to load classes"
+        "load_classes_failed_short": "Failed to load classes",
+        "messages": {
+            "no_access_to_class": "You don't have access to this class",
+            "class_not_found": "Class not found",
+            "no_access_to_archive": "You don't have access to this class's archive",
+            "teacher_only_menu": "Only the teaching teacher can access this menu",
+            "invalid_color": "Invalid color",
+            "invalid_color_format": "Invalid color format",
+            "theme_color_updated": "Theme color updated successfully",
+            "teacher_only_create_class": "Only teachers can create classes",
+            "class_name_required": "Class name is required",
+            "invalid_academic_year": "Invalid academic year",
+            "no_permission_edit_class": "You don't have permission to edit this class",
+            "invalid_class_name": "Invalid class name",
+            "no_permission_delete_class": "You don't have permission to delete this class",
+            "class_deleted": "Class deleted successfully",
+            "failed_delete_class": "Failed to delete class",
+            "student_only_join_class": "Only students can join a class",
+            "invalid_class_code": "Invalid class code",
+            "class_code_not_found": "Class with code \"{0}\" not found",
+            "already_enrolled": "You are already enrolled in this class",
+            "joined_class": "You successfully joined the class {0}",
+            "class_order_updated": "Class order updated successfully",
+            "failed_update_order": "Failed to update order"
+        }
     },
     "quiz": {
         "start_quiz": "Start Quiz",
@@ -572,7 +596,8 @@
         "server_error": "A server error occurred",
         "no_permission": "You do not have permission",
         "course_not_found": "Course not found",
-        "course_id_required": "Course ID is required"
+        "course_id_required": "Course ID is required",
+        "invalid_data_format": "Invalid data format"
     },
     "user": {
         "name": "Name",

@@ -168,7 +168,31 @@
         "no_other_classes_short": "لا توجد فصول أخرى.",
         "fetch_classes_failed": "فشل جلب بيانات الفصول",
         "load_classes_failed": "فشل تحميل قائمة الفصول",
-        "load_classes_failed_short": "فشل تحميل الفصول"
+        "load_classes_failed_short": "فشل تحميل الفصول",
+        "messages": {
+            "no_access_to_class": "ليس لديك صلاحية الوصول إلى هذا الفصل",
+            "class_not_found": "الفصل غير موجود",
+            "no_access_to_archive": "ليس لديك صلاحية الوصول إلى أرشيف هذا الفصل",
+            "teacher_only_menu": "فقط المعلم المسؤول يمكنه الوصول إلى هذه القائمة",
+            "invalid_color": "لون غير صالح",
+            "invalid_color_format": "تنسيق لون غير صالح",
+            "theme_color_updated": "تم تحديث لون السمة بنجاح",
+            "teacher_only_create_class": "فقط المعلمون يمكنهم إنشاء الفصول",
+            "class_name_required": "اسم الفصل مطلوب",
+            "invalid_academic_year": "سنة دراسية غير صالحة",
+            "no_permission_edit_class": "ليس لديك إذن لتعديل هذا الفصل",
+            "invalid_class_name": "اسم فصل غير صالح",
+            "no_permission_delete_class": "ليس لديك إذن لحذف هذا الفصل",
+            "class_deleted": "تم حذف الفصل بنجاح",
+            "failed_delete_class": "فشل حذف الفصل",
+            "student_only_join_class": "فقط الطلاب يمكنهم الانضمام إلى فصل",
+            "invalid_class_code": "رمز فصل غير صالح",
+            "class_code_not_found": "الفصل بالرمز \"{0}\" غير موجود",
+            "already_enrolled": "أنت مسجل بالفعل في هذا الفصل",
+            "joined_class": "لقد انضممت بنجاح إلى فصل {0}",
+            "class_order_updated": "تم تحديث ترتيب الفصول بنجاح",
+            "failed_update_order": "فشل تحديث الترتيب"
+        }
     },
     "quiz": {
         "start_quiz": "ابدأ الاختبار",
@@ -573,7 +597,8 @@
         "server_error": "حدث خطأ في الخادم",
         "no_permission": "ليس لديك إذن",
         "course_not_found": "المادة الدراسية غير موجودة",
-        "course_id_required": "معرف المادة الدراسية مطلوب"
+        "course_id_required": "معرف المادة الدراسية مطلوب",
+        "invalid_data_format": "تنسيق بيانات غير صالح"
     },
     "user": {
         "name": "الاسم",

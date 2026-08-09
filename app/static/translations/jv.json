@@ -167,7 +167,31 @@
         "no_other_classes_short": "Ora ana kelas liya.",
         "fetch_classes_failed": "Gagal njupuk data kelas",
         "load_classes_failed": "Gagal ngemot daftar kelas",
-        "load_classes_failed_short": "Gagal ngemot kelas"
+        "load_classes_failed_short": "Gagal ngemot kelas",
+        "messages": {
+            "no_access_to_class": "Sampeyan ora duwe akses menyang kelas iki",
+            "class_not_found": "Kelas ora ditemokake",
+            "no_access_to_archive": "Sampeyan ora duwe akses menyang arsip kelas iki",
+            "teacher_only_menu": "Mung guru pengajar sing bisa ngakses menu iki",
+            "invalid_color": "Warna ora valid",
+            "invalid_color_format": "Format warna ora valid",
+            "theme_color_updated": "Warna tema sukses diowahi",
+            "teacher_only_create_class": "Mung guru sing bisa gawe kelas",
+            "class_name_required": "Jeneng kelas wajib diisi",
+            "invalid_academic_year": "Taun ajaran ora valid",
+            "no_permission_edit_class": "Sampeyan ora duwe izin ngowahi kelas iki",
+            "invalid_class_name": "Jeneng kelas ora valid",
+            "no_permission_delete_class": "Sampeyan ora duwe izin mbusak kelas iki",
+            "class_deleted": "Kelas sukses dibusak",
+            "failed_delete_class": "Gagal mbusak kelas",
+            "student_only_join_class": "Mung murid sing bisa gabung kelas",
+            "invalid_class_code": "Kode kelas ora valid",
+            "class_code_not_found": "Kelas kanthi kode \"{0}\" ora ditemokake",
+            "already_enrolled": "Sampeyan wis kedaftar ing kelas iki",
+            "joined_class": "Sampeyan sukses gabung karo kelas {0}",
+            "class_order_updated": "Urutan kelas sukses dianyari",
+            "failed_update_order": "Gagal nganyari urutan"
+        }
     },
     "quiz": {
         "start_quiz": "Miwiti Kuis",
@@ -572,7 +596,8 @@
         "server_error": "Ana kesalahan server",
         "no_permission": "Sampeyan ora duwe idin",
         "course_not_found": "Mata pelajaran ora ditemokake",
-        "course_id_required": "ID mata pelajaran wajib diisi"
+        "course_id_required": "ID mata pelajaran wajib diisi",
+        "invalid_data_format": "Format data ora valid"
     },
     "user": {
         "name": "Jeneng",
