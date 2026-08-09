@@ -77,7 +77,19 @@
         "delete_confirm_placeholder": "Type 'agree' here...",
         "delete_now_button": "DELETE NOW",
         "delete_modal_cancel": "CANCEL",
-        "academic_year_label": "Academic Year"
+        "academic_year_label": "Academic Year",
+        "archive_label": "Archive",
+        "archive_hero_title": "🗄️ Archive",
+        "archive_hero_subtitle": "Archived quizzes, assignments, and files stay saved with all their data.",
+        "back_to_class_button": "BACK TO CLASS",
+        "archive_tab_all": "All",
+        "archive_tab_quiz": "📊 Quizzes",
+        "archive_tab_assignment": "📝 Assignments",
+        "archive_tab_file": "📎 Files",
+        "archive_tab_link": "🔗 Links",
+        "archived_at_prefix": "Archived:",
+        "no_archive_title": "No archives yet",
+        "no_archive_subtitle": "Archived quizzes, assignments, files, or links will show up here."
     },
     "quiz": {
         "start_quiz": "Start Quiz",

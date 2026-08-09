@@ -21,13 +21,13 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
                 </a>
-                <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100 truncate">{{ course.name }} - Arsip</h2>
+                <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100 truncate">{{ course.name }} - <span data-i18n="course.archive_label">Arsip</span></h2>
             </div>
             <div class="px-4 py-1.5 bg-amber-100 rounded-full text-[10px] font-black uppercase tracking-widest text-amber-700">
                 <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
                 </svg>
-                Arsip
+                <span data-i18n="course.archive_label">Arsip</span>
             </div>
         </header>
 
@@ -38,14 +38,14 @@
                 <div class="mb-8">
                     <div class="flex items-center justify-between mb-4">
                         <div>
-                            <h1 class="text-3xl font-black text-gray-900 dark:text-gray-100 mb-2">🗄️ Arsip</h1>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">Kuis, tugas, dan file yang diarsipkan tetap tersimpan dengan semua data.</p>
+                            <h1 class="text-3xl font-black text-gray-900 dark:text-gray-100 mb-2" data-i18n="course.archive_hero_title">🗄️ Arsip</h1>
+                            <p class="text-sm text-gray-500 dark:text-gray-400" data-i18n="course.archive_hero_subtitle">Kuis, tugas, dan file yang diarsipkan tetap tersimpan dengan semua data.</p>
                         </div>
                         <a href="{{ url_for('courses_pages.course_detail', course_id=course.id) }}" class="btn-duo btn-duo-ghost h-12 text-xs">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                             </svg>
-                            KEMBALI KE KELAS
+                            <span data-i18n="course.back_to_class_button">KEMBALI KE KELAS</span>
                         </a>
                     </div>
                 </div>
@@ -53,19 +53,19 @@
                 <!-- Tab Navigation -->
                 <div class="mb-6">
                     <div class="flex items-center gap-2 border-b border-gray-200 dark:border-gray-800">
-                        <button onclick="switchTab('all')" class="archive-tab active px-5 py-3 text-sm font-black border-b-2 border-[#ff9600] text-[#ff9600]" data-tab="all">
+                        <button onclick="switchTab('all')" class="archive-tab active px-5 py-3 text-sm font-black border-b-2 border-[#ff9600] text-[#ff9600]" data-tab="all" data-i18n="course.archive_tab_all">
                             Semua
                         </button>
-                        <button onclick="switchTab('quiz')" class="archive-tab px-5 py-3 text-sm font-bold border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700" data-tab="quiz">
+                        <button onclick="switchTab('quiz')" class="archive-tab px-5 py-3 text-sm font-bold border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700" data-tab="quiz" data-i18n="course.archive_tab_quiz">
                             📊 Kuis
                         </button>
-                        <button onclick="switchTab('assignment')" class="archive-tab px-5 py-3 text-sm font-bold border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700" data-tab="assignment">
+                        <button onclick="switchTab('assignment')" class="archive-tab px-5 py-3 text-sm font-bold border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700" data-tab="assignment" data-i18n="course.archive_tab_assignment">
                             📝 Tugas
                         </button>
-                        <button onclick="switchTab('file')" class="archive-tab px-5 py-3 text-sm font-bold border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700" data-tab="file">
+                        <button onclick="switchTab('file')" class="archive-tab px-5 py-3 text-sm font-bold border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700" data-tab="file" data-i18n="course.archive_tab_file">
                             📎 File
                         </button>
-                        <button onclick="switchTab('link')" class="archive-tab px-5 py-3 text-sm font-bold border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700" data-tab="link">
+                        <button onclick="switchTab('link')" class="archive-tab px-5 py-3 text-sm font-bold border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700" data-tab="link" data-i18n="course.archive_tab_link">
                             🔗 Link
                         </button>
                     </div>
@@ -90,14 +90,14 @@
                                 <div class="flex-1 min-w-0">
                                     <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 truncate">{{ quiz.name }}</h3>
                                     <div class="flex items-center gap-4 mt-2 text-sm text-gray-500 dark:text-gray-400 flex-wrap">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 bg-amber-100 text-amber-700 rounded-full text-[10px] font-black uppercase tracking-wider">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 bg-amber-100 text-amber-700 rounded-full text-[10px] font-black uppercase tracking-wider" data-i18n="course.archive_tab_quiz">
                                             📊 Kuis
                                         </span>
                                         <span class="flex items-center gap-1.5">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                             </svg>
-                                            Diarsipkan: {{ quiz.updated_at.strftime('%d %B %Y, %H:%M') if quiz.updated_at else '-' }}
+                                            <span data-i18n="course.archived_at_prefix">Diarsipkan:</span> {{ quiz.updated_at.strftime('%d %B %Y, %H:%M') if quiz.updated_at else '-' }}
                                         </span>
                                         {% if quiz.submissions %}
                                         <span class="flex items-center gap-1.5">
@@ -148,14 +148,14 @@
                                 <div class="flex-1 min-w-0">
                                     <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 truncate">{{ assignment.title }}</h3>
                                     <div class="flex items-center gap-4 mt-2 text-sm text-gray-500 dark:text-gray-400 flex-wrap">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 bg-green-100 text-green-700 rounded-full text-[10px] font-black uppercase tracking-wider">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 bg-green-100 text-green-700 rounded-full text-[10px] font-black uppercase tracking-wider" data-i18n="course.archive_tab_assignment">
                                             📝 Tugas
                                         </span>
                                         <span class="flex items-center gap-1.5">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                             </svg>
-                                            Diarsipkan: {{ assignment.updated_at.strftime('%d %B %Y, %H:%M') if assignment.updated_at else '-' }}
+                                            <span data-i18n="course.archived_at_prefix">Diarsipkan:</span> {{ assignment.updated_at.strftime('%d %B %Y, %H:%M') if assignment.updated_at else '-' }}
                                         </span>
                                         {% if assignment.submissions %}
                                         <span class="flex items-center gap-1.5">
@@ -206,14 +206,14 @@
                                 <div class="flex-1 min-w-0">
                                     <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 truncate">{{ file.name }}</h3>
                                     <div class="flex items-center gap-4 mt-2 text-sm text-gray-500 dark:text-gray-400 flex-wrap">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 bg-blue-100 text-blue-700 rounded-full text-[10px] font-black uppercase tracking-wider">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 bg-blue-100 text-blue-700 rounded-full text-[10px] font-black uppercase tracking-wider" data-i18n="course.archive_tab_file">
                                             📎 File
                                         </span>
                                         <span class="flex items-center gap-1.5">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                             </svg>
-                                            Diarsipkan: {{ file.created_at.strftime('%d %B %Y, %H:%M') if file.created_at else '-' }}
+                                            <span data-i18n="course.archived_at_prefix">Diarsipkan:</span> {{ file.created_at.strftime('%d %B %Y, %H:%M') if file.created_at else '-' }}
                                         </span>
                                         <span class="inline-flex items-center px-2.5 py-0.5 bg-gray-100 text-gray-600 rounded text-[10px] font-bold uppercase">
                                             {{ file.filename.split('.').pop().upper() if '.' in file.filename else 'DOC' }}
@@ -259,14 +259,14 @@
                                 <div class="flex-1 min-w-0">
                                     <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 truncate">{{ link.name }}</h3>
                                     <div class="flex items-center gap-4 mt-2 text-sm text-gray-500 dark:text-gray-400 flex-wrap">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 bg-indigo-100 text-indigo-700 rounded-full text-[10px] font-black uppercase tracking-wider">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 bg-indigo-100 text-indigo-700 rounded-full text-[10px] font-black uppercase tracking-wider" data-i18n="course.archive_tab_link">
                                             🔗 Link
                                         </span>
                                         <span class="flex items-center gap-1.5">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                             </svg>
-                                            Diarsipkan: {{ link.created_at.strftime('%d %B %Y, %H:%M') if link.created_at else '-' }}
+                                            <span data-i18n="course.archived_at_prefix">Diarsipkan:</span> {{ link.created_at.strftime('%d %B %Y, %H:%M') if link.created_at else '-' }}
                                         </span>
                                     </div>
                                 </div>
@@ -302,13 +302,13 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
                             </svg>
                         </div>
-                        <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">Belum ada arsip</h3>
-                        <p class="text-gray-500 dark:text-gray-400 mb-6 max-w-md mx-auto">Kuis, tugas, berkas, atau link yang diarsipkan akan muncul di sini.</p>
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2" data-i18n="course.no_archive_title">Belum ada arsip</h3>
+                        <p class="text-gray-500 dark:text-gray-400 mb-6 max-w-md mx-auto" data-i18n="course.no_archive_subtitle">Kuis, tugas, berkas, atau link yang diarsipkan akan muncul di sini.</p>
                         <a href="{{ url_for('courses_pages.course_detail', course_id=course.id) }}" class="btn-duo btn-duo-blue h-14 text-sm inline-flex">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                             </svg>
-                            KEMBALI KE KELAS
+                            <span data-i18n="course.back_to_class_button">KEMBALI KE KELAS</span>
                         </a>
                     </div>
                     {% endif %}

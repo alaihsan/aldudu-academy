@@ -77,7 +77,19 @@
         "delete_confirm_placeholder": "Ketik 'setuju' di sini...",
         "delete_now_button": "HAPUS SEKARANG",
         "delete_modal_cancel": "BATAL",
-        "academic_year_label": "Tahun Ajaran"
+        "academic_year_label": "Tahun Ajaran",
+        "archive_label": "Arsip",
+        "archive_hero_title": "🗄️ Arsip",
+        "archive_hero_subtitle": "Kuis, tugas, dan file yang diarsipkan tetap tersimpan dengan semua data.",
+        "back_to_class_button": "KEMBALI KE KELAS",
+        "archive_tab_all": "Semua",
+        "archive_tab_quiz": "📊 Kuis",
+        "archive_tab_assignment": "📝 Tugas",
+        "archive_tab_file": "📎 File",
+        "archive_tab_link": "🔗 Link",
+        "archived_at_prefix": "Diarsipkan:",
+        "no_archive_title": "Belum ada arsip",
+        "no_archive_subtitle": "Kuis, tugas, berkas, atau link yang diarsipkan akan muncul di sini."
     },
     "quiz": {
         "start_quiz": "Mulai Kuis",

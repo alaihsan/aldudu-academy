@@ -78,7 +78,19 @@
         "delete_confirm_placeholder": "اكتب 'موافق' هنا...",
         "delete_now_button": "احذف الآن",
         "delete_modal_cancel": "إلغاء",
-        "academic_year_label": "العام الدراسي"
+        "academic_year_label": "العام الدراسي",
+        "archive_label": "الأرشيف",
+        "archive_hero_title": "🗄️ الأرشيف",
+        "archive_hero_subtitle": "تبقى الاختبارات والواجبات والملفات المؤرشفة محفوظة مع جميع بياناتها.",
+        "back_to_class_button": "العودة إلى الفصل",
+        "archive_tab_all": "الكل",
+        "archive_tab_quiz": "📊 الاختبارات",
+        "archive_tab_assignment": "📝 الواجبات",
+        "archive_tab_file": "📎 الملفات",
+        "archive_tab_link": "🔗 الروابط",
+        "archived_at_prefix": "أُرشف في:",
+        "no_archive_title": "لا توجد أرشيفات بعد",
+        "no_archive_subtitle": "ستظهر هنا الاختبارات والواجبات والملفات أو الروابط المؤرشفة."
     },
     "quiz": {
         "start_quiz": "ابدأ الاختبار",

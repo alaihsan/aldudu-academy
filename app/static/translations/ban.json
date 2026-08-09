@@ -77,7 +77,19 @@
         "delete_confirm_placeholder": "Ketik 'satinut' driki...",
         "delete_now_button": "HAPUS DAWEG",
         "delete_modal_cancel": "BATAL",
-        "academic_year_label": "Tahun Ajaran"
+        "academic_year_label": "Tahun Ajaran",
+        "archive_label": "Arsip",
+        "archive_hero_title": "🗄️ Arsip",
+        "archive_hero_subtitle": "Kuis, tugas, lan file sane kaarsipang tetep kaselamatang sareng makasami data.",
+        "back_to_class_button": "WANGSUL KA KELAS",
+        "archive_tab_all": "Makasami",
+        "archive_tab_quiz": "📊 Kuis",
+        "archive_tab_assignment": "📝 Tugas",
+        "archive_tab_file": "📎 File",
+        "archive_tab_link": "🔗 Tautan",
+        "archived_at_prefix": "Kaarsipang:",
+        "no_archive_title": "Durung wenten arsip",
+        "no_archive_subtitle": "Kuis, tugas, berkas, utawi tautan sane kaarsipang jagi kacumpuang driki."
     },
     "quiz": {
         "start_quiz": "Miwiti Kuis",
