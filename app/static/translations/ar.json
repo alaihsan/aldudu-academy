@@ -1001,7 +1001,12 @@
         "additional_notes_placeholder": "ملاحظات، عقبات، إلخ (اختياري)",
         "edit_note_title": "تعديل سجل التدريس",
         "edit_note_subtitle": "تحديث معلومات النشاط",
-        "update_button": "تحديث"
+        "update_button": "تحديث",
+        "messages": {
+            "topic_required": "الموضوع/المادة مطلوب",
+            "date_required": "التاريخ مطلوب",
+            "invalid_date_format": "تنسيق تاريخ غير صالح"
+        }
     },
     "tickets": {
         "heading": "تذاكر الدعم",

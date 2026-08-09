@@ -1000,7 +1000,12 @@
         "additional_notes_placeholder": "Refleksi, kandalo, dll (opsional)",
         "edit_note_title": "Edit Catatan KBM",
         "edit_note_subtitle": "Update informasi kagiatan",
-        "update_button": "UPDATE"
+        "update_button": "UPDATE",
+        "messages": {
+            "topic_required": "Topik/materi musti diisi",
+            "date_required": "Tanggal musti diisi",
+            "invalid_date_format": "Format tanggal indak valid"
+        }
     },
     "tickets": {
         "heading": "Support Tickets",

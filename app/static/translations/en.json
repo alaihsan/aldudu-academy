@@ -1000,7 +1000,12 @@
         "additional_notes_placeholder": "Reflection, obstacles, etc. (optional)",
         "edit_note_title": "Edit Teaching Log",
         "edit_note_subtitle": "Update activity information",
-        "update_button": "UPDATE"
+        "update_button": "UPDATE",
+        "messages": {
+            "topic_required": "Topic/material is required",
+            "date_required": "Date is required",
+            "invalid_date_format": "Invalid date format"
+        }
     },
     "tickets": {
         "heading": "Support Tickets",

@@ -1000,7 +1000,12 @@
         "additional_notes_placeholder": "Refleksi, kandala, jsb (opsional)",
         "edit_note_title": "Édit Catetan KBM",
         "edit_note_subtitle": "Update inpormasi kagiatan",
-        "update_button": "UPDATE"
+        "update_button": "UPDATE",
+        "messages": {
+            "topic_required": "Topik/matéri wajib dieusian",
+            "date_required": "Tanggal wajib dieusian",
+            "invalid_date_format": "Format tanggal teu valid"
+        }
     },
     "tickets": {
         "heading": "Support Tickets",

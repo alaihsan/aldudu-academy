@@ -8,6 +8,7 @@ from app.core.extensions import db
 from app.models import Course, UserRole
 from app.kbm.models import KbmNote, KbmActivityType
 from app.helpers import log_activity
+from app.core.i18n import t
 
 kbm_bp = Blueprint('kbm', __name__, url_prefix='/api')
 
@@ -20,7 +21,7 @@ def api_get_kbm_notes(course_id):
 
     # Check permission
     if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
 
     notes = KbmNote.query.filter_by(course_id=course_id).order_by(KbmNote.activity_date.desc()).all()
     return jsonify({'success': True, 'notes': [note.to_dict() for note in notes]})
@@ -33,24 +34,24 @@ def api_create_kbm_note(course_id):
     course = Course.query.get_or_404(course_id)
 
     if course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
 
     data = request.get_json() or {}
 
     # Validate required fields
     topic = data.get('topic', '').strip()
     if not topic:
-        return jsonify({'success': False, 'message': 'Topik/materi wajib diisi'}), 400
+        return jsonify({'success': False, 'message': t('kbm.messages.topic_required')}), 400
 
     # Parse date
     activity_date_str = data.get('activity_date')
     if not activity_date_str:
-        return jsonify({'success': False, 'message': 'Tanggal wajib diisi'}), 400
+        return jsonify({'success': False, 'message': t('kbm.messages.date_required')}), 400
 
     try:
         activity_date = datetime.strptime(activity_date_str, '%Y-%m-%d')
     except ValueError:
-        return jsonify({'success': False, 'message': 'Format tanggal tidak valid'}), 400
+        return jsonify({'success': False, 'message': t('kbm.messages.invalid_date_format')}), 400
 
     # Parse time (optional)
     start_time = None
@@ -101,7 +102,7 @@ def api_update_kbm_note(note_id):
     course = Course.query.get(note.course_id)
 
     if not course or (course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN):
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
 
     data = request.get_json() or {}
 
@@ -145,7 +146,7 @@ def api_delete_kbm_note(note_id):
     course = Course.query.get(note.course_id)
 
     if not course or (course.teacher_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN):
-        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        return jsonify({'success': False, 'message': t('messages.unauthorized')}), 403
 
     db.session.delete(note)
     db.session.commit()

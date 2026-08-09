@@ -1000,7 +1000,12 @@
         "additional_notes_placeholder": "Refleksi, pikobet, lsp (opsional)",
         "edit_note_title": "Ubah Cathetan KBM",
         "edit_note_subtitle": "Update informasi kegiatan",
-        "update_button": "UPDATE"
+        "update_button": "UPDATE",
+        "messages": {
+            "topic_required": "Topik/materi patut kaisi",
+            "date_required": "Tanggal patut kaisi",
+            "invalid_date_format": "Format tanggal nenten becik"
+        }
     },
     "tickets": {
         "heading": "Support Tickets",

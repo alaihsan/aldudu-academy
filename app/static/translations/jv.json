@@ -1000,7 +1000,12 @@
         "additional_notes_placeholder": "Refleksi, kendala, lsp (opsional)",
         "edit_note_title": "Edit Cathetan KBM",
         "edit_note_subtitle": "Update informasi kagiyatan",
-        "update_button": "UPDATE"
+        "update_button": "UPDATE",
+        "messages": {
+            "topic_required": "Topik/materi wajib diisi",
+            "date_required": "Tanggal wajib diisi",
+            "invalid_date_format": "Format tanggal ora valid"
+        }
     },
     "tickets": {
         "heading": "Support Tickets",
