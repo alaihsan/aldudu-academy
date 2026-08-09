@@ -30,9 +30,9 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
                 </a>
-                <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100 truncate">{{ course.name }} - Impor Konten</h2>
+                <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100 truncate">{{ course.name }} - <span data-i18n="course.import_content">Impor Konten</span></h2>
             </div>
-            <div class="px-4 py-1.5 bg-[#faf5ff] dark:bg-purple-900/30 rounded-full text-[10px] font-black uppercase tracking-widest text-[#ce82ff]">
+            <div class="px-4 py-1.5 bg-[#faf5ff] dark:bg-purple-900/30 rounded-full text-[10px] font-black uppercase tracking-widest text-[#ce82ff]" data-i18n="course.import_badge">
                 📥 Impor
             </div>
         </header>
@@ -48,18 +48,18 @@
                         </svg>
                     </div>
                     <div class="flex-1 text-center md:text-left">
-                        <h1 class="text-2xl sm:text-3xl font-black text-gray-900 dark:text-gray-100 mb-1">Impor Konten Pembelajaran</h1>
-                        <p class="text-sm text-gray-500 dark:text-gray-400 font-medium">Salin kuis, tugas, file, atau tautan dari kelas Anda yang lain langsung ke dalam kelas <b>{{ course.name }}</b> ini.</p>
+                        <h1 class="text-2xl sm:text-3xl font-black text-gray-900 dark:text-gray-100 mb-1" data-i18n="course.import_hero_title">Impor Konten Pembelajaran</h1>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 font-medium"><span data-i18n="course.import_hero_subtitle_prefix">Salin kuis, tugas, file, atau tautan dari kelas Anda yang lain langsung ke dalam kelas</span> <b>{{ course.name }}</b> <span data-i18n="course.import_hero_subtitle_suffix">ini.</span></p>
                     </div>
                 </div>
 
                 <!-- Select Source Class -->
                 <div class="bg-white dark:bg-gray-900 rounded-[2.5rem] border-2 border-[#e5e5e5] dark:border-gray-700 p-8 shadow-sm">
-                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-4">PILIH KELAS ASAL KONTEN</label>
+                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-4" data-i18n="course.select_source_class_label">PILIH KELAS ASAL KONTEN</label>
                     {% if other_courses %}
                     <div class="relative w-full md:w-96">
                         <select id="source-course-select" onchange="loadSourceMaterials()" class="w-full px-6 py-4 bg-[#f7f7f7] dark:bg-gray-800 border-2 border-[#e5e5e5] dark:border-gray-700 rounded-2xl focus:border-[#ce82ff] outline-none font-bold text-[#4b4b4b] dark:text-white transition-all appearance-none cursor-pointer">
-                            <option value="" disabled selected>Pilih kelas asal...</option>
+                            <option value="" disabled selected data-i18n="course.select_source_class_placeholder">Pilih kelas asal...</option>
                             {% for other in other_courses %}
                             <option value="{{ other.id }}">{{ other.name }} ({{ other.class_code }})</option>
                             {% endfor %}
@@ -71,13 +71,13 @@
                         </div>
                     </div>
                     {% else %}
-                    <p class="text-sm font-bold text-gray-500 dark:text-gray-400">Anda tidak mengajar kelas lain selain kelas ini.</p>
+                    <p class="text-sm font-bold text-gray-500 dark:text-gray-400" data-i18n="course.no_other_classes_message">Anda tidak mengajar kelas lain selain kelas ini.</p>
                     {% endif %}
                 </div>
 
                 <!-- Choose Content Type (Hidden until source class selected) -->
                 <div id="type-selector-container" class="hidden bg-white dark:bg-gray-900 rounded-[2.5rem] border-2 border-[#e5e5e5] dark:border-gray-700 p-8 shadow-sm">
-                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-4">PILIH TIPE KONTEN YANG INGIN DIIMPOR</label>
+                    <label class="block text-[11px] font-black text-[#afafaf] uppercase tracking-[0.2em] mb-4" data-i18n="course.select_import_type_label">PILIH TIPE KONTEN YANG INGIN DIIMPOR</label>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Option Materi -->
                         <div id="type-opt-materi" onclick="selectImportType('materi')" class="flex items-center gap-4 p-5 border-2 border-[#ce82ff] bg-[#faf5ff] dark:bg-purple-900/10 rounded-2xl cursor-pointer hover:bg-slate-50 dark:hover:bg-gray-800 transition-all select-none">
@@ -85,8 +85,8 @@
                                 📝
                             </div>
                             <div class="flex-1">
-                                <span class="block text-sm font-bold text-gray-900 dark:text-gray-100">Materi Pembelajaran</span>
-                                <span class="block text-xs text-gray-400 mt-0.5">Tugas kelas, berkas PDF/doc, dan link referensi</span>
+                                <span class="block text-sm font-bold text-gray-900 dark:text-gray-100" data-i18n="course.import_type_material_title">Materi Pembelajaran</span>
+                                <span class="block text-xs text-gray-400 mt-0.5" data-i18n="course.import_type_material_desc">Tugas kelas, berkas PDF/doc, dan link referensi</span>
                             </div>
                             <div class="shrink-0 w-6 h-6 rounded-full bg-[#ce82ff] flex items-center justify-center text-white check-icon">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
@@ -101,8 +101,8 @@
                                 📊
                             </div>
                             <div class="flex-1">
-                                <span class="block text-sm font-bold text-gray-900 dark:text-gray-100">Kuis & Soal</span>
-                                <span class="block text-xs text-gray-400 mt-0.5">Ujian, ulangan harian, dan bank kuis</span>
+                                <span class="block text-sm font-bold text-gray-900 dark:text-gray-100" data-i18n="course.import_type_quiz_title">Kuis & Soal</span>
+                                <span class="block text-xs text-gray-400 mt-0.5" data-i18n="course.import_type_quiz_desc">Ujian, ulangan harian, dan bank kuis</span>
                             </div>
                             <div class="shrink-0 w-6 h-6 rounded-full bg-[#ce82ff] flex items-center justify-center text-white check-icon hidden">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
@@ -119,48 +119,48 @@
                         <!-- Select all header -->
                         <div class="flex items-center justify-between pb-6 border-b border-gray-100 dark:border-gray-800 mb-6">
                             <div>
-                                <h3 class="text-lg font-black text-gray-900 dark:text-gray-100">Daftar Materi</h3>
-                                <p class="text-xs text-[#afafaf] font-bold mt-0.5">Pilih materi yang ingin Anda salin ke kelas ini</p>
+                                <h3 class="text-lg font-black text-gray-900 dark:text-gray-100" data-i18n="course.material_list_heading">Daftar Materi</h3>
+                                <p class="text-xs text-[#afafaf] font-bold mt-0.5" data-i18n="course.material_list_subtitle">Pilih materi yang ingin Anda salin ke kelas ini</p>
                             </div>
                             <label class="flex items-center gap-3 cursor-pointer select-none">
                                 <input type="checkbox" id="select-all-checkbox" onchange="toggleSelectAll(this)" class="w-5 h-5 border-2 border-gray-300 dark:border-gray-600 rounded text-[#ce82ff] focus:ring-0 cursor-pointer">
-                                <span class="text-sm font-black text-[#4b4b4b] dark:text-gray-200">Pilih Semua</span>
+                                <span class="text-sm font-black text-[#4b4b4b] dark:text-gray-200" data-i18n="course.select_all_label">Pilih Semua</span>
                             </label>
                         </div>
 
                         <!-- Quizzes Group -->
                         <div id="group-quizzes" class="hidden mb-8">
-                            <h4 class="text-xs font-black text-[#afafaf] uppercase tracking-wider mb-3">📊 Kuis & Ulangan</h4>
+                            <h4 class="text-xs font-black text-[#afafaf] uppercase tracking-wider mb-3" data-i18n="course.quiz_group_heading">📊 Kuis & Ulangan</h4>
                             <div class="space-y-3" id="list-quizzes"></div>
                         </div>
 
                         <!-- Assignments Group -->
                         <div id="group-assignments" class="hidden mb-8">
-                            <h4 class="text-xs font-black text-[#afafaf] uppercase tracking-wider mb-3">📝 Tugas Kelas</h4>
+                            <h4 class="text-xs font-black text-[#afafaf] uppercase tracking-wider mb-3" data-i18n="course.assignment_group_heading">📝 Tugas Kelas</h4>
                             <div class="space-y-3" id="list-assignments"></div>
                         </div>
 
                         <!-- Files Group -->
                         <div id="group-files" class="hidden mb-8">
-                            <h4 class="text-xs font-black text-[#afafaf] uppercase tracking-wider mb-3">📎 Berkas Pembelajaran</h4>
+                            <h4 class="text-xs font-black text-[#afafaf] uppercase tracking-wider mb-3" data-i18n="course.file_group_heading">📎 Berkas Pembelajaran</h4>
                             <div class="space-y-3" id="list-files"></div>
                         </div>
 
                         <!-- Links Group -->
                         <div id="group-links" class="hidden mb-6">
-                            <h4 class="text-xs font-black text-[#afafaf] uppercase tracking-wider mb-3">🔗 Referensi Link</h4>
+                            <h4 class="text-xs font-black text-[#afafaf] uppercase tracking-wider mb-3" data-i18n="course.link_group_heading">🔗 Referensi Link</h4>
                             <div class="space-y-3" id="list-links"></div>
                         </div>
 
                         <!-- Empty state when no materials in source class -->
                         <div id="empty-materials-msg" class="hidden text-center py-12">
-                            <p class="text-gray-400 font-bold text-sm">Kelas asal tidak memiliki materi yang dapat diimpor.</p>
+                            <p class="text-gray-400 font-bold text-sm" data-i18n="course.no_source_materials_message">Kelas asal tidak memiliki materi yang dapat diimpor.</p>
                         </div>
                     </div>
 
                     <!-- Action Button Container -->
                     <div class="flex justify-end">
-                        <button id="btn-import-submit" onclick="submitImport()" disabled class="btn-duo btn-duo-purple h-14 px-8 text-sm font-black disabled:opacity-50 disabled:pointer-events-none shadow-lg">
+                        <button id="btn-import-submit" onclick="submitImport()" disabled class="btn-duo btn-duo-purple h-14 px-8 text-sm font-black disabled:opacity-50 disabled:pointer-events-none shadow-lg" data-i18n="course.import_selected_button">
                             IMPOR KONTEN TERPILIH
                         </button>
                     </div>
@@ -233,9 +233,11 @@ async function loadSourceMaterials() {
     const sourceId = select.value;
     if (!sourceId) return;
 
+    const t = window.LanguageManager ? window.LanguageManager.t : (key, fallback) => fallback;
+
     // Show loading
     Swal.fire({
-        title: 'Memuat data…',
+        title: t('course.loading_data_title', 'Memuat data…'),
         allowOutsideClick: false,
         didOpen: () => {
             Swal.showLoading();
@@ -248,7 +250,7 @@ async function loadSourceMaterials() {
         Swal.close();
 
         if (!data.success) {
-            Swal.fire({ icon: 'error', title: 'Gagal memuat materi', text: data.message });
+            Swal.fire({ icon: 'error', title: t('course.load_materials_failed_title', 'Gagal memuat materi'), text: data.message });
             return;
         }
 
@@ -266,7 +268,7 @@ async function loadSourceMaterials() {
 
     } catch (err) {
         Swal.close();
-        Swal.fire({ icon: 'error', title: 'Kesalahan', text: 'Terjadi kegagalan koneksi ke server.' });
+        Swal.fire({ icon: 'error', title: t('course.generic_error_title', 'Kesalahan'), text: t('course.connection_failure_message', 'Terjadi kegagalan koneksi ke server.') });
     }
 }
 
@@ -286,8 +288,9 @@ function renderMaterials() {
     const groupQuizzes = document.getElementById('group-quizzes');
     if (currentImportType === 'soal' && sourceMaterialsData.quizzes && sourceMaterialsData.quizzes.length > 0) {
         groupQuizzes.classList.remove('hidden');
+        const pointsSuffix = window.LanguageManager ? window.LanguageManager.t('course.points_suffix', 'poin') : 'poin';
         sourceMaterialsData.quizzes.forEach(item => {
-            listQuizzes.appendChild(createItemElement('quiz', item.id, '📊', item.name, `${item.points} poin`));
+            listQuizzes.appendChild(createItemElement('quiz', item.id, '📊', item.name, `${item.points} ${pointsSuffix}`));
             activeItemsCount++;
         });
     } else {
@@ -300,8 +303,9 @@ function renderMaterials() {
     const groupAssignments = document.getElementById('group-assignments');
     if (currentImportType === 'materi' && sourceMaterialsData.assignments && sourceMaterialsData.assignments.length > 0) {
         groupAssignments.classList.remove('hidden');
+        const maxScorePrefix = window.LanguageManager ? window.LanguageManager.t('course.max_score_prefix', 'Nilai maks:') : 'Nilai maks:';
         sourceMaterialsData.assignments.forEach(item => {
-            listAssignments.appendChild(createItemElement('assignment', item.id, '📝', item.title, `Nilai maks: ${item.max_score}`));
+            listAssignments.appendChild(createItemElement('assignment', item.id, '📝', item.title, `${maxScorePrefix} ${item.max_score}`));
             activeItemsCount++;
         });
     } else {
@@ -400,20 +404,22 @@ async function submitImport() {
         });
     });
 
+    const t = window.LanguageManager ? window.LanguageManager.t : (key, fallback) => fallback;
+
     const confirm = await Swal.fire({
-        title: 'Impor Konten?',
-        text: `Anda akan mengimpor ${items.length} materi ke dalam kelas ini.`,
+        title: t('course.import_confirm_title', 'Impor Konten?'),
+        text: t('course.import_confirm_text', 'Anda akan mengimpor {0} materi ke dalam kelas ini.').replace('{0}', items.length),
         icon: 'question',
         showCancelButton: true,
-        confirmButtonText: 'YA, IMPOR',
-        cancelButtonText: 'BATAL',
+        confirmButtonText: t('course.import_confirm_button', 'YA, IMPOR'),
+        cancelButtonText: t('course.delete_modal_cancel', 'BATAL'),
         confirmButtonColor: '#ce82ff',
     });
 
     if (!confirm.isConfirmed) return;
 
     Swal.fire({
-        title: 'Mengimpor konten…',
+        title: t('course.importing_title', 'Mengimpor konten…'),
         allowOutsideClick: false,
         didOpen: () => {
             Swal.showLoading();
@@ -436,18 +442,18 @@ async function submitImport() {
         if (data.success) {
             await Swal.fire({
                 icon: 'success',
-                title: 'Berhasil diimpor!',
+                title: t('course.import_success_title', 'Berhasil diimpor!'),
                 text: data.message,
                 confirmButtonColor: '#ce82ff',
-                confirmButtonText: 'LIHAT MATERI'
+                confirmButtonText: t('course.view_material_button', 'LIHAT MATERI')
             });
             // Redirect to class content detail page
             window.location.href = `/kelas/${destCourseId}`;
         } else {
             Swal.fire({
                 icon: 'error',
-                title: 'Gagal mengimpor',
-                text: data.message || 'Terjadi kesalahan internal'
+                title: t('course.import_failed_title', 'Gagal mengimpor'),
+                text: data.message || t('course.internal_error_fallback', 'Terjadi kesalahan internal')
             });
         }
 
@@ -455,8 +461,8 @@ async function submitImport() {
         Swal.close();
         Swal.fire({
             icon: 'error',
-            title: 'Kesalahan',
-            text: 'Kesalahan koneksi ke server.'
+            title: t('course.generic_error_title', 'Kesalahan'),
+            text: t('course.connection_error_short', 'Kesalahan koneksi ke server.')
         });
     }
 }
