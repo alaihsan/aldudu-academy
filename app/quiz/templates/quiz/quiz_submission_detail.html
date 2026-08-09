@@ -15,12 +15,12 @@
             </a>
             <div>
                 <h1 class="font-bold text-gray-800">{{ submission.user.name }}</h1>
-                <p class="text-xs text-gray-400">Dikerjakan pada {{ submission.submitted_at.strftime('%d %b %Y, %H:%M') }}</p>
+                <p class="text-xs text-gray-400"><span data-i18n="quiz.completed_at_prefix">Dikerjakan pada</span> {{ submission.submitted_at.strftime('%d %b %Y, %H:%M') }}</p>
             </div>
         </div>
         <div class="text-right flex items-center space-x-6">
             <div>
-                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Skor Akhir</p>
+                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1" data-i18n="quiz.final_score_label">Skor Akhir</p>
                 <h2 class="text-3xl font-black text-primary-600" id="submission-score">{{ submission.score|round(1) }}%</h2>
             </div>
             {% if is_teacher %}
@@ -43,7 +43,7 @@
             </div>
             <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100 flex items-center space-x-8">
                 <div class="text-center">
-                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Total Poin</p>
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1" data-i18n="quiz.total_points_label">Total Poin</p>
                     <p class="font-bold text-gray-700">{{ submission.total_points }}</p>
                 </div>
             </div>
@@ -61,7 +61,7 @@
             <div class="flex items-start justify-between mb-4">
                 <p class="text-lg font-bold text-gray-800 flex-1">{{ loop.index }}. {{ question.question_text|rich_text|safe }}</p>
                 <div class="ml-4 flex items-center space-x-2">
-                    <span class="text-xs font-black text-gray-400 uppercase tracking-widest">{{ question.points }} Poin</span>
+                    <span class="text-xs font-black text-gray-400 uppercase tracking-widest">{{ question.points }} <span data-i18n="quiz.points">Poin</span></span>
                 </div>
             </div>
 
@@ -72,7 +72,7 @@
             {% endif %}
 
             <div class="mt-4 p-4 rounded-xl bg-gray-50 border border-gray-100">
-                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Jawaban Murid:</p>
+                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2" data-i18n="quiz.student_answer_label">Jawaban Murid:</p>
                 
                 {% if question.question_type.name in ['MULTIPLE_CHOICE', 'TRUE_FALSE', 'DROPDOWN'] %}
                     <div class="flex items-center space-x-2">
@@ -86,11 +86,11 @@
                                 <svg class="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>
                             {% endif %}
                         {% else %}
-                            <span class="text-gray-400 italic">Tidak dijawab</span>
+                            <span class="text-gray-400 italic" data-i18n="quiz.not_answered">Tidak dijawab</span>
                         {% endif %}
                     </div>
                     {% if not answer.selected_option or not answer.selected_option.is_correct %}
-                        <p class="mt-2 text-xs text-gray-500">Kunci Jawaban: 
+                        <p class="mt-2 text-xs text-gray-500"><span data-i18n="quiz.answer_key_prefix">Kunci Jawaban:</span>
                             <span class="font-bold text-green-600">
                                 {% for opt in question.options %}{% if opt.is_correct %}{{ opt.option_text|rich_text|safe }}{% endif %}{% endfor %}
                             </span>
@@ -110,7 +110,7 @@
                                     <div class="w-4 h-4 rounded border border-gray-300"></div>
                                 {% endif %}
                                 <span class="{% if opt.is_correct %} text-green-600 font-bold {% endif %}">{{ opt.option_text|rich_text|safe }}</span>
-                                {% if opt.is_correct %}<span class="text-[10px] text-green-500 uppercase font-black">(Kunci)</span>{% endif %}
+                                {% if opt.is_correct %}<span class="text-[10px] text-green-500 uppercase font-black" data-i18n="quiz.key_marker">(Kunci)</span>{% endif %}
                             </div>
                         {% endfor %}
                     </div>
@@ -120,13 +120,13 @@
                         {% for line in answer.answer_text|matching_answer_lines %}
                         <div class="font-bold text-gray-700">{{ line }}</div>
                         {% else %}
-                        <span class="text-gray-400 italic">Tidak dijawab</span>
+                        <span class="text-gray-400 italic" data-i18n="quiz.not_answered">Tidak dijawab</span>
                         {% endfor %}
                     </div>
 
                 {% elif question.question_type.name == 'LONG_TEXT' %}
                     <div class="prose max-w-none text-gray-700 font-medium">
-                        {{ answer.answer_text or '<span class="text-gray-400 italic">Tidak ada jawaban</span>'|safe }}
+                        {{ answer.answer_text or '<span class="text-gray-400 italic" data-i18n="quiz.no_answer">Tidak ada jawaban</span>'|safe }}
                     </div>
 
                 {% elif question.question_type.name == 'UPLOAD' %}
@@ -138,12 +138,12 @@
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
                             </div>
                             <div>
-                                <p class="text-sm font-bold text-gray-700">Buka Berkas Unggahan</p>
+                                <p class="text-sm font-bold text-gray-700" data-i18n="quiz.open_uploaded_file">Buka Berkas Unggahan</p>
                                 <p class="text-[10px] text-gray-400">{{ answer.answer_text }}</p>
                             </div>
                         </a>
                     {% else %}
-                        <p class="text-gray-400 italic">Tidak ada file yang diunggah</p>
+                        <p class="text-gray-400 italic" data-i18n="quiz.no_file_uploaded">Tidak ada file yang diunggah</p>
                     {% endif %}
                 {% endif %}
             </div>
@@ -155,7 +155,7 @@
     <div class="mt-12 flex justify-center space-x-4">
         <button onclick="window.print()" class="px-8 py-3 bg-white border-2 border-gray-200 text-gray-600 font-bold rounded-2xl hover:bg-gray-50 transition-all flex items-center space-x-2">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
-            <span>Cetak Hasil</span>
+            <span data-i18n="quiz.print_results_button">Cetak Hasil</span>
         </button>
     </div>
 </div>
@@ -163,7 +163,7 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
   window.submissionId = {{ submission.id }};
-  window.submissionScore = {{ submission.score|round(1) if submission.score is not None else 0 }};
+  window.submissionScore = {{ submission.score|round(1) if submission.score is not none else 0 }};
 </script>
 <script src="{{ url_for('static', filename='js/quiz/quiz_submission_detail.js') }}?v={{ asset_hash('js/quiz/quiz_submission_detail.js') }}"></script>
 {% endblock %}

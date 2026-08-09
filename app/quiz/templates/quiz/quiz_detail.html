@@ -20,24 +20,24 @@
         <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
     </div>
     <h1 class="text-3xl font-black text-gray-900 mb-2">{{ quiz.name }}</h1>
-    <div class="text-gray-500 mb-8">{{ (quiz.description or 'Selamat mengerjakan kuis ini. Pastikan koneksi internet Anda stabil.')|safe }}</div>
-    
+    <div class="text-gray-500 mb-8" {% if not quiz.description %}data-i18n="quiz.default_description"{% endif %}>{{ (quiz.description or 'Selamat mengerjakan kuis ini. Pastikan koneksi internet Anda stabil.')|safe }}</div>
+
     <div class="grid grid-cols-2 gap-4 mb-10">
         <div class="bg-gray-50 p-4 rounded-2xl">
-            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Jumlah Soal</p>
+            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1" data-i18n="quiz.number_of_questions_label">Jumlah Soal</p>
             <p class="text-xl font-black text-gray-800">{{ questions|length }}</p>
         </div>
         <div class="bg-gray-50 p-4 rounded-2xl">
-            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Durasi</p>
-            <p class="text-xl font-black text-gray-800">{{ quiz.duration if quiz.duration > 0 else '∞' }} <span class="text-sm">Menit</span></p>
+            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1" data-i18n="quiz.duration_label">Durasi</p>
+            <p class="text-xl font-black text-gray-800">{{ quiz.duration if quiz.duration > 0 else '∞' }} <span class="text-sm" data-i18n="quiz.minutes">Menit</span></p>
         </div>
     </div>
 
     {% if quiz.quiz_password %}
     <div class="mb-8 p-6 bg-primary-50 rounded-2xl border border-primary-100 animate-pulse-slow">
-        <label for="quiz-password-input" class="block text-xs font-black text-primary-600 uppercase tracking-widest mb-3">Password Kuis Diperlukan</label>
+        <label for="quiz-password-input" class="block text-xs font-black text-primary-600 uppercase tracking-widest mb-3" data-i18n="quiz.password_required_label">Password Kuis Diperlukan</label>
         <div class="relative">
-            <input type="password" id="quiz-password-input" placeholder="Masukkan password untuk mulai..."
+            <input type="password" id="quiz-password-input" placeholder="Masukkan password untuk mulai..." data-i18n-placeholder="quiz.password_start_placeholder"
                 class="w-full px-5 py-4 bg-white border-2 border-primary-200 rounded-2xl focus:ring-4 focus:ring-primary-100 focus:border-primary-500 text-center font-bold tracking-widest outline-none transition-all">
             <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none text-primary-300">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
@@ -47,10 +47,10 @@
     </div>
     {% endif %}
 
-    <button onclick="confirmStart()" class="btn-duo btn-duo-primary w-full h-16 text-lg">
+    <button onclick="confirmStart()" class="btn-duo btn-duo-primary w-full h-16 text-lg" data-i18n="quiz.start_working_button">
         MULAI KERJAKAN
     </button>
-    <a href="{{ url_for('courses_pages.course_detail', course_id=quiz.course_id) }}" class="block mt-6 text-sm font-bold text-gray-400 hover:text-gray-600">Kembali</a>
+    <a href="{{ url_for('courses_pages.course_detail', course_id=quiz.course_id) }}" class="block mt-6 text-sm font-bold text-gray-400 hover:text-gray-600" data-i18n="common.back">Kembali</a>
 </div>
 
 <!-- Main Quiz (Hidden initially) -->
@@ -59,9 +59,9 @@
     <div class="bg-amber-50 border-b border-amber-200 py-2 px-6 flex items-center justify-between sticky top-0 z-[60]">
         <div class="flex items-center space-x-2 text-amber-800">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-            <span class="text-sm font-medium">Ini adalah pratinjau. Jawaban Anda tidak akan disimpan.</span>
+            <span class="text-sm font-medium" data-i18n="quiz.preview_notice">Ini adalah pratinjau. Jawaban Anda tidak akan disimpan.</span>
         </div>
-        <a href="{{ url_for('quiz_pages.quiz_detail', quiz_id=quiz.id) }}" class="text-xs font-bold text-amber-900 bg-amber-200 hover:bg-amber-300 px-3 py-1 rounded-full transition-colors">Kembali ke Editor</a>
+        <a href="{{ url_for('quiz_pages.quiz_detail', quiz_id=quiz.id) }}" class="text-xs font-bold text-amber-900 bg-amber-200 hover:bg-amber-300 px-3 py-1 rounded-full transition-colors" data-i18n="quiz.back_to_editor">Kembali ke Editor</a>
     </div>
     {% endif %}
 
@@ -76,7 +76,7 @@
 
     <div class="quiz-shell pt-8 pb-32">
         <aside class="question-nav-panel" aria-label="Navigasi soal">
-            <h2 class="question-nav-title">Daftar Soal</h2>
+            <h2 class="question-nav-title" data-i18n="quiz.question_list_heading">Daftar Soal</h2>
             <div class="question-nav-grid">
                 {% for question in questions %}
                 <button type="button" class="question-nav-btn" data-question-index="{{ loop.index0 }}">{{ loop.index }}</button>
@@ -93,7 +93,7 @@
                     <div class="flex items-center space-x-4 text-gray-500 text-sm">
                         <span>{{ quiz.course.name }}</span>
                         <span>&bull;</span>
-                        <span>{{ questions|length }} Pertanyaan</span>
+                        <span>{{ questions|length }} <span data-i18n="quiz.questions">Pertanyaan</span></span>
                     </div>
                 </div>
             </div>
@@ -141,7 +141,7 @@
                     </div>
                 {% elif question.question_type.name == 'DROPDOWN' %}
                     <select name="question_{{ question.id }}" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none answer-text">
-                        <option value="">Pilih jawaban...</option>
+                        <option value="" data-i18n="quiz.select_answer_placeholder">Pilih jawaban...</option>
                         {% for option in question.options.order_by(Option.order).all() %}
                         <option value="{{ option.id }}">{{ option.option_text|plain_text }}</option>
                         {% endfor %}
@@ -155,7 +155,7 @@
                             <div class="font-bold text-gray-700">{{ left_text }}</div>
                             <div class="hidden md:block text-gray-300 font-black">=</div>
                             <select name="question_{{ question.id }}_match_{{ loop.index0 }}" data-match-left="{{ left_text }}" class="matching-select w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none">
-                                <option value="">Pilih pasangan...</option>
+                                <option value="" data-i18n="quiz.select_match_placeholder">Pilih pasangan...</option>
                                 {% for match_option in matching_options %}
                                 <option value="{{ match_option.option_text|matching_right }}">{{ match_option.option_text|matching_right }}</option>
                                 {% endfor %}
@@ -164,7 +164,7 @@
                         {% endfor %}
                     </div>
                 {% elif question.question_type.name == 'LONG_TEXT' %}
-                    <textarea name="question_{{ question.id }}" rows="4" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none answer-text" placeholder="Tulis jawaban Anda di sini..."></textarea>
+                    <textarea name="question_{{ question.id }}" rows="4" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none answer-text" placeholder="Tulis jawaban Anda di sini..." data-i18n-placeholder="quiz.write_answer_placeholder"></textarea>
                 {% elif question.question_type.name == 'UPLOAD' %}
                     <div class="mt-2">
                         {% set accept_str = "" %}
@@ -183,7 +183,7 @@
                             data-max-size="{{ question.max_file_size }}"
                             accept="{{ accept_str }}">
                         <p class="text-[10px] text-gray-400 mt-2 uppercase tracking-widest font-black">
-                            Maksimal {{ question.max_file_size }}MB • Format: {{ question.allowed_file_types or 'Semua' }}
+                            <span data-i18n="quiz.max_prefix">Maksimal</span> {{ question.max_file_size }}MB • <span data-i18n="quiz.format_label">Format:</span> {% if question.allowed_file_types %}{{ question.allowed_file_types }}{% else %}<span data-i18n="quiz.all_formats">Semua</span>{% endif %}
                         </p>
                     </div>
                 {% endif %}            </div>
@@ -191,14 +191,14 @@
             </div>
 
             <div id="pagination-controls" class="hidden mt-8 items-center justify-between gap-4">
-                <button type="button" id="prev-page-btn" class="px-6 py-3 bg-white border border-gray-200 text-gray-600 font-bold rounded-xl hover:border-primary-300 hover:text-primary-600 transition-all">Sebelumnya</button>
+                <button type="button" id="prev-page-btn" class="px-6 py-3 bg-white border border-gray-200 text-gray-600 font-bold rounded-xl hover:border-primary-300 hover:text-primary-600 transition-all" data-i18n="quiz.previous_button">Sebelumnya</button>
                 <span id="page-indicator" class="text-sm font-bold text-gray-500"></span>
-                <button type="button" id="next-page-btn" class="px-6 py-3 bg-primary-600 text-white font-bold rounded-xl hover:bg-primary-700 transition-all">Berikutnya</button>
+                <button type="button" id="next-page-btn" class="px-6 py-3 bg-primary-600 text-white font-bold rounded-xl hover:bg-primary-700 transition-all" data-i18n="quiz.next_button">Berikutnya</button>
             </div>
 
             <!-- Submit Button -->
             <div class="flex justify-end items-center mt-12">
-                <button id="submit-quiz-btn" class="px-12 py-5 bg-primary-600 text-white font-black rounded-2xl shadow-xl shadow-primary-200 hover:bg-primary-700 transform hover:-translate-y-1 active:scale-95 transition-all">
+                <button id="submit-quiz-btn" class="px-12 py-5 bg-primary-600 text-white font-black rounded-2xl shadow-xl shadow-primary-200 hover:bg-primary-700 transform hover:-translate-y-1 active:scale-95 transition-all" data-i18n="quiz.submit_answers_button">
                     Kirim Jawaban
                 </button>
             </div>

@@ -40,13 +40,13 @@
                     hx-target="#question-{{ question.id }}"
                     hx-swap="outerHTML"
                 >
-                    <option value="MULTIPLE_CHOICE" {% if question.question_type.name == 'MULTIPLE_CHOICE' %}selected{% endif %}>🔘 Pilihan Ganda</option>
-                    <option value="CHECKBOX" {% if question.question_type.name == 'CHECKBOX' %}selected{% endif %}>✅ Kotak Centang</option>
-                    <option value="DROPDOWN" {% if question.question_type.name == 'DROPDOWN' %}selected{% endif %}>🔽 Dropdown</option>
-                    <option value="TRUE_FALSE" {% if question.question_type.name == 'TRUE_FALSE' %}selected{% endif %}>🌗 Benar / Salah</option>
-                    <option value="MATCHING" {% if question.question_type.name == 'MATCHING' %}selected{% endif %}>🔗 Menjodohkan</option>
-                    <option value="LONG_TEXT" {% if question.question_type.name == 'LONG_TEXT' %}selected{% endif %}>📝 Jawaban Singkat</option>
-                    <option value="UPLOAD" {% if question.question_type.name == 'UPLOAD' %}selected{% endif %}>📤 Upload File</option>
+                    <option value="MULTIPLE_CHOICE" {% if question.question_type.name == 'MULTIPLE_CHOICE' %}selected{% endif %} data-i18n="quiz.option_type_multiple_choice">🔘 Pilihan Ganda</option>
+                    <option value="CHECKBOX" {% if question.question_type.name == 'CHECKBOX' %}selected{% endif %} data-i18n="quiz.option_type_checkbox">✅ Kotak Centang</option>
+                    <option value="DROPDOWN" {% if question.question_type.name == 'DROPDOWN' %}selected{% endif %} data-i18n="quiz.option_type_dropdown">🔽 Dropdown</option>
+                    <option value="TRUE_FALSE" {% if question.question_type.name == 'TRUE_FALSE' %}selected{% endif %} data-i18n="quiz.option_type_true_false">🌗 Benar / Salah</option>
+                    <option value="MATCHING" {% if question.question_type.name == 'MATCHING' %}selected{% endif %} data-i18n="quiz.option_type_matching">🔗 Menjodohkan</option>
+                    <option value="LONG_TEXT" {% if question.question_type.name == 'LONG_TEXT' %}selected{% endif %} data-i18n="quiz.option_type_long_text">📝 Jawaban Singkat</option>
+                    <option value="UPLOAD" {% if question.question_type.name == 'UPLOAD' %}selected{% endif %} data-i18n="quiz.option_type_upload">📤 Upload File</option>
                 </select>
                 <div class="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 dark:text-gray-500 group-hover/select:text-primary-500 transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"/></svg>
@@ -98,7 +98,7 @@
                     hx-post="/api/question/{{ question.id }}/option/add"
                     hx-target="#options-list-{{ question.id }}"
                     hx-swap="beforeend">
-                    Tambah opsi jawaban
+                    <span data-i18n="quiz.add_option_button">Tambah opsi jawaban</span>
                 </button>
             </div>
             
@@ -123,7 +123,7 @@
 
         {% elif question.question_type.name == 'LONG_TEXT' %}
             <div class="bg-gray-50/50 border-b-2 border-dotted border-gray-200 py-3 mb-2">
-                <span class="text-gray-400 text-sm italic ml-2">Teks jawaban singkat akan diketik oleh murid</span>
+                <span class="text-gray-400 text-sm italic ml-2" data-i18n="quiz.long_text_hint">Teks jawaban singkat akan diketik oleh murid</span>
             </div>
         {% elif question.question_type.name == 'UPLOAD' %}
             <div class="p-8 bg-blue-50/30 rounded-[2.5rem] border-2 border-blue-100/50">
@@ -132,8 +132,8 @@
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
                     </div>
                     <div>
-                        <h4 class="font-black text-gray-800 uppercase tracking-tight text-base">Konfigurasi Pengunggahan</h4>
-                        <p class="text-xs text-gray-400">Atur batasan file yang dikirim oleh murid</p>
+                        <h4 class="font-black text-gray-800 uppercase tracking-tight text-base" data-i18n="quiz.upload_config_title">Konfigurasi Pengunggahan</h4>
+                        <p class="text-xs text-gray-400" data-i18n="quiz.upload_config_subtitle">Atur batasan file yang dikirim oleh murid</p>
                     </div>
                 </div>
                 
@@ -141,7 +141,7 @@
                     <!-- File Type Restrictions -->
                     <div class="space-y-4">
                         <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center">
-                            <span class="mr-2">Izinkan Jenis File Tertentu</span>
+                            <span class="mr-2" data-i18n="quiz.allowed_file_types_label">Izinkan Jenis File Tertentu</span>
                             <div class="h-px bg-gray-100 flex-1"></div>
                         </label>
                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -166,7 +166,7 @@
                     <!-- File Size Restriction -->
                     <div class="space-y-4">
                         <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center">
-                            <span class="mr-2">Ukuran File Maksimal</span>
+                            <span class="mr-2" data-i18n="quiz.max_file_size_label">Ukuran File Maksimal</span>
                             <div class="h-px bg-gray-100 flex-1"></div>
                         </label>
                         <div class="bg-white rounded-3xl border-2 border-white p-6 shadow-sm">
@@ -182,11 +182,11 @@
                                 </div>
                                 <div class="w-24 text-center">
                                     <p class="text-2xl font-black text-blue-600 leading-none">{{ question.max_file_size }}</p>
-                                    <p class="text-[10px] font-black text-gray-300 uppercase tracking-tighter mt-1">Megabyte</p>
+                                    <p class="text-[10px] font-black text-gray-300 uppercase tracking-tighter mt-1" data-i18n="quiz.megabyte_label">Megabyte</p>
                                 </div>
                             </div>
                         </div>
-                        <p class="text-[10px] text-blue-400 italic bg-blue-50/50 p-3 rounded-2xl">
+                        <p class="text-[10px] text-blue-400 italic bg-blue-50/50 p-3 rounded-2xl" data-i18n="quiz.upload_tip">
                             Tip: Murid akan melihat peringatan jika mencoba mengunggah file yang melebihi kapasitas ini.
                         </p>
                     </div>
@@ -198,27 +198,27 @@
     <!-- Question Actions Footer -->
     <div class="pt-6 border-t border-gray-50 flex flex-wrap items-center justify-end gap-4">
         <div class="flex items-center space-x-3 mr-auto bg-gray-50/50 px-4 py-2 rounded-2xl border border-gray-100 group-hover/card:bg-white transition-all">
-            <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Skor:</span>
+            <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest" data-i18n="quiz.score_label">Skor:</span>
             <input type="number" class="w-12 bg-transparent text-center font-black text-primary-600 border-none focus:ring-0 text-lg" value="{{ question.points }}" hx-put="/api/question/{{ question.id }}/update-points" hx-trigger="blur" hx-swap="none" name="points">
         </div>
 
         <!-- Bloom Taxonomy Selector -->
         {% if BloomLevel is defined %}
         <div class="flex items-center space-x-2 bg-gray-50/50 px-3 py-1.5 rounded-2xl border border-gray-100 group-hover/card:bg-white transition-all">
-            <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">Bloom:</span>
+            <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap" data-i18n="quiz.bloom_label">Bloom:</span>
             <select name="bloom_level"
                     class="text-xs font-bold border-none bg-transparent focus:ring-0 cursor-pointer pr-6
                     {% if question.bloom_taxonomy %}text-indigo-600{% else %}text-gray-400{% endif %}"
                     hx-post="/api/question/{{ question.id }}/set-bloom"
                     hx-target="#question-{{ question.id }}"
                     hx-swap="outerHTML">
-                <option value="none" {% if not question.bloom_taxonomy %}selected{% endif %}>-- Pilih --</option>
-                <option value="remember" {% if question.bloom_taxonomy and question.bloom_taxonomy.bloom_level.value == 'remember' %}selected{% endif %}>C1 Mengingat</option>
-                <option value="understand" {% if question.bloom_taxonomy and question.bloom_taxonomy.bloom_level.value == 'understand' %}selected{% endif %}>C2 Memahami</option>
-                <option value="apply" {% if question.bloom_taxonomy and question.bloom_taxonomy.bloom_level.value == 'apply' %}selected{% endif %}>C3 Menerapkan</option>
-                <option value="analyze" {% if question.bloom_taxonomy and question.bloom_taxonomy.bloom_level.value == 'analyze' %}selected{% endif %}>C4 Menganalisis</option>
-                <option value="evaluate" {% if question.bloom_taxonomy and question.bloom_taxonomy.bloom_level.value == 'evaluate' %}selected{% endif %}>C5 Mengevaluasi</option>
-                <option value="create" {% if question.bloom_taxonomy and question.bloom_taxonomy.bloom_level.value == 'create' %}selected{% endif %}>C6 Mencipta</option>
+                <option value="none" {% if not question.bloom_taxonomy %}selected{% endif %} data-i18n="quiz.select_placeholder">-- Pilih --</option>
+                <option value="remember" {% if question.bloom_taxonomy and question.bloom_taxonomy.bloom_level.value == 'remember' %}selected{% endif %} data-i18n="quiz.bloom_remember">C1 Mengingat</option>
+                <option value="understand" {% if question.bloom_taxonomy and question.bloom_taxonomy.bloom_level.value == 'understand' %}selected{% endif %} data-i18n="quiz.bloom_understand">C2 Memahami</option>
+                <option value="apply" {% if question.bloom_taxonomy and question.bloom_taxonomy.bloom_level.value == 'apply' %}selected{% endif %} data-i18n="quiz.bloom_apply">C3 Menerapkan</option>
+                <option value="analyze" {% if question.bloom_taxonomy and question.bloom_taxonomy.bloom_level.value == 'analyze' %}selected{% endif %} data-i18n="quiz.bloom_analyze">C4 Menganalisis</option>
+                <option value="evaluate" {% if question.bloom_taxonomy and question.bloom_taxonomy.bloom_level.value == 'evaluate' %}selected{% endif %} data-i18n="quiz.bloom_evaluate">C5 Mengevaluasi</option>
+                <option value="create" {% if question.bloom_taxonomy and question.bloom_taxonomy.bloom_level.value == 'create' %}selected{% endif %} data-i18n="quiz.bloom_create">C6 Mencipta</option>
             </select>
         </div>
         {% endif %}
@@ -230,7 +230,7 @@
         <div class="h-10 w-px bg-gray-100"></div>
 
         <label class="flex items-center cursor-pointer group/req">
-            <span class="mr-3 text-xs font-black text-gray-400 uppercase tracking-widest group-hover/req:text-primary-600 transition-colors">Wajib diisi</span>
+            <span class="mr-3 text-xs font-black text-gray-400 uppercase tracking-widest group-hover/req:text-primary-600 transition-colors" data-i18n="quiz.required_label">Wajib diisi</span>
             <div class="relative" hx-post="/api/question/{{ question.id }}/toggle-required" hx-target="#question-{{ question.id }}" hx-swap="outerHTML">
                 <div class="w-12 h-6 {% if question.is_required %} bg-primary-500 {% else %} bg-gray-200 {% endif %} rounded-full transition-colors shadow-inner"></div>
                 <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform {% if question.is_required %} translate-x-6 {% endif %} shadow-md"></div>
