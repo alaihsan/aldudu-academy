@@ -12,6 +12,7 @@ from app.helpers import get_jakarta_now, sanitize_text
 from app.services.email_service import send_school_approved_email, send_ticket_update_email, send_email
 from app.tickets.services import transition_status, TicketStatus as TStat
 from app.core.middleware import invalidate_school_cache
+from app.core.i18n import t
 
 superadmin_bp = Blueprint('superadmin', __name__, url_prefix='/superadmin', template_folder='templates')
 
@@ -27,13 +28,13 @@ def validate_password(password):
     - At least 1 symbol
     """
     if len(password) < 6:
-        return False, 'Password minimal 6 karakter'
+        return False, t('superadmin.messages.password_min_length')
     if not re.search(r'[A-Z]', password):
-        return False, 'Password harus mengandung minimal 1 huruf kapital'
+        return False, t('superadmin.messages.password_uppercase_required')
     if not re.search(r'\d', password):
-        return False, 'Password harus mengandung minimal 1 angka'
+        return False, t('superadmin.messages.password_number_required')
     if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
-        return False, 'Password harus mengandung minimal 1 simbol (!@#$%^&*(),.?":{}|<>)'
+        return False, t('superadmin.messages.password_symbol_required')
     return True, None
 
 
@@ -120,10 +121,10 @@ def api_get_schools():
 def api_approve_school(school_id):
     school = db.session.get(School, school_id)
     if not school:
-        return jsonify({'success': False, 'message': 'Sekolah tidak ditemukan'}), 404
+        return jsonify({'success': False, 'message': t('superadmin.messages.school_not_found')}), 404
 
     if school.status not in (SchoolStatus.PENDING, SchoolStatus.VERIFIED):
-        return jsonify({'success': False, 'message': 'Sekolah sudah aktif atau sedang disuspend'}), 400
+        return jsonify({'success': False, 'message': t('superadmin.messages.school_already_active_or_suspended')}), 400
 
     is_bypass = school.status == SchoolStatus.PENDING
     school.status = SchoolStatus.ACTIVE
@@ -140,7 +141,7 @@ def api_approve_school(school_id):
     if admin_user:
         send_school_approved_email(admin_user, school)
 
-    msg = 'Sekolah disetujui (bypass verifikasi email)' if is_bypass else 'Sekolah berhasil disetujui'
+    msg = t('superadmin.messages.school_approved_bypass') if is_bypass else t('superadmin.messages.school_approved')
     return jsonify({'success': True, 'school': school.to_dict(), 'message': msg})
 
 
@@ -148,7 +149,7 @@ def api_approve_school(school_id):
 def api_suspend_school(school_id):
     school = db.session.get(School, school_id)
     if not school:
-        return jsonify({'success': False, 'message': 'Sekolah tidak ditemukan'}), 404
+        return jsonify({'success': False, 'message': t('superadmin.messages.school_not_found')}), 404
 
     school.status = SchoolStatus.SUSPENDED
     db.session.commit()
@@ -162,7 +163,7 @@ def api_suspend_school(school_id):
 def api_reactivate_school(school_id):
     school = db.session.get(School, school_id)
     if not school:
-        return jsonify({'success': False, 'message': 'Sekolah tidak ditemukan'}), 404
+        return jsonify({'success': False, 'message': t('superadmin.messages.school_not_found')}), 404
 
     school.status = SchoolStatus.ACTIVE
     db.session.commit()
@@ -213,7 +214,7 @@ def api_get_tickets():
 def api_get_ticket(ticket_id):
     ticket = db.session.get(Ticket, ticket_id)
     if not ticket:
-        return jsonify({'success': False, 'message': 'Ticket tidak ditemukan'}), 404
+        return jsonify({'success': False, 'message': t('superadmin.messages.ticket_not_found')}), 404
 
     return jsonify({'success': True, 'ticket': ticket.to_dict(include_messages=True)})
 
@@ -222,14 +223,14 @@ def api_get_ticket(ticket_id):
 def api_reply_ticket(ticket_id):
     ticket = db.session.get(Ticket, ticket_id)
     if not ticket:
-        return jsonify({'success': False, 'message': 'Ticket tidak ditemukan'}), 404
+        return jsonify({'success': False, 'message': t('superadmin.messages.ticket_not_found')}), 404
 
     data = request.get_json() or {}
     content = sanitize_text(data.get('content', ''), max_len=2000)
     is_internal = data.get('is_internal', False)
 
     if not content:
-        return jsonify({'success': False, 'message': 'Pesan tidak boleh kosong'}), 400
+        return jsonify({'success': False, 'message': t('superadmin.messages.message_required')}), 400
 
     message = TicketMessage(
         ticket_id=ticket.id,
@@ -251,7 +252,7 @@ def api_reply_ticket(ticket_id):
 def api_update_ticket_status(ticket_id):
     ticket = db.session.get(Ticket, ticket_id)
     if not ticket:
-        return jsonify({'success': False, 'message': 'Ticket tidak ditemukan'}), 404
+        return jsonify({'success': False, 'message': t('superadmin.messages.ticket_not_found')}), 404
 
     data = request.get_json() or {}
     new_status_str = data.get('status', '')
@@ -259,7 +260,7 @@ def api_update_ticket_status(ticket_id):
     try:
         new_status = TicketStatus(new_status_str)
     except ValueError:
-        return jsonify({'success': False, 'message': 'Status tidak valid'}), 400
+        return jsonify({'success': False, 'message': t('superadmin.messages.invalid_status')}), 400
 
     success, msg = transition_status(ticket, new_status, current_user)
     if not success:
@@ -345,20 +346,20 @@ def api_reset_password(admin_id):
     """Reset password untuk admin."""
     admin = db.session.get(User, admin_id)
     if not admin:
-        return jsonify({'success': False, 'message': 'User tidak ditemukan'}), 404
+        return jsonify({'success': False, 'message': t('superadmin.messages.user_not_found')}), 404
     
     # Hanya bisa reset password admin/superadmin lain, bukan diri sendiri
     if admin.id == current_user.id:
-        return jsonify({'success': False, 'message': 'Tidak bisa reset password sendiri'}), 400
+        return jsonify({'success': False, 'message': t('superadmin.messages.cannot_reset_own_password')}), 400
     
     if admin.role not in [UserRole.ADMIN, UserRole.SUPER_ADMIN]:
-        return jsonify({'success': False, 'message': 'User bukan admin'}), 400
+        return jsonify({'success': False, 'message': t('superadmin.messages.user_not_admin')}), 400
     
     data = request.get_json() or {}
     new_password = data.get('password', '').strip()
 
     if not new_password:
-        return jsonify({'success': False, 'message': 'Password tidak boleh kosong'}), 400
+        return jsonify({'success': False, 'message': t('superadmin.password_required_error')}), 400
 
     is_valid, error_msg = validate_password(new_password)
     if not is_valid:
@@ -369,7 +370,7 @@ def api_reset_password(admin_id):
     
     return jsonify({
         'success': True, 
-        'message': f'Password {admin.name} berhasil direset',
+        'message': t('superadmin.messages.password_reset_success', admin.name),
         'admin': {
             'id': admin.id,
             'name': admin.name,
@@ -384,23 +385,23 @@ def api_update_name(admin_id):
     """Update nama admin."""
     admin = db.session.get(User, admin_id)
     if not admin:
-        return jsonify({'success': False, 'message': 'User tidak ditemukan'}), 404
+        return jsonify({'success': False, 'message': t('superadmin.messages.user_not_found')}), 404
     
     if admin.role not in [UserRole.ADMIN, UserRole.SUPER_ADMIN]:
-        return jsonify({'success': False, 'message': 'User bukan admin'}), 400
+        return jsonify({'success': False, 'message': t('superadmin.messages.user_not_admin')}), 400
     
     data = request.get_json() or {}
     new_name = sanitize_text(data.get('name', ''), max_len=100)
     
     if not new_name:
-        return jsonify({'success': False, 'message': 'Nama tidak boleh kosong'}), 400
+        return jsonify({'success': False, 'message': t('superadmin.messages.name_required')}), 400
     
     admin.name = new_name
     db.session.commit()
     
     return jsonify({
         'success': True, 
-        'message': 'Nama berhasil diperbarui',
+        'message': t('superadmin.messages.name_updated'),
         'admin': {
             'id': admin.id,
             'name': admin.name,
@@ -415,21 +416,21 @@ def api_toggle_active(admin_id):
     """Toggle status active admin."""
     admin = db.session.get(User, admin_id)
     if not admin:
-        return jsonify({'success': False, 'message': 'User tidak ditemukan'}), 404
+        return jsonify({'success': False, 'message': t('superadmin.messages.user_not_found')}), 404
     
     if admin.id == current_user.id:
-        return jsonify({'success': False, 'message': 'Tidak bisa menonaktifkan diri sendiri'}), 400
+        return jsonify({'success': False, 'message': t('superadmin.messages.cannot_deactivate_self')}), 400
     
     if admin.role not in [UserRole.ADMIN, UserRole.SUPER_ADMIN]:
-        return jsonify({'success': False, 'message': 'User bukan admin'}), 400
+        return jsonify({'success': False, 'message': t('superadmin.messages.user_not_admin')}), 400
     
     admin.is_active = not admin.is_active
     db.session.commit()
     
-    status_text = 'diaktifkan' if admin.is_active else 'dinonaktifkan'
+    message_key = 'superadmin.messages.account_activated' if admin.is_active else 'superadmin.messages.account_deactivated'
     return jsonify({
         'success': True, 
-        'message': f'Akun {admin.name} berhasil {status_text}',
+        'message': t(message_key, admin.name),
         'admin': {
             'id': admin.id,
             'name': admin.name,
@@ -478,7 +479,7 @@ def api_get_issues():
 def api_update_issue_status(issue_id):
     issue = db.session.get(Issue, issue_id)
     if not issue:
-        return jsonify({'success': False, 'message': 'Laporan tidak ditemukan'}), 404
+        return jsonify({'success': False, 'message': t('superadmin.messages.report_not_found')}), 404
 
     data = request.get_json() or {}
     new_status_str = data.get('status', '').upper()
@@ -486,7 +487,7 @@ def api_update_issue_status(issue_id):
     try:
         issue.status = IssueStatus[new_status_str]
     except KeyError:
-        return jsonify({'success': False, 'message': 'Status tidak valid'}), 400
+        return jsonify({'success': False, 'message': t('superadmin.messages.invalid_status')}), 400
 
     db.session.commit()
     return jsonify({'success': True, 'issue': issue.to_dict()})
@@ -508,8 +509,8 @@ def api_test_email():
         ),
     )
     if ok:
-        return jsonify({'success': True, 'message': f'Email test berhasil dikirim ke {recipient}'})
-    return jsonify({'success': False, 'message': 'Gagal mengirim email. Cek kredensial Mailtrap di .env.'}), 500
+        return jsonify({'success': True, 'message': t('superadmin.messages.test_email_sent', recipient)})
+    return jsonify({'success': False, 'message': t('superadmin.messages.failed_send_email')}), 500
 
 
 # ─── What's New Routes ─────────────────────────────────
@@ -549,9 +550,9 @@ def api_create_whats_new():
     is_published = data.get('is_published', True)
 
     if not title:
-        return jsonify({'success': False, 'message': 'Judul tidak boleh kosong'}), 400
+        return jsonify({'success': False, 'message': t('superadmin.title_required_error')}), 400
     if not content:
-        return jsonify({'success': False, 'message': 'Konten tidak boleh kosong'}), 400
+        return jsonify({'success': False, 'message': t('superadmin.content_required_error')}), 400
 
     post = WhatsNew(
         title=title,
@@ -564,7 +565,7 @@ def api_create_whats_new():
 
     return jsonify({
         'success': True,
-        'message': 'What\'s New berhasil dibuat',
+        'message': t('superadmin.messages.whats_new_created'),
         'post': post.to_dict(include_author=True)
     })
 
@@ -574,7 +575,7 @@ def api_get_whats_new_post(post_id):
     """Get single What's New post."""
     post = db.session.get(WhatsNew, post_id)
     if not post:
-        return jsonify({'success': False, 'message': 'Post tidak ditemukan'}), 404
+        return jsonify({'success': False, 'message': t('superadmin.messages.post_not_found')}), 404
 
     return jsonify({
         'success': True,
@@ -587,7 +588,7 @@ def api_update_whats_new_post(post_id):
     """Update What's New post."""
     post = db.session.get(WhatsNew, post_id)
     if not post:
-        return jsonify({'success': False, 'message': 'Post tidak ditemukan'}), 404
+        return jsonify({'success': False, 'message': t('superadmin.messages.post_not_found')}), 404
 
     data = request.get_json() or {}
     title = sanitize_text(data.get('title', ''), max_len=200)
@@ -595,9 +596,9 @@ def api_update_whats_new_post(post_id):
     is_published = data.get('is_published', post.is_published)
 
     if not title:
-        return jsonify({'success': False, 'message': 'Judul tidak boleh kosong'}), 400
+        return jsonify({'success': False, 'message': t('superadmin.title_required_error')}), 400
     if not content:
-        return jsonify({'success': False, 'message': 'Konten tidak boleh kosong'}), 400
+        return jsonify({'success': False, 'message': t('superadmin.content_required_error')}), 400
 
     post.title = title
     post.content = content
@@ -607,7 +608,7 @@ def api_update_whats_new_post(post_id):
 
     return jsonify({
         'success': True,
-        'message': 'What\'s New berhasil diperbarui',
+        'message': t('superadmin.messages.whats_new_updated'),
         'post': post.to_dict(include_author=True)
     })
 
@@ -617,12 +618,12 @@ def api_delete_whats_new_post(post_id):
     """Delete What's New post."""
     post = db.session.get(WhatsNew, post_id)
     if not post:
-        return jsonify({'success': False, 'message': 'Post tidak ditemukan'}), 404
+        return jsonify({'success': False, 'message': t('superadmin.messages.post_not_found')}), 404
 
     db.session.delete(post)
     db.session.commit()
 
     return jsonify({
         'success': True,
-        'message': 'What\'s New berhasil dihapus'
+        'message': t('superadmin.messages.whats_new_deleted')
     })
