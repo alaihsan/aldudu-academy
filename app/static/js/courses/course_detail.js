@@ -126,6 +126,7 @@ const CourseDetail = {
 
     applySorting(sort) {
         const container = this.topicsContainer;
+        if (!container) return;
         const items = Array.from(container.querySelectorAll('.draggable-item'));
 
         if (sort === 'newest') {
@@ -197,6 +198,12 @@ const CourseDetail = {
 
     setupDropZones() {
         const container = this.topicsContainer;
+        // #topics-container is gone from course_detail.html — the material grid
+        // is now #materials-list-container, rendered by materials_list.js with
+        // its own drag & drop in materials_list_dnd.js. Without this guard the
+        // addEventListener below throws on null and aborts init() before
+        // initFolders()/updateFolderCounts() ever run.
+        if (!container) return;
 
         // Main grid as drop zone for reordering
         container.addEventListener('dragover', (e) => {
@@ -479,6 +486,7 @@ const CourseDetail = {
     },
 
     async saveOrder() {
+        if (!this.topicsContainer) return;
         const items = [];
         const allItems = this.topicsContainer.querySelectorAll('.draggable-item');
         allItems.forEach((item, index) => {
@@ -716,6 +724,7 @@ const CourseDetail = {
         activeBtn.classList.add('active', 'bg-primary-600', 'text-white', 'shadow-lg', 'shadow-primary-100');
         activeBtn.classList.remove('text-gray-500', 'hover:bg-gray-50');
 
+        if (!this.topicsContainer || !this.discussionsContainer) return;
         const topicCards = this.topicsContainer.querySelectorAll('.draggable-item');
 
         if (tabType === 'Diskusi' || tabType === 'diskusi') {

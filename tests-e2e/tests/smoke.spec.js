@@ -10,20 +10,9 @@ const STUDENT = { email: 'student@aldudu-e2e.dev', password: 'Password123!' };
  * (the exact failure mode this refactor risks: moved/split JS files with a
  * stale path or a name no longer reachable from the global scope).
  */
-// Pre-existing bugs discovered by this suite, unrelated to the JS
-// modularization work (same behavior before the files were moved/split —
-// reported separately to the user, not fixed here to keep this refactor's
-// scope focused). Allowlisted so the suite stays useful as a regression
-// gate for the actual refactor instead of perpetually red on these.
-const KNOWN_PRE_EXISTING_ERRORS = [
-  'setupDropZones', // course_detail.js: this.topicsContainer -> #topics-container no longer exists in the template
-  'discussion.js', // document.querySelector('.container') matches nothing on course_detail
-];
-
 function trackConsoleErrors(page) {
   const errors = [];
   const record = (text) => {
-    if (KNOWN_PRE_EXISTING_ERRORS.some((needle) => text.includes(needle))) return;
     errors.push(text);
   };
   page.on('pageerror', (err) => record(`pageerror: ${err.message}\n${err.stack || ''}`));

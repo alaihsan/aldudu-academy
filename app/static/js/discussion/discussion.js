@@ -1,5 +1,11 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const courseId = document.querySelector('.container').dataset.courseId;
+    // course_detail.html has no `.container` element — it exposes the course id
+    // as window.courseId (inline script, loaded before this file) and as
+    // data-course-id on <main>. Reading `.container` here threw on null and
+    // killed every handler below (discussion modal, form submit, list render).
+    const courseIdEl = document.querySelector('[data-course-id]');
+    const courseId = window.courseId || courseIdEl?.dataset.courseId;
+    if (!courseId) return;
     const currentUserId = document.body.dataset.userId;
 
     const showCreateDiscussionModal = document.getElementById('show-create-discussion-modal');
@@ -54,6 +60,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     async function fetchDiscussions() {
+        // course_detail.html has no #discussions-container — the list there is
+        // rendered by CourseDetail.renderDiscussions() in course_detail.js.
+        // Only the create-discussion modal/form half of this file is live on
+        // that page, so bail out instead of writing innerHTML on null.
+        if (!discussionsContainer) return;
         try {
             const response = await fetch(`/api/courses/${courseId}/discussions`);
             const data = await response.json();
@@ -110,6 +121,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     fetchDiscussions();
+
+    if (!discussionsContainer) return;
 
     discussionsContainer.addEventListener('click', async (e) => {
         const target = e.target;
